@@ -1,20 +1,21 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class SpellType : SpellNode
+public abstract class SpellType : SpellNode
 {
     public bool DealDamage = true;
     public CollisionOptions Collisions;
     public SpellType Type;
-    public float DamageMultiplier;
 
-    SpellTrigger[] Triggers = new SpellTrigger[3];
-    SpellTrajectory Trajectory;
-    SpellEffect Effect;
-    SpellStat Stat;
+    public StatTypes FinalStats;
+    public List<StatTypes> StatBuffs = new List<StatTypes>();
+    public StatTypes StatMultipliers = new StatTypes(1);
 
-
-
+    public SpellTrigger[] Triggers = new SpellTrigger[3];
+    public SpellTrajectory Trajectory;
+    public SpellEffect Effect;
+    public SpellStat Stat;
 
     [Serializable]
     public struct CollisionOptions
@@ -23,6 +24,55 @@ public class SpellType : SpellNode
         public bool Enemies;
         public bool Objects;
     }
-    public enum SpellTypes { Projectile, Lobbed, Area, Explosion, Hazard, Laser, Ray, Breath}
+    public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
+    public void CalculateFinalStats()
+    {
+        FinalStats = BaseStats;
+        foreach (StatTypes s in StatBuffs)
+        {
+            FinalStats += s;
+        }
+        FinalStats *= StatMultipliers;
+    }
+    public virtual Vector3 GetVelocity()
+    {
+        if (Trajectory == null)
+        {
+            return Vector3.zero;
+        }
+        return Trajectory.GetTrajectory() * FinalStats.Speed;
+    }
+    public void UpdateNode()
+    {
+        CalculateFinalStats();
+    }
 
+}
+public class TypeProjectile : SpellType
+{
+
+}
+public class TypeArea : SpellType
+{
+
+}
+public class TypeExplosion : SpellType
+{
+
+}
+public class TypeHazard : SpellType
+{
+
+}
+public class TypeLaser : SpellType
+{
+
+}
+public class TypeRay : SpellType
+{
+
+}
+public class TypeBreath : SpellType
+{
+    
 }
