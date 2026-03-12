@@ -59,7 +59,7 @@ public class NodeConection
         ownerNode = owner;
     }
     public SpellNode ownerNode;
-    public enum Conections { Circle, Triangle, Square, Penta, None, All }
+    public enum Conections { None, Circle, Triangle, Square, Penta, All }
     public Conections conectionType = Conections.None;
     public NodeConection conection;
     public bool TryConect(NodeConection c)

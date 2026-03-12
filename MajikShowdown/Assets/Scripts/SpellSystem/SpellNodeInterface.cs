@@ -7,11 +7,17 @@ public class SpellNodeInterface : MonoBehaviour
     public SpellNode Node;
     public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
     public NodeConection[] conections;
+
     void Awake()
     {
         Node = Instantiate(PrefabNode);
         Node.Interface = this;
         Node.Initialize();
+        InitializeConections();
+    }
+    [ContextMenu("Initialize")]
+    public void InitializeConections()
+    {
         conections = new NodeConection[] { new(Node), new(Node), new(Node), new(Node), new(Node), new(Node) };
         UpdateConectionPorts();
     }
@@ -53,7 +59,7 @@ public class SpellNodeInterface : MonoBehaviour
     }
     public void UpdateConectionPorts()
     {
-        for (int i = 0; 0 < conections.Length; i++)
+        for (int i = 0; i < conections.Length; i++)
         {
             conections[i].conectionType = ConectionPorts[i];
         }
