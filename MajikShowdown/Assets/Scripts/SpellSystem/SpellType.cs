@@ -2,20 +2,21 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public abstract class SpellType : SpellNode
 {
     public bool DealDamage = true;
     public CollisionOptions Collisions;
-    public SpellType Type;
+    //public SpellType Type;
 
     public StatTypes FinalStats;
     public List<StatTypes> StatBuffs = new List<StatTypes>();
     public StatTypes StatMultipliers = new StatTypes(1);
 
-    public SpellTrigger[] Triggers = new SpellTrigger[3];
+    /*public SpellTrigger[] Triggers = new SpellTrigger[3];
     public SpellTrajectory Trajectory;
     public SpellEffect Effect;
-    public SpellStat Stat;
+    public SpellStat Stat;*/
 
     [Serializable]
     public struct CollisionOptions
@@ -36,11 +37,16 @@ public abstract class SpellType : SpellNode
     }
     public virtual Vector3 GetVelocity()
     {
-        if (Trajectory == null)
+        Vector3 traj = Vector3.zero;
+        foreach (SpellNode c in ConectedNodes)
         {
-            return Vector3.zero;
+            if (c is SpellTrajectory t)
+            {
+                traj += t.GetTrajectory();
+            }
         }
-        return Trajectory.GetTrajectory() * FinalStats.Speed;
+        return traj.normalized * FinalStats.Speed;
+
     }
     public void UpdateNode()
     {
@@ -48,6 +54,7 @@ public abstract class SpellType : SpellNode
     }
 
 }
+[CreateAssetMenu(fileName = "Projectile Node", menuName = "Spell Nodes/TypeNodes/Projectile")]
 public class TypeProjectile : SpellType
 {
 

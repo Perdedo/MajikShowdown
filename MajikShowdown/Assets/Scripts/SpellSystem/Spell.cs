@@ -10,6 +10,7 @@ public class Spell
 
     public void UpdateSpell()
     {
+        primaryNode.hierarchy = 0;
         SpellCooldown = 0;
         foreach(SpellNode s in spellNodes)
         {
