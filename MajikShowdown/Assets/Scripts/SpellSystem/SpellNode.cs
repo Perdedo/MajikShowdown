@@ -7,12 +7,12 @@ public abstract class SpellNode : ScriptableObject
 {
     public float Cooldown = 0;
     public StatTypes BaseStats = new StatTypes();
-    
+    public SpellNodeInterface Interface;
     public int hierarchy = int.MaxValue;
-    public NodeConection[] conections;
+    //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
-    public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
-    public bool TryConectNode(SpellNode con, int index)
+    //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
+    /*public bool TryConectNode(SpellNode con, int index)
     {
         int mirrorIndex = (index + 3) % 6;
         if (index < conections.Length)
@@ -25,7 +25,7 @@ public abstract class SpellNode : ScriptableObject
             
         }
         return false;
-    }
+    }*/
     /*public void BreakConection(SpellNode node)
     {
         for (int i = 0; i < ConectedNodes.Length; i++)
@@ -37,7 +37,7 @@ public abstract class SpellNode : ScriptableObject
             }
         }
     }*/
-    public void BreakConection(int Index)
+    /*public void BreakConection(int Index)
     {
         if(Index >= ConectedNodes.Length)
         {
@@ -45,10 +45,10 @@ public abstract class SpellNode : ScriptableObject
         }
         ConectedNodes[Index] = null;
         conections[Index].RemoveConection();
-    }
+    }*/
     public virtual void Initialize()
     {
-        conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
+        //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }
 }
 [Serializable]
@@ -66,6 +66,7 @@ public class NodeConection
     {
         if (conection == null && c.conectionType == conectionType)
         {
+            c.conection = this;
             conection = c;
             if (conection.ownerNode.hierarchy > ownerNode.hierarchy)
             {
