@@ -1,8 +1,12 @@
+using Mirror.BouncyCastle.Math.Field;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpellNodeInterface : MonoBehaviour
 {
     //COLOCAR CONECXÕES NESSE SCRIPT
+    [HideInInspector] public RectTransform rect;
+    [HideInInspector] public HexGridNode hexGridNode;
     public SpellNode PrefabNode;
     public SpellNode Node;
     public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
@@ -14,6 +18,9 @@ public class SpellNodeInterface : MonoBehaviour
         Node.Interface = this;
         Node.Initialize();
         InitializeConections();
+        this.GetComponent<Image>().color *= PrefabNode.color;
+        this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        rect = GetComponent<RectTransform>();
     }
     [ContextMenu("Initialize")]
     public void InitializeConections()
@@ -46,22 +53,48 @@ public class SpellNodeInterface : MonoBehaviour
         }
         //ConectedNodes[Index] = null;
         SpellNode aux = conections[Index].GetNode();
+        Debug.Log(aux);
+        Debug.Log(aux.Interface);
         conections[Index].RemoveConection();
         aux.Interface.UpdateConected();
         UpdateConected();
     }
     public void UpdateConected()
     {
-        for (int i = 0; 0 < conections.Length; i++)
+        for (int i = 0; i < conections.Length; i++)
         {
-            Node.ConectedNodes[i] = conections[i].GetNode();
+            if(Node.ConectedNodes[i] != null)
+            {
+                Node.ConectedNodes[i] = conections[i].GetNode();
+            }
         }
     }
     public void UpdateConectionPorts()
     {
         for (int i = 0; i < conections.Length; i++)
         {
-            conections[i].conectionType = ConectionPorts[i];
+            if(conections[i] != null)
+            {
+                conections[i].conectionType = ConectionPorts[i];
+            }
+        }
+    }
+
+    public void SelectNode()
+    {
+        if (HexGrid.instance.selectedNode == this)
+        {
+            Debug.Log(HexGrid.instance.selectedNode.name + " Deselected");
+            HexGrid.instance.selectedNode = null;
+        }
+        else
+        {
+            /*if(HexGrid.instance.selectedNode != null)
+            {
+                //Remover qqr visual do outro nodo que está selecionado
+            }*/
+            HexGrid.instance.selectedNode = this;
+            Debug.Log(HexGrid.instance.selectedNode.name + " Selected");
         }
     }
 }

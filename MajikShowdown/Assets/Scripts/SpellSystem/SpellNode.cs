@@ -11,6 +11,7 @@ public abstract class SpellNode : ScriptableObject
     public int hierarchy = int.MaxValue;
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
+    public Color color = Color.white;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {
@@ -64,7 +65,7 @@ public class NodeConection
     public NodeConection conection;
     public bool TryConect(NodeConection c)
     {
-        if (conection == null && c.conectionType == conectionType)
+        if (c.conectionType == conectionType && conectionType != Conections.None && c.conectionType != Conections.None)
         {
             c.conection = this;
             conection = c;

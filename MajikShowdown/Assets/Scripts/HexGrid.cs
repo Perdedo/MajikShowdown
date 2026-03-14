@@ -1,10 +1,19 @@
+using NUnit.Framework;
 using UnityEngine;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour
 {
+    public List<HexGridNode> hexGridNodes = new List<HexGridNode>();
     public RectTransform hexPrefab;
     public int hexGridRadius;
     private float hexNodeSize;
+    public static HexGrid instance;
+    public SpellNodeInterface selectedNode;
+    public float maxDistance; 
 
     Vector2Int[] directions =
     {
@@ -18,8 +27,10 @@ public class HexGrid : MonoBehaviour
 
     void Start()
     {
+        instance = this;
         hexNodeSize = hexPrefab.rect.height / 2f;
         GenerateGrid();
+        SetNeighbours();
     }
 
     void GenerateGrid()
@@ -51,6 +62,7 @@ public class HexGrid : MonoBehaviour
         Vector2 pos = HexToPixel(q, r);
         RectTransform hex = Instantiate(hexPrefab, transform);
         hex.anchoredPosition = pos;
+        hexGridNodes.Add(hex.GetComponent<HexGridNode>());
     }
 
     Vector2 HexToPixel(int q, int r)
@@ -60,5 +72,32 @@ public class HexGrid : MonoBehaviour
         float x = width * (q + r * 0.5f);
         float y = height * 0.75f * r;
         return new Vector2(x, y);
+    }
+
+    public void SetNeighbours()
+    {
+        Vector2 dist;
+        float angle;
+        int index;
+        for (int i = 0; i < hexGridNodes.Count; i++)
+        {
+            for(int j = 0; j < hexGridNodes.Count; j++)
+            {
+                if(i != j)
+                {
+                    dist = hexGridNodes[j].rect.localPosition - hexGridNodes[i].rect.localPosition;
+                    if(dist.sqrMagnitude <= Mathf.Pow(maxDistance, 2))
+                    {
+                        angle = Vector2.SignedAngle(Vector2.up, dist.normalized);
+                        index = (int)angle/60;
+                        if(angle < 0)
+                        {
+                            index += 5;
+                        }
+                        hexGridNodes[i].AddNeighbours(hexGridNodes[j], index);
+                    }
+                }
+            }
+        }
     }
 }

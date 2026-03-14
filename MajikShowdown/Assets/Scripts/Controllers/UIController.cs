@@ -76,6 +76,9 @@ public class UIController : MonoBehaviour
     public GameObject confirmLeaveRoom;
     public GameObject returnLeaveRoomPanel;
 
+    [Header("Test Panels")]
+    public GameObject gridPanel;
+
     [HideInInspector]
     public ConfigData data;
 
@@ -109,6 +112,20 @@ public class UIController : MonoBehaviour
         AudioController.instance.StartMusic();
     }
 
+    public void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Tab))
+        {
+            if(gridPanel.activeSelf)
+            {
+                ClosePanel(gridPanel);
+            }
+            else
+            {
+                OpenPanel(gridPanel);
+            }
+        }
+    }
     public void UiMenuSetup()
     {
         if (gameTitle != null)
@@ -191,6 +208,10 @@ public class UIController : MonoBehaviour
         {
             optionsPanel.SetActive(false);
         }
+        if (gridPanel != null)
+        {
+            gridPanel.SetActive(false);
+        }
     }
 
     public void ChangeScene(string sceneName)
@@ -238,6 +259,10 @@ public class UIController : MonoBehaviour
             {
                 SaveManager.SaveConfig();
             }
+        }
+        if(panel == gridPanel)
+        {
+            HexGrid.instance.selectedNode = null;
         }
     }
 
