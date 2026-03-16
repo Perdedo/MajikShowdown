@@ -1,12 +1,14 @@
-using Unity.Jobs;
-using System.IO;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using Mirror;
 using NUnit.Framework.Interfaces;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using TMPro;
+using Unity.Jobs;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIController : MonoBehaviour
 {
@@ -27,14 +29,15 @@ public class UIController : MonoBehaviour
     public GameObject menuQuitGamePanel;
 
     [Header("Room Texts")]
-    public GameObject roomID;
-    public GameObject players;
-    public GameObject playersReady;
+    public TextMeshProUGUI roomID;
+    public TextMeshProUGUI players;
+    public TextMeshProUGUI playersReady;
 
-    [Header("Rooom Buttons")]
+    [Header("Room Buttons")]
     public GameObject gameRulesButton;
     public GameObject optionsButton;
     public GameObject readyButton;
+    public TextMeshProUGUI readyButtonText;
     public GameObject leaveRoomButton;
     public GameObject startGameButton;
 
@@ -170,15 +173,15 @@ public class UIController : MonoBehaviour
         }
         if (roomID != null)
         {
-            roomID.SetActive(true);
+            roomID.gameObject.SetActive(true);
         }
         if (players != null)
         {
-            players.SetActive(true);
+            players.gameObject.SetActive(true);
         }
         if (playersReady != null)
         {
-            playersReady.SetActive(true);
+            playersReady.gameObject.SetActive(true);
         }
         if (gameRulesButton != null)
         {
@@ -199,6 +202,11 @@ public class UIController : MonoBehaviour
         if (startGameButton != null)
         {
             startGameButton.SetActive(true);
+            startGameButton.GetComponent<Button>().interactable = false;
+            /*if(NetworkServer.active)
+            {
+                startGameButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(false);
+            }*/
         }
         if (gameRulesPanel != null)
         {
@@ -284,9 +292,9 @@ public class UIController : MonoBehaviour
 
     public void IsRoomObjectsVisible(bool state)
     {
-        roomID.SetActive(state);
-        players.SetActive(state);
-        playersReady.SetActive(state);
+        roomID.gameObject.SetActive(state);
+        players.gameObject.SetActive(state);
+        playersReady.gameObject.SetActive(state);
         gameRulesButton.SetActive(state);
         optionsButton.SetActive(state);
         readyButton.SetActive(state);
@@ -458,4 +466,37 @@ public class UIController : MonoBehaviour
         }
     }
 
+    public void StartGame()
+    {
+        NetworkManager.singleton.GetComponent<RoomManager>().GoToGameScene();
+    }
+
+    public void CreateRoom()
+    {
+        NetworkManager.singleton.StartHost();
+    }
+
+    public void EnterRoomCode(string roomCode)
+    {
+        NetworkManager.singleton.StartClient();
+    }
+
+    public void ReadyOrNotButton()
+    {
+        foreach(NetworkRoomPlayer rp in NetworkManager.singleton.GetComponent<NetworkRoomManager>().roomSlots)
+        {
+            if(rp.isOwned && rp.isLocalPlayer)
+            {
+                if(!rp.readyToBegin)
+                {
+                    readyButtonText.text = "Cancel";
+                }
+                else
+                {
+                    readyButtonText.text = "Ready";
+                }
+                rp.CmdChangeReadyState(!rp.readyToBegin);
+            }
+        }
+    }
 }
