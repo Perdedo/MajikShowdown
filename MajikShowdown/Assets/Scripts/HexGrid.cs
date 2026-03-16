@@ -14,6 +14,7 @@ public class HexGrid : MonoBehaviour
     public static HexGrid instance;
     public SpellNodeInterface selectedNode;
     public float maxDistance; 
+    public Spell spell = new Spell();
 
     Vector2Int[] directions =
     {

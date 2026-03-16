@@ -54,11 +54,7 @@ public abstract class SpellType : SpellNode
     }
 
 }
-[CreateAssetMenu(fileName = "Projectile Node", menuName = "Spell Nodes/TypeNodes/Projectile")]
-public class TypeProjectile : SpellType
-{
 
-}
 public class TypeArea : SpellType
 {
 

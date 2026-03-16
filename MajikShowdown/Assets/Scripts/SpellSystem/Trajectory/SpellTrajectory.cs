@@ -4,14 +4,7 @@ public abstract class SpellTrajectory : SpellNode
 {
     public abstract Vector3 GetTrajectory();
 }
-[CreateAssetMenu(fileName = "Foward Node", menuName = "Spell Nodes/Tragectory Nodes/Foward")]
-public class TrajectoryFoward : SpellTrajectory
-{
-    public override Vector3 GetTrajectory()
-    {
-        return Vector3.forward;
-    }
-}
+
 public class TrajectoryLobbed : SpellTrajectory
 {
     public override Vector3 GetTrajectory()
