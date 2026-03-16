@@ -11,7 +11,7 @@ public class HexGrid : MonoBehaviour
     public RectTransform hexPrefab;
     public int hexGridRadius;
     private float hexNodeSize;
-    public static HexGrid instance;
+    //public static HexGrid instance;
     public SpellNodeInterface selectedNode;
     public float maxDistance; 
     public Spell spell = new Spell();
@@ -28,10 +28,27 @@ public class HexGrid : MonoBehaviour
 
     void Start()
     {
-        instance = this;
+        //instance = this;
         hexNodeSize = hexPrefab.rect.height / 2f;
         GenerateGrid();
         SetNeighbours();
+    }
+    void OnEnable()
+    {
+        /*if(GameManager.Instance.uiController.activeGrid != null && GameManager.Instance.uiController.activeGrid != this)
+        {
+            GameManager.Instance.uiController.activeGrid.gameObject.SetActive(false);
+        }*/
+        GameManager.Instance.uiController.activeGrid = this;
+    }
+    void OnDisable()
+    {
+        selectedNode = null;
+        if(GameManager.Instance.uiController.activeGrid == this)
+        {
+            GameManager.Instance.uiController.activeGrid = null;
+        }
+        
     }
 
     void GenerateGrid()
@@ -63,7 +80,9 @@ public class HexGrid : MonoBehaviour
         Vector2 pos = HexToPixel(q, r);
         RectTransform hex = Instantiate(hexPrefab, transform);
         hex.anchoredPosition = pos;
-        hexGridNodes.Add(hex.GetComponent<HexGridNode>());
+        HexGridNode node = hex.GetComponent<HexGridNode>();
+        node.SetGrid(this);
+        hexGridNodes.Add(node);
     }
 
     Vector2 HexToPixel(int q, int r)

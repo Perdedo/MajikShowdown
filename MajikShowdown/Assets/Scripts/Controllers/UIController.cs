@@ -81,6 +81,7 @@ public class UIController : MonoBehaviour
 
     [HideInInspector]
     public ConfigData data;
+    public HexGrid activeGrid;
 
     void Awake()
     {
@@ -260,10 +261,10 @@ public class UIController : MonoBehaviour
                 SaveManager.SaveConfig();
             }
         }
-        if(panel == gridPanel)
+        /*if(panel == gridPanel)
         {
             HexGrid.instance.selectedNode = null;
-        }
+        }*/
     }
 
     public void QuitGame()

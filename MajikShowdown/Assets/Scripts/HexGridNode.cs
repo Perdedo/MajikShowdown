@@ -10,6 +10,7 @@ public class HexGridNode : MonoBehaviour
     public Button button;
     public HexGridNode[] neighbours = new HexGridNode[6];
     public SpellNodeInterface spellNode;
+    public HexGrid grid;
 
     private void Awake()
     {
@@ -17,23 +18,27 @@ public class HexGridNode : MonoBehaviour
         button = GetComponent<Button>();
         this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
     }
+    public void SetGrid(HexGrid Grid)
+    {
+        grid = Grid;
+    }
 
     public void ConnectNode()
     {
-        if (HexGrid.instance.selectedNode == null) return;
-        if (!VerifyNearbyConnections(HexGrid.instance.selectedNode)) return;
+        if (grid.selectedNode == null) return;
+        if (!VerifyNearbyConnections(grid.selectedNode)) return;
 
-        NodeInventory.instance.RemoveNodeFromInventory(HexGrid.instance.selectedNode);
-        HexGrid.instance.selectedNode.rect.position = this.rect.position;
-        if(HexGrid.instance.selectedNode.hexGridNode != null)
+        NodeInventory.instance.RemoveNodeFromInventory(grid.selectedNode,grid);
+        grid.selectedNode.rect.position = this.rect.position;
+        if(grid.selectedNode.hexGridNode != null)
         {
-            HexGrid.instance.selectedNode.hexGridNode.VerifyNearbyBreakConections(HexGrid.instance.selectedNode);
-            HexGrid.instance.selectedNode.hexGridNode.spellNode = null;
-            HexGrid.instance.selectedNode.hexGridNode.SetNodeButtonState(true);
+            grid.selectedNode.hexGridNode.VerifyNearbyBreakConections(grid.selectedNode);
+            grid.selectedNode.hexGridNode.spellNode = null;
+            grid.selectedNode.hexGridNode.SetNodeButtonState(true);
         }
-        spellNode = HexGrid.instance.selectedNode;
-        HexGrid.instance.selectedNode.hexGridNode = this;
-        HexGrid.instance.selectedNode = null;
+        spellNode = grid.selectedNode;
+        grid.selectedNode.hexGridNode = this;
+        grid.selectedNode = null;
         SetNodeButtonState(false);
     }
 
@@ -49,7 +54,7 @@ public class HexGridNode : MonoBehaviour
 
     public bool VerifyNearbyConnections(SpellNodeInterface spell)
     {
-        if (HexGrid.instance.hexGridNodes[0] == this)
+        if (grid.hexGridNodes[0] == this)
         {
             return true;
         }
