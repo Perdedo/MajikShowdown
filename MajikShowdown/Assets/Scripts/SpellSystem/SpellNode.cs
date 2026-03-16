@@ -63,12 +63,15 @@ public class NodeConection
     public enum Conections { None, Circle, Triangle, Square, Penta, All }
     public Conections conectionType = Conections.None;
     public NodeConection conection;
+    public SpellNode conectedNode;
     public bool TryConect(NodeConection c)
     {
         if (c.conectionType == conectionType && conectionType != Conections.None && c.conectionType != Conections.None)
         {
             c.conection = this;
             conection = c;
+            c.conectedNode = ownerNode;
+            conectedNode = c.ownerNode;
             if (conection.ownerNode.hierarchy > ownerNode.hierarchy)
             {
                 conection.ownerNode.hierarchy = ownerNode.hierarchy + 1;
@@ -80,10 +83,23 @@ public class NodeConection
             return false;
         }
     }
+    public bool CheckConection(NodeConection c)
+    {
+        if (c.conectionType == conectionType && conectionType != Conections.None && c.conectionType != Conections.None)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     public void RemoveConection()
     {
         if(conection != null)
         {
+            conectedNode = null;
+            conection.conectedNode = null;
             conection.conection = null;
             conection = null;
         }

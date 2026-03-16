@@ -45,6 +45,19 @@ public class SpellNodeInterface : MonoBehaviour
         }
         return false;
     }
+    public bool CheckConectNode(SpellNodeInterface con, int index)
+    {
+        int mirrorIndex = (index + 3) % 6;
+        if (index < conections.Length)
+        {
+            if (conections[index].CheckConection(con.conections[mirrorIndex]))
+            {
+                return true;
+            }
+
+        }
+        return false;
+    }
     public void BreakConection(int Index)
     {
         if (Index >= conections.Length)

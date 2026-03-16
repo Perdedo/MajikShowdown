@@ -7,6 +7,7 @@ public class Spell
     public List<SpellNode> spellNodes = new List<SpellNode>();
     public float SpellCooldown = 0;
     public SpellType primaryNode;
+    public bool validSpell;
 
     public void UpdateSpell()
     {

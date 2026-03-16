@@ -13,7 +13,7 @@ public class HexGrid : MonoBehaviour
     private float hexNodeSize;
     //public static HexGrid instance;
     public SpellNodeInterface selectedNode;
-    public float maxDistance; 
+    public float maxDistance;
     public Spell spell = new Spell();
 
     Vector2Int[] directions =
@@ -32,6 +32,7 @@ public class HexGrid : MonoBehaviour
         hexNodeSize = hexPrefab.rect.height / 2f;
         GenerateGrid();
         SetNeighbours();
+        ConfigurateSpell();
     }
     void OnEnable()
     {
@@ -44,11 +45,11 @@ public class HexGrid : MonoBehaviour
     void OnDisable()
     {
         selectedNode = null;
-        if(GameManager.Instance.uiController.activeGrid == this)
+        if (GameManager.Instance.uiController.activeGrid == this)
         {
             GameManager.Instance.uiController.activeGrid = null;
         }
-        
+
     }
 
     void GenerateGrid()
@@ -101,16 +102,16 @@ public class HexGrid : MonoBehaviour
         int index;
         for (int i = 0; i < hexGridNodes.Count; i++)
         {
-            for(int j = 0; j < hexGridNodes.Count; j++)
+            for (int j = 0; j < hexGridNodes.Count; j++)
             {
-                if(i != j)
+                if (i != j)
                 {
                     dist = hexGridNodes[j].rect.localPosition - hexGridNodes[i].rect.localPosition;
-                    if(dist.sqrMagnitude <= Mathf.Pow(maxDistance, 2))
+                    if (dist.sqrMagnitude <= Mathf.Pow(maxDistance, 2))
                     {
                         angle = Vector2.SignedAngle(Vector2.up, dist.normalized);
-                        index = (int)angle/60;
-                        if(angle < 0)
+                        index = (int)angle / 60;
+                        if (angle < 0)
                         {
                             index += 5;
                         }
@@ -119,5 +120,45 @@ public class HexGrid : MonoBehaviour
                 }
             }
         }
+    }
+    public void AddSelectedToGrid(HexGridNode node)
+    {
+        NodeInventory.instance.RemoveNodeFromInventory(selectedNode, this);
+        selectedNode.rect.position = node.rect.position;
+        if (selectedNode.hexGridNode != null)
+        {
+            selectedNode.hexGridNode.VerifyNearbyBreakConections(selectedNode);
+            selectedNode.hexGridNode.spellNode = null;
+            selectedNode.hexGridNode.SetNodeButtonState(true);
+        }
+        node.spellNode = selectedNode;
+        selectedNode.hexGridNode = node;
+        selectedNode = null;
+        node.SetNodeButtonState(false);
+        ConfigurateSpell();
+    }
+    public void RemoveSelectedFromGrid()
+    {
+        selectedNode.hexGridNode.SetNodeButtonState(true);
+        selectedNode.hexGridNode.VerifyNearbyBreakConections(selectedNode);
+        selectedNode.hexGridNode.spellNode = null;
+        selectedNode.hexGridNode = null;
+        //AddNodeToInventory(selectedNode);
+        selectedNode = null;
+        ConfigurateSpell();
+    }
+    public void ConfigurateSpell()
+    {
+        if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
+        {
+            spell.validSpell = true;
+            spell.primaryNode = t;
+            spell.UpdateSpell();
+        }
+        else
+        {
+            spell.validSpell = false;
+        }
+
     }
 }

@@ -37,12 +37,7 @@ public class NodeInventory : MonoBehaviour
     {
         HexGrid active = GameManager.Instance.uiController.activeGrid;
         if (active.selectedNode == null || active.selectedNode.hexGridNode == null) return;
-
-        active.selectedNode.hexGridNode.SetNodeButtonState(true);
-        active.selectedNode.hexGridNode.VerifyNearbyBreakConections(active.selectedNode);
-        active.selectedNode.hexGridNode.spellNode = null;
-        active.selectedNode.hexGridNode = null;
         AddNodeToInventory(active.selectedNode);
-        active.selectedNode = null;
+        active.RemoveSelectedFromGrid();
     }
 }
