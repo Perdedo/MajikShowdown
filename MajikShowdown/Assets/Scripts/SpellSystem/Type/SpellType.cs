@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public abstract class SpellType : SpellNode
+[CreateAssetMenu(fileName = "Type Node", menuName = "Spell Nodes/TypeNode")]
+public class SpellType : SpellNode
 {
+    public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
+    public SpellTypes Type;
+
     public bool DealDamage = true;
     public CollisionOptions Collisions;
     //public SpellType Type;
 
+    public StatTypes StatMultipliers = new StatTypes(1);
     public StatTypes FinalStats;
     public List<StatTypes> StatBuffs = new List<StatTypes>();
-    public StatTypes StatMultipliers = new StatTypes(1);
 
     /*public SpellTrigger[] Triggers = new SpellTrigger[3];
     public SpellTrajectory Trajectory;
@@ -25,7 +28,6 @@ public abstract class SpellType : SpellNode
         public bool Enemies;
         public bool Objects;
     }
-    public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
     public void CalculateFinalStats()
     {
         FinalStats = BaseStats;
@@ -55,7 +57,7 @@ public abstract class SpellType : SpellNode
 
 }
 
-public class TypeArea : SpellType
+/*public class TypeArea : SpellType
 {
 
 }
@@ -79,3 +81,8 @@ public class TypeBreath : SpellType
 {
     
 }
+[CreateAssetMenu(fileName = "Projectile Node", menuName = "Spell Nodes/TypeNodes/Projectile")]
+public class TypeProjectile : SpellType
+{
+
+}*/
