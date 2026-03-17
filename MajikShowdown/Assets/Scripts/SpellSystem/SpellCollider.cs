@@ -1,24 +1,28 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SpellCollider : MonoBehaviour
 {
     public StaticRB rb;
+    public StatTypes stats;
     public SpellType projectileConfig;
-    public float Size = 1;
-    void Start()
+
+    public UnityEvent OnCast, OnHit, OnDeath;
+    private void Start()
     {
-        /*projectileConfig = new TypeProjectile();
-        projectileConfig.BaseStats.Speed = 1;
-        projectileConfig.BaseStats.Size = 1;
-        TrajectoryFoward test = new TrajectoryFoward();
-        test.BaseStats.Size = 4;
-        projectileConfig.TryConectNode(test,0);*/
-        projectileConfig.CalculateFinalStats();
-        Size = projectileConfig.FinalStats.Size;
-        transform.localScale = Vector3.one * Size;
+        //projectileConfig.CalculateFinalStats();
+        stats = projectileConfig.FinalStats;
+        transform.localScale = Vector3.one * stats.Size;
+        Invoke("Die", stats.Duration);
+        OnCast.Invoke();
     }
     void Update()
     {
         rb.Velocity = projectileConfig.GetVelocity();
+    }
+    public void Die()
+    {
+        OnDeath.Invoke();
+        Destroy(gameObject);
     }
 }

@@ -16,10 +16,11 @@ public class SpellType : SpellNode
     public StatTypes FinalStats;
     public List<StatTypes> StatBuffs = new List<StatTypes>();
 
-    /*public SpellTrigger[] Triggers = new SpellTrigger[3];
-    public SpellTrajectory Trajectory;
-    public SpellEffect Effect;
-    public SpellStat Stat;*/
+   // public SubSpell subSpell;
+    public override void Initialize()
+    {
+        base.Initialize();
+    }
 
     [Serializable]
     public struct CollisionOptions
@@ -30,6 +31,7 @@ public class SpellType : SpellNode
     }
     public void CalculateFinalStats()
     {
+        Debug.Log("bbbbbbbbbbbbb");
         FinalStats = BaseStats;
         foreach (StatTypes s in StatBuffs)
         {

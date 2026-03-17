@@ -11,6 +11,8 @@ public class HexGridNode : MonoBehaviour
     public HexGridNode[] neighbours = new HexGridNode[6];
     public SpellNodeInterface spellNode;
     public HexGrid grid;
+    public int index;
+    public int Layer;
 
     private void Awake()
     {

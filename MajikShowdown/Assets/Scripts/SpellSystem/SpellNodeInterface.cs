@@ -66,8 +66,8 @@ public class SpellNodeInterface : MonoBehaviour
         }
         //ConectedNodes[Index] = null;
         SpellNode aux = conections[Index].GetNode();
-        Debug.Log(aux);
-        Debug.Log(aux.Interface);
+        //Debug.Log(aux);
+        //Debug.Log(aux.Interface);
         conections[Index].RemoveConection();
         aux.Interface.UpdateConected();
         UpdateConected();
@@ -76,9 +76,13 @@ public class SpellNodeInterface : MonoBehaviour
     {
         for (int i = 0; i < conections.Length; i++)
         {
-            if(Node.ConectedNodes[i] != null)
+            if(conections[i] != null)
             {
                 Node.ConectedNodes[i] = conections[i].GetNode();
+            }
+            else
+            {
+                Node.ConectedNodes[i] = null;
             }
         }
     }

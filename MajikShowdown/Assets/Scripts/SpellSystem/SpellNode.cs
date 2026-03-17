@@ -8,7 +8,7 @@ public abstract class SpellNode : ScriptableObject
     public float Cooldown = 0;
     public StatTypes BaseStats = new StatTypes();
     public SpellNodeInterface Interface;
-    public int hierarchy = int.MaxValue;
+    public int hierarchy = -1;
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Color color = Color.white;
@@ -50,6 +50,18 @@ public abstract class SpellNode : ScriptableObject
     public virtual void Initialize()
     {
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
+    }
+    public virtual List<SpellNode> GetSubspellList(List<SpellNode> list)
+    {
+        list.Add(this);
+        foreach (SpellNode conectedNode in ConectedNodes)
+        {
+            if (!list.Contains(conectedNode))
+            {
+                list = conectedNode.GetSubspellList(list);
+            }
+        }
+        return list;
     }
 }
 [Serializable]

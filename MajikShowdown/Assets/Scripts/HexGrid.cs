@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class HexGrid : MonoBehaviour
 {
     public List<HexGridNode> hexGridNodes = new List<HexGridNode>();
+    public List<SpellNodeInterface> spellNodes = new List<SpellNodeInterface>();
     public RectTransform hexPrefab;
     public int hexGridRadius;
     private float hexNodeSize;
@@ -54,7 +55,7 @@ public class HexGrid : MonoBehaviour
 
     void GenerateGrid()
     {
-        CreateHex(0, 0);
+        CreateHex(0, 0,0);
 
         for (int layer = 1; layer <= hexGridRadius; layer++)
         {
@@ -70,19 +71,21 @@ public class HexGrid : MonoBehaviour
         {
             for (int step = 0; step < layer; step++)
             {
-                CreateHex(hex.x, hex.y);
+                CreateHex(hex.x, hex.y, layer);
                 hex += directions[side];
             }
         }
     }
 
-    void CreateHex(int q, int r)
+    void CreateHex(int q, int r, int Layer)
     {
         Vector2 pos = HexToPixel(q, r);
         RectTransform hex = Instantiate(hexPrefab, transform);
         hex.anchoredPosition = pos;
         HexGridNode node = hex.GetComponent<HexGridNode>();
         node.SetGrid(this);
+        node.index = hexGridNodes.Count;
+        node.Layer = Layer;
         hexGridNodes.Add(node);
     }
 
@@ -133,6 +136,7 @@ public class HexGrid : MonoBehaviour
         }
         node.spellNode = selectedNode;
         selectedNode.hexGridNode = node;
+        spellNodes.Insert(node.index, selectedNode);
         selectedNode = null;
         node.SetNodeButtonState(false);
         ConfigurateSpell();
@@ -144,11 +148,19 @@ public class HexGrid : MonoBehaviour
         selectedNode.hexGridNode.spellNode = null;
         selectedNode.hexGridNode = null;
         //AddNodeToInventory(selectedNode);
+        spellNodes.Remove(selectedNode);
+        selectedNode.Node.hierarchy = -1;
         selectedNode = null;
         ConfigurateSpell();
     }
     public void ConfigurateSpell()
     {
+        spell.spellNodes.Clear();
+        foreach (var node in spellNodes)
+        {
+            node.Node.hierarchy = node.hexGridNode.Layer;
+            spell.spellNodes.Add(node.Node);
+        }
         if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
         {
             spell.validSpell = true;
@@ -161,4 +173,5 @@ public class HexGrid : MonoBehaviour
         }
 
     }
+    
 }
