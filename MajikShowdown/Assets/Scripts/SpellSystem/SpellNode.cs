@@ -56,7 +56,7 @@ public abstract class SpellNode : ScriptableObject
         list.Add(this);
         foreach (SpellNode conectedNode in ConectedNodes)
         {
-            if (!list.Contains(conectedNode))
+            if (conectedNode != null && !list.Contains(conectedNode))
             {
                 list = conectedNode.GetSubspellList(list);
             }
