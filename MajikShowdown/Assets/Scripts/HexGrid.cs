@@ -149,7 +149,7 @@ public class HexGrid : MonoBehaviour
         selectedNode.hexGridNode = null;
         //AddNodeToInventory(selectedNode);
         spellNodes.Remove(selectedNode);
-        selectedNode.Node.hierarchy = -1;
+        selectedNode.Node.ResetNode();
         selectedNode = null;
         ConfigurateSpell();
     }

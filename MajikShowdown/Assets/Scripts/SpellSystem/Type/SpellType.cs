@@ -31,13 +31,16 @@ public class SpellType : SpellNode
     }
     public void CalculateFinalStats()
     {
-        Debug.Log("bbbbbbbbbbbbb");
         FinalStats = BaseStats;
         foreach (StatTypes s in StatBuffs)
         {
             FinalStats += s;
         }
         FinalStats *= StatMultipliers;
+    }
+    public void AddBuff(StatTypes s)
+    {
+        StatBuffs.Add(s);
     }
     public virtual Vector3 GetVelocity()
     {
@@ -56,7 +59,11 @@ public class SpellType : SpellNode
     {
         CalculateFinalStats();
     }
-
+    public override List<SpellNode> GetSubspellList(List<SpellNode> list)
+    {
+        if(list.Count != 0) return list;
+        return base.GetSubspellList(list);
+    }
 }
 
 /*public class TypeArea : SpellType

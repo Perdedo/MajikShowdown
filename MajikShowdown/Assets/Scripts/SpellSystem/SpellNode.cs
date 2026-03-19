@@ -12,6 +12,7 @@ public abstract class SpellNode : ScriptableObject
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Color color = Color.white;
+    public SubSpell OwnerSubspell;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {
@@ -62,6 +63,11 @@ public abstract class SpellNode : ScriptableObject
             }
         }
         return list;
+    }
+    public virtual void ResetNode()
+    {
+        hierarchy = -1;
+        OwnerSubspell = null;
     }
 }
 [Serializable]

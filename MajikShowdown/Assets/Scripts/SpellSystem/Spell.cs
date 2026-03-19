@@ -49,9 +49,15 @@ public class SubSpell
     public void UpdateSubSpell()
     {
         spellNodes = Type.GetSubspellList(new List<SpellNode>());
+        Type.StatBuffs.Clear();
         foreach (SpellNode s in spellNodes)
         {
             CooldownCost += s.Cooldown;
+            if(s != Type)
+            {
+                Type.AddBuff(s.BaseStats);
+            }
+            s.OwnerSubspell = this;
         }
         Type.CalculateFinalStats();
     }
