@@ -45,6 +45,19 @@ public class SpellNodeInterface : MonoBehaviour
         }
         return false;
     }
+    public bool CheckConectNode(SpellNodeInterface con, int index)
+    {
+        int mirrorIndex = (index + 3) % 6;
+        if (index < conections.Length)
+        {
+            if (conections[index].CheckConection(con.conections[mirrorIndex]))
+            {
+                return true;
+            }
+
+        }
+        return false;
+    }
     public void BreakConection(int Index)
     {
         if (Index >= conections.Length)
@@ -53,8 +66,8 @@ public class SpellNodeInterface : MonoBehaviour
         }
         //ConectedNodes[Index] = null;
         SpellNode aux = conections[Index].GetNode();
-        Debug.Log(aux);
-        Debug.Log(aux.Interface);
+        //Debug.Log(aux);
+        //Debug.Log(aux.Interface);
         conections[Index].RemoveConection();
         aux.Interface.UpdateConected();
         UpdateConected();
@@ -63,9 +76,13 @@ public class SpellNodeInterface : MonoBehaviour
     {
         for (int i = 0; i < conections.Length; i++)
         {
-            if(Node.ConectedNodes[i] != null)
+            if(conections[i] != null)
             {
                 Node.ConectedNodes[i] = conections[i].GetNode();
+            }
+            else
+            {
+                Node.ConectedNodes[i] = null;
             }
         }
     }
@@ -82,10 +99,10 @@ public class SpellNodeInterface : MonoBehaviour
 
     public void SelectNode()
     {
-        if (HexGrid.instance.selectedNode == this)
+        if (GameManager.Instance.uiController.activeGrid.selectedNode == this)
         {
-            Debug.Log(HexGrid.instance.selectedNode.name + " Deselected");
-            HexGrid.instance.selectedNode = null;
+            Debug.Log(GameManager.Instance.uiController.activeGrid.selectedNode.name + " Deselected");
+            GameManager.Instance.uiController.activeGrid.selectedNode = null;
         }
         else
         {
@@ -93,8 +110,8 @@ public class SpellNodeInterface : MonoBehaviour
             {
                 //Remover qqr visual do outro nodo que está selecionado
             }*/
-            HexGrid.instance.selectedNode = this;
-            Debug.Log(HexGrid.instance.selectedNode.name + " Selected");
+            GameManager.Instance.uiController.activeGrid.selectedNode = this;
+            Debug.Log(GameManager.Instance.uiController.activeGrid.selectedNode.name + " Selected");
         }
     }
 }

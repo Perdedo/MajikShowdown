@@ -7,6 +7,9 @@ public class GameManager : MonoBehaviour
     public UIController uiController;
     public List<Player> Players = new List<Player>();
     public NetworkAuxiliarControl netCtrl;
+
+    public HexGrid TestGrid;
+    public SpellCollider ProjectilePrefab;
     void Awake()
     {
         if(Instance == null)
@@ -34,5 +37,17 @@ public class GameManager : MonoBehaviour
         {
             netCtrl.ffManager.gameObject.SetActive(false);
         }
+    }
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            InstantiateSpellCollider(TestGrid.spell.SubSpells[0],Vector3.up);
+        }
+    }
+    public void InstantiateSpellCollider(SubSpell subSpell, Vector3 pos)
+    {
+        GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, Quaternion.identity);
+        g.GetComponent<SpellCollider>().subSpell = subSpell;
     }
 }

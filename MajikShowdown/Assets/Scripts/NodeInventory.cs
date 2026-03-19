@@ -16,13 +16,13 @@ public class NodeInventory : MonoBehaviour
     public void AddNodeToInventory(SpellNodeInterface node)
     {
         nodes.Add(node);
-        node.transform.parent = this.transform;
+        node.transform.SetParent(transform);
     }
 
-    public void RemoveNodeFromInventory(SpellNodeInterface node)
+    public void RemoveNodeFromInventory(SpellNodeInterface node, HexGrid NewParent)
     {
         nodes.Remove(node);
-        node.transform.parent = HexGrid.instance.transform;
+        node.transform.SetParent(NewParent.transform);
     }
 
     public void GenerateInventory()
@@ -35,14 +35,9 @@ public class NodeInventory : MonoBehaviour
 
     public void ReturnNode()
     {
-
-        if (HexGrid.instance.selectedNode == null || HexGrid.instance.selectedNode.hexGridNode == null) return;
-
-        HexGrid.instance.selectedNode.hexGridNode.SetNodeButtonState(true);
-        HexGrid.instance.selectedNode.hexGridNode.VerifyNearbyBreakConections(HexGrid.instance.selectedNode);
-        HexGrid.instance.selectedNode.hexGridNode.spellNode = null;
-        HexGrid.instance.selectedNode.hexGridNode = null;
-        AddNodeToInventory(HexGrid.instance.selectedNode);
-        HexGrid.instance.selectedNode = null;
+        HexGrid active = GameManager.Instance.uiController.activeGrid;
+        if (active.selectedNode == null || active.selectedNode.hexGridNode == null) return;
+        AddNodeToInventory(active.selectedNode);
+        active.RemoveSelectedFromGrid();
     }
 }

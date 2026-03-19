@@ -8,12 +8,14 @@ using UnityEngine.UI;
 public class HexGrid : MonoBehaviour
 {
     public List<HexGridNode> hexGridNodes = new List<HexGridNode>();
+    public List<SpellNodeInterface> spellNodes = new List<SpellNodeInterface>();
     public RectTransform hexPrefab;
     public int hexGridRadius;
     private float hexNodeSize;
-    public static HexGrid instance;
+    //public static HexGrid instance;
     public SpellNodeInterface selectedNode;
-    public float maxDistance; 
+    public float maxDistance;
+    public Spell spell = new Spell();
 
     Vector2Int[] directions =
     {
@@ -27,15 +29,33 @@ public class HexGrid : MonoBehaviour
 
     void Start()
     {
-        instance = this;
+        //instance = this;
         hexNodeSize = hexPrefab.rect.height / 2f;
         GenerateGrid();
         SetNeighbours();
+        ConfigurateSpell();
+    }
+    void OnEnable()
+    {
+        /*if(GameManager.Instance.uiController.activeGrid != null && GameManager.Instance.uiController.activeGrid != this)
+        {
+            GameManager.Instance.uiController.activeGrid.gameObject.SetActive(false);
+        }*/
+        GameManager.Instance.uiController.activeGrid = this;
+    }
+    void OnDisable()
+    {
+        selectedNode = null;
+        if (GameManager.Instance.uiController.activeGrid == this)
+        {
+            GameManager.Instance.uiController.activeGrid = null;
+        }
+
     }
 
     void GenerateGrid()
     {
-        CreateHex(0, 0);
+        CreateHex(0, 0,0);
 
         for (int layer = 1; layer <= hexGridRadius; layer++)
         {
@@ -51,18 +71,22 @@ public class HexGrid : MonoBehaviour
         {
             for (int step = 0; step < layer; step++)
             {
-                CreateHex(hex.x, hex.y);
+                CreateHex(hex.x, hex.y, layer);
                 hex += directions[side];
             }
         }
     }
 
-    void CreateHex(int q, int r)
+    void CreateHex(int q, int r, int Layer)
     {
         Vector2 pos = HexToPixel(q, r);
         RectTransform hex = Instantiate(hexPrefab, transform);
         hex.anchoredPosition = pos;
-        hexGridNodes.Add(hex.GetComponent<HexGridNode>());
+        HexGridNode node = hex.GetComponent<HexGridNode>();
+        node.SetGrid(this);
+        node.index = hexGridNodes.Count;
+        node.Layer = Layer;
+        hexGridNodes.Add(node);
     }
 
     Vector2 HexToPixel(int q, int r)
@@ -81,16 +105,16 @@ public class HexGrid : MonoBehaviour
         int index;
         for (int i = 0; i < hexGridNodes.Count; i++)
         {
-            for(int j = 0; j < hexGridNodes.Count; j++)
+            for (int j = 0; j < hexGridNodes.Count; j++)
             {
-                if(i != j)
+                if (i != j)
                 {
                     dist = hexGridNodes[j].rect.localPosition - hexGridNodes[i].rect.localPosition;
-                    if(dist.sqrMagnitude <= Mathf.Pow(maxDistance, 2))
+                    if (dist.sqrMagnitude <= Mathf.Pow(maxDistance, 2))
                     {
                         angle = Vector2.SignedAngle(Vector2.up, dist.normalized);
-                        index = (int)angle/60;
-                        if(angle < 0)
+                        index = (int)angle / 60;
+                        if (angle < 0)
                         {
                             index += 5;
                         }
@@ -100,4 +124,54 @@ public class HexGrid : MonoBehaviour
             }
         }
     }
+    public void AddSelectedToGrid(HexGridNode node)
+    {
+        NodeInventory.instance.RemoveNodeFromInventory(selectedNode, this);
+        selectedNode.rect.position = node.rect.position;
+        if (selectedNode.hexGridNode != null)
+        {
+            selectedNode.hexGridNode.VerifyNearbyBreakConections(selectedNode);
+            selectedNode.hexGridNode.spellNode = null;
+            selectedNode.hexGridNode.SetNodeButtonState(true);
+        }
+        node.spellNode = selectedNode;
+        selectedNode.hexGridNode = node;
+        spellNodes.Insert(node.index, selectedNode);
+        selectedNode = null;
+        node.SetNodeButtonState(false);
+        ConfigurateSpell();
+    }
+    public void RemoveSelectedFromGrid()
+    {
+        selectedNode.hexGridNode.SetNodeButtonState(true);
+        selectedNode.hexGridNode.VerifyNearbyBreakConections(selectedNode);
+        selectedNode.hexGridNode.spellNode = null;
+        selectedNode.hexGridNode = null;
+        //AddNodeToInventory(selectedNode);
+        spellNodes.Remove(selectedNode);
+        selectedNode.Node.ResetNode();
+        selectedNode = null;
+        ConfigurateSpell();
+    }
+    public void ConfigurateSpell()
+    {
+        spell.spellNodes.Clear();
+        foreach (var node in spellNodes)
+        {
+            node.Node.hierarchy = node.hexGridNode.Layer;
+            spell.spellNodes.Add(node.Node);
+        }
+        if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
+        {
+            spell.validSpell = true;
+            spell.primaryNode = t;
+            spell.UpdateSpell();
+        }
+        else
+        {
+            spell.validSpell = false;
+        }
+
+    }
+    
 }

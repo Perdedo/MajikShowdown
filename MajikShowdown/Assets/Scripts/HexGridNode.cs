@@ -10,6 +10,9 @@ public class HexGridNode : MonoBehaviour
     public Button button;
     public HexGridNode[] neighbours = new HexGridNode[6];
     public SpellNodeInterface spellNode;
+    public HexGrid grid;
+    public int index;
+    public int Layer;
 
     private void Awake()
     {
@@ -17,24 +20,19 @@ public class HexGridNode : MonoBehaviour
         button = GetComponent<Button>();
         this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
     }
+    public void SetGrid(HexGrid Grid)
+    {
+        grid = Grid;
+    }
 
     public void ConnectNode()
     {
-        if (HexGrid.instance.selectedNode == null) return;
-        if (!VerifyNearbyConnections(HexGrid.instance.selectedNode)) return;
-
-        NodeInventory.instance.RemoveNodeFromInventory(HexGrid.instance.selectedNode);
-        HexGrid.instance.selectedNode.rect.position = this.rect.position;
-        if(HexGrid.instance.selectedNode.hexGridNode != null)
-        {
-            HexGrid.instance.selectedNode.hexGridNode.VerifyNearbyBreakConections(HexGrid.instance.selectedNode);
-            HexGrid.instance.selectedNode.hexGridNode.spellNode = null;
-            HexGrid.instance.selectedNode.hexGridNode.SetNodeButtonState(true);
-        }
-        spellNode = HexGrid.instance.selectedNode;
-        HexGrid.instance.selectedNode.hexGridNode = this;
-        HexGrid.instance.selectedNode = null;
-        SetNodeButtonState(false);
+        if (grid.selectedNode == null) return;
+        if (this == grid.hexGridNodes[0] && !(grid.selectedNode.Node is SpellType)) return;
+        if (!VerifyNearbyConnections(grid.selectedNode)) return;
+        MakeNearbyConnections(grid.selectedNode);
+        grid.AddSelectedToGrid(this);
+        
     }
 
     public void SetNodeButtonState(bool state)
@@ -49,21 +47,46 @@ public class HexGridNode : MonoBehaviour
 
     public bool VerifyNearbyConnections(SpellNodeInterface spell)
     {
-        if (HexGrid.instance.hexGridNodes[0] == this)
+        /*if (grid.hexGridNodes[0] == this)
         {
             return true;
-        }
-        for (int i  = 0; i < neighbours.Length; i++)
+        }*/
+        /*if (neighbours.Length == 0)
         {
-            if (neighbours[i] != null && neighbours[i].spellNode != null)
+            return true;
+        }*/
+        for (int i = 0; i < neighbours.Length; i++)
+        {
+            if (neighbours[i] != null && neighbours[i].spellNode != null && neighbours[i].spellNode != spell)
             {
-                if(spell.TryConectNode(neighbours[i].spellNode, i))
+                if (!spell.CheckConectNode(neighbours[i].spellNode, i))
                 {
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
+    }
+    public void MakeNearbyConnections(SpellNodeInterface spell)
+    {
+        /*if (grid.hexGridNodes[0] == this)
+        {
+            return true;
+        }*/
+        /*if (neighbours.Length == 0)
+        {
+            return true;
+        }*/
+        for (int i  = 0; i < neighbours.Length; i++)
+        {
+            if (neighbours[i] != null && neighbours[i].spellNode != null && neighbours[i].spellNode != spell)
+            {
+                if(!spell.TryConectNode(neighbours[i].spellNode, i))
+                {
+                    Debug.LogError("Failed to conect");
+                }
+            }
+        }
     }
 
     public void VerifyNearbyBreakConections(SpellNodeInterface spell)

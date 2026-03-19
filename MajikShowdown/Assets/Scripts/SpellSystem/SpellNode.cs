@@ -8,10 +8,11 @@ public abstract class SpellNode : ScriptableObject
     public float Cooldown = 0;
     public StatTypes BaseStats = new StatTypes();
     public SpellNodeInterface Interface;
-    public int hierarchy = int.MaxValue;
+    public int hierarchy = -1;
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Color color = Color.white;
+    public SubSpell OwnerSubspell;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {
@@ -51,6 +52,23 @@ public abstract class SpellNode : ScriptableObject
     {
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }
+    public virtual List<SpellNode> GetSubspellList(List<SpellNode> list)
+    {
+        list.Add(this);
+        foreach (SpellNode conectedNode in ConectedNodes)
+        {
+            if (conectedNode != null && !list.Contains(conectedNode))
+            {
+                list = conectedNode.GetSubspellList(list);
+            }
+        }
+        return list;
+    }
+    public virtual void ResetNode()
+    {
+        hierarchy = -1;
+        OwnerSubspell = null;
+    }
 }
 [Serializable]
 public class NodeConection
@@ -63,12 +81,15 @@ public class NodeConection
     public enum Conections { None, Circle, Triangle, Square, Penta, All }
     public Conections conectionType = Conections.None;
     public NodeConection conection;
+    public SpellNode conectedNode;
     public bool TryConect(NodeConection c)
     {
         if (c.conectionType == conectionType && conectionType != Conections.None && c.conectionType != Conections.None)
         {
             c.conection = this;
             conection = c;
+            c.conectedNode = ownerNode;
+            conectedNode = c.ownerNode;
             if (conection.ownerNode.hierarchy > ownerNode.hierarchy)
             {
                 conection.ownerNode.hierarchy = ownerNode.hierarchy + 1;
@@ -80,10 +101,23 @@ public class NodeConection
             return false;
         }
     }
+    public bool CheckConection(NodeConection c)
+    {
+        if (c.conectionType == conectionType && conectionType != Conections.None && c.conectionType != Conections.None)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     public void RemoveConection()
     {
         if(conection != null)
         {
+            conectedNode = null;
+            conection.conectedNode = null;
             conection.conection = null;
             conection = null;
         }
