@@ -3140,9 +3140,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ed5e6311c15eea498744bb589b2d094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   gameTitle: {fileID: 940962269}
   menuHostGameButton: {fileID: 915384633}
   menuJoinGameButton: {fileID: 516782013}
@@ -3192,6 +3189,7 @@ MonoBehaviour:
     music: 0
     sfx: 0
     vsyncEnabled: 0
+  activeGrid: {fileID: 0}
 --- !u!1 &516782013
 GameObject:
   m_ObjectHideFlags: 0
@@ -4917,9 +4915,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 499042832}
-        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
-        m_MethodName: CreateRoom
+      - m_Target: {fileID: 1034749040}
+        m_TargetAssemblyTypeName: SteamLobby, Assembly-CSharp
+        m_MethodName: HostLobby
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5281,8 +5279,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1034749034}
   - component: {fileID: 1034749037}
-  - component: {fileID: 1034749036}
   - component: {fileID: 1034749035}
+  - component: {fileID: 1034749038}
+  - component: {fileID: 1034749040}
   m_Layer: 0
   m_Name: RoomManager
   m_TagString: Untagged
@@ -5319,35 +5318,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Mirror::Mirror.NetworkManagerHUD
   offsetX: 0
   offsetY: 0
---- !u!114 &1034749036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1034749030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Mirror.Transports::kcp2k.KcpTransport
-  port: 7777
-  DualMode: 1
-  NoDelay: 1
-  Interval: 10
-  Timeout: 10000
-  RecvBufferSize: 7361536
-  SendBufferSize: 7361536
-  FastResend: 2
-  ReceiveWindowSize: 4096
-  SendWindowSize: 4096
-  MaxRetransmit: 40
-  MaximizeSocketBuffers: 1
-  ReliableMaxMessageSize: 297433
-  UnreliableMaxMessageSize: 1194
-  debugLog: 0
-  statisticsGUI: 0
-  statisticsLog: 0
 --- !u!114 &1034749037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5368,7 +5338,7 @@ MonoBehaviour:
   offlineScene: Assets/Scenes/Menu.unity
   onlineScene: Assets/Scenes/Room.unity
   offlineSceneLoadDelay: 0
-  transport: {fileID: 1034749036}
+  transport: {fileID: 1034749038}
   networkAddress: localhost
   maxConnections: 4
   disconnectInactiveConnections: 0
@@ -5400,6 +5370,35 @@ MonoBehaviour:
   GameplayScene: Assets/Scenes/Multiplayer.unity
   _allPlayersReady: 0
   clientIndex: 0
+--- !u!114 &1034749038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034749030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6e55fca1f4e4844593a3dd65a3ecb39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FizzySteamworks::Mirror.FizzySteam.FizzySteamworks
+  Channels: 0200000001000000
+  Timeout: 25
+  AllowSteamRelay: 1
+  UseNextGenSteamNetworking: 1
+--- !u!114 &1034749040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034749030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57a755d94bd92874aa74169ee48c9d2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SteamLobby
+  lobbyID: 0
 --- !u!1 &1068245380
 GameObject:
   m_ObjectHideFlags: 0
@@ -8292,6 +8291,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1602448492}
   - component: {fileID: 1602448493}
+  - component: {fileID: 1602448494}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -8329,6 +8329,20 @@ MonoBehaviour:
   uiController: {fileID: 0}
   Players: []
   netCtrl: {fileID: 0}
+  TestGrid: {fileID: 0}
+  ProjectilePrefab: {fileID: 0}
+--- !u!114 &1602448494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602448491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce8d133032bf7b4418b8eef6a7cb12f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FPSTest
 --- !u!1 &1609060140
 GameObject:
   m_ObjectHideFlags: 0

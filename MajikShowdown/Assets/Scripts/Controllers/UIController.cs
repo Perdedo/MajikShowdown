@@ -479,6 +479,7 @@ public class UIController : MonoBehaviour
 
     public void EnterRoomCode(string roomCode)
     {
+        NetworkManager.singleton.networkAddress = roomCode;
         NetworkManager.singleton.StartClient();
     }
 
