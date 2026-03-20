@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Linq;
 
 public class HexGrid : MonoBehaviour
 {
     public List<HexGridNode> hexGridNodes = new List<HexGridNode>();
-    public List<SpellNodeInterface> spellNodes = new List<SpellNodeInterface>();
+    public List<SpellNodeInterface> spellNodes;
     public RectTransform hexPrefab;
     public int hexGridRadius;
     private float hexNodeSize;
@@ -55,12 +56,13 @@ public class HexGrid : MonoBehaviour
 
     void GenerateGrid()
     {
-        CreateHex(0, 0,0);
+        CreateHex(0, 0, 0);
 
         for (int layer = 1; layer <= hexGridRadius; layer++)
         {
             GenerateRing(layer);
         }
+        spellNodes = Enumerable.Repeat<SpellNodeInterface>(null, hexGridNodes.Count).ToList();
     }
 
     void GenerateRing(int layer)
@@ -158,8 +160,12 @@ public class HexGrid : MonoBehaviour
         spell.spellNodes.Clear();
         foreach (var node in spellNodes)
         {
-            node.Node.hierarchy = node.hexGridNode.Layer;
-            spell.spellNodes.Add(node.Node);
+            if (node != null)
+            {
+                node.Node.hierarchy = node.hexGridNode.Layer;
+                spell.spellNodes.Add(node.Node);
+            }
+
         }
         if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
         {
@@ -173,5 +179,5 @@ public class HexGrid : MonoBehaviour
         }
 
     }
-    
+
 }
