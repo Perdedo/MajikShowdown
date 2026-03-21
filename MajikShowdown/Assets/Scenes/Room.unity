@@ -407,8 +407,8 @@ MonoBehaviour:
   menuOptionsPanel: {fileID: 0}
   menuCreditsPanel: {fileID: 0}
   menuQuitGamePanel: {fileID: 0}
-  roomID: {fileID: 1815898678}
-  players: {fileID: 2041622765}
+  roomName: {fileID: 1815898678}
+  waiting: {fileID: 2041622765}
   playersReady: {fileID: 1043662719}
   gameRulesButton: {fileID: 787412135}
   optionsButton: {fileID: 2116592849}
@@ -446,6 +446,7 @@ MonoBehaviour:
     music: 0
     sfx: 0
     vsyncEnabled: 0
+  activeGrid: {fileID: 0}
 --- !u!4 &206876059
 Transform:
   m_ObjectHideFlags: 0
@@ -1731,7 +1732,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
   sceneId: 2252373072
   _assetId: 0
-  serverOnly: 1
+  serverOnly: 0
   visibility: 0
   hasSpawned: 0
 --- !u!114 &558911936
@@ -2593,7 +2594,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 787412138}
   m_OnClick:
     m_PersistentCalls:
@@ -6388,8 +6389,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 206876058}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
-        m_MethodName: ChangeScene
-        m_Mode: 5
+        m_MethodName: LeaveRoom
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -7270,8 +7271,10 @@ GameObject:
   - component: {fileID: 1815898677}
   - component: {fileID: 1815898679}
   - component: {fileID: 1815898678}
+  - component: {fileID: 1815898681}
+  - component: {fileID: 1815898680}
   m_Layer: 5
-  m_Name: T_RoomID
+  m_Name: T_RoomName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7316,7 +7319,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Room ID : XXXX'
+  m_text: Room
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7396,6 +7399,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1815898676}
   m_CullTransparentMesh: 1
+--- !u!114 &1815898680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1815898676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 155782496
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &1815898681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1815898676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9373ea41e89e044ae259f11141256d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SyncedUIElement
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &1825800095
 GameObject:
   m_ObjectHideFlags: 0
@@ -8558,8 +8593,10 @@ GameObject:
   - component: {fileID: 2041622764}
   - component: {fileID: 2041622766}
   - component: {fileID: 2041622765}
+  - component: {fileID: 2041622768}
+  - component: {fileID: 2041622767}
   m_Layer: 5
-  m_Name: T_Players
+  m_Name: T_Waiting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8581,8 +8618,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: -399}
+  m_SizeDelta: {x: 800, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2041622765
 MonoBehaviour:
@@ -8604,16 +8641,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Player 1
-
-
-    Player 2
-
-
-    Player 3
-
-
-    Player 4'
+  m_text: Waiting for host to start the game...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8693,6 +8721,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2041622763}
   m_CullTransparentMesh: 1
+--- !u!114 &2041622767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2041622763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9373ea41e89e044ae259f11141256d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SyncedUIElement
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+--- !u!114 &2041622768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2041622763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 303232185
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &2075014003
 GameObject:
   m_ObjectHideFlags: 0

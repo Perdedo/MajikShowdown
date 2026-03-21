@@ -83,4 +83,30 @@ public class SteamLobby : MonoBehaviour
         NetworkManager.singleton.networkAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HOSTADDRESSKEY);
         NetworkManager.singleton.StartClient();
     }
+
+    public void LeaveLobby()
+    {
+        CSteamID currentOwner = SteamMatchmaking.GetLobbyOwner(new CSteamID(lobbyID));
+        CSteamID me = SteamUser.GetSteamID();
+        var lobby = new CSteamID(lobbyID);
+        List<CSteamID> members = new List<CSteamID>();
+        int count = SteamMatchmaking.GetNumLobbyMembers(lobby);
+        for(int i = 0; i < count; i++)
+        {
+            members.Add(SteamMatchmaking.GetLobbyMemberByIndex(lobby, i));
+        }
+        if(lobbyID != 0)
+        {
+            SteamMatchmaking.LeaveLobby(new CSteamID(lobbyID));
+            lobbyID = 0;
+        }
+        if(NetworkServer.active && currentOwner == me)
+        {
+            NetworkManager.singleton.StopHost();
+        }
+        else if(NetworkClient.isConnected)
+        {
+            NetworkManager.singleton.StopClient();
+        }
+    }
 }

@@ -11,7 +11,6 @@ public class SyncedUIElement : NetworkBehaviour
         this.GetComponent<TextMeshProUGUI>().text = txt;
     }
 
-    [ClientRpc]
     public void ShowOnlyForHost(bool interact)
     {
         if(!isServer)
@@ -26,5 +25,35 @@ public class SyncedUIElement : NetworkBehaviour
                 b.interactable = interact;
             }
         }
+    }
+
+    public void ShowOnlyForClients(bool interact)
+    {
+        if(!isServer)
+        {
+            this.gameObject.SetActive(true);
+            if(this.TryGetComponent<Button>(out Button b))
+            {
+                b.interactable = interact;
+            }
+        }
+        else
+        {
+            this.gameObject.SetActive(false);
+        }
+    }
+
+    public void ShowForAll(bool interact)
+    {
+        this.gameObject.SetActive(true);
+        if(this.TryGetComponent<Button>(out Button b))
+        {
+            b.interactable = interact;
+        }
+    }
+
+    public void HideForAll()
+    {
+        this.gameObject.SetActive(false);
     }
 }

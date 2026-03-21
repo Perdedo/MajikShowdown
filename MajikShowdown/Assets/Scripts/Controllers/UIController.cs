@@ -29,8 +29,8 @@ public class UIController : MonoBehaviour
     public GameObject menuQuitGamePanel;
 
     [Header("Room Texts")]
-    public TextMeshProUGUI roomID;
-    public TextMeshProUGUI players;
+    public TextMeshProUGUI roomName;
+    public TextMeshProUGUI waiting;
     public TextMeshProUGUI playersReady;
 
     [Header("Room Buttons")]
@@ -172,13 +172,13 @@ public class UIController : MonoBehaviour
         {
             menuQuitGamePanel.SetActive(false);
         }
-        if (roomID != null)
+        if (roomName != null)
         {
-            roomID.gameObject.SetActive(true);
+            roomName.gameObject.SetActive(true);
         }
-        if (players != null)
+        if (waiting != null)
         {
-            players.gameObject.SetActive(true);
+            waiting.gameObject.SetActive(true);
         }
         if (playersReady != null)
         {
@@ -202,8 +202,7 @@ public class UIController : MonoBehaviour
         }
         if (startGameButton != null)
         {
-            startGameButton.SetActive(true);
-            startGameButton.GetComponent<Button>().interactable = false;
+            startGameButton.SetActive(false);
             /*if(NetworkServer.active)
             {
                 startGameButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(false);
@@ -293,14 +292,32 @@ public class UIController : MonoBehaviour
 
     public void IsRoomObjectsVisible(bool state)
     {
-        roomID.gameObject.SetActive(state);
-        players.gameObject.SetActive(state);
+        roomName.gameObject.SetActive(state);
         playersReady.gameObject.SetActive(state);
         gameRulesButton.SetActive(state);
         optionsButton.SetActive(state);
         readyButton.SetActive(state);
         leaveRoomButton.SetActive(state);
-        startGameButton.SetActive(state);
+        //startGameButton.SetActive(state);
+        //waiting.gameObject.SetActive(state);
+        if(state)
+        {
+            if(NetworkManager.singleton.GetComponent<RoomManager>().allPlayersReady)
+            {
+                waiting.GetComponent<SyncedUIElement>().ShowOnlyForClients(false);
+                startGameButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(true);
+            }
+            else
+            {
+                waiting.GetComponent<SyncedUIElement>().ShowForAll(false);
+                startGameButton.GetComponent<SyncedUIElement>().HideForAll();
+            }
+        }
+        else
+        {
+            startGameButton.GetComponent<SyncedUIElement>().HideForAll();
+            waiting.GetComponent<SyncedUIElement>().HideForAll();
+        }
     }
 
     public void ChangeMasterVolume()
@@ -474,14 +491,19 @@ public class UIController : MonoBehaviour
 
     public void CreateRoom()
     {
-        NetworkManager.singleton.StartHost();
+        SteamLobby.instance.HostLobby();
     }
 
-    public void EnterRoomCode(string roomCode)
+    public void LeaveRoom()
+    {
+        SteamLobby.instance.LeaveLobby();
+    }
+
+    /*public void EnterRoomCode(string roomCode)
     {
         NetworkManager.singleton.networkAddress = roomCode;
         NetworkManager.singleton.StartClient();
-    }
+    }*/
 
     public void ReadyOrNotButton()
     {
