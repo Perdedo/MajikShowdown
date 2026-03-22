@@ -10,6 +10,10 @@ public class SyncedUIElement : NetworkBehaviour
     {
         this.GetComponent<TextMeshProUGUI>().text = txt;
     }
+    public void SetText(string txt)
+    {
+        this.GetComponent<TextMeshProUGUI>().text = txt;
+    }
 
     public void ShowOnlyForHost(bool interact)
     {
@@ -55,5 +59,15 @@ public class SyncedUIElement : NetworkBehaviour
     public void HideForAll()
     {
         this.gameObject.SetActive(false);
+    }
+
+    public void SyncRawImage(Texture tex)
+    {
+        this.GetComponent<RawImage>().texture = tex;
+    }
+
+    public void SyncImage(Sprite spr)
+    {
+        this.GetComponent<Image>().sprite = spr;
     }
 }

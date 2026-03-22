@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using Unity.Jobs;
+using Unity.Multiplayer.PlayMode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -45,6 +46,9 @@ public class UIController : MonoBehaviour
     public GameObject gameRulesPanel;
     public GameObject optionsPanel;
     public GameObject leaveRoomPanel;
+    public GameObject playerList;
+    public GameObject playerCardPrefab;
+    public List<RoomPlayerCard> playerCards;
 
     [Header("Join Game Panel Objects")]
     public GameObject enterRoomCodeInputField;
@@ -220,6 +224,14 @@ public class UIController : MonoBehaviour
         {
             gridPanel.SetActive(false);
         }
+        if(playerList != null)
+        {
+            playerList.SetActive(true);
+            foreach(RoomPlayerCard pc in playerCards)
+            {
+                pc.gameObject.SetActive(false);
+            }
+        }
     }
 
     public void ChangeScene(string sceneName)
@@ -298,6 +310,7 @@ public class UIController : MonoBehaviour
         optionsButton.SetActive(state);
         readyButton.SetActive(state);
         leaveRoomButton.SetActive(state);
+        playerList.SetActive(state);
         //startGameButton.SetActive(state);
         //waiting.gameObject.SetActive(state);
         if(state)
@@ -520,6 +533,91 @@ public class UIController : MonoBehaviour
                     readyButtonText.text = "Ready";
                 }
                 rp.CmdChangeReadyState(!rp.readyToBegin);
+            }
+        }
+    }
+
+    bool playerCardCreated = false;
+    public void UpdatePlayerList()
+    {
+        if(!playerCardCreated)
+        {
+            CreateHostPlayerCard();
+        }
+        if(playerCards.Count < NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count)
+        {
+            CreateClientPlayerCard();
+        }
+        else if (playerCards.Count > NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count)
+        {
+            RemovePlayerCard();
+        }
+        else
+        {
+            UpdatePlayerCard();
+        }
+    }
+    public void CreateHostPlayerCard()
+    {
+        foreach (RoomPlayer rp in NetworkManager.singleton.GetComponent<RoomManager>().playerList)
+        {
+            RoomPlayerCard pc = Instantiate(playerCardPrefab, playerList.transform).GetComponent<RoomPlayerCard>();
+            pc.playerName = rp.playerName;
+            pc.connectionID = rp.connectionID;
+            pc.playerSteamID = rp.playerSteamID;
+            pc.SetPlayerValues();
+            playerCards.Add(pc);
+        }
+        playerCardCreated = true;
+    }
+    public void CreateClientPlayerCard()
+    {
+        foreach (RoomPlayer rp in NetworkManager.singleton.GetComponent<RoomManager>().playerList)
+        {
+            if(!playerCards.Any(b => b.connectionID == rp.connectionID))
+            {
+                RoomPlayerCard pc = Instantiate(playerCardPrefab, playerList.transform).GetComponent<RoomPlayerCard>();
+                pc.playerName = rp.playerName;
+                pc.connectionID = rp.connectionID;
+                pc.playerSteamID = rp.playerSteamID;
+                pc.SetPlayerValues();
+                playerCards.Add(pc);
+            }
+        }
+    }
+
+    public void RemovePlayerCard()
+    {
+        List<RoomPlayerCard> playerCardsToRemove = new List<RoomPlayerCard>();
+        foreach (RoomPlayerCard pc in playerCards)
+        {
+            if (!NetworkManager.singleton.GetComponent<RoomManager>().playerList.Any(b => b.connectionID == pc.connectionID))
+            {
+                playerCardsToRemove.Add(pc);
+            }
+        }
+        if(playerCardsToRemove.Count > 0)
+        {
+            foreach(RoomPlayerCard pc in playerCardsToRemove)
+            {
+                playerCards.Remove(pc);
+                Destroy(pc.gameObject);
+            }
+        }
+    }
+
+    public void UpdatePlayerCard()
+    {
+        foreach (RoomPlayer rp in NetworkManager.singleton.GetComponent<RoomManager>().playerList)
+        {
+            foreach(RoomPlayerCard pc in playerCards)
+            {
+                if(rp.connectionID == pc.connectionID)
+                {
+                    pc.playerName = rp.playerName;
+                    pc.SetPlayerValues();
+                    pc.SwitchReadyIcon(rp.readyToBegin);
+                }
             }
         }
     }

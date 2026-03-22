@@ -1,10 +1,36 @@
 using Mirror;
+using NUnit.Framework;
 using Steamworks;
-using Unity.Multiplayer.PlayMode;
+//using Unity.Multiplayer.PlayMode;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 public class RoomManager : NetworkRoomManager
 {
+    public List<RoomPlayer> playerList = new List<RoomPlayer>();
+    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+    {
+        clientIndex++;
+
+        if (Utils.IsSceneActive(RoomScene))
+        {
+            allPlayersReady = false;
+
+            GameObject newRoomGameObject = OnRoomServerCreateRoomPlayer(conn);
+            if (newRoomGameObject == null)
+            {
+                newRoomGameObject = Instantiate(roomPlayerPrefab.gameObject, Vector3.zero, Quaternion.identity);
+            }
+            newRoomGameObject.GetComponent<RoomPlayer>().connectionID = conn.connectionId;
+            newRoomGameObject.GetComponent<RoomPlayer>().playerSteamID = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.instance.lobbyID, playerList.Count);
+            NetworkServer.AddPlayerForConnection(conn, newRoomGameObject);
+        }
+        else
+        {
+            Debug.Log($"Not in Room scene...disconnecting {conn}");
+            conn.Disconnect();
+        }
+    }
     public override void OnRoomServerPlayersReady()
     {
         if(GameManager.Instance.uiController.startGameButton != null)
