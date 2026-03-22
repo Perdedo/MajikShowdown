@@ -16,7 +16,8 @@ public class HexGrid : MonoBehaviour
     //public static HexGrid instance;
     public SpellNodeInterface selectedNode;
     public float maxDistance;
-    public Spell spell = new Spell();
+    public SpellCaster caster;
+    public Spell spell;
 
     Vector2Int[] directions =
     {
@@ -30,7 +31,7 @@ public class HexGrid : MonoBehaviour
 
     void Start()
     {
-        //instance = this;
+        spell = new Spell(caster);
         hexNodeSize = hexPrefab.rect.height / 2f;
         GenerateGrid();
         SetNeighbours();
