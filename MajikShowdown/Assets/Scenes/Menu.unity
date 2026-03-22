@@ -3159,6 +3159,7 @@ MonoBehaviour:
   readyButtonText: {fileID: 0}
   leaveRoomButton: {fileID: 0}
   startGameButton: {fileID: 0}
+  inviteButton: {fileID: 0}
   gameRulesPanel: {fileID: 0}
   optionsPanel: {fileID: 0}
   leaveRoomPanel: {fileID: 0}
@@ -3271,18 +3272,18 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 516782016}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 499042832}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
-        m_MethodName: OpenPanel
-        m_Mode: 2
+        m_MethodName: OpenSteamFriendsList
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 402191264}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -8333,8 +8334,6 @@ MonoBehaviour:
   uiController: {fileID: 0}
   Players: []
   netCtrl: {fileID: 0}
-  TestGrid: {fileID: 0}
-  ProjectilePrefab: {fileID: 0}
 --- !u!114 &1602448494
 MonoBehaviour:
   m_ObjectHideFlags: 0

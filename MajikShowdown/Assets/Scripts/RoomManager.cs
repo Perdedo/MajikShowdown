@@ -106,18 +106,28 @@ public class RoomManager : NetworkRoomManager
             }
         }
         GameManager.Instance.uiController.playersReady.GetComponent<SyncedUIElement>().SyncText(ReadyPlayers + "/" + CurrentPlayers + " Players Ready");
+        if(GameManager.Instance.uiController.roomObjectsVisible)
+        {
+            GameManager.Instance.uiController.inviteButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(CurrentPlayers < maxConnections);
+        }
 
         if (allPlayersReady)
         {
-            GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowOnlyForClients(false);
-            GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(true);
             GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().SyncText("Waiting for the host to start the game...");
+            if (GameManager.Instance.uiController.roomObjectsVisible)
+            {
+                GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowOnlyForClients(false);
+                GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(true);
+            }
         }
         else
         {
-            GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().HideForAll();
-            GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowForAll(false);
             GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().SyncText("Waiting for players to get ready...");
+            if (GameManager.Instance.uiController.roomObjectsVisible)
+            {
+                GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().HideForAll();
+                GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowForAll(false);
+            }
         }
     }
 

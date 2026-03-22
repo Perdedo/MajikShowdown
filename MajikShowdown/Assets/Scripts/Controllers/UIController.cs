@@ -1,5 +1,6 @@
 using Mirror;
 using NUnit.Framework.Interfaces;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,6 +42,7 @@ public class UIController : MonoBehaviour
     public TextMeshProUGUI readyButtonText;
     public GameObject leaveRoomButton;
     public GameObject startGameButton;
+    public GameObject inviteButton;
 
     [Header("Room Panels")]
     public GameObject gameRulesPanel;
@@ -179,6 +181,7 @@ public class UIController : MonoBehaviour
         if (roomName != null)
         {
             roomName.gameObject.SetActive(true);
+            roomObjectsVisible = true;
         }
         if (waiting != null)
         {
@@ -223,6 +226,10 @@ public class UIController : MonoBehaviour
         if (gridPanel != null)
         {
             gridPanel.SetActive(false);
+        }
+        if(inviteButton != null)
+        {
+            inviteButton.SetActive(true);
         }
         if(playerList != null)
         {
@@ -302,8 +309,10 @@ public class UIController : MonoBehaviour
         menuQuitGameButton.SetActive(state);
     }
 
+    public bool roomObjectsVisible;
     public void IsRoomObjectsVisible(bool state)
     {
+        roomObjectsVisible = state;
         roomName.gameObject.SetActive(state);
         playersReady.gameObject.SetActive(state);
         gameRulesButton.SetActive(state);
@@ -315,6 +324,7 @@ public class UIController : MonoBehaviour
         //waiting.gameObject.SetActive(state);
         if(state)
         {
+            inviteButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count < NetworkManager.singleton.GetComponent<RoomManager>().maxConnections);
             if(NetworkManager.singleton.GetComponent<RoomManager>().allPlayersReady)
             {
                 waiting.GetComponent<SyncedUIElement>().ShowOnlyForClients(false);
@@ -330,6 +340,7 @@ public class UIController : MonoBehaviour
         {
             startGameButton.GetComponent<SyncedUIElement>().HideForAll();
             waiting.GetComponent<SyncedUIElement>().HideForAll();
+            inviteButton.GetComponent<SyncedUIElement>().HideForAll();
         }
     }
 
@@ -619,6 +630,14 @@ public class UIController : MonoBehaviour
                     pc.SwitchReadyIcon(rp.readyToBegin);
                 }
             }
+        }
+    }
+
+    public void OpenSteamFriendsList()
+    {
+        if(SteamManager.Initialized)
+        {
+            SteamFriends.ActivateGameOverlay("friends");
         }
     }
 }
