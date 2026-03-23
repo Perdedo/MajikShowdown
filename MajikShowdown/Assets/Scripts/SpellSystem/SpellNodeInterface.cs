@@ -1,3 +1,4 @@
+using Mirror.BouncyCastle.Asn1.Mozilla;
 using Mirror.BouncyCastle.Math.Field;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,8 @@ public class SpellNodeInterface : MonoBehaviour
     public SpellNode Node;
     public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
     public NodeConection[] conections;
+    public SpellNodeInfos info;
+    Image borderImg;
 
     void Awake()
     {
@@ -21,7 +24,14 @@ public class SpellNodeInterface : MonoBehaviour
         this.GetComponent<Image>().color *= PrefabNode.color;
         this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         rect = GetComponent<RectTransform>();
+        borderImg = transform.GetChild(0).GetComponent<Image>();
     }
+
+    private void Start()
+    {
+        SetNodeBorder(borderImg);
+    }
+
     [ContextMenu("Initialize")]
     public void InitializeConections()
     {
@@ -112,6 +122,40 @@ public class SpellNodeInterface : MonoBehaviour
             }*/
             GameManager.Instance.uiController.activeGrid.selectedNode = this;
             Debug.Log(GameManager.Instance.uiController.activeGrid.selectedNode.name + " Selected");
+        }
+    }
+
+    public void SetNodeBorder(Image img)
+    {
+        
+        if (ConectionPorts[0] == NodeConection.Conections.Circle && ConectionPorts[1] == NodeConection.Conections.Square)
+        {
+            img.sprite = info.borderSprite[0];
+            return;
+        }
+        else if (ConectionPorts[0] == NodeConection.Conections.None && ConectionPorts[3] == NodeConection.Conections.Circle)
+        {
+            img.sprite= info.borderSprite[1];
+            return;
+        }
+        else if (ConectionPorts[0] == NodeConection.Conections.None && ConectionPorts[2] == NodeConection.Conections.Triangle)
+        {
+            img.sprite = info.borderSprite[2];
+            return;
+        }
+        else if (ConectionPorts[0] == NodeConection.Conections.Square && ConectionPorts[1] == NodeConection.Conections.None)
+        {
+            img.sprite = info.borderSprite[3];
+            return;
+        }
+        else if (ConectionPorts[0] == NodeConection.Conections.None && ConectionPorts[1] == NodeConection.Conections.Penta)
+        {
+            img.sprite = info.borderSprite[4];
+            return;
+        }
+        else
+        {
+            Debug.Log("No Border Found");
         }
     }
 }
