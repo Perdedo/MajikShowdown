@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 //using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
+[Serializable]
 public class Spell
 {
     public readonly SpellCaster Owner;
@@ -38,6 +40,8 @@ public class Spell
         }
     }
 }
+
+[Serializable]
 public class SubSpell
 {
     public SpellType Type;

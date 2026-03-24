@@ -103,7 +103,7 @@ public class NodeConection
     }
     public bool CheckConection(NodeConection c)
     {
-        if (c.conectionType == conectionType && conectionType != Conections.None && c.conectionType != Conections.None)
+        if (c.conectionType == conectionType /*&& conectionType != Conections.None && c.conectionType != Conections.None*/)
         {
             return true;
         }

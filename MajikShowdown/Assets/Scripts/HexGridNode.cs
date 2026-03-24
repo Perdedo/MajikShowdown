@@ -81,10 +81,11 @@ public class HexGridNode : MonoBehaviour
         {
             if (neighbours[i] != null && neighbours[i].spellNode != null && neighbours[i].spellNode != spell)
             {
-                if(!spell.TryConectNode(neighbours[i].spellNode, i))
+                spell.TryConectNode(neighbours[i].spellNode, i);
+                /*if (!spell.TryConectNode(neighbours[i].spellNode, i))
                 {
                     Debug.LogError("Failed to conect");
-                }
+                }*/
             }
         }
     }

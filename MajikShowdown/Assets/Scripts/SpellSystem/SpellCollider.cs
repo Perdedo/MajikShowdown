@@ -9,7 +9,7 @@ public class SpellCollider : MonoBehaviour
     public SubSpell subSpell;
     int pierceCount, bounceCount;
 
-    public UnityEvent OnCast, OnHit, OnDeath;
+    public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
     private void Start()
     {
         //projectileConfig.CalculateFinalStats();
