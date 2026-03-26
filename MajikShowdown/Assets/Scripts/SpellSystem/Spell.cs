@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 //using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static SpellTrigger;
 
 [Serializable]
 public class Spell
 {
     public readonly SpellCaster Owner;
-    public List<SubSpell> SubSpells = new List<SubSpell>();
+    //public List<SubSpell> SubSpells = new List<SubSpell>();
     public List<SpellNode> spellNodes = new List<SpellNode>();
     public float SpellCooldown = 0;
     public SpellType primaryNode;
+    public List<SpellTrigger> triggers = new List<SpellTrigger>();
     public bool validSpell;
     public Spell(SpellCaster owner)
     {
@@ -19,16 +21,34 @@ public class Spell
 
     public void UpdateSpell()
     {
-        CreateSubSpells();
+        //CreateSubSpells();
         primaryNode.hierarchy = 0;
         SpellCooldown = 0;
-        foreach(SubSpell s in SubSpells)
+
+        spellNodes = primaryNode.GetSubspellList(new List<SpellNode>());
+        primaryNode.StatBuffs.Clear();
+        triggers.Clear();
+        foreach (SpellNode s in spellNodes)
+        {
+            if (s is SpellTrigger t)
+            {
+                triggers.Add(t);
+            }
+            SpellCooldown += s.Cooldown;
+            if (s != primaryNode)
+            {
+                primaryNode.AddBuff(s.BaseStats);
+            }
+            s.OwnerSubspell = this;
+        }
+        primaryNode.CalculateFinalStats();
+        /*foreach(SubSpell s in SubSpells)
         {
             SpellCooldown += s.CooldownCost;
             s.UpdateSubSpell();
-        }
+        }*/
     }
-    public void CreateSubSpells()
+    /*public void CreateSubSpells()
     {
         SubSpells.Clear();
         foreach (SpellNode spellNode in spellNodes)
@@ -38,10 +58,10 @@ public class Spell
                 SubSpells.Add(new SubSpell(t, this));
             }
         }
-    }
+    }*/
 }
 
-[Serializable]
+/*[Serializable]
 public class SubSpell
 {
     public SpellType Type;
@@ -76,4 +96,4 @@ public class SubSpell
         }
         Type.CalculateFinalStats();
     }
-}
+}*/
