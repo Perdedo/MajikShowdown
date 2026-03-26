@@ -6,49 +6,51 @@ public class SpellCollider : MonoBehaviour
 {
     public StaticRB rb;
     public StatTypes stats;
-    public SubSpell subSpell;
+    public Spell OwnerSpell;
     int pierceCount, bounceCount;
+    public bool primarySpell;
 
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
     private void Start()
     {
         //projectileConfig.CalculateFinalStats();
-        stats = subSpell.Type.FinalStats;
+        stats = OwnerSpell.primaryNode.FinalStats;
         transform.localScale = Vector3.one * stats.Size;
         Invoke("Die", stats.Duration);
         pierceCount = (int)stats.Piercing;
         bounceCount = (int)stats.Bounce;
-        InitiateTriggeredSpells();
+        if (primarySpell)
+        {
+            InitiateTriggeredSpells();
+        }
         OnCast.Invoke();
     }
     void Update()
     {
-        rb.Velocity = ToLookDirection(subSpell.Type.GetVelocity());
+        rb.Velocity = ToLookDirection(OwnerSpell.primaryNode.GetVelocity());
     }
     public void InitiateTriggeredSpells()
     {
-        foreach (SpellTrigger t in subSpell.triggers)
+        foreach (SpellTrigger t in OwnerSpell.triggers)
         {
+            if (t.TriggeredSpell == null) continue;
             switch (t.trigger)
             {
                 case SpellTrigger.Triggers.OnCast:
-                    AddSpellsToEvent(OnCast, t.TriggeredSubspells());
+                    AddSpellToEvent(OnCast, t.TriggeredSpell);
                     break;
                 case SpellTrigger.Triggers.OnHit:
-                    AddSpellsToEvent(OnHit, t.TriggeredSubspells());
+                    AddSpellToEvent(OnHit, t.TriggeredSpell);
                     break;
                 case SpellTrigger.Triggers.OnDeath:
-                    AddSpellsToEvent(OnDeath, t.TriggeredSubspells());
+                    AddSpellToEvent(OnDeath, t.TriggeredSpell);
                     break;
             }
         }
     }
-    public void AddSpellsToEvent(UnityEvent e, List<SubSpell> subSpells)
+    public void AddSpellToEvent(UnityEvent e, Spell spell)
     {
-        foreach (SubSpell s in subSpells)
-        {
-            e.AddListener(() => { subSpell.spell.Owner.InstantiateSpellCollider(s, transform.position); });
-        }
+        e.AddListener(() => { OwnerSpell.Owner.InstantiateSpellCollider(spell, transform.position); });
     }
     public Vector3 ToLookDirection(Vector3 rawDir)
     {
@@ -61,17 +63,17 @@ public class SpellCollider : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if (subSpell.Type.Collisions.Enemies && LayerMaskUtility.BelongsInMask(other.gameObject.layer, subSpell.spell.Owner.EnemyLayer))
+        if (OwnerSpell.primaryNode.Collisions.Enemies && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Owner.EnemyLayer))
         {
             OnHit.Invoke();
             CollideCreature();
         }
-        else if (subSpell.Type.Collisions.Players && LayerMaskUtility.BelongsInMask(other.gameObject.layer, subSpell.spell.Owner.PlayerLayer))
+        else if (OwnerSpell.primaryNode.Collisions.Players && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Owner.PlayerLayer))
         {
             OnHit.Invoke();
             CollideCreature();
         }
-        else if (subSpell.Type.Collisions.Objects && LayerMaskUtility.BelongsInMask(other.gameObject.layer, subSpell.spell.Owner.ObjectLayer))
+        else if (OwnerSpell.primaryNode.Collisions.Objects && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Owner.ObjectLayer))
         {
             OnHit.Invoke();
             CollideObject();

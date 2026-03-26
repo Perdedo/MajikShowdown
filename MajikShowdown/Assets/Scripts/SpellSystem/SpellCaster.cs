@@ -22,12 +22,14 @@ public class SpellCaster : MonoBehaviour
     }
     public void CastSpell(Spell spell)
     {
-        InstantiateSpellCollider(spell.SubSpells[0], CastingPoint.position);
+        InstantiateSpellCollider(spell, CastingPoint.position, true);
     }
-    public void InstantiateSpellCollider(SubSpell subSpell, Vector3 pos)
+    public void InstantiateSpellCollider(Spell Spell, Vector3 pos, bool primary = false)
     {
         GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, transform.rotation);
-        g.GetComponent<SpellCollider>().subSpell = subSpell;
+        SpellCollider col = g.GetComponent<SpellCollider>();
+        col.OwnerSpell = Spell;
+        col.primarySpell = primary;
     }
     
 }

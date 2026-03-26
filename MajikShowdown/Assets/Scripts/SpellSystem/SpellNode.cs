@@ -12,7 +12,7 @@ public abstract class SpellNode : ScriptableObject
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Color color = Color.white;
-    public SubSpell OwnerSubspell;
+    public Spell OwnerSpell;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {
@@ -52,14 +52,14 @@ public abstract class SpellNode : ScriptableObject
     {
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }
-    public virtual List<SpellNode> GetSubspellList(List<SpellNode> list)
+    public virtual List<SpellNode> GetSpellList(List<SpellNode> list)
     {
         list.Add(this);
         foreach (SpellNode conectedNode in ConectedNodes)
         {
             if (conectedNode != null && !list.Contains(conectedNode))
             {
-                list = conectedNode.GetSubspellList(list);
+                list = conectedNode.GetSpellList(list);
             }
         }
         return list;
@@ -67,7 +67,7 @@ public abstract class SpellNode : ScriptableObject
     public virtual void ResetNode()
     {
         hierarchy = -1;
-        OwnerSubspell = null;
+        OwnerSpell = null;
     }
 }
 [Serializable]

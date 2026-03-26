@@ -59,10 +59,10 @@ public class SpellType : SpellNode
     {
         CalculateFinalStats();
     }
-    public override List<SpellNode> GetSubspellList(List<SpellNode> list)
+    public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {
         if(list.Count != 0) return list;
-        return base.GetSubspellList(list);
+        return base.GetSpellList(list);
     }
 }
 

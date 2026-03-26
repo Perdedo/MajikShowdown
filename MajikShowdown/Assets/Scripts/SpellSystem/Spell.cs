@@ -25,7 +25,7 @@ public class Spell
         primaryNode.hierarchy = 0;
         SpellCooldown = 0;
 
-        spellNodes = primaryNode.GetSubspellList(new List<SpellNode>());
+        spellNodes = primaryNode.GetSpellList(new List<SpellNode>());
         primaryNode.StatBuffs.Clear();
         triggers.Clear();
         foreach (SpellNode s in spellNodes)
@@ -39,7 +39,7 @@ public class Spell
             {
                 primaryNode.AddBuff(s.BaseStats);
             }
-            s.OwnerSubspell = this;
+            s.OwnerSpell = this;
         }
         primaryNode.CalculateFinalStats();
         /*foreach(SubSpell s in SubSpells)
