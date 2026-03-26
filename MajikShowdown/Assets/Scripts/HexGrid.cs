@@ -139,7 +139,7 @@ public class HexGrid : MonoBehaviour
         }
         node.spellNode = selectedNode;
         selectedNode.hexGridNode = node;
-        spellNodes.Insert(node.index, selectedNode);
+        spellNodes[node.index] = selectedNode;
         selectedNode = null;
         node.SetNodeButtonState(false);
         ConfigurateSpell();
@@ -151,7 +151,8 @@ public class HexGrid : MonoBehaviour
         selectedNode.hexGridNode.spellNode = null;
         selectedNode.hexGridNode = null;
         //AddNodeToInventory(selectedNode);
-        spellNodes.Remove(selectedNode);
+        int i = spellNodes.IndexOf(selectedNode);
+        spellNodes[i] = null;
         selectedNode.Node.ResetNode();
         selectedNode = null;
         ConfigurateSpell();

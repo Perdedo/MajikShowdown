@@ -90,13 +90,13 @@ public class HexGridNode : MonoBehaviour
         }
     }
 
-    public void VerifyNearbyBreakConections(SpellNodeInterface spell)
+    public void VerifyNearbyBreakConections(SpellNodeInterface spellNode)
     {
         for (int i = 0; i < neighbours.Length;i++)
         {
             if(neighbours[i] != null && neighbours[i].spellNode != null)
             {
-                spell.BreakConection(i);
+                spellNode.BreakConection(i);
             }
         }
     }

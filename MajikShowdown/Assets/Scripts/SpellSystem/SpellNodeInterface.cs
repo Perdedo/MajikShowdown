@@ -78,15 +78,19 @@ public class SpellNodeInterface : MonoBehaviour
         SpellNode aux = conections[Index].GetNode();
         //Debug.Log(aux);
         //Debug.Log(aux.Interface);
-        conections[Index].RemoveConection();
-        aux.Interface.UpdateConected();
-        UpdateConected();
+        if (aux != null)
+        {
+            conections[Index].RemoveConection();
+            aux.Interface.UpdateConected();
+            UpdateConected();
+        }
+
     }
     public void UpdateConected()
     {
         for (int i = 0; i < conections.Length; i++)
         {
-            if(conections[i] != null)
+            if (conections[i] != null)
             {
                 Node.ConectedNodes[i] = conections[i].GetNode();
             }
@@ -100,7 +104,7 @@ public class SpellNodeInterface : MonoBehaviour
     {
         for (int i = 0; i < conections.Length; i++)
         {
-            if(conections[i] != null)
+            if (conections[i] != null)
             {
                 conections[i].conectionType = ConectionPorts[i];
             }
@@ -127,7 +131,7 @@ public class SpellNodeInterface : MonoBehaviour
 
     public void SetNodeBorder(Image img)
     {
-        
+
         if (ConectionPorts[0] == NodeConection.Conections.Circle && ConectionPorts[1] == NodeConection.Conections.Square)
         {
             img.sprite = info.borderSprite[0];
@@ -135,7 +139,7 @@ public class SpellNodeInterface : MonoBehaviour
         }
         else if (ConectionPorts[0] == NodeConection.Conections.None && ConectionPorts[3] == NodeConection.Conections.Circle)
         {
-            img.sprite= info.borderSprite[1];
+            img.sprite = info.borderSprite[1];
             return;
         }
         else if (ConectionPorts[0] == NodeConection.Conections.None && ConectionPorts[2] == NodeConection.Conections.Triangle)
