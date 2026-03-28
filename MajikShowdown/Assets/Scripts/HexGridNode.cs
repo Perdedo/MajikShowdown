@@ -28,7 +28,7 @@ public class HexGridNode : MonoBehaviour
     public void ConnectNode()
     {
         if (grid.selectedNode == null) return;
-        if (this == grid.hexGridNodes[0] && !(grid.selectedNode.Node is SpellType)) return;
+        if (!((this == grid.hexGridNodes[0]) == (grid.selectedNode.Node is SpellType))) return;
         if (!VerifyNearbyConnections(grid.selectedNode)) return;
         MakeNearbyConnections(grid.selectedNode);
         grid.AddSelectedToGrid(this);
