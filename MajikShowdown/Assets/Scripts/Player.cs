@@ -29,7 +29,9 @@ public class Player : Character
     public UnityEvent StoppedPushing;
     public PushableObject pushing;
     PlayerInput input;
-    bool Shooting;
+    bool Casting;
+    [Header("Network")]
+    public bool network = true;
     //public PlayerData data;
 
     /*[Serializable]
@@ -74,7 +76,7 @@ public class Player : Character
         }
         HandleRotation();
         UpdateVelocity();
-        if (!isServer)
+        if (!isServer && network)
         {
             CMDUpdateVelocity();
         }
@@ -111,7 +113,7 @@ public class Player : Character
     }
     public void MoveInput(InputAction.CallbackContext context)
     {
-        if(!isLocalPlayer)
+        if(!isLocalPlayer && network)
         {
             return;
         }if (!movePaused)
@@ -126,7 +128,7 @@ public class Player : Character
 
     public void JumpInput(InputAction.CallbackContext context)
     {
-        if(!isLocalPlayer)
+        if(!isLocalPlayer && network)
         {
             return;
         }
@@ -169,7 +171,7 @@ public class Player : Character
     }*/
     protected override void HandleRotation()
     {
-        if (Shooting)
+        if (Casting)
         {
             RotateTowards(directionAnchor.forward);
         }

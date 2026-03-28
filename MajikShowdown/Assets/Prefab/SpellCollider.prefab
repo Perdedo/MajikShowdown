@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3981877690685951420}
   - component: {fileID: 1586992893179240707}
   - component: {fileID: 4293220648711445590}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SpellCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,7 +84,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpellCollider
   rb: {fileID: 5440666987905268095}
-  Size: 1
+  stats:
+    Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  OwnerSpell:
+    spellNodes: []
+    SpellCooldown: 0
+    primaryNode: {fileID: 0}
+    triggers: []
+    validSpell: 0
+  primarySpell: 0
+  OnCast:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHit:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!33 &1586992893179240707
 MeshFilter:
   m_ObjectHideFlags: 0

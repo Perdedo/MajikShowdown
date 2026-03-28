@@ -50,7 +50,7 @@ public class SpellCollider : MonoBehaviour
     }
     public void AddSpellToEvent(UnityEvent e, Spell spell)
     {
-        e.AddListener(() => { OwnerSpell.Owner.InstantiateSpellCollider(spell, transform.position); });
+        e.AddListener(() => { OwnerSpell.Owner.InstantiateSpellCollider(spell, transform.position,transform.forward); });
     }
     public Vector3 ToLookDirection(Vector3 rawDir)
     {

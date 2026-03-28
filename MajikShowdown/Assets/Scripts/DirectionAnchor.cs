@@ -12,12 +12,12 @@ public class DirectionAnchor : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!isLocalPlayer)
+        if(!isLocalPlayer && player.network)
         {
             return;
         }
         MoveAnchor();
-        if(!isServer)
+        if(!isServer && player.network)
         {
             CMDMoveAnchor();
         }
