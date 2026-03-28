@@ -7,6 +7,6 @@ public class StaticRB : MonoBehaviour
     void Update()
     {
         Velocity += Acceleration * Time.deltaTime;
-        transform.position += Velocity * Time.deltaTime;
+        transform.Translate(Velocity * Time.deltaTime, Space.World);
     }
 }
