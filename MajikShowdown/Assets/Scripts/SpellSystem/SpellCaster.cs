@@ -13,6 +13,14 @@ public class SpellCaster : MonoBehaviour
     public LayerMask EnemyLayer;
     public LayerMask PlayerLayer;
     public LayerMask ObjectLayer;
+
+    private void Awake()
+    {
+        foreach (var grid in SpellGrids)
+        {
+            grid.caster = this;
+        }
+    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
