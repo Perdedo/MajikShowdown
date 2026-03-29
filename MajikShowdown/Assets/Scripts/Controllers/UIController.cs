@@ -86,11 +86,12 @@ public class UIController : MonoBehaviour
     public GameObject returnLeaveRoomPanel;
 
     [Header("Test Panels")]
-    public GameObject gridPanel;
+    public GameObject spellPanel;
 
     [HideInInspector]
     public ConfigData data;
     public HexGrid activeGrid;
+    public SpellNodeDescription spellNodeDescription;
 
     void Awake()
     {
@@ -126,13 +127,13 @@ public class UIController : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Tab))
         {
-            if(gridPanel.activeSelf)
+            if(spellPanel.activeSelf)
             {
-                ClosePanel(gridPanel);
+                ClosePanel(spellPanel);
             }
             else
             {
-                OpenPanel(gridPanel);
+                OpenPanel(spellPanel);
             }
         }
     }
@@ -223,9 +224,9 @@ public class UIController : MonoBehaviour
         {
             optionsPanel.SetActive(false);
         }
-        if (gridPanel != null)
+        if (spellPanel != null)
         {
-            gridPanel.SetActive(false);
+            spellPanel.SetActive(false);
         }
         if(inviteButton != null)
         {

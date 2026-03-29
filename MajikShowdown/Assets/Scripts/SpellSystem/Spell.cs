@@ -7,6 +7,7 @@ using static SpellTrigger;
 [Serializable]
 public class Spell
 {
+    public string spellName;
     public readonly SpellCaster Owner;
     //public List<SubSpell> SubSpells = new List<SubSpell>();
     public List<SpellNode> spellNodes = new List<SpellNode>();

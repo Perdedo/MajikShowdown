@@ -116,6 +116,7 @@ public class SpellNodeInterface : MonoBehaviour
         if (GameManager.Instance.uiController.activeGrid.selectedNode == this)
         {
             Debug.Log(GameManager.Instance.uiController.activeGrid.selectedNode.name + " Deselected");
+            GameManager.Instance.uiController.spellNodeDescription.HideDescription(Node);
             GameManager.Instance.uiController.activeGrid.selectedNode = null;
         }
         else
@@ -125,6 +126,7 @@ public class SpellNodeInterface : MonoBehaviour
                 //Remover qqr visual do outro nodo que está selecionado
             }*/
             GameManager.Instance.uiController.activeGrid.selectedNode = this;
+            GameManager.Instance.uiController.spellNodeDescription.ShowDescription(Node);
             Debug.Log(GameManager.Instance.uiController.activeGrid.selectedNode.name + " Selected");
         }
     }

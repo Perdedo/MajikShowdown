@@ -13,6 +13,7 @@ public abstract class SpellNode : ScriptableObject
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Color color = Color.white;
     public Spell OwnerSpell;
+    public string spellDescription;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {
