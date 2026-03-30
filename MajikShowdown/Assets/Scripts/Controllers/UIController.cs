@@ -87,11 +87,13 @@ public class UIController : MonoBehaviour
 
     [Header("Test Panels")]
     public GameObject spellPanel;
+    public GameObject createSpellPanel;
+    public GameObject editSpellPanel;
 
     [HideInInspector]
     public ConfigData data;
     public HexGrid activeGrid;
-    public SpellNodeDescription spellNodeDescription;
+    public SpellNodeDescription spellNodeDescription; 
 
     void Awake()
     {
@@ -129,7 +131,14 @@ public class UIController : MonoBehaviour
         {
             if(spellPanel.activeSelf)
             {
-                ClosePanel(spellPanel);
+                if(editSpellPanel.activeSelf)
+                {
+                    CloseEditSpellHUD();
+                }
+                else
+                {
+                    ClosePanel(spellPanel);
+                }
             }
             else
             {
@@ -640,5 +649,17 @@ public class UIController : MonoBehaviour
         {
             SteamFriends.ActivateGameOverlay("friends");
         }
+    }
+
+    public void OpenEditSpellHUD()
+    {
+        createSpellPanel.gameObject.SetActive(false);
+        editSpellPanel.gameObject.SetActive(true);
+    }
+
+    public void CloseEditSpellHUD()
+    {
+        editSpellPanel.gameObject.SetActive(false);
+        createSpellPanel.gameObject.SetActive(true);
     }
 }

@@ -10,6 +10,7 @@ public class SpellNodeDescription : MonoBehaviour
     public TextMeshProUGUI statsText;
 
     [Header("Type Node")]
+    public TextMeshProUGUI multiplierText;
     public TextMeshProUGUI collisionsText;
     public Toggle playersToggle;
     public Toggle enemiesToggle;
@@ -34,6 +35,7 @@ public class SpellNodeDescription : MonoBehaviour
     {
         SpellDescription(node);
         StatsDescription(node);
+        MultiplierDescription(node);
         CollisionDescription(node);
     }
 
@@ -41,7 +43,7 @@ public class SpellNodeDescription : MonoBehaviour
     {
         descText.text = "";
         statsText.text = "";
-
+        multiplierText.gameObject.SetActive(false);
         collisionsText.gameObject.SetActive(false);
         playersToggle.gameObject.SetActive(false);
         enemiesToggle.gameObject.SetActive(false);
@@ -60,25 +62,25 @@ public class SpellNodeDescription : MonoBehaviour
         SpellType typeNode = node as SpellType;
 
         if (stats.Speed != 0)
-            CreateStatsText("Speed : " + stats.Speed + GetMultiplier(typeNode?.StatMultipliers.Speed));
+            CreateStatsText("Speed:" + stats.Speed);
 
         if (stats.Duration != 0)
-            CreateStatsText("Duration : " + stats.Duration + GetMultiplier(typeNode?.StatMultipliers.Duration));
+            CreateStatsText("Duration:" + stats.Duration);
 
         if (stats.Size != 0)
-            CreateStatsText("Size : " + stats.Size + GetMultiplier(typeNode?.StatMultipliers.Size));
+            CreateStatsText("Size:" + stats.Size);
 
         if (stats.Damage != 0)
-            CreateStatsText("Damage : " + stats.Damage + GetMultiplier(typeNode?.StatMultipliers.Damage));
+            CreateStatsText("Damage:" + stats.Damage);
 
         if (stats.Piercing != 0)
-            CreateStatsText("Piercing : " + stats.Piercing + GetMultiplier(typeNode?.StatMultipliers.Piercing));
+            CreateStatsText("Piercing:" + stats.Piercing);
 
         if (stats.Bounce != 0)
-            CreateStatsText("Bounce : " + stats.Bounce + GetMultiplier(typeNode?.StatMultipliers.Bounce));
+            CreateStatsText("Bounce:" + stats.Bounce);
 
         if (stats.Knockback != 0)
-            CreateStatsText("Knockback : " + stats.Knockback + GetMultiplier(typeNode?.StatMultipliers.Knockback));
+            CreateStatsText("Knockback:" + stats.Knockback);
     }
 
     void CreateStatsText(string statName)
@@ -86,10 +88,29 @@ public class SpellNodeDescription : MonoBehaviour
         statsText.text += statName + "\n";
     }
 
-    string GetMultiplier(float? multiplier)
+    void MultiplierDescription(SpellNode node)
     {
-        if (multiplier == null) return "";
-        return " (x" + multiplier.Value + ")";
+        multiplierText.text = "";
+        SpellType typeNode = node as SpellType;
+        if (typeNode == null)
+        {
+            multiplierText.gameObject.SetActive(false);
+            return;
+        }
+        multiplierText.gameObject.SetActive(true);
+        var m = typeNode.StatMultipliers;
+        CreateMultiplierText("Speed Multiplier:", m.Speed);
+        CreateMultiplierText("Duration Multiplier:", m.Duration);
+        CreateMultiplierText("Size Multiplier:", m.Size);
+        CreateMultiplierText("Damage Multiplier:", m.Damage);
+        CreateMultiplierText("Piercing Multiplier:", m.Piercing);
+        CreateMultiplierText("Bounce Multiplier:", m.Bounce);
+        CreateMultiplierText("Knockback Multiplier:", m.Knockback);
+    }
+
+    void CreateMultiplierText(string stat, float value)
+    {
+        multiplierText.text += stat + " x" + value + "\n";
     }
 
     void CollisionDescription(SpellNode node)
