@@ -8,6 +8,7 @@ using System.Linq;
 using TMPro;
 using Unity.Jobs;
 using Unity.Multiplayer.PlayMode;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -89,6 +90,10 @@ public class UIController : MonoBehaviour
     public GameObject spellPanel;
     public GameObject createSpellPanel;
     public GameObject editSpellPanel;
+    public Spell spellToEquip;
+    public Button[] equipSlotButtons;
+    public TMP_Text[] equipSlotTexts;
+    public SpellCaster caster;
 
     [HideInInspector]
     public ConfigData data;
@@ -651,15 +656,56 @@ public class UIController : MonoBehaviour
         }
     }
 
-    public void OpenEditSpellHUD()
+    public void OpenEditSpellHUD(Spell spell)
     {
         createSpellPanel.gameObject.SetActive(false);
         editSpellPanel.gameObject.SetActive(true);
+        if (activeGrid != null)
+        {
+            activeGrid.gameObject.SetActive(false);
+        }
+        activeGrid = spell.grid;
+        activeGrid.gameObject.SetActive(true);
     }
 
     public void CloseEditSpellHUD()
     {
         editSpellPanel.gameObject.SetActive(false);
         createSpellPanel.gameObject.SetActive(true);
+    }
+
+    public void StartEquipSpell(Spell spell)
+    {
+        spellToEquip = spell;
+    }
+
+    public void EquipSpellToSlot(int index)
+    {
+        if (spellToEquip == null) return;
+        Spell oldSpell = caster.equippedSpells[index];
+        if (oldSpell != null)
+        {
+            SpellButtonUI[] buttons = FindObjectsByType<SpellButtonUI>(FindObjectsSortMode.None);
+            foreach (var button in buttons)
+            {
+                if (button.GetSpell() == oldSpell)
+                {
+                    button.SetEquipText("Equip");
+                    break;
+                }
+            }
+        }
+        caster.equippedSpells[index] = spellToEquip;
+        equipSlotTexts[index].text = string.IsNullOrWhiteSpace(spellToEquip.spellName) ? "Nameless": spellToEquip.spellName;
+        SpellButtonUI[] allButtons = FindObjectsByType<SpellButtonUI>(FindObjectsSortMode.None);
+        foreach (var button in allButtons)
+        {
+            if (button.GetSpell() == spellToEquip)
+            {
+                button.SetEquipText("Unequip");
+                break;
+            }
+        }
+        spellToEquip = null;
     }
 }

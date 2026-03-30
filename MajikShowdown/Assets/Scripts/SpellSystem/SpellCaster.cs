@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class SpellCaster : MonoBehaviour
 {
-    public Player player;
-    public HexGrid[] SpellGrids;
+    public Player player; 
+    public Spell[] equippedSpells = new Spell[4];
     public NodeInventory inventory;
     public SpellCollider ProjectilePrefab;
     public Transform CastingPoint;
@@ -16,16 +16,20 @@ public class SpellCaster : MonoBehaviour
 
     private void Awake()
     {
-        foreach (var grid in SpellGrids)
+        /*foreach (var grid in SpellGrids)
         {
             grid.caster = this;
-        }
+        }*/
     }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            CastSpell(SpellGrids[0].spell);
+            if (equippedSpells[0] != null)
+            {
+                CastSpell(equippedSpells[0]);
+                Debug.Log(equippedSpells[0].spellName);
+            }
         }
     }
     public void CastSpell(Spell spell)

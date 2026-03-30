@@ -15,6 +15,7 @@ public class Spell
     public SpellType primaryNode;
     public List<SpellTrigger> triggers = new List<SpellTrigger>();
     public bool validSpell;
+    public HexGrid grid;
     public Spell(SpellCaster owner)
     {
         Owner = owner;

@@ -31,11 +31,21 @@ public class HexGrid : MonoBehaviour
 
     void Start()
     {
-        spell = new Spell(caster);
+        InitGrid();
+        ConfigurateSpell();
+    }
+
+    public void InitGrid()
+    {
         hexNodeSize = hexPrefab.rect.height / 2f;
         GenerateGrid();
         SetNeighbours();
-        ConfigurateSpell();
+    }
+
+    public void SetSpell(Spell newSpell)
+    {
+        spell = newSpell;
+        //ConfigurateSpell();
     }
     void OnEnable()
     {

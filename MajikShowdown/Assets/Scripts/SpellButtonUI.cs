@@ -7,6 +7,7 @@ public class SpellButtonUI : MonoBehaviour
     public TMP_InputField spellNameInput;
     public Button editButton;
     public Button equipButton;
+    public TextMeshProUGUI equipText;
 
     Spell spell;
 
@@ -21,6 +22,11 @@ public class SpellButtonUI : MonoBehaviour
         equipButton.onClick.AddListener(EquipSpell);
     }
 
+    public Spell GetSpell()
+    {
+        return spell;
+    }
+
     void UpdateSpellName(string newName)
     {
         spell.spellName = newName;
@@ -28,11 +34,47 @@ public class SpellButtonUI : MonoBehaviour
 
     void EditSpell()
     {
-        GameManager.Instance.uiController.OpenEditSpellHUD();
+        GameManager.Instance.uiController.OpenEditSpellHUD(spell);
     }
 
     void EquipSpell()
     {
-        Debug.Log("Equipar spell: " + spell.spellName);
+        if (IsSpellEquipped(spell))
+        {
+            UnequipSpell();
+        }
+        else
+        {
+            GameManager.Instance.uiController.StartEquipSpell(spell);
+        }
+    }
+
+    void UnequipSpell()
+    {
+        for (int i = 0; i < spell.Owner.equippedSpells.Length; i++)
+        {
+            if (spell.Owner.equippedSpells[i] == spell)
+            {
+                spell.Owner.equippedSpells[i] = null;
+                GameManager.Instance.uiController.equipSlotTexts[i].text = "Slot " + (i + 1);
+                break;
+            }
+        }
+        equipText.text = "Equip";
+    }
+
+    public bool IsSpellEquipped(Spell spell)
+    {
+        foreach (var s in spell.Owner.equippedSpells)
+        {
+            if (s == spell)
+                return true;
+        }
+        return false;
+    }
+
+    public void SetEquipText(string text)
+    {
+        equipText.text = text;
     }
 }
