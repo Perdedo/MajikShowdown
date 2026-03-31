@@ -4,7 +4,6 @@ using UnityEngine;
 public class SpellInventoryUI : MonoBehaviour
 {
     public SpellCaster caster;
-    public List<Spell> spells = new List<Spell>();
     public HexGrid gridPrefab;
     public Transform gridParent;
 
@@ -20,8 +19,9 @@ public class SpellInventoryUI : MonoBehaviour
         newGrid.gameObject.SetActive(false);
         newGrid.SetSpell(newSpell);
         newSpell.grid = newGrid;
-        spells.Add(newSpell);
+        caster.spells.Add(newSpell);
         CreateSpellButton(newSpell);
+        GameManager.Instance.uiController.spellNodeDescription.RefreshTriggerDropdown();
     }
 
     void CreateSpellButton(Spell spell)

@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
 public class SpellCaster : MonoBehaviour
 {
-    public Player player; 
+    public Player player;
+    public List<Spell> spells = new List<Spell>();
     public Spell[] equippedSpells = new Spell[4];
     public NodeInventory inventory;
     public SpellCollider ProjectilePrefab;

@@ -116,7 +116,7 @@ public class SpellNodeInterface : MonoBehaviour
         if (GameManager.Instance.uiController.activeGrid.selectedNode == this)
         {
             Debug.Log(GameManager.Instance.uiController.activeGrid.selectedNode.name + " Deselected");
-            GameManager.Instance.uiController.spellNodeDescription.HideDescription(Node);
+            GameManager.Instance.uiController.spellNodeDescription.HideDescription();
             GameManager.Instance.uiController.activeGrid.selectedNode = null;
         }
         else

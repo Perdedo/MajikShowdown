@@ -670,8 +670,11 @@ public class UIController : MonoBehaviour
 
     public void CloseEditSpellHUD()
     {
+        spellNodeDescription.HideDescription();
+        activeGrid.selectedNode = null;
         editSpellPanel.gameObject.SetActive(false);
         createSpellPanel.gameObject.SetActive(true);
+
     }
 
     public void StartEquipSpell(Spell spell)

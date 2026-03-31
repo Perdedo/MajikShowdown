@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEditor;
+using System.Collections.Generic;
 
 public class SpellNodeDescription : MonoBehaviour
 {
@@ -24,22 +25,36 @@ public class SpellNodeDescription : MonoBehaviour
 
     SpellType currentType;
 
+    [Header("Trigger")]
+    public TMP_Dropdown spellDropdown;
+    public TMP_Dropdown triggerDropdown;
+
+    SpellTrigger currentTrigger;
+    public SpellCaster caster;
+    List<Spell> availableSpells = new List<Spell>();
+    public HexGrid grid;
+    SpellNode currentNode;
+
     void Start()
     {
         playersToggle.onValueChanged.AddListener(SetPlayersCollision);
         enemiesToggle.onValueChanged.AddListener(SetEnemiesCollision);
         objectsToggle.onValueChanged.AddListener(SetObjectsCollision);
+        spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
     }
 
     public void ShowDescription(SpellNode node)
     {
+        currentNode = node;
+
         SpellDescription(node);
         StatsDescription(node);
         MultiplierDescription(node);
         CollisionDescription(node);
+        TriggerDescription(node);
     }
 
-    public void HideDescription(SpellNode node)
+    public void HideDescription()
     {
         descText.text = "";
         statsText.text = "";
@@ -48,6 +63,8 @@ public class SpellNodeDescription : MonoBehaviour
         playersToggle.gameObject.SetActive(false);
         enemiesToggle.gameObject.SetActive(false);
         objectsToggle.gameObject.SetActive(false);
+        spellDropdown.gameObject.SetActive(false);
+        triggerDropdown.gameObject.SetActive(false);
     }
 
     void SpellDescription(SpellNode node)
@@ -161,5 +178,49 @@ public class SpellNodeDescription : MonoBehaviour
         currentType.Collisions = col;
         Debug.Log("DEPOIS: Objects Collisions = " + currentType.Collisions.Objects);
         objectsToggleIcon.sprite = value ? checkSprite : xSprite;
+    }
+
+    void TriggerDescription(SpellNode node)
+    {
+        currentTrigger = node as SpellTrigger;
+        bool isTrigger = currentTrigger != null;
+        spellDropdown.gameObject.SetActive(isTrigger);
+        triggerDropdown.gameObject.SetActive(isTrigger);
+        if (!isTrigger) return;
+
+        var spells = caster.spells;
+        spellDropdown.ClearOptions();
+        List<string> names = new List<string>();
+        availableSpells.Clear();
+        Spell editingSpell = GameManager.Instance.uiController.activeGrid.spell;
+        foreach (var s in spells)
+        {
+            if (s == editingSpell) { continue; }
+            names.Add(s.spellName);
+            availableSpells.Add(s);
+        }
+
+        spellDropdown.AddOptions(names);
+        triggerDropdown.ClearOptions();
+        triggerDropdown.AddOptions(new List<string>() { "On Cast", "On Hit", "On Death" });
+        triggerDropdown.SetValueWithoutNotify((int)currentTrigger.trigger);
+    }
+
+    void SetTriggerSpell(int index)
+    {
+        currentTrigger.TriggeredSpell = availableSpells[index];
+    }
+
+    public void RefreshTriggerDropdown()
+    {
+        if (currentNode == null)
+            return;
+
+        var ui = GameManager.Instance.uiController;
+
+        if (ui == null || ui.activeGrid == null)
+            return;
+
+        TriggerDescription(currentNode);
     }
 }
