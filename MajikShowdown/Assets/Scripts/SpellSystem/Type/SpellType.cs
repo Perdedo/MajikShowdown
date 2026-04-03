@@ -7,6 +7,7 @@ public class SpellType : SpellNode
 {
     public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
     public SpellTypes Type;
+    public Elements Element;
 
     public bool DealDamage = true;
     public CollisionOptions Collisions;

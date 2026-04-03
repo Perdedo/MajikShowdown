@@ -1,0 +1,70 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CharacterDamageHandler : MonoBehaviour
+{
+    public float MaxHealth;
+    public float Health;
+    public List<Resistance> Resistances;
+    void Awake()
+    {
+        Health = MaxHealth;
+    }
+
+    public void TakeDamage(Damage damage)
+    {
+        float finalDamage = damage.Value;
+        for (int i = 0; i < Resistances.Count; i++)
+        {
+            if (Resistances[i].Element == damage.Element)
+            {
+                finalDamage *= 1 - Resistances[i].PercentValue / 100;
+                i = Resistances.Count;
+            }
+        }
+        Health = MathF.Max(Health - finalDamage, 0);
+        if (Health <= 0)
+        {
+            Die();
+        }
+    }
+    public void Heal(float amount)
+    {
+        Health = Mathf.Min(Health + amount, MaxHealth);
+    }
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
+}
+public enum Elements { None, Fire, Ice, Earth, Lightning, Radiance, Darkness, Poison }
+
+public class Damage
+{
+    public Damage(float value, Elements element, Character damageSource)
+    {
+        Value = value;
+        Element = element;
+        DamageSource = damageSource;
+    }
+    public float Value;
+    public Elements Element;
+    public Character DamageSource;
+}
+public class MagicDamage : Damage
+{
+    public MagicDamage(float value, Elements element, Character damageSource, SpellCollider spell) : base(value, element, damageSource)
+    {
+        spellCollider = spell;
+    }
+    public SpellCollider spellCollider;
+
+}
+[Serializable]
+public class Resistance
+{
+    public Elements Element;
+    [Range(-100,100)]public float PercentValue;
+}
+
