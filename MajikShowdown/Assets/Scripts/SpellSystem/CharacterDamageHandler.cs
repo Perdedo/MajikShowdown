@@ -42,19 +42,25 @@ public enum Elements { None, Fire, Ice, Earth, Lightning, Radiance, Darkness, Po
 
 public class Damage
 {
-    public Damage(float value, Elements element, Character damageSource)
+    public Damage(float value, Elements element, IGameCharacter damageSource)
     {
         Value = value;
         Element = element;
         DamageSource = damageSource;
     }
+    public Damage(float value, Elements element)
+    {
+        Value = value;
+        Element = element;
+        DamageSource = null;
+    }
     public float Value;
     public Elements Element;
-    public Character DamageSource;
+    public IGameCharacter DamageSource;
 }
 public class MagicDamage : Damage
 {
-    public MagicDamage(float value, Elements element, Character damageSource, SpellCollider spell) : base(value, element, damageSource)
+    public MagicDamage(float value, Elements element, IGameCharacter damageSource, SpellCollider spell) : base(value, element, damageSource)
     {
         spellCollider = spell;
     }
@@ -65,6 +71,10 @@ public class MagicDamage : Damage
 public class Resistance
 {
     public Elements Element;
-    [Range(-100,100)]public float PercentValue;
+    [Range(-100, 100)] public float PercentValue;
+}
+public interface IGameCharacter
+{
+    public CharacterDamageHandler DamageHandler { get; }
 }
 

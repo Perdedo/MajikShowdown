@@ -66,12 +66,12 @@ public class SpellCollider : MonoBehaviour
         if (OwnerSpell.primaryNode.Collisions.Enemies && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Owner.EnemyLayer))
         {
             OnHit.Invoke();
-            CollideCreature();
+            CollideCreature(other);
         }
         else if (OwnerSpell.primaryNode.Collisions.Players && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Owner.PlayerLayer))
         {
             OnHit.Invoke();
-            CollideCreature();
+            CollideCreature(other);
         }
         else if (OwnerSpell.primaryNode.Collisions.Objects && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Owner.ObjectLayer))
         {
@@ -83,8 +83,15 @@ public class SpellCollider : MonoBehaviour
     {
         CheckBounce();
     }
-    public void CollideCreature()
+    public void CollideCreature(Collider c)
     {
+        CharacterDamageHandler character = c.GetComponent<CharacterDamageHandler>();
+        if (character != null)        {
+            foreach (SpellEffect e in OwnerSpell.spellEffects)
+            {
+                e.ApplyEffect(character);
+            }
+        }
         if (pierceCount > 0)
         {
             pierceCount--;

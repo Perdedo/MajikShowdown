@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class SpellCaster : MonoBehaviour
+public class SpellCaster : MonoBehaviour, IGameCharacter
 {
+    public CharacterDamageHandler DamageHandler { get; private set; }
+
     public Player player;
     public List<Spell> spells = new List<Spell>();
     public Spell[] equippedSpells = new Spell[4];
@@ -18,6 +20,7 @@ public class SpellCaster : MonoBehaviour
 
     private void Awake()
     {
+        DamageHandler = GetComponent<CharacterDamageHandler>();
         /*foreach (var grid in SpellGrids)
         {
             grid.caster = this;
@@ -30,7 +33,7 @@ public class SpellCaster : MonoBehaviour
             if (equippedSpells[0] != null)
             {
                 CastSpell(equippedSpells[0]);
-                Debug.Log(equippedSpells[0].spellName);
+                //Debug.Log(equippedSpells[0].spellName);
             }
         }
     }

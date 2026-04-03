@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 //using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static SpellTrigger;
@@ -14,6 +16,7 @@ public class Spell
     public float SpellCooldown = 0;
     public SpellType primaryNode;
     public List<SpellTrigger> triggers = new List<SpellTrigger>();
+    public List<SpellEffect> spellEffects = new List<SpellEffect>();
     public bool validSpell;
     public HexGrid grid;
     public Spell(SpellCaster owner)
@@ -30,12 +33,21 @@ public class Spell
         spellNodes = primaryNode.GetSpellList(new List<SpellNode>());
         primaryNode.StatBuffs.Clear();
         triggers.Clear();
+        spellEffects.Clear();
         foreach (SpellNode s in spellNodes)
         {
             if (s is SpellTrigger t)
             {
                 triggers.Add(t);
             }
+            if (s is SpellEffect e)
+            {
+                if(e.Repeatable || !spellEffects.Any(x => x.GetType() == e.GetType()))
+                {
+                    spellEffects.Add(e);
+                }
+            }
+            
             SpellCooldown += s.Cooldown;
             if (s != primaryNode)
             {

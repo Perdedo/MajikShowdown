@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "Spell Stat", menuName = "Spell Nodes/SpellStat")]
 public class SpellStat : SpellNode
 {
 
