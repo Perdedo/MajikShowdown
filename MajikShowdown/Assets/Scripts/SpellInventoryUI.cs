@@ -21,7 +21,7 @@ public class SpellInventoryUI : MonoBehaviour
         newSpell.grid = newGrid;
         caster.spells.Add(newSpell);
         CreateSpellButton(newSpell);
-        GameManager.Instance.uiController.spellNodeDescription.RefreshTriggerDropdown();
+        GameManager.Instance.uiController.spellNodeDescription.RefreshTriggerUI();
     }
 
     void CreateSpellButton(Spell spell)
