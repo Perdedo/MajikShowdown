@@ -94,11 +94,14 @@ public class UIController : MonoBehaviour
     public Button[] equipSlotButtons;
     public TMP_Text[] equipSlotTexts;
     public SpellCaster caster;
+    public TextMeshProUGUI spellNameText;
+    public TextMeshProUGUI spellCooldownText;
 
     [HideInInspector]
     public ConfigData data;
     public HexGrid activeGrid;
-    public SpellNodeDescription spellNodeDescription; 
+    public SpellNodeDescription spellNodeDescription;
+    Spell activeSpell;
 
     void Awake()
     {
@@ -666,15 +669,39 @@ public class UIController : MonoBehaviour
         }
         activeGrid = spell.grid;
         activeGrid.gameObject.SetActive(true);
+        SetActiveSpell(spell);
+    }
+
+    void SetActiveSpell(Spell spell)
+    {
+        if (activeSpell != null)
+        {
+            activeSpell.OnSpellUpdated -= RefreshSpellInfo;
+        }
+        activeSpell = spell;
+        if (activeSpell == null) return;
+        RefreshSpellInfo();
+        activeSpell.OnSpellUpdated += RefreshSpellInfo;
+    }
+
+    void RefreshSpellInfo()
+    {
+        if (activeSpell == null) return;
+        spellNameText.text = string.IsNullOrWhiteSpace(activeSpell.spellName) ? "Nameless Spell" : activeSpell.spellName;
+        spellCooldownText.text = "Cooldown: " + activeSpell.SpellCooldown.ToString("0.0") + "s";
     }
 
     public void CloseEditSpellHUD()
     {
         spellNodeDescription.HideDescription();
+        if (activeSpell != null)
+        {
+            activeSpell.OnSpellUpdated -= RefreshSpellInfo;
+        }
+        activeSpell = null;
         activeGrid.selectedNode = null;
         editSpellPanel.gameObject.SetActive(false);
         createSpellPanel.gameObject.SetActive(true);
-
     }
 
     public void StartEquipSpell(Spell spell)

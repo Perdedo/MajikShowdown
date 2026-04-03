@@ -3,10 +3,12 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEditor;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 
 public class SpellNodeDescription : MonoBehaviour
 {
     [Header("Description Texts")]
+    public TextMeshProUGUI nodeCooldown;
     public TextMeshProUGUI descText;
     public TextMeshProUGUI statsText;
 
@@ -19,6 +21,7 @@ public class SpellNodeDescription : MonoBehaviour
     public Image playersToggleIcon;
     public Image enemiesToggleIcon;
     public Image objectsToggleIcon;
+    public TextMeshProUGUI elementText;
 
     public Sprite checkSprite;
     public Sprite xSprite;
@@ -41,23 +44,27 @@ public class SpellNodeDescription : MonoBehaviour
         enemiesToggle.onValueChanged.AddListener(SetEnemiesCollision);
         objectsToggle.onValueChanged.AddListener(SetObjectsCollision);
         spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
+        triggerDropdown.onValueChanged.AddListener(SetTriggerType);
     }
 
     public void ShowDescription(SpellNode node)
     {
         currentNode = node;
-
+        NodeCoolDownDescription(node);
         SpellDescription(node);
         StatsDescription(node);
         MultiplierDescription(node);
         CollisionDescription(node);
         TriggerDescription(node);
+        UpdateElementColor();
     }
 
     public void HideDescription()
     {
+        nodeCooldown.text = "";
         descText.text = "";
         statsText.text = "";
+        elementText.text = "";
         multiplierText.gameObject.SetActive(false);
         collisionsText.gameObject.SetActive(false);
         playersToggle.gameObject.SetActive(false);
@@ -65,6 +72,11 @@ public class SpellNodeDescription : MonoBehaviour
         objectsToggle.gameObject.SetActive(false);
         spellDropdown.gameObject.SetActive(false);
         triggerDropdown.gameObject.SetActive(false);
+    }
+
+    void NodeCoolDownDescription(SpellNode node)
+    {
+        nodeCooldown.text = "Cooldown : +" + node.Cooldown + "s";
     }
 
     void SpellDescription(SpellNode node)
@@ -115,14 +127,15 @@ public class SpellNodeDescription : MonoBehaviour
             return;
         }
         multiplierText.gameObject.SetActive(true);
+        multiplierText.text = "Multipliers\n";
         var m = typeNode.StatMultipliers;
-        CreateMultiplierText("Speed Multiplier:", m.Speed);
-        CreateMultiplierText("Duration Multiplier:", m.Duration);
-        CreateMultiplierText("Size Multiplier:", m.Size);
-        CreateMultiplierText("Damage Multiplier:", m.Damage);
-        CreateMultiplierText("Piercing Multiplier:", m.Piercing);
-        CreateMultiplierText("Bounce Multiplier:", m.Bounce);
-        CreateMultiplierText("Knockback Multiplier:", m.Knockback);
+        CreateMultiplierText("Speed: ", m.Speed);
+        CreateMultiplierText("Duration: ", m.Duration);
+        CreateMultiplierText("Size: ", m.Size);
+        CreateMultiplierText("Damage: ", m.Damage);
+        CreateMultiplierText("Piercing: ", m.Piercing);
+        CreateMultiplierText("Bounce: ", m.Bounce);
+        CreateMultiplierText("Knockback: ", m.Knockback);
     }
 
     void CreateMultiplierText(string stat, float value)
@@ -187,40 +200,114 @@ public class SpellNodeDescription : MonoBehaviour
         spellDropdown.gameObject.SetActive(isTrigger);
         triggerDropdown.gameObject.SetActive(isTrigger);
         if (!isTrigger) return;
+        spellDropdown.onValueChanged.RemoveListener(SetTriggerSpell);
+        triggerDropdown.onValueChanged.RemoveListener(SetTriggerType);
+        SetupSpellDropdown();
+        SetupTriggerDropdown();
+        RefreshTriggerUI();
+        spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
+        triggerDropdown.onValueChanged.AddListener(SetTriggerType);
+    }
 
+    void SetupSpellDropdown()
+    {
         var spells = caster.spells;
         spellDropdown.ClearOptions();
-        List<string> names = new List<string>();
         availableSpells.Clear();
-        Spell editingSpell = GameManager.Instance.uiController.activeGrid.spell;
+        List<string> names = new List<string>();
+        names.Add("None");
+        availableSpells.Add(null);
         foreach (var s in spells)
         {
-            if (s == editingSpell) { continue; }
             names.Add(s.spellName);
             availableSpells.Add(s);
         }
-
         spellDropdown.AddOptions(names);
+    }
+
+    void SetupTriggerDropdown()
+    {
         triggerDropdown.ClearOptions();
-        triggerDropdown.AddOptions(new List<string>() { "On Cast", "On Hit", "On Death" });
-        triggerDropdown.SetValueWithoutNotify((int)currentTrigger.trigger);
+        var enumNames = System.Enum.GetNames(typeof(SpellTrigger.Triggers));
+        triggerDropdown.AddOptions(new List<string>(enumNames));
     }
 
     void SetTriggerSpell(int index)
     {
+        if (currentTrigger == null) return;
+        if (index < 0 || index >= availableSpells.Count) return;
         currentTrigger.TriggeredSpell = availableSpells[index];
     }
 
-    public void RefreshTriggerDropdown()
+    void SetTriggerType(int index)
     {
-        if (currentNode == null)
+        if (currentTrigger == null) return;
+
+        if (System.Enum.IsDefined(typeof(SpellTrigger.Triggers), index))
+        {
+            currentTrigger.trigger = (SpellTrigger.Triggers)index;
+        }
+    }
+
+    public void RefreshTriggerUI()
+    {
+        if (currentTrigger == null) return;
+        int spellIndex = availableSpells.IndexOf(currentTrigger.TriggeredSpell);
+        if (spellIndex < 0)
+        {
+            spellIndex = 0;
+        }
+        spellDropdown.SetValueWithoutNotify(spellIndex);
+        int triggerIndex = (int)currentTrigger.trigger;
+        if (triggerIndex < 0 || triggerIndex >= triggerDropdown.options.Count)
+        {
+            triggerIndex = 0;
+        }
+        triggerDropdown.SetValueWithoutNotify(triggerIndex);
+    }
+
+    public static Color GetElementColor(Elements element)
+    {
+        switch (element)
+        {
+            case Elements.Fire:
+                return Color.red;
+
+            case Elements.Ice:
+                return Color.lightBlue;
+
+            case Elements.Earth:
+                return new Color(0.735f, 0.535f, 0.380f);
+
+            case Elements.Lightning:
+                return Color.yellow;
+
+            case Elements.Radiance:
+                return new Color(1f, 0.985f, 0.61f);
+
+            case Elements.Darkness:
+                return new Color(0.825f, 0.45f, 1f); ;
+
+            case Elements.Poison:
+                return new Color(0.4f, 0.8f, 0.2f);
+
+            case Elements.None:
+            default:
+                return Color.white;
+        }
+    }
+    void UpdateElementColor()
+    {
+        SpellType typeNode = currentNode as SpellType;
+        if (typeNode == null)
+        {
+            elementText.gameObject.SetActive(false);
             return;
-
-        var ui = GameManager.Instance.uiController;
-
-        if (ui == null || ui.activeGrid == null)
-            return;
-
-        TriggerDescription(currentNode);
+        }
+        elementText.gameObject.SetActive(true);
+        Color color = GetElementColor(typeNode.Element);
+        elementText.color = color;
+        //elementText.text = typeNode.Element.ToString();
+        elementText.text = "Element: " + typeNode.Element.ToString();
     }
 }

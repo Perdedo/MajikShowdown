@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e873651b2d0183c4ca51f62a95ca85eb, type: 3}
   m_Name: Projectile
   m_EditorClassIdentifier: Assembly-CSharp::SpellType
-  Cooldown: 0
+  Cooldown: 3
   BaseStats:
     Speed: 1
     Duration: 3
@@ -38,8 +38,10 @@ MonoBehaviour:
     primaryNode: {fileID: 0}
     triggers: []
     validSpell: 0
+    grid: {fileID: 0}
   spellDescription: A Red Node Description
   Type: 0
+  Element: 7
   DealDamage: 1
   Collisions:
     Players: 0

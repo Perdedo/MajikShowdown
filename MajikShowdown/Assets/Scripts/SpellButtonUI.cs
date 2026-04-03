@@ -4,11 +4,12 @@ using UnityEngine.UI;
 
 public class SpellButtonUI : MonoBehaviour
 {
-    public TMP_InputField spellNameInput;
+    public TMP_InputField spellNameInput; 
+    public TextMeshProUGUI cooldownText;
     public Button editButton;
     public Button equipButton;
+    public Button deleteButton;
     public TextMeshProUGUI equipText;
-
     Spell spell;
 
     public void Setup(Spell newSpell)
@@ -20,6 +21,10 @@ public class SpellButtonUI : MonoBehaviour
         editButton.onClick.AddListener(EditSpell);
         equipButton.onClick.RemoveAllListeners();
         equipButton.onClick.AddListener(EquipSpell);
+        deleteButton.onClick.RemoveAllListeners();
+        deleteButton.onClick.AddListener(DeleteSpell);
+        UpdateCooldownUI();
+        spell.OnSpellUpdated += UpdateCooldownUI;
     }
 
     public Spell GetSpell()
@@ -61,6 +66,17 @@ public class SpellButtonUI : MonoBehaviour
             }
         }
         equipText.text = "Equip";
+    }
+
+    void UpdateCooldownUI()
+    {
+        if (spell == null || cooldownText == null) return;
+        cooldownText.text = "Cooldown: " + spell.SpellCooldown.ToString("0.0") + "s";
+    }
+
+    void DeleteSpell()
+    {
+        Debug.Log("Deleted spell(not finished yet): " + spell.spellName);
     }
 
     public bool IsSpellEquipped(Spell spell)

@@ -19,6 +19,7 @@ public class Spell
     public List<SpellEffect> spellEffects = new List<SpellEffect>();
     public bool validSpell;
     public HexGrid grid;
+    [HideInInspector] public System.Action OnSpellUpdated;
     public Spell(SpellCaster owner)
     {
         Owner = owner;
@@ -56,6 +57,7 @@ public class Spell
             s.OwnerSpell = this;
         }
         primaryNode.CalculateFinalStats();
+        OnSpellUpdated?.Invoke();
         /*foreach(SubSpell s in SubSpells)
         {
             SpellCooldown += s.CooldownCost;
