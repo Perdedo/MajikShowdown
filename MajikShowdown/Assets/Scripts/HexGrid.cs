@@ -31,11 +31,21 @@ public class HexGrid : MonoBehaviour
 
     void Start()
     {
-        spell = new Spell(caster);
+        InitGrid();
+        ConfigurateSpell();
+    }
+
+    public void InitGrid()
+    {
         hexNodeSize = hexPrefab.rect.height / 2f;
         GenerateGrid();
         SetNeighbours();
-        ConfigurateSpell();
+    }
+
+    public void SetSpell(Spell newSpell)
+    {
+        spell = newSpell;
+        //ConfigurateSpell();
     }
     void OnEnable()
     {
@@ -129,7 +139,19 @@ public class HexGrid : MonoBehaviour
     }
     public void AddSelectedToGrid(HexGridNode node)
     {
-        NodeInventory.instance.RemoveNodeFromInventory(selectedNode, this);
+        //NodeInventory.instance.RemoveNodeFromInventory(selectedNode, this);
+        if (caster == null)
+        {
+            Debug.LogError("Caster is NULL");
+            return;
+        }
+
+        if (caster.inventory == null)
+        {
+            Debug.LogError("Inventory is NULL");
+            return;
+        }
+        caster.inventory.RemoveNodeFromInventory(selectedNode, this);
         selectedNode.rect.position = node.rect.position;
         if (selectedNode.hexGridNode != null)
         {

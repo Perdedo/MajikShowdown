@@ -8,6 +8,7 @@ using System.Linq;
 using TMPro;
 using Unity.Jobs;
 using Unity.Multiplayer.PlayMode;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -86,11 +87,21 @@ public class UIController : MonoBehaviour
     public GameObject returnLeaveRoomPanel;
 
     [Header("Test Panels")]
-    public GameObject gridPanel;
+    public GameObject spellPanel;
+    public GameObject createSpellPanel;
+    public GameObject editSpellPanel;
+    public Spell spellToEquip;
+    public Button[] equipSlotButtons;
+    public TMP_Text[] equipSlotTexts;
+    public SpellCaster caster;
+    public TextMeshProUGUI spellNameText;
+    public TextMeshProUGUI spellCooldownText;
 
     [HideInInspector]
     public ConfigData data;
     public HexGrid activeGrid;
+    public SpellNodeDescription spellNodeDescription;
+    Spell activeSpell;
 
     void Awake()
     {
@@ -126,13 +137,20 @@ public class UIController : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Tab))
         {
-            if(gridPanel.activeSelf)
+            if(spellPanel.activeSelf)
             {
-                ClosePanel(gridPanel);
+                if(editSpellPanel.activeSelf)
+                {
+                    CloseEditSpellHUD();
+                }
+                else
+                {
+                    ClosePanel(spellPanel);
+                }
             }
             else
             {
-                OpenPanel(gridPanel);
+                OpenPanel(spellPanel);
             }
         }
     }
@@ -223,9 +241,9 @@ public class UIController : MonoBehaviour
         {
             optionsPanel.SetActive(false);
         }
-        if (gridPanel != null)
+        if (spellPanel != null)
         {
-            gridPanel.SetActive(false);
+            spellPanel.SetActive(false);
         }
         if(inviteButton != null)
         {
@@ -639,5 +657,85 @@ public class UIController : MonoBehaviour
         {
             SteamFriends.ActivateGameOverlay("friends");
         }
+    }
+
+    public void OpenEditSpellHUD(Spell spell)
+    {
+        createSpellPanel.gameObject.SetActive(false);
+        editSpellPanel.gameObject.SetActive(true);
+        if (activeGrid != null)
+        {
+            activeGrid.gameObject.SetActive(false);
+        }
+        activeGrid = spell.grid;
+        activeGrid.gameObject.SetActive(true);
+        SetActiveSpell(spell);
+    }
+
+    void SetActiveSpell(Spell spell)
+    {
+        if (activeSpell != null)
+        {
+            activeSpell.OnSpellUpdated -= RefreshSpellInfo;
+        }
+        activeSpell = spell;
+        if (activeSpell == null) return;
+        RefreshSpellInfo();
+        activeSpell.OnSpellUpdated += RefreshSpellInfo;
+    }
+
+    void RefreshSpellInfo()
+    {
+        if (activeSpell == null) return;
+        spellNameText.text = string.IsNullOrWhiteSpace(activeSpell.spellName) ? "Nameless Spell" : activeSpell.spellName;
+        spellCooldownText.text = "Cooldown: " + activeSpell.SpellCooldown.ToString("0.0") + "s";
+    }
+
+    public void CloseEditSpellHUD()
+    {
+        spellNodeDescription.HideDescription();
+        if (activeSpell != null)
+        {
+            activeSpell.OnSpellUpdated -= RefreshSpellInfo;
+        }
+        activeSpell = null;
+        activeGrid.selectedNode = null;
+        editSpellPanel.gameObject.SetActive(false);
+        createSpellPanel.gameObject.SetActive(true);
+    }
+
+    public void StartEquipSpell(Spell spell)
+    {
+        spellToEquip = spell;
+    }
+
+    public void EquipSpellToSlot(int index)
+    {
+        if (spellToEquip == null) return;
+        Spell oldSpell = caster.equippedSpells[index];
+        if (oldSpell != null)
+        {
+            SpellButtonUI[] buttons = FindObjectsByType<SpellButtonUI>(FindObjectsSortMode.None);
+            foreach (var button in buttons)
+            {
+                if (button.GetSpell() == oldSpell)
+                {
+                    button.SetEquipText("Equip");
+                    break;
+                }
+            }
+        }
+        caster.equippedSpells[index] = spellToEquip;
+        equipSlotTexts[index].text = string.IsNullOrWhiteSpace(spellToEquip.spellName) ? "Nameless": spellToEquip.spellName;
+        SpellButtonUI[] allButtons = FindObjectsByType<SpellButtonUI>(FindObjectsSortMode.None);
+        foreach (var button in allButtons)
+        {
+            if (button.GetSpell() == spellToEquip)
+            {
+                button.SetEquipText("Unequip");
+                break;
+            }
+        }
+        spellToEquip = null;
     }
 }

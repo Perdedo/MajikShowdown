@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b96bcacb0b8a1647b8050cd8d3ca9c9, type: 3}
-  m_Name: Trigger Node
-  m_EditorClassIdentifier: Assembly-CSharp::SpellTrigger
-  Cooldown: 2
+  m_Script: {fileID: 11500000, guid: ebada4b227f663a4d9d204be5a95d0e4, type: 3}
+  m_Name: Damage Effect
+  m_EditorClassIdentifier: Assembly-CSharp::DamageEffect
+  Cooldown: 0
   BaseStats:
     Speed: 0
     Duration: 0
     Size: 0
-    Damage: 0
+    Damage: 10
     Piercing: 0
     Bounce: 0
     Knockback: 0
@@ -30,14 +30,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  color: {r: 0, g: 1, b: 0.117884636, a: 1}
+  color: {r: 1, g: 0.86453676, b: 0, a: 1}
   OwnerSpell:
     spellName: 
     spellNodes: []
     SpellCooldown: 0
     primaryNode: {fileID: 0}
     triggers: []
+    spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
-  spellDescription: A Green Node Description
-  trigger: 0
+  spellDescription: Deals damage to target

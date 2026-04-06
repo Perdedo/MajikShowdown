@@ -1,10 +1,14 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 
-public class SpellCaster : MonoBehaviour
+public class SpellCaster : MonoBehaviour, IGameCharacter
 {
+    public CharacterDamageHandler DamageHandler { get; private set; }
+
     public Player player;
-    public HexGrid[] SpellGrids;
+    public List<Spell> spells = new List<Spell>();
+    public Spell[] equippedSpells = new Spell[4];
     public NodeInventory inventory;
     public SpellCollider ProjectilePrefab;
     public Transform CastingPoint;
@@ -13,11 +17,24 @@ public class SpellCaster : MonoBehaviour
     public LayerMask EnemyLayer;
     public LayerMask PlayerLayer;
     public LayerMask ObjectLayer;
+
+    private void Awake()
+    {
+        DamageHandler = GetComponent<CharacterDamageHandler>();
+        /*foreach (var grid in SpellGrids)
+        {
+            grid.caster = this;
+        }*/
+    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            CastSpell(SpellGrids[0].spell);
+            if (equippedSpells[0] != null)
+            {
+                CastSpell(equippedSpells[0]);
+                //Debug.Log(equippedSpells[0].spellName);
+            }
         }
     }
     public void CastSpell(Spell spell)

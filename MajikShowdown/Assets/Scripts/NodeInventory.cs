@@ -5,11 +5,9 @@ using System.Collections.Generic;
 public class NodeInventory : MonoBehaviour
 {
     public List<SpellNodeInterface> nodes = new List<SpellNodeInterface>();
-    public static NodeInventory instance;
 
     void Start()
     {
-        instance = this;
         GenerateInventory();
     }
 

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 //using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static SpellTrigger;
@@ -7,13 +9,17 @@ using static SpellTrigger;
 [Serializable]
 public class Spell
 {
+    public string spellName;
     public readonly SpellCaster Owner;
     //public List<SubSpell> SubSpells = new List<SubSpell>();
     public List<SpellNode> spellNodes = new List<SpellNode>();
     public float SpellCooldown = 0;
     public SpellType primaryNode;
     public List<SpellTrigger> triggers = new List<SpellTrigger>();
+    public List<SpellEffect> spellEffects = new List<SpellEffect>();
     public bool validSpell;
+    public HexGrid grid;
+    [HideInInspector] public System.Action OnSpellUpdated;
     public Spell(SpellCaster owner)
     {
         Owner = owner;
@@ -28,12 +34,21 @@ public class Spell
         spellNodes = primaryNode.GetSpellList(new List<SpellNode>());
         primaryNode.StatBuffs.Clear();
         triggers.Clear();
+        spellEffects.Clear();
         foreach (SpellNode s in spellNodes)
         {
             if (s is SpellTrigger t)
             {
                 triggers.Add(t);
             }
+            if (s is SpellEffect e)
+            {
+                if(e.Repeatable || !spellEffects.Any(x => x.GetType() == e.GetType()))
+                {
+                    spellEffects.Add(e);
+                }
+            }
+            
             SpellCooldown += s.Cooldown;
             if (s != primaryNode)
             {
@@ -42,6 +57,7 @@ public class Spell
             s.OwnerSpell = this;
         }
         primaryNode.CalculateFinalStats();
+        OnSpellUpdated?.Invoke();
         /*foreach(SubSpell s in SubSpells)
         {
             SpellCooldown += s.CooldownCost;
