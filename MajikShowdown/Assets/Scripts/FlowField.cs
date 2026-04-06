@@ -9,6 +9,7 @@ public class FlowField
     public Vector2Int fieldSize;
     public float cellSize = 1f;
     public float maxStepOffset = 0.5f;
+    public float maxJumpHeight = 5f;
     public FieldCell DestinationCell;
     public bool DiagonalNeighbors = true;
     public FlowFieldManager manager;
@@ -58,9 +59,19 @@ public class FlowField
             foreach (FieldCell cell in v.Value.Layers)
             {
                 cell.Neighbors = GetNeighbors(cell);
+                cell.closeToObstacle = CheckForObstacles(cell);
             }
         }
     }
+
+    float DetectionRadius = 4;
+    public bool CheckForObstacles(FieldCell c)
+    {
+        Collider[] buffer = new Collider[32];
+        int count = Physics.OverlapSphereNonAlloc(c.position, DetectionRadius, buffer, manager.ObstacleMask);
+        return count > 0;
+    }
+
     public FieldCell GetCell(Vector2Int gridPos, int layerIndex)
     {
         if (field.TryGetValue(gridPos, out CellColumn column) && layerIndex >= 0 && layerIndex < column.Layers.Count)
@@ -116,7 +127,14 @@ public class FlowField
                         {
                             if(c.position.y < cell.position.y - maxStepOffset)
                             {
-                                neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell,c),FieldCell.NeighborContext.Context.Lower));
+                                if(c.position.y < cell.position.y - maxJumpHeight)
+                                {
+                                    neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell,c),FieldCell.NeighborContext.Context.Lower));
+                                }
+                                else
+                                {
+                                    neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell,c),FieldCell.NeighborContext.Context.ABitLower));
+                                }
                             }
                             else
                             {
@@ -126,7 +144,14 @@ public class FlowField
                     }
                     else
                     {
-                        neighbors.Add(new FieldCell.NeighborContext(c,CellDistance(cell,c), FieldCell.NeighborContext.Context.Upper));
+                        if (c.position.y < cell.position.y + maxJumpHeight)
+                        {
+                            neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.Jumpable));
+                        }
+                        else
+                        {
+                            neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.Upper));
+                        }
                     }
                 }
             }
@@ -242,6 +267,27 @@ public class FlowField
                 if (c == DestinationCell)
                 {
                     DestinationCell.SetDirection(Vector3.zero);
+                    continue;
+                }
+                if(c.closeToObstacle)
+                {
+                    NavMeshPath path = new NavMeshPath();
+                    if (NavMesh.CalculatePath(c.position, new Vector3(manager.Target.position.x, c.position.y, manager.Target.position.z), NavMesh.AllAreas, path))
+                    {
+                        if (path.corners.Length > 1)
+                        {
+                            Vector3 navDir = path.corners[1] - c.position;
+                            c.SetDirection(navDir.normalized);
+                        }
+                        else
+                        {
+                            c.SetDirection(Vector3.zero);
+                        }
+                    }
+                    else
+                    {
+                        c.SetDirection(Vector3.zero);
+                    }
                     continue;
                 }
                 FieldCell lowest = null;

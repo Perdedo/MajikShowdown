@@ -11,6 +11,7 @@ public class FlowFieldManager : MonoBehaviour
     public Vector3 Offset = Vector3.one * 0.5f;
     public float ObstructionHeight = 2f;
     public LayerMask ObstructionLayer;
+    public LayerMask ObstacleMask;
     public float SlopeThreshold = 0.5f;
     [Range(1, 2)] public float DiagonalWeight = 1;
     [Tooltip("How much the directions point to the lowest cost cells")]

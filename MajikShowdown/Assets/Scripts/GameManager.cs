@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
         Players.Remove(player);
         if(Players.Count <= 0)
         {
-            netCtrl?.ffManager.gameObject.SetActive(false);
+            netCtrl?.ffManager?.gameObject.SetActive(false);
         }
     }
     

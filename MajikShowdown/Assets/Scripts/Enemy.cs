@@ -1,6 +1,7 @@
-using UnityEngine;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy : Character
 {
@@ -73,20 +74,74 @@ public class Enemy : Character
         CalculateDanger();
         CalculateInterest();
         MoveDirection = GetBestDirection();
+        CheckForJump(currentCell);
         //Debug.DrawRay(transform.position, targetVector, Color.red);
         //Debug.DrawRay(transform.position, targetLastSeen, Color.blue);
-        PathToTarget();
+        PathToTarget(currentCell);
     }
-    public void PathToTarget()
+
+    public Vector3 GetNavMeshDir(FieldCell c)
     {
-        if (targetVector.magnitude <= TargetStoppingDistance)
+        NavMeshPath path = new NavMeshPath();
+        if (NavMesh.CalculatePath(c.position, new Vector3(target.transform.position.x, c.position.y, target.transform.position.z), NavMesh.AllAreas, path))
+        {
+            if (path.corners.Length > 1)
+            {
+                Vector3 navDir = path.corners[1] - c.position;
+                return navDir.normalized;
+            }
+            else
+            {
+                return Vector3.zero;
+            }
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+    }
+
+    public void CheckForJump(FieldCell currentCell)
+    {
+        bool needsJump = false;
+        foreach(FieldCell.NeighborContext n in currentCell.Neighbors)
+        {
+            if(n.context == FieldCell.NeighborContext.Context.Jumpable && Vector3.Dot(currentCell.direction, FlowField.CellDistance(currentCell, n.neighborCell)) > 0.75f)
+            {
+                needsJump = true; 
+                break;
+            }
+        }
+        if(needsJump)
+        {
+            Jump(true);
+        }
+    }
+    public void PathToTarget(FieldCell currentCell)
+    {
+        if (targetVector.magnitude <= TargetStoppingDistance || (MoveDirection == Vector3.zero && canSeeTarget))
         {
             SetVelocity(new Vector3(0, localVelocity.y, 0));
             SetAcceleration(Vector3.zero);
         }
         else
         {
-            Move(MoveDirection, speed);
+            if(detectedObstacle)
+            {
+                Vector3 navDir = GetNavMeshDir(currentCell);
+                if(Vector3.Dot(targetVector, navDir) < -0.75f)
+                {
+                    Move(navDir, speed);
+                }
+                else
+                {
+                    Move((MoveDirection + navDir).normalized, speed);
+                }
+            }
+            else
+            {
+                Move(MoveDirection, speed);
+            }
         }
     }
     public void CalculateDanger()
@@ -132,7 +187,7 @@ public class Enemy : Character
         {
             for (int i = 0; i < Directions.Length; i++)
             {
-                Interest[i] = 0;
+                Interest[i] = 0.01f;
                 float dot = Vector3.Dot(interestDirection.normalized, Directions[i]);
                 if (dot > 0)
                 {

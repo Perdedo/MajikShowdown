@@ -7,6 +7,7 @@ public class FieldCell
     public FieldPos fieldPos;
     public float BaseCost = 1;
     public float BestCost = float.MaxValue;
+    public bool closeToObstacle = false;
     public Vector3 direction;
     public int generation = 0;
     public List<NeighborContext> Neighbors;
@@ -46,7 +47,7 @@ public class FieldCell
     {
         public FieldCell neighborCell;
         public Vector3 neighborDir;
-        public enum Context { None, Lower, Upper, Jumpable }
+        public enum Context { None, Lower, ABitLower, Upper, Jumpable }
         public Context context;
         public NeighborContext(FieldCell cell,Vector3 dir, Context c)
         {

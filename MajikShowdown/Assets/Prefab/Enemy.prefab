@@ -68,6 +68,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -89,9 +91,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!136 &645316620460028333
 CapsuleCollider:
@@ -123,10 +127,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1083197047355929555}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -183,10 +187,10 @@ MonoBehaviour:
   speed: 7
   accelerate: 1
   accelerationTime: 0.8
-  jumpForce: 0
-  jumpTime: 0
-  jumpingSpeedMultiplier: 0
-  jumpCooldown: 0
+  jumpForce: 2
+  jumpTime: 0.3
+  jumpingSpeedMultiplier: 1.2
+  jumpCooldown: 0.4
   Jumped:
     m_PersistentCalls:
       m_Calls: []
@@ -196,7 +200,7 @@ MonoBehaviour:
   rotationSpeed: 360
   ObstacleMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 2176
   EnemyMask:
     serializedVersion: 2
     m_Bits: 64
@@ -204,7 +208,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 320
   DetectionRadius: 4
-  EnemyAvoidanceRadius: 2.2
+  EnemyAvoidanceRadius: 1.5
   TargetStoppingDistance: 2
   SeparationForce: 10
   FlowfieldActivationDistance: 20
@@ -354,6 +358,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -375,7 +381,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
