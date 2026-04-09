@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e873651b2d0183c4ca51f62a95ca85eb, type: 3}
-  m_Name: Projectile
+  m_Name: Area
   m_EditorClassIdentifier: Assembly-CSharp::SpellType
-  Cooldown: 3
+  Cooldown: 0
   BaseStats:
-    Speed: 5
-    Duration: 3
-    Size: 1
+    Speed: 0
+    Duration: 0
+    Size: 0
     Damage: 0
     Piercing: 0
     Bounce: 0
     Knockback: 0
   Interface: {fileID: 0}
-  hierarchy: 2147483647
+  hierarchy: -1
   ConectedNodes:
   - {fileID: 0}
   - {fileID: 0}
@@ -30,7 +30,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  color: {r: 1, g: 0, b: 0, a: 1}
+  color: {r: 1, g: 1, b: 1, a: 1}
   OwnerSpell:
     spellName: 
     spellNodes: []
@@ -40,9 +40,9 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
-  spellDescription: A Red Node Description
+  spellDescription: 
   Type: 0
-  Element: 7
+  Element: 0
   Collisions:
     Players: 0
     Enemies: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
     Knockback: 1
   HitOnStay: 0
   HitCooldown: 0
-  SpanwTriggeredSpellCooldown: 1
+  SpawnTriggeredSpellCooldown: 0.5
   FinalStats:
     Speed: 0
     Duration: 0

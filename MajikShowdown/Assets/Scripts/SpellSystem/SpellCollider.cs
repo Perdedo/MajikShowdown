@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,6 +10,8 @@ public class SpellCollider : MonoBehaviour
     public Spell OwnerSpell;
     int pierceCount, bounceCount;
     public bool primarySpell;
+    bool HitOnCooldown;
+    Timer HitTimer = new Timer();
 
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
     private void Start()
@@ -19,6 +22,7 @@ public class SpellCollider : MonoBehaviour
         Invoke("Die", stats.Duration);
         pierceCount = (int)stats.Piercing;
         bounceCount = (int)stats.Bounce;
+        OnHit.AddListener(StartHitCooldown);
         if (primarySpell)
         {
             InitiateTriggeredSpells();
@@ -27,7 +31,16 @@ public class SpellCollider : MonoBehaviour
     }
     void Update()
     {
+        if (HitOnCooldown)
+        {
+            HitOnCooldown = HitTimer.timer(OwnerSpell.primaryNode.HitCooldown, Time.deltaTime, true, false);
+        }
         rb.Velocity = ToLookDirection(OwnerSpell.primaryNode.GetVelocity());
+        foreach (SpellTrigger t in OwnerSpell.triggers)
+        {
+            t.UpdateTrigger();
+        }
+        
     }
     public void InitiateTriggeredSpells()
     {
@@ -37,32 +50,55 @@ public class SpellCollider : MonoBehaviour
             switch (t.trigger)
             {
                 case SpellTrigger.Triggers.OnCast:
-                    AddSpellToEvent(OnCast, t.TriggeredSpell);
+                    AddSpellToEvent(OnCast, t.TriggeredSpell, t);
                     break;
                 case SpellTrigger.Triggers.OnHit:
-                    AddSpellToEvent(OnHit, t.TriggeredSpell);
+                    AddSpellToEvent(OnHit, t.TriggeredSpell, t);
                     break;
                 case SpellTrigger.Triggers.OnDeath:
-                    AddSpellToEvent(OnDeath, t.TriggeredSpell);
+                    AddSpellToEvent(OnDeath, t.TriggeredSpell, t);
                     break;
             }
         }
     }
-    public void AddSpellToEvent(UnityEvent e, Spell spell)
+    public void AddSpellToEvent(UnityEvent e, Spell spell, SpellTrigger trigger)
     {
-        e.AddListener(() => { OwnerSpell.Owner.InstantiateSpellCollider(spell, transform.position,transform.forward); });
+        UnityAction action = () =>
+        {
+            if(!trigger.SpellOnCooldown)
+            {
+                OwnerSpell.Owner.InstantiateSpellCollider(spell, transform.position, transform.forward);
+                trigger.SpellOnCooldown = true;
+            }
+        };
+        e.AddListener(action);
     }
     public Vector3 ToLookDirection(Vector3 rawDir)
     {
         return transform.forward * rawDir.z + transform.up * rawDir.y + transform.right * rawDir.x;
     }
-    public void Die()
+    void StartHitCooldown()
     {
-        OnDeath.Invoke();
-        Destroy(gameObject);
+        HitOnCooldown = true;
+        HitTimer.SetTimer(0);
     }
     void OnTriggerEnter(Collider other)
     {
+        if(!OwnerSpell.primaryNode.HitOnStay)
+        {
+            HandleTrigger(other);
+        }
+    }
+    void OnTriggerStay(Collider other)
+    {
+        if (OwnerSpell.primaryNode.HitOnStay)
+        {
+            HandleTrigger(other);
+        }
+    }
+    public void HandleTrigger(Collider other)
+    {
+        if (HitOnCooldown) return;
         if (OwnerSpell.primaryNode.Collisions.Enemies && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Owner.EnemyLayer))
         {
             OnHit.Invoke();
@@ -79,6 +115,7 @@ public class SpellCollider : MonoBehaviour
             CollideObject();
         }
     }
+    
     public void CollideObject()
     {
         CheckBounce();
@@ -116,5 +153,10 @@ public class SpellCollider : MonoBehaviour
     public void Bounce()
     {
 
+    }
+    public void Die()
+    {
+        OnDeath.Invoke();
+        Destroy(gameObject);
     }
 }

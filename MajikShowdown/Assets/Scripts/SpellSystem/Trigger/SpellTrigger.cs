@@ -9,6 +9,15 @@ public class SpellTrigger : SpellNode
     [NonSerialized]public Spell TriggeredSpell;
     //public SpellType[] triggeredSpells = new SpellType[2];
     public enum Triggers { OnCast, OnHit, OnDeath};
+    Timer TriggerTimer = new Timer();
+    public bool SpellOnCooldown;
+    public void UpdateTrigger()
+    {
+        if (SpellOnCooldown)
+        {
+            SpellOnCooldown = TriggerTimer.timer(OwnerSpell.primaryNode.SpawnTriggeredSpellCooldown, Time.deltaTime, true, true);
+        }
+    }
     public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {
         /*if(hierarchy > list[0].hierarchy)

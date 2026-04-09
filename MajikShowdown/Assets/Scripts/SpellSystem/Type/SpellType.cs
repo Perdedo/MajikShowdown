@@ -8,12 +8,17 @@ public class SpellType : SpellNode
     public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
     public SpellTypes Type;
     public Elements Element;
-
-    public bool DealDamage = true;
     public CollisionOptions Collisions;
-    //public SpellType Type;
-
     public StatTypes StatMultipliers = new StatTypes(1);
+
+    [Header("Hidden Colision Config")]
+    public bool HitOnStay;
+    public float HitCooldown;
+    public float SpawnTriggeredSpellCooldown = 0.5f;
+
+    //public bool DealDamage = true;
+    //public SpellType Type;
+    [Header("Debug")]
     public StatTypes FinalStats;
     public List<StatTypes> StatBuffs = new List<StatTypes>();
 
