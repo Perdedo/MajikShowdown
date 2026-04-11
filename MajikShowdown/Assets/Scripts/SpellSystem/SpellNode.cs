@@ -5,15 +5,18 @@ using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
 {
+    [Header("Stats")]
     public float Cooldown = 0;
     public StatTypes BaseStats = new StatTypes();
+    [Header("Display")]
+    public string spellDescription;
+    public Color color = Color.white;
+    [Header("Debug")]
     public SpellNodeInterface Interface;
     public int hierarchy = -1;
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
-    public Color color = Color.white;
     public Spell OwnerSpell;
-    public string spellDescription;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {

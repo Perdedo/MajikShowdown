@@ -6,6 +6,7 @@ using UnityEngine;
 public class SpellType : SpellNode
 {
     public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
+    [Header("Core Config")]
     public SpellTypes Type;
     public Elements Element;
     public CollisionOptions Collisions;
