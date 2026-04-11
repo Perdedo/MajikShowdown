@@ -49,8 +49,9 @@ public class SpellCaster : MonoBehaviour, IGameCharacter
     {
         GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, Quaternion.LookRotation(lookDir,Vector3.up));
         SpellCollider col = g.GetComponent<SpellCollider>();
-        col.OwnerSpell = Spell;
-        col.primarySpell = primary;
+        //col.OwnerSpell = Spell;
+        //col.primarySpell = primary;
+        col.Initialize(Spell, primary);
     }
     
 }

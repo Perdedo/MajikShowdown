@@ -8,26 +8,34 @@ public class SpellCollider : MonoBehaviour
     public StaticRB rb;
     public StatTypes stats;
     public Spell OwnerSpell;
-    int pierceCount, bounceCount;
+    float pierceCount, bounceCount;
     public bool primarySpell;
     bool HitOnCooldown;
     Timer HitTimer = new Timer();
+    float LifeTime = 0;
 
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
-    private void Start()
+    public void Initialize(Spell owner, bool isPrimary)
     {
         //projectileConfig.CalculateFinalStats();
+        OwnerSpell = owner;;
+        primarySpell = isPrimary;
         stats = OwnerSpell.primaryNode.FinalStats;
         transform.localScale = Vector3.one * stats.Size;
-        Invoke("Die", stats.Duration);
-        pierceCount = (int)stats.Piercing;
-        bounceCount = (int)stats.Bounce;
+        //Invoke("Die", stats.Duration);
+        pierceCount = stats.Piercing;
+        bounceCount = stats.Bounce;
         OnHit.AddListener(StartHitCooldown);
         if (primarySpell)
         {
             InitiateTriggeredSpells();
         }
         OnCast.Invoke();
+
+        if(OwnerSpell.primaryNode.Type == SpellType.SpellTypes.Explosion)
+        {
+            transform.localScale = Vector3.zero;
+        }
     }
     void Update()
     {
@@ -39,6 +47,19 @@ public class SpellCollider : MonoBehaviour
         foreach (SpellTrigger t in OwnerSpell.triggers)
         {
             t.UpdateTrigger();
+        }
+
+        switch (OwnerSpell.primaryNode.Type)
+        {
+            case SpellType.SpellTypes.Explosion:
+            transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one* stats.Size, LifeTime/stats.Duration);
+            break;
+        }
+
+        LifeTime += Time.deltaTime;
+        if(LifeTime >= stats.Duration)
+        {
+            Die();
         }
         
     }
@@ -129,7 +150,7 @@ public class SpellCollider : MonoBehaviour
                 e.ApplyEffect(character);
             }
         }
-        if (pierceCount > 0)
+        if (pierceCount >= 1)
         {
             pierceCount--;
         }
@@ -140,7 +161,7 @@ public class SpellCollider : MonoBehaviour
     }
     public void CheckBounce()
     {
-        if (bounceCount > 0)
+        if (bounceCount >= 1)
         {
             bounceCount--;
             Bounce();
