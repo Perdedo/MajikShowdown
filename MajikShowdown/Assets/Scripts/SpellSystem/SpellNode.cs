@@ -81,7 +81,7 @@ public abstract class SpellNode : ScriptableObject
         Cooldown = statRandomizer.Cooldown.GetValue();
         BaseStats.Randomize(statRandomizer);
     }
-    public T RandomizeEnum<T>(string[] exceptions = null)
+    public static T RandomizeEnum<T>(string[] exceptions = null)
     {
         List<string> validNames = new List<string>(Enum.GetNames(typeof(T)));
         if (exceptions != null)
