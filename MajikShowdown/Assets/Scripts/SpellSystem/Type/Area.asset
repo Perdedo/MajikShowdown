@@ -12,6 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e873651b2d0183c4ca51f62a95ca85eb, type: 3}
   m_Name: Area
   m_EditorClassIdentifier: Assembly-CSharp::SpellType
+  statRandomizer:
+    Cooldown:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Speed:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Duration:
+      type: 1
+      value: 0
+      min: 4
+      max: 6
+    Size:
+      type: 1
+      value: 0
+      min: 8
+      max: 14
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Piercing:
+      type: 2
+      value: 0
+      min: 0
+      max: 0
+    Bounce:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+  spellDescription: Creates an area of effect
+  color: {r: 0, g: 0.8848131, b: 1, a: 1}
   Cooldown: 0
   BaseStats:
     Speed: 0
@@ -30,7 +73,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  color: {r: 0, g: 0.8848131, b: 1, a: 1}
   OwnerSpell:
     spellName: 
     spellNodes: []
@@ -40,9 +82,7 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
-  spellDescription: Creates an area of effect
   Type: 1
-  Element: 0
   Collisions:
     Players: 0
     Enemies: 0
@@ -58,6 +98,7 @@ MonoBehaviour:
   HitOnStay: 1
   HitCooldown: 0.2
   SpawnTriggeredSpellCooldown: 0.5
+  Element: 0
   FinalStats:
     Speed: 0
     Duration: 0

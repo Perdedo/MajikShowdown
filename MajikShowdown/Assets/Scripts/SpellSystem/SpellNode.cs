@@ -5,12 +5,14 @@ using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
 {
-    [Header("Stats")]
-    public float Cooldown = 0;
-    public StatTypes BaseStats = new StatTypes();
+    [Header("Define Stat Randomization")]
+    public StatRandomizer statRandomizer;
     [Header("Display")]
     public string spellDescription;
     public Color color = Color.white;
+    [Header("Final Stats Debug")]
+    public float Cooldown = 0;
+    public StatTypes BaseStats = new StatTypes();
     [Header("Debug")]
     public SpellNodeInterface Interface;
     public int hierarchy = -1;
@@ -54,6 +56,7 @@ public abstract class SpellNode : ScriptableObject
     }*/
     public virtual void Initialize()
     {
+        RandomizeStats();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }
     public virtual List<SpellNode> GetSpellList(List<SpellNode> list)
@@ -72,6 +75,24 @@ public abstract class SpellNode : ScriptableObject
     {
         hierarchy = -1;
         OwnerSpell = null;
+    }
+    public virtual void RandomizeStats()
+    {
+        Cooldown = statRandomizer.Cooldown.GetValue();
+        BaseStats.Randomize(statRandomizer);
+    }
+    public T RandomizeEnum<T>(string[] exceptions = null)
+    {
+        List<string> validNames = new List<string>(Enum.GetNames(typeof(T)));
+        if (exceptions != null)
+        {
+            foreach (string exception in exceptions)
+            {
+                validNames.Remove(exception);
+            }
+        }
+        string name = validNames[UnityEngine.Random.Range(0, validNames.Count)];
+        return (T)Enum.Parse(typeof(T), name);
     }
 }
 [Serializable]
@@ -118,14 +139,14 @@ public class NodeConection
     }
     public void RemoveConection()
     {
-        if(conection != null)
+        if (conection != null)
         {
             conectedNode = null;
             conection.conectedNode = null;
             conection.conection = null;
             conection = null;
         }
-        
+
     }
     public SpellNode GetNode()
     {
@@ -197,4 +218,26 @@ public struct StatTypes
             Knockback = s1.Knockback - s2.Knockback
         };
     }
+    public void Randomize(StatRandomizer randomizer)
+    {
+        Speed = randomizer.Speed.GetValue();
+        Duration = randomizer.Duration.GetValue();
+        Size = randomizer.Size.GetValue();
+        Damage = randomizer.Damage.GetValue();
+        Piercing = randomizer.Piercing.GetValue();
+        Bounce = randomizer.Bounce.GetValue();
+        Knockback = randomizer.Knockback.GetValue();
+    }
+}
+[Serializable]
+public struct StatRandomizer
+{
+    public SimpleFloat Cooldown;
+    public SimpleFloat Speed;
+    public SimpleFloat Duration;
+    public SimpleFloat Size;
+    public SimpleFloat Damage;
+    public SimpleFloat Piercing;
+    public SimpleFloat Bounce;
+    public SimpleFloat Knockback;
 }

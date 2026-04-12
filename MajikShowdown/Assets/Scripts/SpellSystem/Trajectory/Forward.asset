@@ -12,6 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b2ab1ed0c378944f8357d7513ab20be, type: 3}
   m_Name: Forward
   m_EditorClassIdentifier: Assembly-CSharp::SpellTrajectory
+  statRandomizer:
+    Cooldown:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Speed:
+      type: 1
+      value: 0
+      min: 15
+      max: 30
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Bounce:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+  spellDescription: A Blue Node Description
+  color: {r: 0, g: 0.112580776, b: 1, a: 1}
   Cooldown: 1
   BaseStats:
     Speed: 20
@@ -30,14 +73,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  color: {r: 0, g: 0.112580776, b: 1, a: 1}
   OwnerSpell:
     spellName: 
     spellNodes: []
     SpellCooldown: 0
     primaryNode: {fileID: 0}
     triggers: []
+    spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
-  spellDescription: A Blue Node Description
   tragectory: 0

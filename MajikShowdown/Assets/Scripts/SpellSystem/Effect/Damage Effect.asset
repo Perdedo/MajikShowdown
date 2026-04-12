@@ -12,6 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebada4b227f663a4d9d204be5a95d0e4, type: 3}
   m_Name: Damage Effect
   m_EditorClassIdentifier: Assembly-CSharp::DamageEffect
+  statRandomizer:
+    Cooldown:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Speed:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Damage:
+      type: 1
+      value: 0
+      min: 5
+      max: 10
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Bounce:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+  spellDescription: Deals damage to target
+  color: {r: 1, g: 0.86453676, b: 0, a: 1}
   Cooldown: 0
   BaseStats:
     Speed: 0
@@ -30,7 +73,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  color: {r: 1, g: 0.86453676, b: 0, a: 1}
   OwnerSpell:
     spellName: 
     spellNodes: []
@@ -40,4 +82,3 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
-  spellDescription: Deals damage to target
