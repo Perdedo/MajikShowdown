@@ -48,6 +48,8 @@ public class FlowFieldManager : MonoBehaviour
             flowField.GenerateFlowField(current);
         }
     }
+
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         if (flowField != null && ShowCells)
@@ -110,11 +112,9 @@ public class FlowFieldManager : MonoBehaviour
             FieldCell c = WorldToGridPosition(Target.position);
             Debug.Log(c.BestCost);
         }*/
-
-
-
-
     }
+#endif
+
     //public Vector2Int cellpos;
     public FieldCell WorldToGridPosition(Vector3 worldPosition, bool ToLowestLayer = true)
     {

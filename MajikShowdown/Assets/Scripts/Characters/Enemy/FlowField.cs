@@ -244,7 +244,8 @@ public class FlowField
                 if (n.neighborCell.BestCost > currentCell.BestCost + n.neighborCell.BaseCost)
                 {
                     float mult = 1;
-                    Vector2 dir = new Vector2(n.neighborCell.position.x - currentCell.position.x, n.neighborCell.position.z - currentCell.position.z).normalized;
+                    Vector2 dir = new Vector2(n.neighborCell.position.x - currentCell.position.x, n.neighborCell.position.z - currentCell.position.z);
+                    //Vector2 dir = new Vector2(n.neighborCell.position.x - currentCell.position.x, n.neighborCell.position.z - currentCell.position.z).normalized;
                     if(dir.x != 0 && dir.y != 0)
                     {
                         mult = manager.DiagonalWeight;
@@ -269,7 +270,7 @@ public class FlowField
                     DestinationCell.SetDirection(Vector3.zero);
                     continue;
                 }
-                if(c.closeToObstacle)
+                /*if(c.closeToObstacle)
                 {
                     NavMeshPath path = new NavMeshPath();
                     if (NavMesh.CalculatePath(c.position, new Vector3(manager.Target.position.x, c.position.y, manager.Target.position.z), NavMesh.AllAreas, path))
@@ -289,9 +290,11 @@ public class FlowField
                         c.SetDirection(Vector3.zero);
                     }
                     continue;
-                }
+                }*/
                 FieldCell lowest = null;
-                Vector3 dirToDestiny = CellDistance(c, DestinationCell).normalized;
+                //Vector3 dirToDestiny = CellDistance(c, DestinationCell).normalized;
+                Vector3 dirToDestiny = CellDistance(c, DestinationCell);
+                dirToDestiny *= 1f / (Mathf.Abs(dirToDestiny.x) + Mathf.Abs(dirToDestiny.z) + 0.0001f);
                 float bestDot = float.MinValue;
                 Vector3 dirSum = Vector3.zero;
                 foreach (FieldCell.NeighborContext n in c.Neighbors)

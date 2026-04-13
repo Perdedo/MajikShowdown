@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
@@ -26,7 +27,8 @@ public class Enemy : Character
     Vector3 MoveDirection;
     Vector3 interestDirection;
     bool canSeeTarget;
-
+    float updateRate;
+    FieldCell currentCell;
     void Start()
     {
         for (int i = 0; i < Directions.Length; i++)
@@ -34,19 +36,39 @@ public class Enemy : Character
             float angle = i * Mathf.PI * 2f / Directions.Length;
             Directions[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
         }
+        updateRate = 1f / 30f;
+        StartCoroutine(AICalculation());
         //targetLastSeen = targetVector;
     }
-
-    // Update is called once per frame
     void Update()
     {
-        target = GetClosestPlayer();
+        //target = GetClosestPlayer();
         if(target == null)
         {
             return;
         }
-        targetVector = target.transform.position - transform.position;
-        if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
+        if(currentCell == null)
+        {
+            return;
+        }
+        /*targetVector = target.transform.position - transform.position;
+        if(targetVector.sqrMagnitude > 2500)
+        {
+            updateRate = 1f / 15f;
+        }
+        else if(targetVector.sqrMagnitude > 625)
+        {
+            updateRate = 1f / 20f;
+        }
+        else if(targetVector.sqrMagnitude > 225)
+        {
+            updateRate = 1f / 25f;
+        }
+        else
+        {
+            updateRate = 1f / 30f;
+        }*/
+        /*if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
         {
             //targetLastSeen = targetVector;
             canSeeTarget = true;
@@ -73,11 +95,65 @@ public class Enemy : Character
         FindObstacles();
         CalculateDanger();
         CalculateInterest();
-        MoveDirection = GetBestDirection();
+        MoveDirection = GetBestDirection();*/
         CheckForJump(currentCell);
         //Debug.DrawRay(transform.position, targetVector, Color.red);
         //Debug.DrawRay(transform.position, targetLastSeen, Color.blue);
         PathToTarget(currentCell);
+    }
+
+    IEnumerator AICalculation()
+    {
+        target = GetClosestPlayer();
+        if (target != null)
+        {
+            targetVector = target.transform.position - transform.position;
+            if (targetVector.sqrMagnitude > 2500)
+            {
+                updateRate = 1f / 15f;
+            }
+            else if (targetVector.sqrMagnitude > 625)
+            {
+                updateRate = 1f / 20f;
+            }
+            else if (targetVector.sqrMagnitude > 225)
+            {
+                updateRate = 1f / 25f;
+            }
+            else
+            {
+                updateRate = 1f / 30f;
+            }
+            if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
+            {
+                //targetLastSeen = targetVector;
+                canSeeTarget = true;
+                //Debug.Log("cant see");
+            }
+            else
+            {
+                canSeeTarget = false;
+                //Debug.Log("can see");
+            }
+            currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
+            if (currentCell != null)
+            {
+                if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance && Vector3.Dot(targetVector.normalized, currentCell.direction.normalized) > 0.5)
+                {
+                    interestDirection = targetVector.normalized;
+                }
+                else
+                {
+                    interestDirection = currentCell.direction;
+                }
+                FindObstacles();
+                CalculateDanger();
+                CalculateInterest();
+                MoveDirection = GetBestDirection();
+            }
+        }
+        yield return new WaitForSeconds(updateRate);
+        StartCoroutine(AICalculation());
     }
 
     public Vector3 GetNavMeshDir(FieldCell c)
@@ -126,6 +202,7 @@ public class Enemy : Character
         }
         else
         {
+            //Move(MoveDirection, speed);
             if(detectedObstacle)
             {
                 Vector3 navDir = GetNavMeshDir(currentCell);
