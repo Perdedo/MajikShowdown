@@ -76,7 +76,24 @@ public class SpellButtonUI : MonoBehaviour
 
     void DeleteSpell()
     {
-        Debug.Log("Deleted spell(not finished yet): " + spell.spellName);
+        if (spell == null) return;
+        for (int i = 0; i < spell.Owner.equippedSpells.Length; i++)
+        {
+            if (spell.Owner.equippedSpells[i] == spell)
+            {
+                spell.Owner.equippedSpells[i] = null;
+                GameManager.Instance.uiController.equipSlotTexts[i].text = "Slot " + (i + 1);
+            }
+        }
+        if (spell.grid != null)
+        {
+            spell.grid.ReturnAllNodesToInventory();
+            Destroy(spell.grid.gameObject);
+        }
+        spell.Owner.spells.Remove(spell);
+        spell.OnSpellUpdated -= UpdateCooldownUI;
+        Destroy(gameObject);
+        spell = null;
     }
 
     public bool IsSpellEquipped(Spell spell)
