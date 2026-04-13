@@ -102,6 +102,7 @@ public class UIController : MonoBehaviour
     public HexGrid activeGrid;
     public SpellNodeDescription spellNodeDescription;
     Spell activeSpell;
+    public SpellNodeInterface selectedNode;
 
     void Awake()
     {
@@ -699,7 +700,7 @@ public class UIController : MonoBehaviour
             activeSpell.OnSpellUpdated -= RefreshSpellInfo;
         }
         activeSpell = null;
-        activeGrid.selectedNode = null;
+        selectedNode = null;
         editSpellPanel.gameObject.SetActive(false);
         createSpellPanel.gameObject.SetActive(true);
     }

@@ -113,21 +113,19 @@ public class SpellNodeInterface : MonoBehaviour
 
     public void SelectNode()
     {
-        if (GameManager.Instance.uiController.activeGrid.selectedNode == this)
+        var ui = GameManager.Instance.uiController;
+
+        if (ui.selectedNode == this)
         {
-            Debug.Log(GameManager.Instance.uiController.activeGrid.selectedNode.name + " Deselected");
-            GameManager.Instance.uiController.spellNodeDescription.HideDescription();
-            GameManager.Instance.uiController.activeGrid.selectedNode = null;
+            Debug.Log(name + " Deselected");
+            ui.spellNodeDescription.HideDescription();
+            ui.selectedNode = null;
         }
         else
         {
-            /*if(HexGrid.instance.selectedNode != null)
-            {
-                //Remover qqr visual do outro nodo que está selecionado
-            }*/
-            GameManager.Instance.uiController.activeGrid.selectedNode = this;
-            GameManager.Instance.uiController.spellNodeDescription.ShowDescription(Node);
-            Debug.Log(GameManager.Instance.uiController.activeGrid.selectedNode.name + " Selected");
+            ui.selectedNode = this;
+            ui.spellNodeDescription.ShowDescription(Node);
+            Debug.Log(name + " Selected");
         }
     }
 

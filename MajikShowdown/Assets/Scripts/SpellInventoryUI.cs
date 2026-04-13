@@ -16,8 +16,9 @@ public class SpellInventoryUI : MonoBehaviour
         Spell newSpell = new Spell(caster);
         HexGrid newGrid = Instantiate(gridPrefab, gridParent);
         newGrid.caster = caster;
-        newGrid.gameObject.SetActive(false);
         newGrid.SetSpell(newSpell);
+        newGrid.Initialize();
+        newGrid.gameObject.SetActive(false);
         newSpell.grid = newGrid;
         caster.spells.Add(newSpell);
         CreateSpellButton(newSpell);
