@@ -8,7 +8,6 @@ public class SpellType : SpellNode
     public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
     [Header("Core Config")]
     public SpellTypes Type;
-    public Elements Element;
     public CollisionOptions Collisions;
     public StatTypes StatMultipliers = new StatTypes(1);
 
@@ -20,13 +19,16 @@ public class SpellType : SpellNode
     //public bool DealDamage = true;
     //public SpellType Type;
     [Header("Debug")]
+    public Elements Element;
     public StatTypes FinalStats;
     public List<StatTypes> StatBuffs = new List<StatTypes>();
 
-   // public SubSpell subSpell;
-    public override void Initialize()
+    // public SubSpell subSpell;
+    public override void RandomizeStats()
     {
-        base.Initialize();
+        base.RandomizeStats();
+        //Type = (SpellTypes)RandomizeEnum<SpellTypes>();
+        Element = RandomizeEnum<Elements>(new string[] { "None" });
     }
 
     [Serializable]

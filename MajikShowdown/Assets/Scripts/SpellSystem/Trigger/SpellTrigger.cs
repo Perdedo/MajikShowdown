@@ -27,6 +27,11 @@ public class SpellTrigger : SpellNode
         list.Add(this);
         return list;
     }
+    public override void RandomizeStats()
+    {
+        base.RandomizeStats();
+        trigger = RandomizeEnum<Triggers>();
+    }
     /*public List<SubSpell> TriggeredSubspells()
     {
         List<SubSpell> aux = new List<SubSpell>();

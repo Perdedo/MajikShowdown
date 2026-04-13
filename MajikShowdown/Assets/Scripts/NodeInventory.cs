@@ -1,41 +1,72 @@
-using NUnit.Framework;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class NodeInventory : MonoBehaviour
+public class NodeInventory : MonoBehaviour, IDropZone
 {
-    public List<SpellNodeInterface> nodes = new List<SpellNodeInterface>();
+    [Header("Prefab Nodes")]
+    public List<SpellNodeInterface> nodePrefabs = new List<SpellNodeInterface>();
+    private List<SpellNodeInterface> activeNodes = new List<SpellNodeInterface>();
+    public ContentSizeFitter contentSizeFitter;
+    public LayoutGroup layoutGroup;
 
     void Start()
     {
         GenerateInventory();
     }
 
-    public void AddNodeToInventory(SpellNodeInterface node)
+    public bool CanReceive(DraggableNode node) => true;
+
+    public void Release(DraggableNode node) { }
+
+    public void Receive(DraggableNode node)
     {
-        nodes.Add(node);
-        node.transform.SetParent(transform);
+        node.SetOriginZone(this as IDropZone);
+        var spellNode = node.GetComponent<SpellNodeInterface>();
+        if (spellNode != null)
+            AddNodeToInventory(spellNode);
     }
 
-    public void RemoveNodeFromInventory(SpellNodeInterface node, HexGrid NewParent)
+    public void Freeze()
     {
-        nodes.Remove(node);
-        node.transform.SetParent(NewParent.transform);
+        if (contentSizeFitter != null) contentSizeFitter.enabled = false;
+        if (layoutGroup != null) layoutGroup.enabled = false;
     }
+
+    public void Unfreeze()
+    {
+        if (layoutGroup != null) layoutGroup.enabled = true;
+        if (contentSizeFitter != null) contentSizeFitter.enabled = true;
+    }
+
 
     public void GenerateInventory()
     {
-        for(int i = 0; i < nodes.Count; i++)
+        foreach (var prefab in nodePrefabs)
         {
-            Instantiate(nodes[i], this.transform);
+            var instance = Instantiate(prefab, transform);
+            activeNodes.Add(instance);
+            var draggable = instance.GetComponent<DraggableNode>();
+            if (draggable != null)
+                draggable.SetOriginZone(this as IDropZone);
         }
     }
 
-    public void ReturnNode()
+    public void AddNodeToInventory(SpellNodeInterface node)
     {
-        HexGrid active = GameManager.Instance.uiController.activeGrid;
-        if (active.selectedNode == null || active.selectedNode.hexGridNode == null) return;
-        AddNodeToInventory(active.selectedNode);
-        active.RemoveSelectedFromGrid();
+        if (!activeNodes.Contains(node))
+            activeNodes.Add(node);
+
+        node.transform.SetParent(transform, false);
+
+        RectTransform rect = node.GetComponent<RectTransform>();
+        rect.localScale = Vector3.one;
+        rect.localRotation = Quaternion.identity;
+    }
+
+    public void RemoveNodeFromInventory(SpellNodeInterface node)
+    {
+        if (activeNodes.Contains(node))
+            activeNodes.Remove(node);
     }
 }
