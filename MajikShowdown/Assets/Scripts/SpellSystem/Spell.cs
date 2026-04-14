@@ -10,7 +10,7 @@ using static SpellTrigger;
 public class Spell
 {
     public string spellName;
-    public readonly SpellCaster Owner;
+    public readonly SpellCaster Caster;
     //public List<SubSpell> SubSpells = new List<SubSpell>();
     public List<SpellNode> spellNodes = new List<SpellNode>();
     public float SpellCooldown = 0;
@@ -22,7 +22,7 @@ public class Spell
     [HideInInspector] public System.Action OnSpellUpdated;
     public Spell(SpellCaster owner)
     {
-        Owner = owner;
+        Caster = owner;
     }
 
     public void UpdateSpell()

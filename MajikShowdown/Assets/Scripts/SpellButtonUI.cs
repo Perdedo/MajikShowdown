@@ -56,11 +56,11 @@ public class SpellButtonUI : MonoBehaviour
 
     void UnequipSpell()
     {
-        for (int i = 0; i < spell.Owner.equippedSpells.Length; i++)
+        for (int i = 0; i < spell.Caster.equippedSpells.Length; i++)
         {
-            if (spell.Owner.equippedSpells[i] == spell)
+            if (spell.Caster.equippedSpells[i] == spell)
             {
-                spell.Owner.equippedSpells[i] = null;
+                spell.Caster.equippedSpells[i] = null;
                 GameManager.Instance.uiController.equipSlotTexts[i].text = "Slot " + (i + 1);
                 break;
             }
@@ -77,11 +77,11 @@ public class SpellButtonUI : MonoBehaviour
     void DeleteSpell()
     {
         if (spell == null) return;
-        for (int i = 0; i < spell.Owner.equippedSpells.Length; i++)
+        for (int i = 0; i < spell.Caster.equippedSpells.Length; i++)
         {
-            if (spell.Owner.equippedSpells[i] == spell)
+            if (spell.Caster.equippedSpells[i] == spell)
             {
-                spell.Owner.equippedSpells[i] = null;
+                spell.Caster.equippedSpells[i] = null;
                 GameManager.Instance.uiController.equipSlotTexts[i].text = "Slot " + (i + 1);
             }
         }
@@ -90,7 +90,7 @@ public class SpellButtonUI : MonoBehaviour
             spell.grid.ReturnAllNodesToInventory();
             Destroy(spell.grid.gameObject);
         }
-        spell.Owner.spells.Remove(spell);
+        spell.Caster.spells.Remove(spell);
         spell.OnSpellUpdated -= UpdateCooldownUI;
         Destroy(gameObject);
         spell = null;
@@ -98,7 +98,7 @@ public class SpellButtonUI : MonoBehaviour
 
     public bool IsSpellEquipped(Spell spell)
     {
-        foreach (var s in spell.Owner.equippedSpells)
+        foreach (var s in spell.Caster.equippedSpells)
         {
             if (s == spell)
                 return true;

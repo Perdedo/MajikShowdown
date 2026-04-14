@@ -6,18 +6,12 @@ using UnityEngine;
 public class SpellTrigger : SpellNode
 {
     public Triggers trigger;
-    [NonSerialized]public Spell TriggeredSpell;
+    [NonSerialized] public Spell TriggeredSpell;
     //public SpellType[] triggeredSpells = new SpellType[2];
-    public enum Triggers { OnCast, OnHit, OnDeath};
-    Timer TriggerTimer = new Timer();
-    public bool SpellOnCooldown;
-    public void UpdateTrigger()
-    {
-        if (SpellOnCooldown)
-        {
-            SpellOnCooldown = TriggerTimer.timer(OwnerSpell.primaryNode.SpawnTriggeredSpellCooldown, Time.deltaTime, true, true);
-        }
-    }
+    public enum Triggers { OnCast, OnHit, OnDeath };
+    
+    
+    
     public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {
         /*if(hierarchy > list[0].hierarchy)
@@ -44,4 +38,21 @@ public class SpellTrigger : SpellNode
         }
         return aux;
     }*/
+}
+public class TriggerInfo
+{
+    public SpellTrigger Trigger;
+    public bool SpellOnCooldown;
+    Timer TriggerTimer = new Timer();
+    public TriggerInfo(SpellTrigger trigger)
+    {
+        Trigger = trigger;
+    }
+    public void UpdateTrigger()
+    {
+        if (SpellOnCooldown)
+        {
+            SpellOnCooldown = TriggerTimer.timer(Trigger.OwnerSpell.primaryNode.SpawnTriggeredSpellCooldown, Time.deltaTime, true, true);
+        }
+    }
 }

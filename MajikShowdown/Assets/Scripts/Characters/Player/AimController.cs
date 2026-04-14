@@ -9,14 +9,27 @@ public class AimController : MonoBehaviour
     public bool ShowHit = true;
     RaycastHit Hit;
     Vector2 screenCenter;
+    int previousScreenWidth, previousScreenHeight;
     void Awake()
     {
+        UpdateScreenCenter();
+
+    }
+    public void UpdateScreenCenter()
+    {
         screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        previousScreenWidth = Screen.width;
+        previousScreenHeight = Screen.height;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Screen.width != previousScreenWidth || Screen.height != previousScreenHeight)
+        {
+            UpdateScreenCenter();
+        }
         Ray ray = Camera.main.ScreenPointToRay(screenCenter);
         if (Physics.Raycast(ray, out Hit, MaxRayDistance, HitLayer))
         {

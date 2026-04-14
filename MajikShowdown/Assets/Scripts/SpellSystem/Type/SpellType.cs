@@ -15,6 +15,7 @@ public class SpellType : SpellNode
     public bool HitOnStay;
     public float HitCooldown;
     public float SpawnTriggeredSpellCooldown = 0.5f;
+    public bool DieOnObjectCollide = true;
 
     //public bool DealDamage = true;
     //public SpellType Type;
