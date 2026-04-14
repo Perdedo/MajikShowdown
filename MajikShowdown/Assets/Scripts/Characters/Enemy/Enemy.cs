@@ -19,9 +19,9 @@ public class Enemy : Character
     Player target;
     List<Enemy> neighbors = new List<Enemy>();
     Collider[] neighborBuffer = new Collider[32];
-    Vector3[] Directions = new Vector3[16];
-    float[] Danger = new float[16];
-    float[] Interest = new float[16];
+    Vector3[] Directions = new Vector3[8];
+    float[] Danger = new float[8];
+    float[] Interest = new float[8];
     Vector3 targetVector/*, targetLastSeen*/;
     bool detectedObstacle = false;
     Vector3 MoveDirection;

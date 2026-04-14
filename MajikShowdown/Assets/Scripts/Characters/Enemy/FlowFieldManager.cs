@@ -1,6 +1,6 @@
 
 using UnityEngine;
-
+using System.Collections;
 public class FlowFieldManager : MonoBehaviour
 {
     public static FlowFieldManager instance;
@@ -38,8 +38,9 @@ public class FlowFieldManager : MonoBehaviour
         Target = GameManager.Instance.Players[0].transform;
         lastTargetPos = WorldToGridPosition(Target.position);
         flowField.GenerateFlowField(lastTargetPos);
+        StartCoroutine(FlowFieldGenerator());
     }
-    void Update()
+    /*void Update()
     {
         FieldCell current = WorldToGridPosition(Target.position);
         if (current != null && ((current.fieldPos.gridPosition - lastTargetPos.fieldPos.gridPosition).magnitude > TargetRecalculationOffset || current.position.y - lastTargetPos.position.y > SlopeThreshold))
@@ -47,6 +48,18 @@ public class FlowFieldManager : MonoBehaviour
             lastTargetPos = current;
             flowField.GenerateFlowField(current);
         }
+    }*/
+
+    IEnumerator FlowFieldGenerator()
+    {
+        FieldCell current = WorldToGridPosition(Target.position);
+        if (current != null && ((current.fieldPos.gridPosition - lastTargetPos.fieldPos.gridPosition).magnitude > TargetRecalculationOffset || current.position.y - lastTargetPos.position.y > SlopeThreshold))
+        {
+            lastTargetPos = current;
+            flowField.GenerateFlowField(current);
+        }
+        yield return new WaitForSeconds(1);
+        StartCoroutine(FlowFieldGenerator());
     }
 
 #if UNITY_EDITOR
