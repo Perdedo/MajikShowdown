@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Trajectory Node", menuName = "Spell Nodes/Trajectory Node")]
@@ -5,14 +6,27 @@ public class SpellTrajectory : SpellNode
 {
     public enum TragectoryType { Forward, Lobbed, Orbital, ZigZag, FollowEnemy, FollowCaster, FollowAlly };
     public TragectoryType tragectory;
-    public Vector3 GetTrajectory()
+    public Vector3 GetTrajectory(float lifetime)
     {
+        Vector3 dir = Vector3.zero;
         switch (tragectory)
         {
             case TragectoryType.Forward:
-                return Vector3.forward;
-            default: return Vector3.zero;
+                dir = Vector3.forward;
+                break;
+            case TragectoryType.ZigZag:
+                dir = Vector3.right * Mathf.Sin(lifetime * 10 + math.PI / 2);
+                break;
+
+            default:
+                dir = Vector3.zero;
+                break;
         }
+        if(ConectedNodes[0] is SpellTrajectory t)
+        {
+            return dir + t.GetTrajectory(lifetime);
+        }
+        return dir;
     }
 }
 

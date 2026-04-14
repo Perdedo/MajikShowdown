@@ -45,7 +45,7 @@ public class SpellCollider : MonoBehaviour
         {
             HitOnCooldown = HitTimer.timer(OwnerSpell.primaryNode.HitCooldown, Time.deltaTime, true, false);
         }
-        rb.Velocity = ToLookDirection(OwnerSpell.primaryNode.GetVelocity());
+        rb.Velocity = ToLookDirection(OwnerSpell.primaryNode.GetVelocity(LifeTime));
         foreach (TriggerInfo t in triggerInfos)
         {
             t.UpdateTrigger();

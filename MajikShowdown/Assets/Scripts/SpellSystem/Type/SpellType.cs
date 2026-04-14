@@ -52,14 +52,14 @@ public class SpellType : SpellNode
     {
         StatBuffs.Add(s);
     }
-    public virtual Vector3 GetVelocity()
+    public virtual Vector3 GetVelocity(float lifetime)
     {
         Vector3 traj = Vector3.zero;
         foreach (SpellNode c in ConectedNodes)
         {
             if (c is SpellTrajectory t)
             {
-                traj += t.GetTrajectory();
+                traj += t.GetTrajectory(lifetime);
             }
         }
         return traj.normalized * FinalStats.Speed;
