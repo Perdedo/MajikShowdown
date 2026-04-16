@@ -19,7 +19,7 @@ public class SpellCollider : MonoBehaviour
     public void Initialize(Spell owner, bool isPrimary)
     {
         //projectileConfig.CalculateFinalStats();
-        OwnerSpell = owner;;
+        OwnerSpell = owner; ;
         primarySpell = isPrimary;
         stats = OwnerSpell.primaryNode.FinalStats;
         transform.localScale = Vector3.one * stats.Size;
@@ -37,7 +37,7 @@ public class SpellCollider : MonoBehaviour
         {
             transform.localScale = Vector3.zero;
         }
-        
+
     }
     void Update()
     {
@@ -45,7 +45,11 @@ public class SpellCollider : MonoBehaviour
         {
             HitOnCooldown = HitTimer.timer(OwnerSpell.primaryNode.HitCooldown, Time.deltaTime, true, false);
         }
-        rb.Velocity = ToLookDirection(OwnerSpell.primaryNode.GetVelocity(LifeTime));
+        Vector3 centerVel = ToLookDirection(OwnerSpell.primaryNode.GetVelocity(LifeTime));
+        float x = Mathf.Cos(LifeTime*5) * 1;
+        float z = Mathf.Sin(LifeTime*5) * 1;
+        Vector3 relativeVel = new Vector3(x, 0, z);
+        rb.Velocity = centerVel + relativeVel*OwnerSpell.primaryNode.FinalStats.Speed;
         foreach (TriggerInfo t in triggerInfos)
         {
             t.UpdateTrigger();
@@ -54,16 +58,16 @@ public class SpellCollider : MonoBehaviour
         switch (OwnerSpell.primaryNode.Type)
         {
             case SpellType.SpellTypes.Explosion:
-            transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one* stats.Size, LifeTime/stats.Duration);
-            break;
+                transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * stats.Size, LifeTime / stats.Duration);
+                break;
         }
 
         LifeTime += Time.deltaTime;
-        if(LifeTime >= stats.Duration)
+        if (LifeTime >= stats.Duration)
         {
             Die();
         }
-        
+
     }
     public void InitiateTriggeredSpells()
     {
@@ -92,7 +96,7 @@ public class SpellCollider : MonoBehaviour
     {
         UnityAction action = () =>
         {
-            if(!trigger.SpellOnCooldown)
+            if (!trigger.SpellOnCooldown)
             {
                 OwnerSpell.Caster.InstantiateSpellCollider(spell, transform.position, transform.forward);
                 trigger.SpellOnCooldown = true;
@@ -111,7 +115,7 @@ public class SpellCollider : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if(!OwnerSpell.primaryNode.HitOnStay)
+        if (!OwnerSpell.primaryNode.HitOnStay)
         {
             HandleTrigger(other);
         }
@@ -142,7 +146,7 @@ public class SpellCollider : MonoBehaviour
             CollideObject();
         }
     }
-    
+
     public void CollideObject()
     {
         CheckBounce();
@@ -150,7 +154,8 @@ public class SpellCollider : MonoBehaviour
     public void CollideCreature(Collider c)
     {
         CharacterDamageHandler character = c.GetComponent<CharacterDamageHandler>();
-        if (character != null)        {
+        if (character != null)
+        {
             foreach (SpellEffect e in OwnerSpell.spellEffects)
             {
                 e.ApplyEffect(character);

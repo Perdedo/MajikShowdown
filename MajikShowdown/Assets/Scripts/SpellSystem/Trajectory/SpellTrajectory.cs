@@ -18,13 +18,19 @@ public class SpellTrajectory : SpellNode
                 dir = Vector3.right * Mathf.Sin(lifetime * 10 + math.PI / 2);
                 break;
 
+            /*case TragectoryType.Orbital:
+                float x = Mathf.Cos(lifetime*5) * 0.1f;
+                float z = Mathf.Sin(lifetime*5) * 0.1f;
+                dir = new Vector3(x, 0, z);
+                break;*/
+
             default:
                 dir = Vector3.zero;
                 break;
         }
-        if(ConectedNodes[0] is SpellTrajectory t)
+        if (ConectedNodes[0] is SpellTrajectory t)
         {
-            return dir + t.GetTrajectory(lifetime);
+            return (dir + t.GetTrajectory(lifetime)).normalized;
         }
         return dir;
     }
