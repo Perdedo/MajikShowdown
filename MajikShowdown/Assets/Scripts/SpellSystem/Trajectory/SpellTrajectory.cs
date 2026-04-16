@@ -1,37 +1,63 @@
+using System;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Trajectory Node", menuName = "Spell Nodes/Trajectory Node")]
 public class SpellTrajectory : SpellNode
 {
-    public enum TragectoryType { Forward, Lobbed, Orbital, ZigZag, FollowEnemy, FollowCaster, FollowAlly };
-    public TragectoryType tragectory;
-    public Vector3 GetTrajectory(float lifetime)
+    public enum TrajectoryType { Forward, Lobbed, Orbital, ZigZag, FollowEnemy, FollowCaster, FollowAlly, Spiral, Boomerang };
+    public TrajectoryType trajectoryType;
+    public Vector3 GetTrajectory(SpellCollider collider)
     {
         Vector3 dir = Vector3.zero;
-        switch (tragectory)
+        switch (trajectoryType)
         {
-            case TragectoryType.Forward:
-                dir = Vector3.forward;
+            case TrajectoryType.Forward:
+                dir = collider.transform.forward;
                 break;
-            case TragectoryType.ZigZag:
-                dir = Vector3.right * Mathf.Sin(lifetime * 10 + math.PI / 2);
+            case TrajectoryType.ZigZag:
+                dir = collider.ToLookDirection(new Vector3(Mathf.Sin(collider.LifeTime * 10 + math.PI / 2),0,1));
                 break;
 
-            /*case TragectoryType.Orbital:
-                float x = Mathf.Cos(lifetime*5) * 0.1f;
-                float z = Mathf.Sin(lifetime*5) * 0.1f;
+            case TrajectoryType.Orbital:
+                float x = Mathf.Cos(collider.LifeTime*5) * 0.1f;
+                float z = Mathf.Sin(collider.LifeTime*5) * 0.1f;
                 dir = new Vector3(x, 0, z);
-                break;*/
+                break;
+
+            case TrajectoryType.Spiral:
+            float X = Mathf.Sin(collider.LifeTime * 10 + math.PI / 2);
+            float Y = Mathf.Sin(collider.LifeTime * 10);
+            dir = collider.ToLookDirection(new Vector3(X,Y,1));
+            break;
+
+            case TrajectoryType.Boomerang:
+            if(collider.LifeTime/OwnerSpell.primaryNode.FinalStats.Duration < 0.5f)
+                {
+                    dir = collider.transform.forward;
+                }
+                else
+                {
+                    Vector3 distance = OwnerSpell.Caster.CastingPoint.position - collider.transform.position;
+                    float multiplier = Mathf.Max(distance.magnitude/(OwnerSpell.primaryNode.FinalStats.Speed*OwnerSpell.primaryNode.FinalStats.Duration/2), 1);
+                    dir = distance.normalized *multiplier;
+                    if(distance.magnitude < 0.1f)
+                    {
+                        collider.Die();
+                    }
+                }
+            //dir = Vector3.forward * Mathf.Sin((lifetime/OwnerSpell.primaryNode.FinalStats.Duration)*Mathf.PI*2);
+            break;
 
             default:
                 dir = Vector3.zero;
                 break;
         }
-        if (ConectedNodes[0] is SpellTrajectory t)
+        /*if (ConectedNodes[0] is SpellTrajectory t)
         {
-            return (dir + t.GetTrajectory(lifetime)).normalized;
-        }
+            return (dir + t.GetTrajectory(collider)).normalized;
+        }*/
         return dir;
     }
 }

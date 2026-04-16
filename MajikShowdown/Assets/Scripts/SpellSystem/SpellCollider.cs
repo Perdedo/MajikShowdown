@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +13,7 @@ public class SpellCollider : MonoBehaviour
     public bool primarySpell;
     bool HitOnCooldown;
     Timer HitTimer = new Timer();
-    float LifeTime = 0;
+    [NonSerialized] public float LifeTime = 0;
     List<TriggerInfo> triggerInfos = new List<TriggerInfo>();
 
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
@@ -45,11 +46,12 @@ public class SpellCollider : MonoBehaviour
         {
             HitOnCooldown = HitTimer.timer(OwnerSpell.primaryNode.HitCooldown, Time.deltaTime, true, false);
         }
-        Vector3 centerVel = ToLookDirection(OwnerSpell.primaryNode.GetVelocity(LifeTime));
+        /*Vector3 centerVel = ToLookDirection(OwnerSpell.primaryNode.GetVelocity(LifeTime));
         float x = Mathf.Cos(LifeTime*5) * 1;
         float z = Mathf.Sin(LifeTime*5) * 1;
         Vector3 relativeVel = new Vector3(x, 0, z);
-        rb.Velocity = centerVel + relativeVel*OwnerSpell.primaryNode.FinalStats.Speed;
+        rb.Velocity = centerVel + relativeVel*OwnerSpell.primaryNode.FinalStats.Speed;*/
+        rb.Velocity = OwnerSpell.primaryNode.GetVelocity(this);
         foreach (TriggerInfo t in triggerInfos)
         {
             t.UpdateTrigger();
@@ -63,10 +65,14 @@ public class SpellCollider : MonoBehaviour
         }
 
         LifeTime += Time.deltaTime;
-        if (LifeTime >= stats.Duration)
+        if (OwnerSpell.primaryNode.trajectory.trajectoryType != SpellTrajectory.TrajectoryType.Boomerang)
         {
-            Die();
+            if (LifeTime >= stats.Duration)
+            {
+                Die();
+            }
         }
+
 
     }
     public void InitiateTriggeredSpells()

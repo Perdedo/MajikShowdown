@@ -56,7 +56,7 @@ public class Spell
             }
             s.OwnerSpell = this;
         }
-        primaryNode.CalculateFinalStats();
+        primaryNode.UpdateNode();
         OnSpellUpdated?.Invoke();
         /*foreach(SubSpell s in SubSpells)
         {

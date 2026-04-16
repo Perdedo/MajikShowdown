@@ -23,6 +23,7 @@ public class SpellType : SpellNode
     public Elements Element;
     public StatTypes FinalStats;
     public List<StatTypes> StatBuffs = new List<StatTypes>();
+    [NonSerialized]public SpellTrajectory trajectory;
 
     // public SubSpell subSpell;
     public override void RandomizeStats()
@@ -52,22 +53,31 @@ public class SpellType : SpellNode
     {
         StatBuffs.Add(s);
     }
-    public virtual Vector3 GetVelocity(float lifetime)
+    public virtual Vector3 GetVelocity(SpellCollider collider)
     {
         Vector3 traj = Vector3.zero;
+        if(trajectory != null)
+        {
+            traj = trajectory.GetTrajectory(collider);
+        }
+        return traj * FinalStats.Speed;
+
+    }
+    public void GetTrajectory()
+    {
+        trajectory = null;
         foreach (SpellNode c in ConectedNodes)
         {
             if (c is SpellTrajectory t)
             {
-                traj += t.GetTrajectory(lifetime);
+                trajectory = t;
             }
         }
-        return traj.normalized * FinalStats.Speed;
-
     }
     public void UpdateNode()
     {
         CalculateFinalStats();
+        GetTrajectory();
     }
     public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {
