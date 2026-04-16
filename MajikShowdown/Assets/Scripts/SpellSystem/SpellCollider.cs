@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror.Examples.Billiards;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -17,6 +18,7 @@ public class SpellCollider : MonoBehaviour
     List<TriggerInfo> triggerInfos = new List<TriggerInfo>();
 
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
+    public Collider spellCol;
     public void Initialize(Spell owner, bool isPrimary)
     {
         //projectileConfig.CalculateFinalStats();
@@ -38,6 +40,7 @@ public class SpellCollider : MonoBehaviour
         {
             transform.localScale = Vector3.zero;
         }
+        spellCol = GetComponent<Collider>();
 
     }
     void Update()
@@ -136,30 +139,31 @@ public class SpellCollider : MonoBehaviour
     public void HandleTrigger(Collider other)
     {
         if (HitOnCooldown) return;
+        CollisionData ColData = new CollisionData(other,this);
         if (OwnerSpell.primaryNode.Collisions.Enemies && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.EnemyLayer))
         {
             OnHit.Invoke();
-            CollideCreature(other);
+            CollideCreature(ColData);
         }
         else if (OwnerSpell.primaryNode.Collisions.Players && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.PlayerLayer))
         {
             OnHit.Invoke();
-            CollideCreature(other);
+            CollideCreature(ColData);
         }
         else if (OwnerSpell.primaryNode.Collisions.Objects && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.ObjectLayer))
         {
             OnHit.Invoke();
-            CollideObject();
+            CollideObject(ColData);
         }
     }
 
-    public void CollideObject()
+    public void CollideObject(CollisionData data)
     {
-        CheckBounce();
+        CheckBounce(data);
     }
-    public void CollideCreature(Collider c)
+    public void CollideCreature(CollisionData data)
     {
-        CharacterDamageHandler character = c.GetComponent<CharacterDamageHandler>();
+        CharacterDamageHandler character = data.collision.GetComponent<CharacterDamageHandler>();
         if (character != null)
         {
             foreach (SpellEffect e in OwnerSpell.spellEffects)
@@ -173,15 +177,15 @@ public class SpellCollider : MonoBehaviour
         }
         else
         {
-            CheckBounce();
+            CheckBounce(data);
         }
     }
-    public void CheckBounce()
+    public void CheckBounce(CollisionData data)
     {
         if (bounceCount >= 1)
         {
             bounceCount--;
-            Bounce();
+            Bounce(data);
         }
         else
         {
@@ -191,13 +195,31 @@ public class SpellCollider : MonoBehaviour
             }
         }
     }
-    public void Bounce()
+    public void Bounce(CollisionData data)
     {
-
+        transform.LookAt(transform.position + Vector3.Reflect(rb.Velocity, data.hitNormal));
     }
     public void Die()
     {
         OnDeath.Invoke();
         Destroy(gameObject);
+    }
+}
+public struct CollisionData
+{
+    public Collider collision;
+    public SpellCollider Object;
+    public Vector3 hitPoint;
+    public Vector3 hitNormal;
+    public float Distance;
+    public CollisionData(Collider col, SpellCollider obj)
+    {
+        collision = col;
+        Object = obj;
+        Physics.ComputePenetration(obj.spellCol,obj.transform.position, obj.transform.rotation,col, col.transform.position, col.transform.rotation, out hitNormal, out Distance);
+        Physics.SphereCast(obj.transform.position,Distance+0.1f,Vector3.zero,out RaycastHit hitInfo, 0,col.gameObject.layer);
+        hitPoint = hitInfo.point;
+        //Physics.Raycast(obj.transform.position, obj.rb.Velocity.normalized, out RaycastHit hit, Distance+0.1f);
+        //hitPoint = hit.point;
     }
 }
