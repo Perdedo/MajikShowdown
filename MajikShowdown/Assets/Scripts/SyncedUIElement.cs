@@ -10,6 +10,12 @@ public class SyncedUIElement : NetworkBehaviour
     {
         this.GetComponent<TextMeshProUGUI>().text = txt;
     }
+
+    [Command(requiresAuthority = false)]
+    public void CMDSyncText(string txt)
+    {
+        SyncText(txt);
+    }
     public void SetText(string txt)
     {
         this.GetComponent<TextMeshProUGUI>().text = txt;

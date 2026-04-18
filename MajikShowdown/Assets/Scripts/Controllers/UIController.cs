@@ -580,7 +580,10 @@ public class UIController : MonoBehaviour
         }
         else if (playerCards.Count > NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count)
         {
-            RemovePlayerCard();
+            if (Utils.IsSceneActive(NetworkManager.singleton.GetComponent<RoomManager>().RoomScene))
+            {
+                RemovePlayerCard();
+            }
         }
         else
         {

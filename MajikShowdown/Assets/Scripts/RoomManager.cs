@@ -5,6 +5,7 @@ using Steamworks;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Collections;
 public class RoomManager : NetworkRoomManager
 {
     public List<RoomPlayer> playerList = new List<RoomPlayer>();
@@ -62,7 +63,10 @@ public class RoomManager : NetworkRoomManager
             }
         }
 
-        GameManager.Instance.uiController.playersReady.GetComponent<SyncedUIElement>().SyncText(ReadyPlayers + "/" + CurrentPlayers + " Players Ready");
+        if(NetworkClient.active)
+        {
+            GameManager.Instance.uiController.playersReady.GetComponent<SyncedUIElement>().CMDSyncText(ReadyPlayers + "/" + CurrentPlayers + " Players Ready");
+        }
 
         if (CurrentPlayers == ReadyPlayers)
         {
@@ -83,7 +87,11 @@ public class RoomManager : NetworkRoomManager
 
     public override void OnRoomClientEnter() 
     {
-        GameManager.Instance.uiController.roomName.GetComponent<SyncedUIElement>().SyncText(SteamMatchmaking.GetLobbyData(new CSteamID(SteamLobby.instance.lobbyID), "name"));
+        if (NetworkClient.active)
+        {
+            //GameManager.Instance.uiController.roomName.GetComponent<SyncedUIElement>().CMDSyncText(SteamMatchmaking.GetLobbyData(new CSteamID(SteamLobby.instance.lobbyID), "name"));
+            StartCoroutine(SyncTextWhenReady(GameManager.Instance.uiController.roomName.GetComponent<SyncedUIElement>(), SteamMatchmaking.GetLobbyData(new CSteamID(SteamLobby.instance.lobbyID), "name")));
+        }
         RoomUIChanges();
     }
     public override void OnRoomClientExit() 
@@ -105,28 +113,43 @@ public class RoomManager : NetworkRoomManager
                     ReadyPlayers++;
             }
         }
-        GameManager.Instance.uiController.playersReady.GetComponent<SyncedUIElement>().SyncText(ReadyPlayers + "/" + CurrentPlayers + " Players Ready");
-        if(GameManager.Instance.uiController.roomObjectsVisible)
+        if (Utils.IsSceneActive(RoomScene))
         {
-            GameManager.Instance.uiController.inviteButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(CurrentPlayers < maxConnections);
-        }
-
-        if (allPlayersReady)
-        {
-            GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().SyncText("Waiting for the host to start the game...");
-            if (GameManager.Instance.uiController.roomObjectsVisible)
+            if (NetworkClient.active)
             {
-                GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowOnlyForClients(false);
-                GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(true);
+                //GameManager.Instance.uiController.playersReady.GetComponent<SyncedUIElement>().CMDSyncText(ReadyPlayers + "/" + CurrentPlayers + " Players Ready");
+                StartCoroutine(SyncTextWhenReady(GameManager.Instance.uiController.playersReady.GetComponent<SyncedUIElement>(), ReadyPlayers + "/" + CurrentPlayers + " Players Ready"));
             }
-        }
-        else
-        {
-            GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().SyncText("Waiting for players to get ready...");
             if (GameManager.Instance.uiController.roomObjectsVisible)
             {
-                GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().HideForAll();
-                GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowForAll(false);
+                GameManager.Instance.uiController.inviteButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(CurrentPlayers < maxConnections);
+            }
+
+            if (allPlayersReady)
+            {
+                if (NetworkClient.active)
+                {
+                    //GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().CMDSyncText("Waiting for the host to start the game...");
+                    StartCoroutine(SyncTextWhenReady(GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>(), "Waiting for the host to start the game..."));
+                }
+                if (GameManager.Instance.uiController.roomObjectsVisible)
+                {
+                    GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowOnlyForClients(false);
+                    GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(true);
+                }
+            }
+            else
+            {
+                if (NetworkClient.active)
+                {
+                    //GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().CMDSyncText("Waiting for players to get ready...");
+                    StartCoroutine(SyncTextWhenReady(GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>(), "Waiting for players to get ready..."));
+                }
+                if (GameManager.Instance.uiController.roomObjectsVisible)
+                {
+                    GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().HideForAll();
+                    GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowForAll(false);
+                }
             }
         }
     }
@@ -137,13 +160,25 @@ public class RoomManager : NetworkRoomManager
         {
             GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowOnlyForClients(false);
             GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().ShowOnlyForHost(true);
-            GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().SyncText("Waiting for the host to start the game...");
+            if (NetworkClient.active)
+            {
+                GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().CMDSyncText("Waiting for the host to start the game...");
+            }
         }
         else
         {
             GameManager.Instance.uiController.startGameButton.GetComponent<SyncedUIElement>().HideForAll();
             GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().ShowForAll(false);
-            GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().SyncText("Waiting for players to get ready...");
+            if (NetworkClient.active)
+            {
+                GameManager.Instance.uiController.waiting.GetComponent<SyncedUIElement>().CMDSyncText("Waiting for players to get ready...");
+            }
         }
+    }
+
+    IEnumerator SyncTextWhenReady(SyncedUIElement ui, string txt)
+    {
+        yield return new WaitUntil(() => NetworkClient.ready && ui.netId != 0);
+        ui.CMDSyncText(txt);
     }
 }

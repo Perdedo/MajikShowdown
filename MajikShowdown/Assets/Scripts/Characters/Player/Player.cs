@@ -75,10 +75,13 @@ public class Player : Character
             stopJump();
         }
         HandleRotation();
-        UpdateVelocity();
-        if (!isServer && network)
+        if(isLocalPlayer)
         {
-            CMDUpdateVelocity();
+            UpdateVelocity();
+            if (!isServer && network)
+            {
+                CMDUpdateVelocity();
+            }
         }
     }
     private void Update()

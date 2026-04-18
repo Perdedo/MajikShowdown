@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,7 +27,10 @@ public class GameManager : MonoBehaviour
     public void AddPlayer(Player player)
     {
         Players.Add(player);
-        netCtrl?.ffManager.gameObject.SetActive(true);
+        if(Players.Count == NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count)
+        {
+            netCtrl?.ffManager.gameObject.SetActive(true);
+        }
     }
 
     public void RemovePlayer(Player player)

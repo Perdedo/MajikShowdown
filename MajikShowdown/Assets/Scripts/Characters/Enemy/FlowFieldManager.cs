@@ -1,6 +1,7 @@
 
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 public class FlowFieldManager : MonoBehaviour
 {
     public static FlowFieldManager instance;
@@ -25,7 +26,12 @@ public class FlowFieldManager : MonoBehaviour
     public int TargetRecalculationOffset;
     public FlowField flowField;
     public Transform Target;
-    FieldCell lastTargetPos;
+    //FieldCell lastTargetPos;
+    public List<Transform> Targets = new List<Transform>();
+    List<FieldCell> lastTargetsPos = new List<FieldCell>();
+    bool moved;
+    FieldCell current;
+    public float flowFieldDelay = 0.5f;
     [Header("Gizmos")]
     public bool ShowCells = true;
     public bool ShowFieldArea = true;
@@ -36,8 +42,16 @@ public class FlowFieldManager : MonoBehaviour
         instance = this;
         GenerateGrid();
         Target = GameManager.Instance.Players[0].transform;
-        lastTargetPos = WorldToGridPosition(Target.position);
-        flowField.GenerateFlowField(lastTargetPos);
+        //lastTargetPos = WorldToGridPosition(Target.position);
+        Targets.Clear();
+        lastTargetsPos.Clear();
+        foreach(Player p in GameManager.Instance.Players)
+        {
+            Targets.Add(p.transform);
+            Debug.Log(p.transform);
+            lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+        }
+        flowField.GenerateFlowField(lastTargetsPos);
         StartCoroutine(FlowFieldGenerator());
     }
     /*void Update()
@@ -49,16 +63,23 @@ public class FlowFieldManager : MonoBehaviour
             flowField.GenerateFlowField(current);
         }
     }*/
-
     IEnumerator FlowFieldGenerator()
     {
-        FieldCell current = WorldToGridPosition(Target.position);
-        if (current != null && ((current.fieldPos.gridPosition - lastTargetPos.fieldPos.gridPosition).magnitude > TargetRecalculationOffset || current.position.y - lastTargetPos.position.y > SlopeThreshold))
+        moved = false;
+        for(int i = 0; i < Targets.Count; i++)
         {
-            lastTargetPos = current;
-            flowField.GenerateFlowField(current);
+            current = WorldToGridPosition(Targets[i].position);
+            if (current != null && ((current.fieldPos.gridPosition - lastTargetsPos[i].fieldPos.gridPosition).magnitude > TargetRecalculationOffset || current.position.y - lastTargetsPos[i].position.y > SlopeThreshold))
+            {
+                lastTargetsPos[i] = current;
+                moved = true;
+            }
         }
-        yield return new WaitForSeconds(1);
+        if(moved)
+        {
+            flowField.GenerateFlowField(lastTargetsPos);
+        }
+        yield return new WaitForSeconds(flowFieldDelay);
         StartCoroutine(FlowFieldGenerator());
     }
 
