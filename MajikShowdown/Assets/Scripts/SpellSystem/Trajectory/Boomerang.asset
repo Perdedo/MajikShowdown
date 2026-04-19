@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e873651b2d0183c4ca51f62a95ca85eb, type: 3}
-  m_Name: Projectile
-  m_EditorClassIdentifier: Assembly-CSharp::SpellType
+  m_Script: {fileID: 11500000, guid: 5b2ab1ed0c378944f8357d7513ab20be, type: 3}
+  m_Name: Boomerang
+  m_EditorClassIdentifier: Assembly-CSharp::SpellTrajectory
   statRandomizer:
     Cooldown:
       type: 0
@@ -21,18 +21,18 @@ MonoBehaviour:
     Speed:
       type: 1
       value: 0
-      min: 3
-      max: 6
+      min: 15
+      max: 30
     Duration:
-      type: 1
-      value: 2
-      min: 2
-      max: 4
-    Size:
-      type: 1
+      type: 0
       value: 0
-      min: 1
-      max: 2
+      min: 0
+      max: 0
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
     Damage:
       type: 0
       value: 0
@@ -53,13 +53,13 @@ MonoBehaviour:
       value: 0
       min: 0
       max: 0
-  spellDescription: A Red Node Description
-  color: {r: 1, g: 0, b: 0, a: 1}
-  Cooldown: 3
+  spellDescription: Spell moves in a boomerang pattern
+  color: {r: 0, g: 0.05192756, b: 0.4566037, a: 1}
+  Cooldown: 1
   BaseStats:
-    Speed: 5
-    Duration: 3
-    Size: 1
+    Speed: 20
+    Duration: 0
+    Size: 0
     Damage: 0
     Piercing: 0
     Bounce: 0
@@ -82,30 +82,4 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
-  Type: 0
-  Collisions:
-    Players: 0
-    Enemies: 1
-    Objects: 1
-  StatMultipliers:
-    Speed: 1.2
-    Duration: 1
-    Size: 0.7
-    Damage: 1
-    Piercing: 1
-    Bounce: 1
-    Knockback: 1
-  HitOnStay: 0
-  HitCooldown: 0
-  SpawnTriggeredSpellCooldown: 0.5
-  DieOnObjectCollide: 1
-  Element: 0
-  FinalStats:
-    Speed: 0
-    Duration: 0
-    Size: 0
-    Damage: 0
-    Piercing: 0
-    Bounce: 0
-    Knockback: 0
-  StatBuffs: []
+  trajectoryType: 8

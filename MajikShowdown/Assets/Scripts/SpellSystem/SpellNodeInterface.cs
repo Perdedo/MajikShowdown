@@ -137,7 +137,7 @@ public class SpellNodeInterface : MonoBehaviour
             img.sprite = info.borderSprite[0];
             return;
         }
-        else if (ConectionPorts[0] == NodeConection.Conections.Circle && ConectionPorts[3] == NodeConection.Conections.Circle)
+        else if (ConectionPorts[0] == NodeConection.Conections.None && ConectionPorts[3] == NodeConection.Conections.Circle)
         {
             img.sprite = info.borderSprite[1];
             return;
