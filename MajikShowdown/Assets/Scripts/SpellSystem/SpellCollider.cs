@@ -68,7 +68,7 @@ public class SpellCollider : MonoBehaviour
         }
 
         LifeTime += Time.deltaTime;
-        if (OwnerSpell.primaryNode.trajectory.trajectoryType != SpellTrajectory.TrajectoryType.Boomerang)
+        if (OwnerSpell.primaryNode.trajectory == null || OwnerSpell.primaryNode.trajectory.trajectoryType != SpellTrajectory.TrajectoryType.Boomerang)
         {
             if (LifeTime >= stats.Duration)
             {
