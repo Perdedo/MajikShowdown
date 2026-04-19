@@ -3,17 +3,25 @@ using UnityEngine;
 
 public class SpellInventoryUI : MonoBehaviour
 {
+    [Header("Data")]
     public SpellCaster caster;
+
+    [Header("Grid")]
     public HexGrid gridPrefab;
     public Transform gridParent;
 
     [Header("UI")]
-    public Transform spellListContent;
-    public GameObject spellPrefab;
+    public Transform content;
+    public GameObject spellCardPrefab;
+    public Transform createSpellCard;
+
+    int nextSpellId = 1;
 
     public void CreateNewSpell()
     {
+        DeselectAllCards();
         Spell newSpell = new Spell(caster);
+        newSpell.spellName = GenerateSpellName();
         HexGrid newGrid = Instantiate(gridPrefab, gridParent);
         newGrid.caster = caster;
         newGrid.SetSpell(newSpell);
@@ -21,14 +29,30 @@ public class SpellInventoryUI : MonoBehaviour
         newGrid.gameObject.SetActive(false);
         newSpell.grid = newGrid;
         caster.spells.Add(newSpell);
-        CreateSpellButton(newSpell);
+        CreateSpellCard(newSpell);
         GameManager.Instance.uiController.spellNodeDescription.RefreshTriggerUI();
     }
 
-    void CreateSpellButton(Spell spell)
+    string GenerateSpellName()
     {
-        GameObject buttonObj = Instantiate(spellPrefab, spellListContent);
-        SpellButtonUI buttonUI = buttonObj.GetComponent<SpellButtonUI>();
-        buttonUI.Setup(spell);
+        return "Nameless";
+    }
+
+    void CreateSpellCard(Spell spell)
+    {
+        GameObject cardObj = Instantiate(spellCardPrefab, content);
+        cardObj.transform.SetSiblingIndex(createSpellCard.GetSiblingIndex());
+        SpellCardUI cardUI = cardObj.GetComponent<SpellCardUI>();
+        cardUI.Setup(spell);
+        createSpellCard.SetAsLastSibling();
+    }
+
+    public void DeselectAllCards()
+    {
+        SpellCardUI[] cards = GetComponentsInChildren<SpellCardUI>();
+        foreach (var card in cards)
+        {
+            card.Deselect();
+        }
     }
 }
