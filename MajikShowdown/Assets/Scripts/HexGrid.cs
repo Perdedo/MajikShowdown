@@ -54,13 +54,13 @@ public class HexGrid : MonoBehaviour
         {
             GameManager.Instance.uiController.activeGrid.gameObject.SetActive(false);
         }*/
-        GameManager.Instance.uiController.activeGrid = this;
+        GameManager.Instance.uiController.playerUI.activeGrid = this;
     }
     void OnDisable()
     {
-        if (GameManager.Instance.uiController.activeGrid == this)
+        if (GameManager.Instance.uiController.playerUI.activeGrid == this)
         {
-            GameManager.Instance.uiController.activeGrid = null;
+            GameManager.Instance.uiController.playerUI.activeGrid = null;
         }
 
     }

@@ -15,6 +15,10 @@ public class CharacterDamageHandler : NetworkBehaviour
 
     public void TakeDamage(Damage damage)
     {
+        if(!isServer)
+        {
+            return;
+        }
         float finalDamage = damage.Value;
         for (int i = 0; i < Resistances.Count; i++)
         {
@@ -24,24 +28,18 @@ public class CharacterDamageHandler : NetworkBehaviour
                 i = Resistances.Count;
             }
         }
-        CMDTakeDamage(finalDamage);
-    }
-
-    [Command]
-    public void CMDTakeDamage(float finalDamage)
-    {
         Health = MathF.Max(Health - finalDamage, 0);
         if (Health <= 0)
         {
             Die();
         }
     }
+
     public void Heal(float amount)
     {
         Health = Mathf.Min(Health + amount, MaxHealth);
     }
 
-    [Server]
     public void Die()
     {
         //Destroy(gameObject);

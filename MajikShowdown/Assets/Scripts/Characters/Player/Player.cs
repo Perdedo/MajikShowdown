@@ -32,6 +32,7 @@ public class Player : Character
     bool Casting;
     [Header("Network")]
     public bool network = true;
+
     //public PlayerData data;
 
     /*[Serializable]

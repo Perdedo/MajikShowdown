@@ -269,7 +269,6 @@ public class FlowField
     void GenerateIntegration(List<FieldCell> targets)
     {
         DestinationCells = targets;
-        Debug.Log(DestinationCells.Count);
         if (DestinationCells.Count <= 0) return;
         Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
         foreach(FieldCell cell in DestinationCells)

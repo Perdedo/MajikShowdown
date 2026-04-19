@@ -3185,23 +3185,6 @@ MonoBehaviour:
   leaveGameRulesPanel: {fileID: 0}
   confirmLeaveRoom: {fileID: 0}
   returnLeaveRoomPanel: {fileID: 0}
-  spellPanel: {fileID: 0}
-  createSpellPanel: {fileID: 0}
-  editSpellPanel: {fileID: 0}
-  spellToEquip:
-    spellName: 
-    spellNodes: []
-    SpellCooldown: 0
-    primaryNode: {fileID: 0}
-    triggers: []
-    spellEffects: []
-    validSpell: 0
-    grid: {fileID: 0}
-  equipSlotButtons: []
-  equipSlotTexts: []
-  caster: {fileID: 0}
-  spellNameText: {fileID: 0}
-  spellCooldownText: {fileID: 0}
   data:
     selectedRes: 0
     screenMode: 0
@@ -3209,9 +3192,7 @@ MonoBehaviour:
     music: 0
     sfx: 0
     vsyncEnabled: 0
-  activeGrid: {fileID: 0}
-  spellNodeDescription: {fileID: 0}
-  selectedNode: {fileID: 0}
+  playerUI: {fileID: 0}
   roomObjectsVisible: 0
 --- !u!1 &516782013
 GameObject:
@@ -5372,6 +5353,7 @@ MonoBehaviour:
   playerSpawnMethod: 0
   spawnPrefabs:
   - {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
+  - {fileID: 5184826410647254319, guid: 797a4b56813750b4f9730eea5b06fff7, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -8354,6 +8336,7 @@ MonoBehaviour:
   uiController: {fileID: 0}
   Players: []
   netCtrl: {fileID: 0}
+  spellInventoryUI: {fileID: 0}
 --- !u!114 &1602448494
 MonoBehaviour:
   m_ObjectHideFlags: 0

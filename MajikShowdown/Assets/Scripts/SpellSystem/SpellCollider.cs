@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using Mirror.Examples.Billiards;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class SpellCollider : MonoBehaviour
+public class SpellCollider : NetworkBehaviour
 {
     public StaticRB rb;
     public StatTypes stats;
@@ -202,7 +203,11 @@ public class SpellCollider : MonoBehaviour
     public void Die()
     {
         OnDeath.Invoke();
-        Destroy(gameObject);
+        if(isServer)
+        {
+            NetworkServer.Destroy(this.gameObject);
+        }
+        //Destroy(gameObject);
     }
 }
 public struct CollisionData

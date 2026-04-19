@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
     public List<Player> Players = new List<Player>();
     public NetworkAuxiliarControl netCtrl;
 
-    
     void Awake()
     {
         if(Instance == null)

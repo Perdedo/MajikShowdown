@@ -86,7 +86,7 @@ public class UIController : MonoBehaviour
     public GameObject confirmLeaveRoom;
     public GameObject returnLeaveRoomPanel;
 
-    [Header("Test Panels")]
+    /*[Header("Test Panels")]
     public GameObject spellPanel;
     public GameObject createSpellPanel;
     public GameObject editSpellPanel;
@@ -100,14 +100,15 @@ public class UIController : MonoBehaviour
     public GameObject spellPage;
     public GameObject runePage;
     public GameObject spellsInventoryPageButton;
-    public GameObject runesInventoryPageButton;
+    public GameObject runesInventoryPageButton;*/
 
     [HideInInspector]
     public ConfigData data;
-    public HexGrid activeGrid;
+    public PlayerUI playerUI;
+    /*public HexGrid activeGrid;
     public SpellNodeDescription spellNodeDescription;
     Spell activeSpell;
-    public SpellNodeInterface selectedNode;
+    public SpellNodeInterface selectedNode;*/
 
     void Awake()
     {
@@ -139,7 +140,7 @@ public class UIController : MonoBehaviour
         AudioController.instance.StartMusic();
     }
 
-    public void Update()
+    /*public void Update()
     {
         if(Input.GetKeyDown(KeyCode.Tab))
         {
@@ -160,7 +161,7 @@ public class UIController : MonoBehaviour
                 ActivateSpellsInventoryPage();
             }
         }
-    }
+    }*/
     public void UiMenuSetup()
     {
         if (gameTitle != null)
@@ -248,10 +249,10 @@ public class UIController : MonoBehaviour
         {
             optionsPanel.SetActive(false);
         }
-        if (spellPanel != null)
+        /*if (spellPanel != null)
         {
             spellPanel.SetActive(false);
-        }
+        }*/
         if(inviteButton != null)
         {
             inviteButton.SetActive(true);
@@ -669,7 +670,7 @@ public class UIController : MonoBehaviour
         }
     }
 
-    public void OpenEditSpellHUD(Spell spell)
+   /* public void OpenEditSpellHUD(Spell spell)
     {
         createSpellPanel.gameObject.SetActive(false);
         editSpellPanel.gameObject.SetActive(true);
@@ -824,5 +825,5 @@ public class UIController : MonoBehaviour
 
         spellsInventoryPageButton.GetComponent<Image>().color = Color.white;
         spellPage.SetActive(true);
-    }
+    }*/
 }

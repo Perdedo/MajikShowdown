@@ -1,8 +1,9 @@
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-public class SpellCaster : MonoBehaviour, IGameCharacter
+public class SpellCaster : NetworkBehaviour, IGameCharacter
 {
     public CharacterDamageHandler DamageHandler { get; private set; }
 
@@ -27,25 +28,36 @@ public class SpellCaster : MonoBehaviour, IGameCharacter
             grid.caster = this;
         }*/
     }
+
     private void Update()
     {
+        if(!isLocalPlayer)
+        {
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.E))
         {
             if (equippedSpells[0] != null)
             {
-                CastSpell(equippedSpells[0]);
+                CastSpell(0);
                 //Debug.Log(equippedSpells[0].spellName);
             }
         }
     }
-    public void CastSpell(Spell spell)
+
+    [Command]
+    public void CastSpell(int spellInd)
     {
+        Spell spell = equippedSpells[spellInd];
+
         if (spell.validSpell)
         {
             InstantiateSpellCollider(spell, CastingPoint.position,transform.forward, true);
         }
         
     }
+
+    [Server]
     public void InstantiateSpellCollider(Spell Spell, Vector3 pos, Vector3 lookDir, bool primary = false)
     {
         GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, Quaternion.LookRotation(lookDir,Vector3.up));
@@ -53,6 +65,7 @@ public class SpellCaster : MonoBehaviour, IGameCharacter
         //col.OwnerSpell = Spell;
         //col.primarySpell = primary;
         col.Initialize(Spell, primary);
+        NetworkServer.Spawn(g);
     }
 
     public bool IsSlotValid(int index)

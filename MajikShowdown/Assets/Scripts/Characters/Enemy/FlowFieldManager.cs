@@ -48,7 +48,6 @@ public class FlowFieldManager : MonoBehaviour
         foreach(Player p in GameManager.Instance.Players)
         {
             Targets.Add(p.transform);
-            Debug.Log(p.transform);
             lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
         }
         flowField.GenerateFlowField(lastTargetsPos);

@@ -65,7 +65,7 @@ public class SpellCardUI : MonoBehaviour
         editButton.gameObject.SetActive(true);
         deleteButton.gameObject.SetActive(true);
         cardColor.color = Color.cyan; 
-        GameManager.Instance.uiController.StartEquipSpell(boundSpell);
+        GameManager.Instance.uiController.playerUI.StartEquipSpell(boundSpell);
     }
 
     public void Deselect()
@@ -79,7 +79,7 @@ public class SpellCardUI : MonoBehaviour
     void OpenEdit()
     {
         Deselect();
-        GameManager.Instance.uiController.OpenEditSpellHUD(boundSpell);
+        GameManager.Instance.uiController.playerUI.OpenEditSpellHUD(boundSpell);
     }
 
     void RefreshUI()
@@ -97,7 +97,7 @@ public class SpellCardUI : MonoBehaviour
             if (boundSpell.Caster.equippedSpells[i] == boundSpell)
             {
                 boundSpell.Caster.equippedSpells[i] = null;
-                GameManager.Instance.uiController.equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                GameManager.Instance.uiController.playerUI.equipSlotTexts[i].text = "Spell Slot " + (i + 1);
             }
         }
         if (boundSpell.grid != null)

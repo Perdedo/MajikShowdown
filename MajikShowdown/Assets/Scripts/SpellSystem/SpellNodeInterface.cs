@@ -113,7 +113,7 @@ public class SpellNodeInterface : MonoBehaviour
 
     public void SelectNode()
     {
-        var ui = GameManager.Instance.uiController;
+        var ui = GameManager.Instance.uiController.playerUI;
 
         if (ui.selectedNode == this)
         {

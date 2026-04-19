@@ -1,7 +1,8 @@
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpellInventoryUI : MonoBehaviour
+public class SpellInventoryUI : NetworkBehaviour
 {
     [Header("Data")]
     public SpellCaster caster;
@@ -15,22 +16,26 @@ public class SpellInventoryUI : MonoBehaviour
     public GameObject spellCardPrefab;
     public Transform createSpellCard;
 
-    int nextSpellId = 1;
-
     public void CreateNewSpell()
     {
-        DeselectAllCards();
-        Spell newSpell = new Spell(caster);
-        newSpell.spellName = GenerateSpellName();
-        HexGrid newGrid = Instantiate(gridPrefab, gridParent);
-        newGrid.caster = caster;
-        newGrid.SetSpell(newSpell);
-        newGrid.Initialize();
-        newGrid.gameObject.SetActive(false);
-        newSpell.grid = newGrid;
-        caster.spells.Add(newSpell);
-        CreateSpellCard(newSpell);
-        GameManager.Instance.uiController.spellNodeDescription.RefreshTriggerUI();
+        if(isLocalPlayer)
+        {
+            DeselectAllCards();
+            Spell newSpell = new Spell(caster);
+            newSpell.spellName = GenerateSpellName();
+            HexGrid newGrid = Instantiate(gridPrefab, gridParent);
+            newGrid.caster = caster;
+            newGrid.SetSpell(newSpell);
+            newGrid.Initialize();
+            newGrid.gameObject.SetActive(false);
+            newSpell.grid = newGrid;
+            Debug.Log(caster);
+            Debug.Log(caster.spells);
+            Debug.Log(newSpell);
+            caster.spells.Add(newSpell);
+            CreateSpellCard(newSpell);
+            GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
+        }
     }
 
     string GenerateSpellName()
@@ -49,10 +54,13 @@ public class SpellInventoryUI : MonoBehaviour
 
     public void DeselectAllCards()
     {
-        SpellCardUI[] cards = GetComponentsInChildren<SpellCardUI>();
-        foreach (var card in cards)
+        if(isLocalPlayer)
         {
-            card.Deselect();
+            SpellCardUI[] cards = GetComponentsInChildren<SpellCardUI>();
+            foreach (var card in cards)
+            {
+                card.Deselect();
+            }
         }
     }
 }
