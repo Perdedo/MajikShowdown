@@ -19,6 +19,8 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     public LayerMask PlayerLayer;
     public LayerMask ObjectLayer;
 
+    [HideInInspector] public bool canCast = true;
+
     private void Awake()
     {
         DamageHandler = GetComponent<CharacterDamageHandler>();
@@ -31,7 +33,11 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
     private void Update()
     {
-        if(!isLocalPlayer)
+        if(!isLocalPlayer || !isServer)
+        {
+            return;
+        }
+        if(!canCast)
         {
             return;
         }

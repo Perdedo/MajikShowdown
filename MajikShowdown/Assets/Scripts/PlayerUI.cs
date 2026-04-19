@@ -2,6 +2,7 @@ using Mirror;
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +31,7 @@ public class PlayerUI : NetworkBehaviour
     Spell activeSpell;
     public SpellNodeInterface selectedNode;
     public SpellInventoryUI inventory;
+    public Player myPlayer;
     private void Start()
     {
         if(isLocalPlayer)
@@ -59,12 +61,18 @@ public class PlayerUI : NetworkBehaviour
                 else
                 {
                     spellPanel.SetActive(false);
+                    myPlayer.input.ActivateInput();
+                    myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+                    caster.canCast = true;
                 }
             }
             else
             {
                 spellPanel.SetActive(true);
                 ActivateSpellsInventoryPage();
+                myPlayer.input.DeactivateInput();
+                myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
+                caster.canCast = false;
             }
         }
     }

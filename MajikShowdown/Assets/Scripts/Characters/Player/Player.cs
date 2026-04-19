@@ -28,7 +28,7 @@ public class Player : Character
     public UnityEvent StartedPushing;
     public UnityEvent StoppedPushing;
     public PushableObject pushing;
-    PlayerInput input;
+    [HideInInspector]public PlayerInput input;
     bool Casting;
     [Header("Network")]
     public bool network = true;
