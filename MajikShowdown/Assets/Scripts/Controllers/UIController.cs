@@ -94,8 +94,13 @@ public class UIController : MonoBehaviour
     public Button[] equipSlotButtons;
     public TMP_Text[] equipSlotTexts;
     public SpellCaster caster;
+    public TMP_InputField spellNameInput;
     public TextMeshProUGUI spellNameText;
     public TextMeshProUGUI spellCooldownText;
+    public GameObject spellPage;
+    public GameObject runePage;
+    public GameObject spellsInventoryPageButton;
+    public GameObject runesInventoryPageButton;
 
     [HideInInspector]
     public ConfigData data;
@@ -152,6 +157,7 @@ public class UIController : MonoBehaviour
             else
             {
                 OpenPanel(spellPanel);
+                ActivateSpellsInventoryPage();
             }
         }
     }
@@ -664,12 +670,15 @@ public class UIController : MonoBehaviour
     {
         createSpellPanel.gameObject.SetActive(false);
         editSpellPanel.gameObject.SetActive(true);
+
         if (activeGrid != null)
         {
             activeGrid.gameObject.SetActive(false);
         }
+
         activeGrid = spell.grid;
         activeGrid.gameObject.SetActive(true);
+
         SetActiveSpell(spell);
     }
 
@@ -681,28 +690,62 @@ public class UIController : MonoBehaviour
         }
         activeSpell = spell;
         if (activeSpell == null) return;
+        spellNameInput.onValueChanged.RemoveAllListeners();
+        spellNameInput.text = activeSpell.spellName;
+        spellNameInput.onValueChanged.AddListener(OnSpellNameChanged);
         RefreshSpellInfo();
         activeSpell.OnSpellUpdated += RefreshSpellInfo;
+    }
+
+    void OnSpellNameChanged(string newName)
+    {
+        if (activeSpell == null) return;
+        if (string.IsNullOrWhiteSpace(newName)) return;
+
+        activeSpell.spellName = newName;
+        activeSpell.OnSpellUpdated?.Invoke();
+        for (int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            if (caster.equippedSpells[i] == activeSpell)
+            {
+                equipSlotTexts[i].text = newName;
+                break;
+            }
+        }
+    }
+
+    void UpdateAllEquippedSlots()
+    {
+        if (caster == null) return;
+
+        for (int i = 0; i < equipSlotTexts.Length; i++)
+        {
+            equipSlotTexts[i].text = caster.IsSlotValid(i)
+                ? caster.equippedSpells[i].spellName
+                : "Spell Slot " + (i + 1);
+        }
     }
 
     void RefreshSpellInfo()
     {
         if (activeSpell == null) return;
-        spellNameText.text = string.IsNullOrWhiteSpace(activeSpell.spellName) ? "Nameless Spell" : activeSpell.spellName;
         spellCooldownText.text = "Cooldown: " + activeSpell.SpellCooldown.ToString("0.0") + "s";
     }
 
     public void CloseEditSpellHUD()
     {
+        editSpellPanel.gameObject.SetActive(false);
+        spellNameInput.onValueChanged.RemoveAllListeners();
         spellNodeDescription.HideDescription();
+
         if (activeSpell != null)
-        {
             activeSpell.OnSpellUpdated -= RefreshSpellInfo;
-        }
+
         activeSpell = null;
         selectedNode = null;
-        editSpellPanel.gameObject.SetActive(false);
+
         createSpellPanel.gameObject.SetActive(true);
+        UpdateAllEquippedSlots();
     }
 
     public void StartEquipSpell(Spell spell)
@@ -713,30 +756,70 @@ public class UIController : MonoBehaviour
     public void EquipSpellToSlot(int index)
     {
         if (spellToEquip == null) return;
-        Spell oldSpell = caster.equippedSpells[index];
-        if (oldSpell != null)
+        if (caster.equippedSpells[index] == spellToEquip)
         {
-            SpellButtonUI[] buttons = FindObjectsByType<SpellButtonUI>(FindObjectsSortMode.None);
-            foreach (var button in buttons)
+            spellToEquip = null;
+            return;
+        }
+
+        for (int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            if (caster.equippedSpells[i] == spellToEquip)
             {
-                if (button.GetSpell() == oldSpell)
-                {
-                    button.SetEquipText("Equip");
-                    break;
-                }
+                caster.equippedSpells[i] = null;
+                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
             }
         }
+
         caster.equippedSpells[index] = spellToEquip;
-        equipSlotTexts[index].text = string.IsNullOrWhiteSpace(spellToEquip.spellName) ? "Nameless": spellToEquip.spellName;
-        SpellButtonUI[] allButtons = FindObjectsByType<SpellButtonUI>(FindObjectsSortMode.None);
-        foreach (var button in allButtons)
+        equipSlotTexts[index].text = spellToEquip.spellName;
+
+        spellToEquip = null;
+
+        var inventory = FindFirstObjectByType<SpellInventoryUI>();
+        if (inventory != null)
         {
-            if (button.GetSpell() == spellToEquip)
+            inventory.DeselectAllCards();
+        }
+    }
+
+    public void OnSpellNameInputSelected(string currentText)
+    {
+        if (string.IsNullOrEmpty(currentText))
+        {
+            if (spellNameInput.placeholder != null)
             {
-                button.SetEquipText("Unequip");
-                break;
+                spellNameInput.placeholder.gameObject.SetActive(false);
             }
         }
-        spellToEquip = null;
+    }
+
+    public void OnSpellNameInputDeselected(string currentText)
+    {
+        if (string.IsNullOrEmpty(currentText))
+        {
+            if (spellNameInput.placeholder != null)
+            {
+                spellNameInput.placeholder.gameObject.SetActive(true);
+            }
+        }
+    }
+
+    public void ActivateRunesInventoryPage()
+    {
+        spellsInventoryPageButton.GetComponent<Image>().color = Color.grey;
+        spellPage.SetActive(false);
+
+        runesInventoryPageButton.GetComponent<Image>().color = Color.white;
+        runePage.SetActive(true);
+    }
+
+    public void ActivateSpellsInventoryPage()
+    {
+        runesInventoryPageButton.GetComponent<Image>().color = Color.grey;
+        runePage.SetActive(false);
+
+        spellsInventoryPageButton.GetComponent<Image>().color = Color.white;
+        spellPage.SetActive(true);
     }
 }
