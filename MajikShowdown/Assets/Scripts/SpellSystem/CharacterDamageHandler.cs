@@ -1,8 +1,9 @@
+using Mirror;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterDamageHandler : MonoBehaviour
+public class CharacterDamageHandler : NetworkBehaviour
 {
     public float MaxHealth;
     public float Health;
@@ -23,6 +24,12 @@ public class CharacterDamageHandler : MonoBehaviour
                 i = Resistances.Count;
             }
         }
+        CMDTakeDamage(finalDamage);
+    }
+
+    [Command]
+    public void CMDTakeDamage(float finalDamage)
+    {
         Health = MathF.Max(Health - finalDamage, 0);
         if (Health <= 0)
         {
@@ -33,9 +40,12 @@ public class CharacterDamageHandler : MonoBehaviour
     {
         Health = Mathf.Min(Health + amount, MaxHealth);
     }
+
+    [Server]
     public void Die()
     {
-        Destroy(gameObject);
+        //Destroy(gameObject);
+        NetworkServer.Destroy(gameObject);
     }
 }
 public enum Elements { None, Fire, Ice, Earth, Lightning, Radiance, Darkness, Poison }
