@@ -30,7 +30,7 @@ public class SpellCollider : NetworkBehaviour
         //Invoke("Die", stats.Duration);
         pierceCount = stats.Piercing;
         bounceCount = stats.Bounce;
-        OnHit.AddListener(StartHitCooldown);
+        OnHit.AddListener(() => {if(OwnerSpell.primaryNode.HitCooldown > 0 && !routineStarted)StartCoroutine(StartHitCooldown());});
         if (primarySpell)
         {
             InitiateTriggeredSpells();
@@ -118,10 +118,14 @@ public class SpellCollider : NetworkBehaviour
     {
         return transform.forward * rawDir.z + transform.up * rawDir.y + transform.right * rawDir.x;
     }
-    void StartHitCooldown()
+    bool routineStarted;
+    IEnumerator StartHitCooldown()
     {
+        routineStarted = true;
+        yield return new WaitForEndOfFrame();
         HitOnCooldown = true;
         HitTimer.SetTimer(0);
+        routineStarted = false;
     }
     void OnTriggerEnter(Collider other)
     {
