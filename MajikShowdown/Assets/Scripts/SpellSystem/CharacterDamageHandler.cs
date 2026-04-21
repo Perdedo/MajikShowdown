@@ -8,6 +8,9 @@ public class CharacterDamageHandler : NetworkBehaviour
     public float MaxHealth;
     public float Health;
     public List<Resistance> Resistances;
+
+    [Header("Network")]
+    public bool network = true;
     void Awake()
     {
         Health = MaxHealth;
@@ -15,7 +18,7 @@ public class CharacterDamageHandler : NetworkBehaviour
 
     public void TakeDamage(Damage damage)
     {
-        if(!isServer)
+        if(!isServer && network)
         {
             return;
         }
@@ -42,8 +45,14 @@ public class CharacterDamageHandler : NetworkBehaviour
 
     public void Die()
     {
-        //Destroy(gameObject);
-        NetworkServer.Destroy(gameObject);
+        if(network)
+        {
+            NetworkServer.Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }
 public enum Elements { None, Fire, Ice, Earth, Lightning, Radiance, Darkness, Poison }

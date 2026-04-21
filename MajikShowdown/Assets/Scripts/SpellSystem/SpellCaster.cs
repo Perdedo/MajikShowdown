@@ -21,6 +21,9 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
     [HideInInspector] public bool canCast = true;
 
+    [Header("Network")]
+    public bool network = true;
+
     private void Awake()
     {
         DamageHandler = GetComponent<CharacterDamageHandler>();
@@ -33,7 +36,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
     private void Update()
     {
-        if(!isLocalPlayer || !isServer)
+        if((!isLocalPlayer || !isServer) && network)
         {
             return;
         }
@@ -45,13 +48,41 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         {
             if (equippedSpells[0] != null)
             {
-                CastSpell(0);
+                if(network)
+                {
+                    CMDCastSpell(0);
+                }
+                else
+                {
+                    CastSpell(0);
+                }
                 //Debug.Log(equippedSpells[0].spellName);
             }
         }
     }
 
     [Command]
+    public void CMDCastSpell(int spellInd)
+    {
+        Spell spell = equippedSpells[spellInd];
+
+        if (spell.validSpell)
+        {
+            ServerInstantiateSpellCollider(spell, CastingPoint.position,transform.forward, true);
+        }
+        
+    }
+
+    [Server]
+    public void ServerInstantiateSpellCollider(Spell Spell, Vector3 pos, Vector3 lookDir, bool primary = false)
+    {
+        GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, Quaternion.LookRotation(lookDir,Vector3.up));
+        SpellCollider col = g.GetComponent<SpellCollider>();
+        //col.OwnerSpell = Spell;
+        //col.primarySpell = primary;
+        col.Initialize(Spell, primary);
+        NetworkServer.Spawn(g);
+    }
     public void CastSpell(int spellInd)
     {
         Spell spell = equippedSpells[spellInd];
@@ -63,7 +94,6 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         
     }
 
-    [Server]
     public void InstantiateSpellCollider(Spell Spell, Vector3 pos, Vector3 lookDir, bool primary = false)
     {
         GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, Quaternion.LookRotation(lookDir,Vector3.up));
@@ -71,7 +101,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         //col.OwnerSpell = Spell;
         //col.primarySpell = primary;
         col.Initialize(Spell, primary);
-        NetworkServer.Spawn(g);
+        //NetworkServer.Spawn(g);
     }
 
     public bool IsSlotValid(int index)

@@ -16,9 +16,11 @@ public class SpellInventoryUI : NetworkBehaviour
     public GameObject spellCardPrefab;
     public Transform createSpellCard;
 
+    [Header("Network")]
+    public bool network = true;
     public void CreateNewSpell()
     {
-        if(isLocalPlayer)
+        if(isLocalPlayer || !network)
         {
             DeselectAllCards();
             Spell newSpell = new Spell(caster);
@@ -54,7 +56,7 @@ public class SpellInventoryUI : NetworkBehaviour
 
     public void DeselectAllCards()
     {
-        if(isLocalPlayer)
+        if(isLocalPlayer || !network)
         {
             SpellCardUI[] cards = GetComponentsInChildren<SpellCardUI>();
             foreach (var card in cards)

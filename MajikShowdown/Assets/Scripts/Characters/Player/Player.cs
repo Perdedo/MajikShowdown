@@ -54,6 +54,8 @@ public class Player : Character
         Fell.AddListener(CoyoteTime);
         HitGround.AddListener(StopCoyoteTime);
         HitGround.AddListener(PeformJumpBuffering);
+        input = GetComponent<PlayerInput>();
+        input.enabled = true;
         //cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }
@@ -62,8 +64,6 @@ public class Player : Character
     {
         base.OnStartLocalPlayer();
         playerCamera.Priority = 2;
-        input = GetComponent<PlayerInput>();
-        input.enabled = true;
     }
     protected override void FixedUpdate()
     {
@@ -76,7 +76,7 @@ public class Player : Character
             stopJump();
         }
         HandleRotation();
-        if(isLocalPlayer)
+        if(isLocalPlayer || !network)
         {
             UpdateVelocity();
             if (!isServer && network)

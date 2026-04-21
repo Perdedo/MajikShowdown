@@ -26,10 +26,11 @@ public class GameManager : MonoBehaviour
     public void AddPlayer(Player player)
     {
         Players.Add(player);
-        if(Players.Count == NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count)
+        if(NetworkManager.singleton != null && NetworkManager.singleton.GetComponent<RoomManager>() != null && Players.Count != NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count)
         {
-            netCtrl?.ffManager.gameObject.SetActive(true);
+            return;
         }
+        netCtrl?.ffManager.gameObject.SetActive(true);
     }
 
     public void RemovePlayer(Player player)

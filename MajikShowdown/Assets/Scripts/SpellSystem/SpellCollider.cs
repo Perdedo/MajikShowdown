@@ -207,11 +207,15 @@ public class SpellCollider : NetworkBehaviour
     public void Die()
     {
         OnDeath.Invoke();
-        if(isServer)
+        if(isServer && OwnerSpell.Caster.network)
         {
+            Debug.Log("CU");
             NetworkServer.Destroy(this.gameObject);
         }
-        //Destroy(gameObject);
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }
 public struct CollisionData

@@ -32,9 +32,12 @@ public class PlayerUI : NetworkBehaviour
     public SpellNodeInterface selectedNode;
     public SpellInventoryUI inventory;
     public Player myPlayer;
+
+    [Header("Network")]
+    public bool network = true;
     private void Start()
     {
-        if(isLocalPlayer)
+        if(isLocalPlayer || !network)
         {
             GameManager.Instance.uiController.playerUI = this;
         }
@@ -46,7 +49,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void Update()
     {
-        if(!isLocalPlayer)
+        if(!isLocalPlayer && network)
         {
             return;
         }
@@ -70,6 +73,8 @@ public class PlayerUI : NetworkBehaviour
             {
                 spellPanel.SetActive(true);
                 ActivateSpellsInventoryPage();
+                Debug.Log(myPlayer);
+                Debug.Log(myPlayer.input);
                 myPlayer.input.DeactivateInput();
                 myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
                 caster.canCast = false;
@@ -79,7 +84,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void OpenEditSpellHUD(Spell spell)
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -99,7 +104,7 @@ public class PlayerUI : NetworkBehaviour
 
     void SetActiveSpell(Spell spell)
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -118,7 +123,7 @@ public class PlayerUI : NetworkBehaviour
 
     void OnSpellNameChanged(string newName)
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -139,7 +144,7 @@ public class PlayerUI : NetworkBehaviour
 
     void UpdateAllEquippedSlots()
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -155,7 +160,7 @@ public class PlayerUI : NetworkBehaviour
 
     void RefreshSpellInfo()
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -165,7 +170,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void CloseEditSpellHUD()
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -185,7 +190,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void StartEquipSpell(Spell spell)
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -194,7 +199,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void EquipSpellToSlot(int index)
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -243,7 +248,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void OnSpellNameInputSelected(string currentText)
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -258,7 +263,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void OnSpellNameInputDeselected(string currentText)
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -273,7 +278,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void ActivateRunesInventoryPage()
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -286,7 +291,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void ActivateSpellsInventoryPage()
     {
-        if (!isLocalPlayer)
+        if (!isLocalPlayer && network)
         {
             return;
         }
