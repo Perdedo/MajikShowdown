@@ -16,6 +16,8 @@ public class Enemy : Character
     public float TargetStoppingDistance;
     public float SeparationForce = 1;
     public float FlowfieldActivationDistance = 20;
+    public int priority = 1;
+    float size;
     Player target;
     List<Enemy> neighbors = new List<Enemy>();
     Collider[] neighborBuffer = new Collider[32];
@@ -23,14 +25,16 @@ public class Enemy : Character
     float[] Danger = new float[8];
     float[] Interest = new float[8];
     Vector3 targetVector/*, targetLastSeen*/;
-    bool detectedObstacle = false;
+    bool detectedObstacle = false, detectedHigherPriority = false;
     Vector3 MoveDirection;
     Vector3 interestDirection;
+    Vector3 priorityAvoidDirection;
     bool canSeeTarget;
     float updateRate;
     FieldCell currentCell;
     void Start()
     {
+        size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
         for (int i = 0; i < Directions.Length; i++)
         {
             float angle = i * Mathf.PI * 2f / Directions.Length;
@@ -197,8 +201,15 @@ public class Enemy : Character
     {
         if (targetVector.magnitude <= TargetStoppingDistance || (MoveDirection == Vector3.zero && canSeeTarget))
         {
-            SetVelocity(new Vector3(0, localVelocity.y, 0));
-            SetAcceleration(Vector3.zero);
+            if(detectedHigherPriority)
+            {
+                Move(priorityAvoidDirection.normalized, speed);
+            }
+            else
+            {
+                SetVelocity(new Vector3(0, localVelocity.y, 0));
+                SetAcceleration(Vector3.zero);
+            }
         }
         else
         {
@@ -217,12 +228,21 @@ public class Enemy : Character
             }
             else
             {
-                Move(MoveDirection, speed);
+                if(detectedHigherPriority)
+                {
+                    Move((MoveDirection + priorityAvoidDirection).normalized, speed);
+                }
+                else
+                {
+
+                    Move(MoveDirection, speed);
+                }
             }
         }
     }
     public void CalculateDanger()
     {
+        priorityAvoidDirection = Vector3.zero;
         for (int i = 0; i < Danger.Length; i++)
         {
             Danger[i] = 0;
@@ -230,7 +250,7 @@ public class Enemy : Character
         foreach (Enemy e in neighbors)
         {
             Vector3 toEnemy = e.transform.position - transform.position;
-            float distance = toEnemy.magnitude;
+            float distance = toEnemy.magnitude - e.size;
             if (distance < EnemyAvoidanceRadius)
             {
                 float strength = Mathf.Pow(2 - (distance / EnemyAvoidanceRadius), 2) - 1;
@@ -239,8 +259,12 @@ public class Enemy : Character
                     float dot = Vector3.Dot(toEnemy.normalized, Directions[i]);
                     if (dot > 0)
                     {
-                        Danger[i] += strength * dot * SeparationForce;
+                        Danger[i] += strength * dot * SeparationForce * (e.priority/priority);
                     }
+                }
+                if(e.priority > priority)
+                {
+                    priorityAvoidDirection -= toEnemy * (e.priority / priority);
                 }
             }
         }
@@ -285,14 +309,19 @@ public class Enemy : Character
     public void FindObstacles()
     {
         neighbors.Clear();
+        detectedHigherPriority = false;
         detectedObstacle = false;
         int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRadius, neighborBuffer, ObstacleMask | EnemyMask);
         for (int i = 0; i < count; i++)
         {
             if (neighborBuffer[i].TryGetComponent(out Enemy e))
             {
-                if (e != this)
+                if (e != this && e.priority >= priority)
                 {
+                    if(e.priority > priority)
+                    {
+                        detectedHigherPriority = true;
+                    }
                     neighbors.Add(e);
                 }
             }

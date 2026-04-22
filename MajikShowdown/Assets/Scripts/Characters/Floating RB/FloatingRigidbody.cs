@@ -35,7 +35,6 @@ public class FloatingRigidbody : NetworkBehaviour
     protected virtual void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody>();
-        Debug.Log(rb);
         height = gameObject.GetComponent<Collider>().bounds.size.y;
         lastHorizontalDirection = transform.forward;
     }
