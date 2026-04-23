@@ -179,5 +179,9 @@ public class Character : FloatingRigidbody
         }
 
     }
+    public void KnockBack(Vector3 direction, float strenght)
+    {
+        AddExternalVelocity(direction*strenght);
+    }
 
 }

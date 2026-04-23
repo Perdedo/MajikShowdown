@@ -5,17 +5,18 @@ using Mirror;
 public class FloatingRigidbody : NetworkBehaviour
 {
     [SerializeField] protected float maxVelocity;
-    [Header ("Floating Options")]
+    [Header("Floating Options")]
     [SerializeField] protected float floatingHeight;
     [SerializeField] protected float gravityMultiplier;
     [SerializeField] protected float terrainBuffer;
+    [SerializeField] protected float BaseFriction = 0.5f;
 
-    [System.NonSerialized] public Vector3 localVelocity, worldVelocity, parentVelocity, lastHorizontalDirection, hDir, acceleration;
+    [System.NonSerialized] public Vector3 localVelocity, worldVelocity, parentVelocity, externalVelocity, lastHorizontalDirection, hDir, acceleration;
     public Vector3 HolrizontalDirection { get { return hDir; } }
     [System.NonSerialized] public Rigidbody rb;
     protected float height;
     public enum HorizontalState { moving, idle, none };
-    [NonSerialized]public HorizontalState movingState;
+    [NonSerialized] public HorizontalState movingState;
     public enum VerticalState { falling, grounded, none };
     [NonSerialized] public VerticalState vState;
 
@@ -37,6 +38,7 @@ public class FloatingRigidbody : NetworkBehaviour
         rb = gameObject.GetComponent<Rigidbody>();
         height = gameObject.GetComponent<Collider>().bounds.size.y;
         lastHorizontalDirection = transform.forward;
+        externalVelocity = Vector3.zero;
     }
     protected virtual void FixedUpdate()
     {
@@ -139,13 +141,13 @@ public class FloatingRigidbody : NetworkBehaviour
                 vState = VerticalState.falling;
             }
         }
-        
+
     }
 
     protected void SetVelocity(Vector3 vel)
     {
         if (movePaused) vel = new Vector3(0, vel.y, 0);
-        
+
         localVelocity = vel;
     }
     /*protected void AccelerateToVelocity(Vector3 vel, float seconds)
@@ -163,11 +165,14 @@ public class FloatingRigidbody : NetworkBehaviour
         acceleration = acc;
     }
 
-    protected void  AddAcceleration(Vector3 acc)
+    protected void AddAcceleration(Vector3 acc)
     {
         acceleration += acc;
     }
-
+    protected void AddExternalVelocity(Vector3 vel)
+    {
+        externalVelocity += vel;
+    }
     protected void UpdateVelocity()
     {
         localVelocity += acceleration * Time.fixedDeltaTime;
@@ -197,7 +202,24 @@ public class FloatingRigidbody : NetworkBehaviour
             parentVelocity = Vector3.zero;
         }
         worldVelocity = parentVelocity + Vector3.ClampMagnitude(localVelocity, maxVelocity);
-        Vector3 velocityChange = worldVelocity - rb.linearVelocity;
+        Vector3 atritionVector = externalVelocity.normalized * BaseFriction;
+        externalVelocity = Vector3.Max(Vector3.zero, externalVelocity - atritionVector);
+        Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
         rb.AddForce(velocityChange, ForceMode.VelocityChange);
+    }
+    protected virtual void OnCollisionStay(Collision collision)
+    {
+        if (externalVelocity.sqrMagnitude != 0)
+        {
+            foreach (ContactPoint p in collision.contacts)
+            {
+                float dot = Vector3.Dot(p.normal, externalVelocity.normalized);
+                if (dot < 0)
+                {
+                    externalVelocity += externalVelocity * dot;
+                }
+            }
+        }
+
     }
 }

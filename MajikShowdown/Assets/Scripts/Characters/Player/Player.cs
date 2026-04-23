@@ -88,7 +88,11 @@ public class Player : Character
     private void Update()
     {
         Move(directionAnchor.forward * directionInput.y + directionAnchor.right * directionInput.x, speed);
-        
+        /*if (Input.GetKeyDown(KeyCode.T))
+        {
+            Debug.Log("a");
+            KnockBack(Vector3.forward, 50);
+        }*/
         //RotateCamera();
 
         
