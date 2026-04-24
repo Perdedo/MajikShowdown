@@ -1,4 +1,5 @@
 using Mirror;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
@@ -24,6 +25,7 @@ public class Character : FloatingRigidbody
     [SerializeField] protected UnityEvent FellOnJump;
     public enum CharVerticalState { falling, grounded, jumping };
     CharVerticalState cvState; // N�O USE ESTA VARIAVEL use PvState ao inv�s
+    [NonSerialized] public CharacterDamageHandler damageHandler;
     public CharVerticalState CvState
     {
         get
@@ -52,6 +54,10 @@ public class Character : FloatingRigidbody
         base.Awake();
         jumpTimer.timedEvent.AddListener(JumpForce);
         accelerationSpeed = speed / accelerationTime;
+        if(damageHandler == null)
+        {
+            damageHandler = GetComponent<CharacterDamageHandler>();
+        }
     }
 
     protected override void FixedUpdate()

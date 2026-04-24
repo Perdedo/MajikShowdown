@@ -203,7 +203,7 @@ public class FloatingRigidbody : NetworkBehaviour
         }
         worldVelocity = parentVelocity + Vector3.ClampMagnitude(localVelocity, maxVelocity);
         Vector3 atritionVector = externalVelocity.normalized * BaseFriction;
-        externalVelocity = Vector3.Max(Vector3.zero, externalVelocity - atritionVector);
+        externalVelocity -= atritionVector;
         Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
         rb.AddForce(velocityChange, ForceMode.VelocityChange);
     }

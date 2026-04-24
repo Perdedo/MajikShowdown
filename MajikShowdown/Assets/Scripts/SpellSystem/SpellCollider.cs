@@ -168,13 +168,15 @@ public class SpellCollider : NetworkBehaviour
     }
     public void CollideCreature(CollisionData data)
     {
-        CharacterDamageHandler character = data.collision.GetComponent<CharacterDamageHandler>();
+        Character character = data.collision.GetComponent<Character>();
         if (character != null)
         {
             foreach (SpellEffect e in OwnerSpell.spellEffects)
             {
-                e.ApplyEffect(character);
+                e.ApplyEffect(character.damageHandler);
             }
+            character.KnockBack(((data.collision.transform.position - data.Object.transform.position)+data.Object.rb.Velocity).normalized,stats.Knockback);
+
         }
         if (pierceCount >= 1)
         {
@@ -209,7 +211,6 @@ public class SpellCollider : NetworkBehaviour
         OnDeath.Invoke();
         if(isServer && OwnerSpell.Caster.network)
         {
-            Debug.Log("CU");
             NetworkServer.Destroy(this.gameObject);
         }
         else
