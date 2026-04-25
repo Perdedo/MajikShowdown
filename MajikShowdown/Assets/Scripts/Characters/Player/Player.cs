@@ -56,6 +56,7 @@ public class Player : Character
         HitGround.AddListener(PeformJumpBuffering);
         input = GetComponent<PlayerInput>();
         input.enabled = true;
+        damageHandler = GetComponent<PlayerDamageHandler>();
         //cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }

@@ -27,7 +27,7 @@ public class PushableObject : FloatingRigidbody
             StopPush();
         }
     }
-    private void OnCollisionStay(Collision collision)
+    protected override void OnCollisionStay(Collision collision)
     {
         if (collision.collider.GetComponent<Player>() != null && (collision.collider.GetComponent<Player>().pushing == this || collision.collider.GetComponent<Player>().pushing == null))
         {

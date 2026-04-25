@@ -43,7 +43,7 @@ public class CharacterDamageHandler : NetworkBehaviour
         Health = Mathf.Min(Health + amount, MaxHealth);
     }
 
-    public void Die()
+    public virtual void Die()
     {
         if(network)
         {
@@ -55,6 +55,7 @@ public class CharacterDamageHandler : NetworkBehaviour
         }
     }
 }
+
 public enum Elements { None, Fire, Ice, Earth, Lightning, Radiance, Darkness, Poison }
 
 public class Damage

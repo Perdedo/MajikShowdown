@@ -5756,6 +5756,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 576
   canCast: 1
+  network: 1
 --- !u!114 &7285538749250529348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7195,6 +7196,7 @@ MonoBehaviour:
   content: {fileID: 2472678668191509851}
   spellCardPrefab: {fileID: 7878594787101006241, guid: fdb1f33ac4e0b804d93b313f0441648f, type: 3}
   createSpellCard: {fileID: 329663851776646526}
+  network: 1
 --- !u!114 &6932264981861579884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7252,6 +7254,7 @@ MonoBehaviour:
   selectedNode: {fileID: 0}
   inventory: {fileID: 2826145939144236601}
   myPlayer: {fileID: 6002867169297178958}
+  network: 1
 --- !u!1 &6333681522659554261
 GameObject:
   m_ObjectHideFlags: 0
@@ -9574,6 +9577,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4265607478582442934, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8204233925789890373}
+    - targetCorrespondingSourceObject: {fileID: 4265607478582442934, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4307277274885393003}
   m_SourcePrefab: {fileID: 100100000, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
 --- !u!1 &1066103122001722327 stripped
 GameObject:
@@ -9648,6 +9654,25 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &4307277274885393003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066103122001722327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e1762e74d61ba6408a049df4c64ba25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageHandler
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  MaxHealth: 100
+  Health: 0
+  Resistances: []
+  network: 1
 --- !u!4 &5642760642209226531 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8914568331542961986, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}

@@ -31,7 +31,14 @@ public class Enemy : Character
     Vector3 priorityAvoidDirection;
     bool canSeeTarget;
     float updateRate;
-    FieldCell currentCell;
+    FieldCell currentCell, forwardCell;
+
+    bool attacked = true, onAttackCooldown = false;
+    Timer attackTimer = new Timer(), attackCooldownTimer = new Timer();
+    public float attackDuration = 0.3f, attackCooldown = 0.5f;
+    public float damage = 1;
+    public Elements element = Elements.None;
+    Damage dmgCtrl;
     void Start()
     {
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
@@ -41,6 +48,10 @@ public class Enemy : Character
             Directions[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
         }
         updateRate = 1f / 30f;
+        dmgCtrl = new Damage(damage, element);
+        attackTimer.timedEvent.AddListener(AttackPlayer);
+        attackTimer.Paused = true;
+        attackCooldownTimer.Paused = true;
         StartCoroutine(AICalculation());
         //targetLastSeen = targetVector;
     }
@@ -100,9 +111,30 @@ public class Enemy : Character
         CalculateDanger();
         CalculateInterest();
         MoveDirection = GetBestDirection();*/
-        CheckForJump(currentCell);
+        if(forwardCell != null)
+        {
+            CheckForJump(currentCell);
+        }
         //Debug.DrawRay(transform.position, targetVector, Color.red);
         //Debug.DrawRay(transform.position, targetLastSeen, Color.blue);
+        if(!attacked)
+        {
+            attacked = attackTimer.timer(attackDuration, Time.deltaTime, false, false);
+            if(attacked)
+            {
+                attackCooldownTimer.SetTimer(0);
+                attackCooldownTimer.Paused = false;
+                onAttackCooldown = true;
+            }
+        }
+        if(onAttackCooldown)
+        {
+            onAttackCooldown = attackCooldownTimer.timer(attackCooldown, Time.deltaTime, true, false);
+        }
+        else
+        {
+            attackCooldownTimer.Paused = true;
+        }
         PathToTarget(currentCell);
     }
 
@@ -140,6 +172,7 @@ public class Enemy : Character
                 //Debug.Log("can see");
             }
             currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
+            forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);
             if (currentCell != null)
             {
                 if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance && Vector3.Dot(targetVector.normalized, currentCell.direction.normalized) > 0.5)
@@ -184,9 +217,9 @@ public class Enemy : Character
     public void CheckForJump(FieldCell currentCell)
     {
         bool needsJump = false;
-        foreach(FieldCell.NeighborContext n in currentCell.Neighbors)
+        foreach(FieldCell.NeighborContext n in forwardCell.Neighbors)
         {
-            if(n.context == FieldCell.NeighborContext.Context.Jumpable && Vector3.Dot(currentCell.direction, FlowField.CellDistance(currentCell, n.neighborCell)) > 0.75f)
+            if(n.context == FieldCell.NeighborContext.Context.Jumpable && Vector3.Dot(forwardCell.direction, FlowField.CellDistance(forwardCell, n.neighborCell)) > 0.75f)
             {
                 needsJump = true; 
                 break;
@@ -210,9 +243,24 @@ public class Enemy : Character
                 SetVelocity(new Vector3(0, localVelocity.y, 0));
                 SetAcceleration(Vector3.zero);
             }
+
+            if(targetVector.magnitude <= TargetStoppingDistance && !onAttackCooldown)
+            {
+                if(attacked)
+                {
+                    attacked = false;
+                    attackTimer.SetTimer(0);
+                    attackTimer.Paused = false;
+                }
+            }
+            else
+            {
+                attackTimer.Paused = true;
+            }
         }
         else
         {
+            attackTimer.Paused = true;
             //Move(MoveDirection, speed);
             if(detectedObstacle)
             {
@@ -238,6 +286,14 @@ public class Enemy : Character
                     Move(MoveDirection, speed);
                 }
             }
+        }
+    }
+
+    void AttackPlayer()
+    {
+        if (targetVector.magnitude <= TargetStoppingDistance)
+        {
+            target.damageHandler.TakeDamage(dmgCtrl);
         }
     }
     public void CalculateDanger()
