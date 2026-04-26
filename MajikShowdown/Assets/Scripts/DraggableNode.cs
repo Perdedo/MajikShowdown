@@ -35,6 +35,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         pendingDropZone = null;
+        var node = GetComponent<SpellNodeInterface>();
+        node?.SelectOnly();
         OriginZone?.Release(this);
         var inventory = OriginZone as NodeInventory;
         inventory?.Freeze();

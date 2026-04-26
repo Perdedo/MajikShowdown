@@ -154,12 +154,14 @@ public class HexGrid : MonoBehaviour
         {
             spell.validSpell = true;
             spell.primaryNode = t;
-            spell.UpdateSpell();
         }
         else
         {
             spell.validSpell = false;
+            spell.primaryNode = null;
         }
+
+        spell.UpdateSpell();
 
     }
 
@@ -193,7 +195,6 @@ public class HexGrid : MonoBehaviour
         if (node == null) return;
         if (caster == null || caster.inventory == null)
         {
-            Debug.LogError("Caster ou Inventory NULL");
             return;
         }
         caster.inventory.RemoveNodeFromInventory(node);
@@ -214,5 +215,4 @@ public class HexGrid : MonoBehaviour
         rect.localRotation = Quaternion.identity;
         ConfigurateSpell();
     }
-
 }

@@ -83,6 +83,11 @@ public class SpellNodeInterface : MonoBehaviour
             conections[Index].RemoveConection();
             aux.Interface.UpdateConected();
             UpdateConected();
+            var spell = Node.OwnerSpell;
+            if (spell != null)
+            {
+                spell.UpdateSpell();
+            }
         }
 
     }
@@ -117,7 +122,6 @@ public class SpellNodeInterface : MonoBehaviour
 
         if (ui.selectedNode == this)
         {
-            Debug.Log(name + " Deselected");
             ui.spellNodeDescription.HideDescription();
             ui.selectedNode = null;
         }
@@ -125,8 +129,15 @@ public class SpellNodeInterface : MonoBehaviour
         {
             ui.selectedNode = this;
             ui.spellNodeDescription.ShowDescription(Node);
-            Debug.Log(name + " Selected");
         }
+    }
+
+    public void SelectOnly()
+    {
+        var ui = GameManager.Instance.uiController.playerUI;
+        if (ui.selectedNode == this) return;
+        ui.selectedNode = this;
+        ui.spellNodeDescription.ShowDescription(Node);
     }
 
     public void SetNodeBorder(Image img)

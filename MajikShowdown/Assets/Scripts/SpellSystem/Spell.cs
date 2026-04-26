@@ -28,6 +28,16 @@ public class Spell
     public void UpdateSpell()
     {
         //CreateSubSpells();
+        if (primaryNode == null)
+        {
+            SpellCooldown = 0;
+            spellNodes.Clear();
+            triggers.Clear();
+            spellEffects.Clear();
+
+            OnSpellUpdated?.Invoke();
+            return;
+        }
         primaryNode.hierarchy = 0;
         SpellCooldown = 0;
 

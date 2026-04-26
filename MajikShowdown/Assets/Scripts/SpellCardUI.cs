@@ -86,7 +86,7 @@ public class SpellCardUI : MonoBehaviour
     {
         if (boundSpell == null) return; 
         spellNameLabel.text = boundSpell.spellName;
-        cooldownLabel.text = "Cooldown: " + boundSpell.SpellCooldown.ToString("0.0") + "s";
+        cooldownLabel.text = boundSpell.SpellCooldown.ToString("0.0") + "s";
     }
 
     void Delete()

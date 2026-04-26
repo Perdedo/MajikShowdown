@@ -8,6 +8,7 @@ using System.Collections.Generic;
 public class SpellNodeDescription : MonoBehaviour
 {
     [Header("Description Texts")]
+    public Image cooldownIcon;
     public TextMeshProUGUI nodeCooldown;
     public TextMeshProUGUI descText;
     public TextMeshProUGUI statsText;
@@ -21,7 +22,7 @@ public class SpellNodeDescription : MonoBehaviour
     public Image playersToggleIcon;
     public Image enemiesToggleIcon;
     public Image objectsToggleIcon;
-    public TextMeshProUGUI elementText;
+    public Image elementIcon;
 
     public Sprite checkSprite;
     public Sprite xSprite;
@@ -37,6 +38,16 @@ public class SpellNodeDescription : MonoBehaviour
     List<Spell> availableSpells = new List<Spell>();
     public HexGrid grid;
     SpellNode currentNode;
+
+    [Header("Element Sprites")]
+    public Sprite fireIcon;
+    public Sprite iceIcon;
+    public Sprite earthIcon;
+    public Sprite lightningIcon;
+    public Sprite radianceIcon;
+    public Sprite darknessIcon;
+    public Sprite poisonIcon;
+    public Sprite noneIcon;
 
     void Start()
     {
@@ -61,10 +72,10 @@ public class SpellNodeDescription : MonoBehaviour
 
     public void HideDescription()
     {
+        cooldownIcon.gameObject.SetActive(false);
         nodeCooldown.text = "";
         descText.text = "";
         statsText.text = "";
-        elementText.text = "";
         multiplierText.gameObject.SetActive(false);
         collisionsText.gameObject.SetActive(false);
         playersToggle.gameObject.SetActive(false);
@@ -72,11 +83,13 @@ public class SpellNodeDescription : MonoBehaviour
         objectsToggle.gameObject.SetActive(false);
         spellDropdown.gameObject.SetActive(false);
         triggerDropdown.gameObject.SetActive(false);
+        elementIcon.gameObject.SetActive(false);
     }
 
     void NodeCoolDownDescription(SpellNode node)
     {
-        nodeCooldown.text = "Cooldown : +" + node.Cooldown + "s";
+        cooldownIcon.gameObject.SetActive(true);
+        nodeCooldown.text = node.Cooldown + "s";
     }
 
     void SpellDescription(SpellNode node)
@@ -86,35 +99,50 @@ public class SpellNodeDescription : MonoBehaviour
 
     void StatsDescription(SpellNode node)
     {
-        statsText.text = "";
-        StatTypes stats = node.BaseStats;
+        statsText.text = ""; 
+        StatTypes stats = node.BaseStats; 
         SpellType typeNode = node as SpellType;
 
         if (stats.Speed != 0)
-            CreateStatsText("Speed:" + stats.Speed);
-
+        {
+            CreateStatsText("Speed: " + FormatStat(stats.Speed));
+        }
         if (stats.Duration != 0)
-            CreateStatsText("Duration:" + stats.Duration);
-
+        {
+            CreateStatsText("Duration: " + FormatStat(stats.Duration));
+        }
         if (stats.Size != 0)
-            CreateStatsText("Size:" + stats.Size);
-
+        {
+            CreateStatsText("Size: " + FormatStat(stats.Size));
+        }
         if (stats.Damage != 0)
-            CreateStatsText("Damage:" + stats.Damage);
-
+        {
+            CreateStatsText("Damage: " + FormatStat(stats.Damage));
+        }
         if (stats.Piercing != 0)
-            CreateStatsText("Piercing:" + stats.Piercing);
-
+        {
+            CreateStatsText("Piercing: " + FormatStat(stats.Piercing));
+        }
         if (stats.Bounce != 0)
-            CreateStatsText("Bounce:" + stats.Bounce);
-
+        {
+            CreateStatsText("Bounce: " + FormatStat(stats.Bounce));
+        }
         if (stats.Knockback != 0)
-            CreateStatsText("Knockback:" + stats.Knockback);
+        {
+            CreateStatsText("Knockback: " + FormatStat(stats.Knockback));
+        }
     }
 
     void CreateStatsText(string statName)
     {
         statsText.text += statName + "\n";
+    }
+
+    string FormatStat(float value)
+    {
+        if (float.IsInfinity(value)) return value > 0 ? "+\u221E" : "-\u221E";
+        if (float.IsNaN(value)) return "NaN";
+        return value.ToString("F1");
     }
 
     void MultiplierDescription(SpellNode node)
@@ -129,16 +157,16 @@ public class SpellNodeDescription : MonoBehaviour
         multiplierText.gameObject.SetActive(true);
         multiplierText.text = "Multipliers\n";
         var m = typeNode.StatMultipliers;
-        CreateMultiplierText("Speed: ", m.Speed);
-        CreateMultiplierText("Duration: ", m.Duration);
-        CreateMultiplierText("Size: ", m.Size);
-        CreateMultiplierText("Damage: ", m.Damage);
-        CreateMultiplierText("Piercing: ", m.Piercing);
-        CreateMultiplierText("Bounce: ", m.Bounce);
-        CreateMultiplierText("Knockback: ", m.Knockback);
+        CreateMultiplierText("Speed: ", FormatStat(m.Speed));
+        CreateMultiplierText("Duration: ", FormatStat(m.Duration));
+        CreateMultiplierText("Size: ", FormatStat(m.Size));
+        CreateMultiplierText("Damage: ", FormatStat(m.Damage));
+        CreateMultiplierText("Piercing: ", FormatStat(m.Piercing));
+        CreateMultiplierText("Bounce: ", FormatStat(m.Bounce));
+        CreateMultiplierText("Knockback: ", FormatStat(m.Knockback));
     }
 
-    void CreateMultiplierText(string stat, float value)
+    void CreateMultiplierText(string stat, string value)
     {
         multiplierText.text += stat + " x" + value + "\n";
     }
@@ -266,7 +294,7 @@ public class SpellNodeDescription : MonoBehaviour
         triggerDropdown.SetValueWithoutNotify(triggerIndex);
     }
 
-    public static Color GetElementColor(Elements element)
+    /*public static Color GetElementColor(Elements element)
     {
         switch (element)
         {
@@ -295,19 +323,34 @@ public class SpellNodeDescription : MonoBehaviour
             default:
                 return Color.white;
         }
-    }
+    }*/
+
     void UpdateElementColor()
     {
         SpellType typeNode = currentNode as SpellType;
         if (typeNode == null)
         {
-            elementText.gameObject.SetActive(false);
+            elementIcon.gameObject.SetActive(false);
             return;
         }
-        elementText.gameObject.SetActive(true);
-        Color color = GetElementColor(typeNode.Element);
-        elementText.color = color;
-        //elementText.text = typeNode.Element.ToString();
-        elementText.text = "Element: " + typeNode.Element.ToString();
+        elementIcon.gameObject.SetActive(true);
+        elementIcon.sprite = GetElementSprite(typeNode.Element);
+        elementIcon.color = Color.white;
+    }
+
+    Sprite GetElementSprite(Elements element)
+    {
+        switch (element)
+        {
+            case Elements.Fire: return fireIcon;
+            case Elements.Ice: return iceIcon;
+            case Elements.Earth: return earthIcon;
+            case Elements.Lightning: return lightningIcon;
+            case Elements.Radiance: return radianceIcon;
+            case Elements.Darkness: return darknessIcon;
+            case Elements.Poison: return poisonIcon;
+            case Elements.None:
+            default: return noneIcon;
+        }
     }
 }

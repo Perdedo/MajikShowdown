@@ -23,6 +23,7 @@ public class PlayerUI : NetworkBehaviour
     public GameObject runePage;
     public GameObject spellsInventoryPageButton;
     public GameObject runesInventoryPageButton;
+    public TextMeshProUGUI[] spellStats;
 
     [HideInInspector]
     public ConfigData data;
@@ -45,6 +46,7 @@ public class PlayerUI : NetworkBehaviour
         {
             gameObject.SetActive(false);
         }
+        InitializeStatsUI();
     }
 
     public void Update()
@@ -82,6 +84,22 @@ public class PlayerUI : NetworkBehaviour
         }
     }
 
+    void InitializeStatsUI()
+    {
+        float value = 0f;
+        for (int i = 0; i < spellStats.Length; i++)
+        {
+            if (i != 1)
+            {
+                spellStats[i].text = FormatStat(value);
+            }
+            else
+            {
+                spellStats[i].text = FormatStat(value) + "s";
+            }
+        }
+    }
+
     public void OpenEditSpellHUD(Spell spell)
     {
         if (!isLocalPlayer && network)
@@ -95,10 +113,8 @@ public class PlayerUI : NetworkBehaviour
         {
             activeGrid.gameObject.SetActive(false);
         }
-
         activeGrid = spell.grid;
         activeGrid.gameObject.SetActive(true);
-
         SetActiveSpell(spell);
     }
 
@@ -158,14 +174,33 @@ public class PlayerUI : NetworkBehaviour
         }
     }
 
+    string FormatStat(float value)
+    {
+        if (float.IsInfinity(value)) return value > 0 ? "+\u221E" : "-\u221E";
+        if (float.IsNaN(value)) return "NaN";
+        return value.ToString("F1");
+    }
+
     void RefreshSpellInfo()
     {
-        if (!isLocalPlayer && network)
+        Debug.Log("RefreshSpellInfo chamado");
+        if (!isLocalPlayer && network) return;
+        if (activeSpell == null) return;
+        spellCooldownText.text = FormatStat(activeSpell.SpellCooldown) + "s";
+        if (activeSpell.primaryNode == null)
         {
+            InitializeStatsUI();
             return;
         }
-        if (activeSpell == null) return;
-        spellCooldownText.text = "Cooldown: " + activeSpell.SpellCooldown.ToString("0.0") + "s";
+
+        var stats = activeSpell.primaryNode.FinalStats;
+        spellStats[0].text = FormatStat(stats.Speed);
+        spellStats[1].text = FormatStat(stats.Duration) + "s";
+        spellStats[2].text = FormatStat(stats.Size);
+        spellStats[3].text = FormatStat(stats.Damage);
+        spellStats[4].text = FormatStat(stats.Piercing);
+        spellStats[5].text = FormatStat(stats.Bounce);
+        spellStats[6].text = FormatStat(stats.Knockback);
     }
 
     public void CloseEditSpellHUD()
