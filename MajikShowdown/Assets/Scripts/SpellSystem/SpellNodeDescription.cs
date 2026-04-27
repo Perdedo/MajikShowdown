@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEditor;
 using System.Collections.Generic;
+using Mirror;
 //using UnityEditor.Experimental.GraphView;
 
 public class SpellNodeDescription : MonoBehaviour
@@ -11,7 +12,27 @@ public class SpellNodeDescription : MonoBehaviour
     public Image cooldownIcon;
     public TextMeshProUGUI nodeCooldown;
     public TextMeshProUGUI descText;
-    public TextMeshProUGUI statsText;
+    public TextMeshProUGUI healText;
+
+    [Header("Stats UI")]
+    public GameObject nodeStatsContainer;
+
+    public TextMeshProUGUI nodeSpeedText;
+    public Image nodeSpeedImage;
+    public TextMeshProUGUI nodeDurationText;
+    public Image nodeDurationImage;
+    public TextMeshProUGUI nodeSizeText;
+    public Image nodeSizeImage;
+    public TextMeshProUGUI nodeDamageText;
+    public Image nodeDamageImage;
+    public TextMeshProUGUI nodePiercingText;
+    public Image nodePiercingImage;
+    public TextMeshProUGUI nodeBounceText;
+    public Image nodeBounceImage;
+    public TextMeshProUGUI nodeKnockbackText;
+    public Image nodeKnockbackImage;
+    [ShowInInspector]Color activeColor = Color.white;
+    [ShowInInspector]Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 1f);
 
     [Header("Type Node")]
     public TextMeshProUGUI multiplierText;
@@ -63,6 +84,7 @@ public class SpellNodeDescription : MonoBehaviour
         currentNode = node;
         NodeCoolDownDescription(node);
         SpellDescription(node);
+        HealDescription(node);
         StatsDescription(node);
         MultiplierDescription(node);
         CollisionDescription(node);
@@ -75,7 +97,8 @@ public class SpellNodeDescription : MonoBehaviour
         cooldownIcon.gameObject.SetActive(false);
         nodeCooldown.text = "";
         descText.text = "";
-        statsText.text = "";
+        healText.text = "";
+        nodeStatsContainer.gameObject.SetActive(false);
         multiplierText.gameObject.SetActive(false);
         collisionsText.gameObject.SetActive(false);
         playersToggle.gameObject.SetActive(false);
@@ -97,50 +120,46 @@ public class SpellNodeDescription : MonoBehaviour
         descText.text = node.spellDescription;
     }
 
-    void StatsDescription(SpellNode node)
+    void HealDescription(SpellNode node)
     {
-        statsText.text = ""; 
-        StatTypes stats = node.BaseStats; 
-        SpellType typeNode = node as SpellType;
-
-        if (stats.Speed != 0)
+        if (node is HealEffect heal)
         {
-            CreateStatsText("Speed: " + FormatStat(stats.Speed));
+            healText.gameObject.SetActive(true);
+            healText.text = $"Heal: +{FormatStat(heal.HealAmount)}";
         }
-        if (stats.Duration != 0)
+        else
         {
-            CreateStatsText("Duration: " + FormatStat(stats.Duration));
-        }
-        if (stats.Size != 0)
-        {
-            CreateStatsText("Size: " + FormatStat(stats.Size));
-        }
-        if (stats.Damage != 0)
-        {
-            CreateStatsText("Damage: " + FormatStat(stats.Damage));
-        }
-        if (stats.Piercing != 0)
-        {
-            CreateStatsText("Piercing: " + FormatStat(stats.Piercing));
-        }
-        if (stats.Bounce != 0)
-        {
-            CreateStatsText("Bounce: " + FormatStat(stats.Bounce));
-        }
-        if (stats.Knockback != 0)
-        {
-            CreateStatsText("Knockback: " + FormatStat(stats.Knockback));
+            healText.text = "";
+            healText.gameObject.SetActive(false);
         }
     }
 
-    void CreateStatsText(string statName)
+    void StatsDescription(SpellNode node)
     {
-        statsText.text += statName + "\n";
+        StatTypes stats = node.BaseStats;
+
+        nodeStatsContainer.SetActive(true);
+
+        UpdateStatVisual(nodeSpeedText, nodeSpeedImage, stats.Speed);
+        UpdateStatVisual(nodeDurationText, nodeDurationImage, stats.Duration);
+        UpdateStatVisual(nodeSizeText, nodeSizeImage, stats.Size);
+        UpdateStatVisual(nodeDamageText, nodeDamageImage, stats.Damage);
+        UpdateStatVisual(nodePiercingText, nodePiercingImage, stats.Piercing);
+        UpdateStatVisual(nodeBounceText, nodeBounceImage, stats.Bounce);
+        UpdateStatVisual(nodeKnockbackText, nodeKnockbackImage, stats.Knockback);
+    }
+
+    void UpdateStatVisual(TextMeshProUGUI text, Image image, float value)
+    {
+        bool isActive = value != 0;
+        text.text = FormatStat(value);
+        text.color = isActive ? activeColor : inactiveColor;
+        image.color = isActive ? activeColor : inactiveColor;
     }
 
     string FormatStat(float value)
     {
-        if (float.IsInfinity(value)) return value > 0 ? "+\u221E" : "-\u221E";
+        if (float.IsInfinity(value)) return value > 0 ? "+\u221E" : "-\u221E"; //infinity symbol, positive and negative
         if (float.IsNaN(value)) return "NaN";
         return value.ToString("F1");
     }
@@ -191,33 +210,27 @@ public class SpellNodeDescription : MonoBehaviour
     void SetPlayersCollision(bool value)
     {
         if (currentType == null) return;
-        Debug.Log("ANTES: Players Collisions = " + currentType.Collisions.Players);
         var col = currentType.Collisions;
         col.Players = value;
         currentType.Collisions = col;
-        Debug.Log("DEPOIS: Players Collisions = " + currentType.Collisions.Players);
         playersToggleIcon.sprite = value ? checkSprite : xSprite;
     }
 
     void SetEnemiesCollision(bool value)
     {
         if (currentType == null) return;
-        Debug.Log("ANTES: Enemies Collisions = " + currentType.Collisions.Enemies);
         var col = currentType.Collisions;
         col.Enemies = value;
         currentType.Collisions = col;
-        Debug.Log("DEPOIS: Enemies Collisions = " + currentType.Collisions.Enemies);
         enemiesToggleIcon.sprite = value ? checkSprite : xSprite;
     }
 
     void SetObjectsCollision(bool value)
     {
         if (currentType == null) return;
-        Debug.Log("ANTES: Objects Collisions = " + currentType.Collisions.Objects);
         var col = currentType.Collisions;
         col.Objects = value;
         currentType.Collisions = col;
-        Debug.Log("DEPOIS: Objects Collisions = " + currentType.Collisions.Objects);
         objectsToggleIcon.sprite = value ? checkSprite : xSprite;
     }
 

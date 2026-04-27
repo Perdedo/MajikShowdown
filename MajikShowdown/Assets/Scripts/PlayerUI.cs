@@ -183,7 +183,6 @@ public class PlayerUI : NetworkBehaviour
 
     void RefreshSpellInfo()
     {
-        Debug.Log("RefreshSpellInfo chamado");
         if (!isLocalPlayer && network) return;
         if (activeSpell == null) return;
         spellCooldownText.text = FormatStat(activeSpell.SpellCooldown) + "s";
