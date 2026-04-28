@@ -23,12 +23,18 @@ public class Player : Character
     [SerializeField] protected float coyoteTime;
     [SerializeField] protected float jumpBuffering;
     bool jumpBuffer;
+    [Header("Dash Options")]
+    [SerializeField] protected float DashForce;
+    [SerializeField] protected float DashCooldown;
+    [SerializeField] protected float GravityNegationTime;
+    Timer dashTimer = new Timer(), gravityTimer = new Timer();
+    bool dashOnCooldown;
 
     [Header("Push Events")]
     public UnityEvent StartedPushing;
     public UnityEvent StoppedPushing;
     public PushableObject pushing;
-    [HideInInspector]public PlayerInput input;
+    [HideInInspector] public PlayerInput input;
     bool Casting;
     [Header("Network")]
     public bool network = true;
@@ -77,7 +83,7 @@ public class Player : Character
             stopJump();
         }
         HandleRotation();
-        if(isLocalPlayer || !network)
+        if (isLocalPlayer || !network)
         {
             UpdateVelocity();
             if (!isServer && network)
@@ -89,14 +95,24 @@ public class Player : Character
     private void Update()
     {
         Move(directionAnchor.forward * directionInput.y + directionAnchor.right * directionInput.x, speed);
-        /*if (Input.GetKeyDown(KeyCode.T))
+        if (dashOnCooldown)
         {
-            Debug.Log("a");
-            KnockBack(Vector3.forward, 50);
-        }*/
+            if(gravityTimer.timer(GravityNegationTime, Time.deltaTime, false, false))
+            {
+                gravityPaused = false;
+            }
+            if (dashTimer.timer(DashCooldown, Time.deltaTime, false, true))
+            {
+                dashOnCooldown = false;
+                gravityPaused = false;
+                gravityTimer.SetTimer(0);
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            Dash(directionInput);
+        }
         //RotateCamera();
-
-        
     }
     /*void OnDrawGizmos()
     {
@@ -122,10 +138,11 @@ public class Player : Character
     }
     public void MoveInput(InputAction.CallbackContext context)
     {
-        if(!isLocalPlayer && network)
+        if (!isLocalPlayer && network)
         {
             return;
-        }if (!movePaused)
+        }
+        if (!movePaused)
         {
             directionInput = Vector2.ClampMagnitude(context.ReadValue<Vector2>(), 1);
         }
@@ -137,7 +154,7 @@ public class Player : Character
 
     public void JumpInput(InputAction.CallbackContext context)
     {
-        if(!isLocalPlayer && network)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -160,6 +177,35 @@ public class Player : Character
         {
             Jump(false);
             jumpBuffer = false;
+        }
+    }
+    public void DashInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network)
+        {
+            return;
+        }
+        if (!movePaused)
+        {
+            Dash(directionInput);
+        }
+    }
+    public void Dash(Vector2 dir)
+    {
+        if (!dashOnCooldown)
+        {
+            Vector3 v;
+            if(dir.sqrMagnitude != 0)
+            {
+                v= (directionAnchor.transform.right * dir.x) + (directionAnchor.transform.forward * dir.y);
+            }
+            else
+            {
+                v = directionAnchor.transform.forward;
+            }
+            AddExternalVelocity(v.normalized * DashForce);
+            dashOnCooldown = true;
+            gravityPaused = true;
         }
     }
     /*Vector2 lookInput;
@@ -188,7 +234,7 @@ public class Player : Character
         {
             RotateFoward();
         }
-        
+
         //transform.eulerAngles = new Vector3(0, lookAnchor.eulerAngles.y, 0);
     }
     IEnumerator CoyoteTimer()

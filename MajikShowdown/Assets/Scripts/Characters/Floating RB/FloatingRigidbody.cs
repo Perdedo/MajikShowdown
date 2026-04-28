@@ -95,9 +95,10 @@ public class FloatingRigidbody : NetworkBehaviour
     {
         RaycastHit hitInfo = RaycastGround();
         float groundDistance = hitInfo.distance - (floatingHeight + (height / 2));
-        if (!gravityPaused)
+
+        if (hitInfo.collider == null || Mathf.Sign(groundDistance) > 0)
         {
-            if (hitInfo.collider == null || Mathf.Sign(groundDistance) > 0)
+            if (!gravityPaused)
             {
                 if (hitInfo.collider != null || (groundDistance <= terrainBuffer && vState == VerticalState.grounded))
                 {
@@ -110,13 +111,15 @@ public class FloatingRigidbody : NetworkBehaviour
             }
             else
             {
-                localVelocity.y = Mathf.Clamp(groundDistance, -1, 0) * Physics.gravity.y * gravityMultiplier;
+                localVelocity.y = 0;
             }
+
         }
         else
         {
-            localVelocity.y = 0;
+            localVelocity.y = Mathf.Clamp(groundDistance, -1, 0) * Physics.gravity.y * gravityMultiplier;
         }
+
         if (hitInfo.collider != null)
         {
             if (vState == VerticalState.falling)
