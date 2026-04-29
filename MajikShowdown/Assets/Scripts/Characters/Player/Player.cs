@@ -97,7 +97,7 @@ public class Player : Character
         Move(directionAnchor.forward * directionInput.y + directionAnchor.right * directionInput.x, speed);
         if (dashOnCooldown)
         {
-            if(gravityTimer.timer(GravityNegationTime, Time.deltaTime, false, false))
+            if (gravityTimer.timer(GravityNegationTime, Time.deltaTime, false, false))
             {
                 gravityPaused = false;
             }
@@ -108,10 +108,10 @@ public class Player : Character
                 gravityTimer.SetTimer(0);
             }
         }
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        /*if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             Dash(directionInput);
-        }
+        }*/
         //RotateCamera();
     }
     /*void OnDrawGizmos()
@@ -185,9 +185,12 @@ public class Player : Character
         {
             return;
         }
-        if (!movePaused)
+        if (context.phase == InputActionPhase.Started)
         {
-            Dash(directionInput);
+            if (!movePaused)
+            {
+                Dash(directionInput);
+            }
         }
     }
     public void Dash(Vector2 dir)
@@ -195,9 +198,9 @@ public class Player : Character
         if (!dashOnCooldown)
         {
             Vector3 v;
-            if(dir.sqrMagnitude != 0)
+            if (dir.sqrMagnitude != 0)
             {
-                v= (directionAnchor.transform.right * dir.x) + (directionAnchor.transform.forward * dir.y);
+                v = (directionAnchor.transform.right * dir.x) + (directionAnchor.transform.forward * dir.y);
             }
             else
             {

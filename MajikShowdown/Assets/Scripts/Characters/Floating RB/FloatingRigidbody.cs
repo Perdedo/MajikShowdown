@@ -11,7 +11,7 @@ public class FloatingRigidbody : NetworkBehaviour
     [SerializeField] protected float terrainBuffer;
     [SerializeField] protected float BaseFriction = 0.5f;
 
-    [System.NonSerialized] public Vector3 localVelocity, worldVelocity, parentVelocity, externalVelocity, lastHorizontalDirection, hDir, acceleration;
+    [NonSerialized] public Vector3 localVelocity, worldVelocity, parentVelocity, externalVelocity, lastHorizontalDirection, hDir, acceleration;
     public Vector3 HolrizontalDirection { get { return hDir; } }
     [System.NonSerialized] public Rigidbody rb;
     protected float height;
@@ -206,7 +206,14 @@ public class FloatingRigidbody : NetworkBehaviour
         }
         worldVelocity = parentVelocity + Vector3.ClampMagnitude(localVelocity, maxVelocity);
         Vector3 atritionVector = externalVelocity.normalized * BaseFriction;
-        externalVelocity -= atritionVector;
+        if (externalVelocity.sqrMagnitude < 0.01f)
+        {
+            externalVelocity = Vector3.zero;
+        }
+        else
+        {
+            externalVelocity -= atritionVector;
+        }
         Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
         rb.AddForce(velocityChange, ForceMode.VelocityChange);
     }

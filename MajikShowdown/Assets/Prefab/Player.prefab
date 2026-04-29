@@ -256,7 +256,7 @@ MonoBehaviour:
   floatingHeight: 0.4
   gravityMultiplier: 5
   terrainBuffer: 0.3
-  BaseAtrition: 0.5
+  BaseFriction: 0.5
   Fell:
     m_PersistentCalls:
       m_Calls: []
@@ -293,6 +293,9 @@ MonoBehaviour:
   lookAnchor: {fileID: 0}
   coyoteTime: 0.1
   jumpBuffering: 0.25
+  DashForce: 20
+  DashCooldown: 1
+  GravityNegationTime: 0.2
   StartedPushing:
     m_PersistentCalls:
       m_Calls: []
@@ -443,6 +446,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: b41468e9-f2ff-4713-8ab4-6c96f61556ee
     m_ActionName: 'Player/Pause[/DualShock4GamepadHID/start,/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7401529235878125871}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: DashInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2d67f3a7-d10e-4a99-805f-15e7f0e12515
+    m_ActionName: 'Player/Dash[/Keyboard/leftShift]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
