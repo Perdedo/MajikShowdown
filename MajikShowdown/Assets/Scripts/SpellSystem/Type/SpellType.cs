@@ -60,6 +60,10 @@ public class SpellType : SpellNode
         {
             traj = trajectory.GetTrajectory(collider);
         }
+        /*if(trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Orbital)
+        {
+            return traj;
+        }*/
         return traj * FinalStats.Speed;
 
     }

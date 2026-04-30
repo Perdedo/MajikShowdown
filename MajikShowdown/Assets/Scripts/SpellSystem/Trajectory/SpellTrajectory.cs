@@ -21,9 +21,12 @@ public class SpellTrajectory : SpellNode
                 break;
 
             case TrajectoryType.Orbital:
-                float x = Mathf.Cos(collider.LifeTime*5) * 0.1f;
-                float z = Mathf.Sin(collider.LifeTime*5) * 0.1f;
-                dir = new Vector3(x, 0, z);
+                float radius = 4f+collider.stats.Size;
+                float rotationSpeed = 5;
+                float x = Mathf.Cos(collider.LifeTime*rotationSpeed) * radius;
+                float z = Mathf.Sin(collider.LifeTime*rotationSpeed) * radius;
+                Vector3 targetPos = collider.OwnerSpell.Caster.transform.position + new Vector3(x, 0, z);
+                dir = targetPos - collider.transform.position;
                 break;
 
             case TrajectoryType.Spiral:
