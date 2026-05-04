@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class PopupUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -22,6 +23,7 @@ public class PopupUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             popupText.text = text;
         }
+        this.gameObject.GetComponent<Image>().color = Color.white * 1.5f;
         popup.SetActive(false);
     }
 

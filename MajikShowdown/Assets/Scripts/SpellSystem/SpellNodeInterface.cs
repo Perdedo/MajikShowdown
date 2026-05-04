@@ -15,7 +15,8 @@ public class SpellNodeInterface : MonoBehaviour
     public SpellNodeInfos info;
     GameObject usedNodeImg;
     Image borderImg;
-    [HideInInspector]public int acquisitionOrder;
+    [HideInInspector] public int acquisitionOrder;
+    [HideInInspector] public SpellNodeDescription linkedDescription;
     void Awake()
     {
         Node = Instantiate(PrefabNode);
@@ -121,17 +122,18 @@ public class SpellNodeInterface : MonoBehaviour
 
     public void SelectNode()
     {
+        var description = linkedDescription ?? GameManager.Instance.uiController.playerUI.spellNodeDescription;
         var ui = GameManager.Instance.uiController.playerUI;
 
         if (ui.selectedNode == this)
         {
-            ui.spellNodeDescription.HideDescription();
+            description.HideDescription();
             ui.selectedNode = null;
         }
         else
         {
             ui.selectedNode = this;
-            ui.spellNodeDescription.ShowDescription(Node);
+            description.ShowDescription(Node);
         }
     }
 
@@ -140,7 +142,9 @@ public class SpellNodeInterface : MonoBehaviour
         var ui = GameManager.Instance.uiController.playerUI;
         if (ui.selectedNode == this) return;
         ui.selectedNode = this;
-        ui.spellNodeDescription.ShowDescription(Node);
+        var description = linkedDescription
+            ?? ui.spellNodeDescription;
+        description.ShowDescription(Node);
     }
 
     public void SetNodeBorder(Image img)
@@ -173,7 +177,8 @@ public class SpellNodeInterface : MonoBehaviour
         }
         else
         {
-            Debug.Log("No Border Found");
+            img.sprite = info.borderSprite[2];
+            return;
         }
     }
 

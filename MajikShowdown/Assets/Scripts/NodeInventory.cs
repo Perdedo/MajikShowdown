@@ -9,6 +9,7 @@ public class NodeInventory : MonoBehaviour, IDropZone
     private List<SpellNodeInterface> activeNodes = new List<SpellNodeInterface>();
     public ContentSizeFitter contentSizeFitter;
     public LayoutGroup layoutGroup;
+    public SpellNodeDescription nodeDescription;
     public TMP_Dropdown typeDropdown;
     public Toggle onlyUnusedToggle;
     public Toggle recentOrderToggle;
@@ -19,12 +20,12 @@ public class NodeInventory : MonoBehaviour, IDropZone
         GenerateInventory();
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
-            "All Nodes",
-            "Effect Nodes Only",
-            "Stat Nodes Only",
-            "Trajectory Nodes Only",
-            "Trigger Nodes Only",
-            "Type Nodes Only"
+            "All Runes",
+            "Effect Runes Only",
+            "Stat Runes Only",
+            "Trajectory Runes Only",
+            "Trigger Runes Only",
+            "Core Runes Only"
         });
         onlyUnusedToggle.SetIsOnWithoutNotify(false);
         recentOrderToggle.SetIsOnWithoutNotify(false);
@@ -60,6 +61,7 @@ public class NodeInventory : MonoBehaviour, IDropZone
         {
             var instance = Instantiate(prefab, transform);
             instance.acquisitionOrder = currentOrder++;
+            instance.linkedDescription = nodeDescription;
             activeNodes.Add(instance);
             var draggable = instance.GetComponent<DraggableNode>();
             if (draggable != null)
@@ -70,6 +72,7 @@ public class NodeInventory : MonoBehaviour, IDropZone
     }
     public void AddNodeToInventory(SpellNodeInterface node)
     {
+        node.linkedDescription = nodeDescription;
         if (!activeNodes.Contains(node))
         {
             activeNodes.Add(node);
