@@ -13,8 +13,9 @@ public class SpellNodeInterface : MonoBehaviour
     public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
     public NodeConection[] conections;
     public SpellNodeInfos info;
+    GameObject usedNodeImg;
     Image borderImg;
-
+    [HideInInspector]public int acquisitionOrder;
     void Awake()
     {
         Node = Instantiate(PrefabNode);
@@ -30,6 +31,8 @@ public class SpellNodeInterface : MonoBehaviour
     private void Start()
     {
         SetNodeBorder(borderImg);
+        usedNodeImg = transform.GetChild(1).gameObject;
+        usedNodeImg.SetActive(false);
     }
 
     [ContextMenu("Initialize")]
@@ -172,5 +175,21 @@ public class SpellNodeInterface : MonoBehaviour
         {
             Debug.Log("No Border Found");
         }
+    }
+
+    public bool IsUsed()
+    {
+        return usedNodeImg.activeSelf;
+    }
+
+    public NodeCategory GetCategory()
+    {
+        if (Node is SpellEffect) return NodeCategory.Effect;
+        if (Node is SpellStat) return NodeCategory.Stat;
+        if (Node is SpellTrajectory) return NodeCategory.Trajectory;
+        if (Node is SpellTrigger) return NodeCategory.Trigger;
+        if (Node is SpellType) return NodeCategory.Type;
+
+        return NodeCategory.All;
     }
 }
