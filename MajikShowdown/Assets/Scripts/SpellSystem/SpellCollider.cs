@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using Mirror.Examples.Billiards;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -17,6 +18,7 @@ public class SpellCollider : NetworkBehaviour
     Timer HitTimer = new Timer();
     [NonSerialized] public float LifeTime = 0;
     List<TriggerInfo> triggerInfos = new List<TriggerInfo>();
+    [NonSerialized] public Vector3 previousDir;
 
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
     public Collider spellCol;
@@ -56,6 +58,7 @@ public class SpellCollider : NetworkBehaviour
         Vector3 relativeVel = new Vector3(x, 0, z);
         rb.Velocity = centerVel + relativeVel*OwnerSpell.primaryNode.FinalStats.Speed;*/
         rb.Velocity = OwnerSpell.primaryNode.GetVelocity(this);
+        previousDir = rb.Velocity;
         foreach (TriggerInfo t in triggerInfos)
         {
             t.UpdateTrigger();
@@ -204,7 +207,15 @@ public class SpellCollider : NetworkBehaviour
     }
     public void Bounce(CollisionData data)
     {
+        previousDir = Vector3.zero;
         transform.LookAt(transform.position + Vector3.Reflect(rb.Velocity, data.hitNormal));
+        /*Vector3 reflection = Vector3.Reflect(rb.Velocity, data.hitNormal);
+        Quaternion q = Quaternion.FromToRotation(rb.Velocity, reflection);
+        transform.rotation = Quaternion.Euler(transform.rotation.x, q.eulerAngles.y, q.eulerAngles.z);*/
+        /*if(OwnerSpell.primaryNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
+        {
+            previousDir = Vector3.zero;
+        }*/
     }
     public void Die()
     {
@@ -233,6 +244,7 @@ public struct CollisionData
         Physics.ComputePenetration(obj.spellCol,obj.transform.position, obj.transform.rotation,col, col.transform.position, col.transform.rotation, out hitNormal, out Distance);
         Physics.SphereCast(obj.transform.position,Distance+0.1f,Vector3.zero,out RaycastHit hitInfo, 0,col.gameObject.layer);
         hitPoint = hitInfo.point;
+        hitNormal = hitInfo.normal;
         //Physics.Raycast(obj.transform.position, obj.rb.Velocity.normalized, out RaycastHit hit, Distance+0.1f);
         //hitPoint = hit.point;
     }

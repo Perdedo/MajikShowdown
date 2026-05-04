@@ -13,45 +13,59 @@ public class SpellTrajectory : SpellNode
         Vector3 dir = Vector3.zero;
         switch (trajectoryType)
         {
+            case TrajectoryType.Lobbed:
+                if(collider.previousDir == Vector3.zero)
+                {
+                    dir = (collider.transform.forward + Vector3.up).normalized;
+                }
+                else
+                {
+                    dir = (collider.previousDir + Physics.gravity*Time.deltaTime*10).normalized;
+                }
+                break;
             case TrajectoryType.Forward:
                 dir = collider.transform.forward;
                 break;
             case TrajectoryType.ZigZag:
-                dir = collider.ToLookDirection(new Vector3(Mathf.Sin(collider.LifeTime * 10 + math.PI / 2),0,1));
+                dir = collider.ToLookDirection(new Vector3(Mathf.Sin(collider.LifeTime * 10 + math.PI / 2), 0, 1));
                 break;
 
             case TrajectoryType.Orbital:
-                float radius = 4f+collider.stats.Size;
+                float radius = 4f + collider.stats.Size;
                 float rotationSpeed = 5;
-                float x = Mathf.Cos(collider.LifeTime*rotationSpeed) * radius;
-                float z = Mathf.Sin(collider.LifeTime*rotationSpeed) * radius;
+                float x = Mathf.Cos(collider.LifeTime * rotationSpeed) * radius;
+                float z = Mathf.Sin(collider.LifeTime * rotationSpeed) * radius;
                 Vector3 targetPos = collider.OwnerSpell.Caster.transform.position + new Vector3(x, 0, z);
                 dir = targetPos - collider.transform.position;
                 break;
 
+            case TrajectoryType.FollowCaster:
+                dir = Vector3.ClampMagnitude(collider.OwnerSpell.Caster.transform.position - collider.transform.position, 1);
+                break;
+
             case TrajectoryType.Spiral:
-            float X = Mathf.Sin(collider.LifeTime * 10 + math.PI / 2);
-            float Y = Mathf.Sin(collider.LifeTime * 10);
-            dir = collider.ToLookDirection(new Vector3(X,Y,1));
-            break;
+                float X = Mathf.Sin(collider.LifeTime * 10 + math.PI / 2);
+                float Y = Mathf.Sin(collider.LifeTime * 10);
+                dir = collider.ToLookDirection(new Vector3(X, Y, 1));
+                break;
 
             case TrajectoryType.Boomerang:
-            if(collider.LifeTime/OwnerSpell.primaryNode.FinalStats.Duration < 0.5f)
+                if (collider.LifeTime / OwnerSpell.primaryNode.FinalStats.Duration < 0.5f)
                 {
                     dir = collider.transform.forward;
                 }
                 else
                 {
                     Vector3 distance = OwnerSpell.Caster.CastingPoint.position - collider.transform.position;
-                    float multiplier = Mathf.Max(distance.magnitude/(OwnerSpell.primaryNode.FinalStats.Speed*OwnerSpell.primaryNode.FinalStats.Duration/2), 1);
-                    dir = distance.normalized *multiplier;
-                    if(distance.magnitude < 0.1f)
+                    float multiplier = Mathf.Max(distance.magnitude / (OwnerSpell.primaryNode.FinalStats.Speed * OwnerSpell.primaryNode.FinalStats.Duration / 2), 1);
+                    dir = distance.normalized * multiplier;
+                    if (distance.magnitude < 0.1f)
                     {
                         collider.Die();
                     }
                 }
-            //dir = Vector3.forward * Mathf.Sin((lifetime/OwnerSpell.primaryNode.FinalStats.Duration)*Mathf.PI*2);
-            break;
+                //dir = Vector3.forward * Mathf.Sin((lifetime/OwnerSpell.primaryNode.FinalStats.Duration)*Mathf.PI*2);
+                break;
 
             default:
                 dir = Vector3.zero;
