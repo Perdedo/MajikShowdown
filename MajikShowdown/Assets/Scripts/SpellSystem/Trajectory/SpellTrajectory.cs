@@ -13,21 +13,21 @@ public class SpellTrajectory : SpellNode
         Vector3 dir = Vector3.zero;
         switch (trajectoryType)
         {
+            case TrajectoryType.Forward:
+                dir = collider.TrajectoryTransform.Forward;
+                break;
             case TrajectoryType.Lobbed:
-                if(collider.previousDir == Vector3.zero)
+                if(collider.previousVelocity == Vector3.zero)
                 {
-                    dir = (collider.transform.forward + Vector3.up).normalized;
+                    dir = (collider.TrajectoryTransform.Forward + Vector3.up).normalized;
                 }
                 else
                 {
-                    dir = (collider.previousDir + Physics.gravity*Time.deltaTime*10).normalized;
+                    dir = (collider.previousVelocity + Physics.gravity*Time.deltaTime*10).normalized;
                 }
                 break;
-            case TrajectoryType.Forward:
-                dir = collider.transform.forward;
-                break;
             case TrajectoryType.ZigZag:
-                dir = collider.ToLookDirection(new Vector3(Mathf.Sin(collider.LifeTime * 10 + math.PI / 2), 0, 1));
+                dir = collider.ToTrajDirection(new Vector3(Mathf.Sin(collider.LifeTime * 10 + math.PI / 2), 0, 1));
                 break;
 
             case TrajectoryType.Orbital:
@@ -44,15 +44,15 @@ public class SpellTrajectory : SpellNode
                 break;
 
             case TrajectoryType.Spiral:
-                float X = Mathf.Sin(collider.LifeTime * 10 + math.PI / 2);
-                float Y = Mathf.Sin(collider.LifeTime * 10);
-                dir = collider.ToLookDirection(new Vector3(X, Y, 1));
+                float X = -collider.inverseBounceMultiplier * Mathf.Sin(collider.LifeTime * 10 + math.PI / 2);
+                float Y = -Mathf.Sin(collider.LifeTime * 10);
+                dir = collider.ToTrajDirection(new Vector3(X, Y, 1));
                 break;
 
             case TrajectoryType.Boomerang:
                 if (collider.LifeTime / OwnerSpell.primaryNode.FinalStats.Duration < 0.5f)
                 {
-                    dir = collider.transform.forward;
+                    dir = collider.TrajectoryTransform.Forward;
                 }
                 else
                 {
