@@ -23,6 +23,7 @@ public class SpellCollider : NetworkBehaviour
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
     public Collider spellCol;
     [NonSerialized] public int inverseBounceMultiplier = 1;
+    [HideInInspector] public bool UseAcceleration = false;
     public struct TrajectoryInfo
     {
         public Vector3 Forward;
@@ -61,12 +62,16 @@ public class SpellCollider : NetworkBehaviour
         {
             HitOnCooldown = HitTimer.timer(OwnerSpell.primaryNode.HitCooldown, Time.deltaTime, true, false);
         }
-        /*Vector3 centerVel = ToTrajDirection(OwnerSpell.primaryNode.GetVelocity(LifeTime));
-        float x = Mathf.Cos(LifeTime*5) * 1;
-        float z = Mathf.Sin(LifeTime*5) * 1;
-        Vector3 relativeVel = new Vector3(x, 0, z);
-        rb.Velocity = centerVel + relativeVel*OwnerSpell.primaryNode.FinalStats.Speed;*/
-        rb.Velocity = OwnerSpell.primaryNode.GetVelocity(this);
+        if (UseAcceleration)
+        {
+            rb.LerpToVelocity(OwnerSpell.primaryNode.GetVelocity(this), stats.Speed*2);
+            SetTrajectoryForward(rb.Velocity);
+        }
+        else
+        {
+            rb.CancelLerp();
+            rb.Velocity = OwnerSpell.primaryNode.GetVelocity(this);
+        }
         previousVelocity = rb.Velocity;
         foreach (TriggerInfo t in triggerInfos)
         {
@@ -89,7 +94,7 @@ public class SpellCollider : NetworkBehaviour
             }
         }
         transform.LookAt(transform.position + rb.Velocity.normalized);
-        Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
+        //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
 
 
     }

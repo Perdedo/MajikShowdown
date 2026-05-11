@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b2ab1ed0c378944f8357d7513ab20be, type: 3}
-  m_Name: Follow Caster
+  m_Name: FollowAlly
   m_EditorClassIdentifier: Assembly-CSharp::SpellTrajectory
   statRandomizer:
     Cooldown:
@@ -20,8 +20,8 @@ MonoBehaviour:
       max: 0
     Speed:
       type: 1
-      value: 0
-      min: 15
+      value: 10
+      min: 10
       max: 20
     Duration:
       type: 0
@@ -39,10 +39,10 @@ MonoBehaviour:
       min: 0
       max: 0
     Piercing:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 1
+      max: 4
     Bounce:
       type: 0
       value: 0
@@ -53,9 +53,9 @@ MonoBehaviour:
       value: 0
       min: 0
       max: 0
-  spellDescription: Follow Caster - Trajectory - Spell follows the caster
-  color: {r: 0.4611618, g: 0.17880027, b: 0.9245283, a: 1}
-  Cooldown: 1
+  spellDescription: Follow Ally - Trajectory - Follows allies that get close.
+  color: {r: 0.6556604, g: 1, b: 0.96149224, a: 1}
+  Cooldown: 0
   BaseStats:
     Speed: 0
     Duration: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
     Bounce: 0
     Knockback: 0
   Interface: {fileID: 0}
-  hierarchy: 2147483647
+  hierarchy: -1
   ConectedNodes:
   - {fileID: 0}
   - {fileID: 0}
@@ -82,6 +82,5 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
-  ConectionPorts: 000000000000000000000000010000000000000000000000
-  trajectoryType: 5
+  trajectoryType: 6
   HommingRange: 10

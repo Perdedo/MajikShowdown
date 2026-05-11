@@ -8,6 +8,8 @@ public class SpellTrajectory : SpellNode
 {
     public enum TrajectoryType { Forward, Lobbed, Orbital, ZigZag, FollowEnemy, FollowCaster, FollowAlly, Spiral, Boomerang };
     public TrajectoryType trajectoryType;
+    public float HommingRange = 10f;
+    
     public Vector3 GetTrajectory(SpellCollider collider)
     {
         Vector3 dir = Vector3.zero;
@@ -17,13 +19,13 @@ public class SpellTrajectory : SpellNode
                 dir = collider.TrajectoryTransform.Forward;
                 break;
             case TrajectoryType.Lobbed:
-                if(collider.previousVelocity == Vector3.zero)
+                if (collider.previousVelocity == Vector3.zero)
                 {
                     dir = (collider.TrajectoryTransform.Forward + Vector3.up).normalized;
                 }
                 else
                 {
-                    dir = (collider.previousVelocity + Physics.gravity*Time.deltaTime*10).normalized;
+                    dir = (collider.previousVelocity + Physics.gravity * Time.deltaTime * 10).normalized;
                 }
                 break;
             case TrajectoryType.ZigZag:
@@ -40,7 +42,23 @@ public class SpellTrajectory : SpellNode
                 break;
 
             case TrajectoryType.FollowCaster:
+                collider.UseAcceleration = true;
                 dir = Vector3.ClampMagnitude(collider.OwnerSpell.Caster.transform.position - collider.transform.position, 1);
+                break;
+            case TrajectoryType.FollowEnemy:
+                dir = Homming(collider, collider.OwnerSpell.Caster.EnemyLayer);
+                if(dir == Vector3.zero)
+                {
+                    dir = collider.TrajectoryTransform.Forward;
+                }
+                break;
+
+            case TrajectoryType.FollowAlly:
+                dir = Homming(collider, collider.OwnerSpell.Caster.PlayerLayer);
+                if(dir == Vector3.zero)
+                {
+                    dir = collider.TrajectoryTransform.Forward;
+                }
                 break;
 
             case TrajectoryType.Spiral:
@@ -76,6 +94,36 @@ public class SpellTrajectory : SpellNode
             return (dir + t.GetTrajectory(collider)).normalized;
         }*/
         return dir;
+    }
+    public Vector3 Homming(SpellCollider collider, LayerMask targetLayers)
+    {
+        Collider[] hits = Physics.OverlapSphere(collider.transform.position, HommingRange,targetLayers, QueryTriggerInteraction.Ignore);
+        Transform target = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (Collider hit in hits)
+        {
+            if (hit.transform != collider.transform && hit.transform != collider.OwnerSpell.Caster.player.transform)
+            {
+                float distance = Vector3.Distance(collider.transform.position, hit.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    target = hit.transform;
+                }
+            }
+        }
+        if (target == null)
+        {
+            collider.UseAcceleration = false;
+            return Vector3.zero;
+        }
+        if(collider.UseAcceleration == false)
+        {
+            collider.UseAcceleration = true;
+            return Vector3.zero;
+        }
+        return (target.position - collider.transform.position).normalized;
     }
 }
 
