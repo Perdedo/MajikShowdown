@@ -6,7 +6,13 @@ using UnityEngine;
 public class SpellCaster : NetworkBehaviour, IGameCharacter
 {
     public CharacterDamageHandler DamageHandler { get; private set; }
+    [Header("Generic Node")]
+    public SpellNodeInterface genericNodePrefab;
+    [Header("Player Nodes")]
+    public List<SpellNode> ownedNodes = new();
 
+    public List<SpellNode> runtimeNodes = new();
+    public List<NodeInventory> inventories = new();
     public Player player;
     public List<Spell> spells = new List<Spell>();
     public Spell[] equippedSpells;
@@ -28,6 +34,11 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     {
         DamageHandler = GetComponent<CharacterDamageHandler>();
         equippedSpells = new Spell[4];
+        foreach (var nodeData in ownedNodes)
+        {
+            SpellNode runtimeNode = Instantiate(nodeData);
+            runtimeNodes.Add(runtimeNode);
+        }
         /*foreach (var grid in SpellGrids)
         {
             grid.caster = this;
@@ -109,5 +120,17 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         if (index < 0 || index >= equippedSpells.Length) return false;
         var spell = equippedSpells[index];
         return spell != null && !string.IsNullOrEmpty(spell.spellName);
+    }
+
+    public bool IsNodeInUse(SpellNode node)
+    {
+        return node.IsInUse;
+    }
+
+    public void SetNodeInUse(SpellNode node, bool value)
+    {
+        node.IsInUse = value;
+        foreach (var inventory in inventories)
+            inventory.RefreshNodeState(node);
     }
 }

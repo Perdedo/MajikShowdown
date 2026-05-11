@@ -55,6 +55,15 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         spellNode = null;
         SetNodeButtonState(true);
         grid.ConfigurateSpell();
+
+        if (node.isClone && node.inventorySource != null)
+        {
+            var inventory = node.inventorySource.OriginZone as NodeInventory;
+            var spellNode = node.inventorySource.GetComponent<SpellNodeInterface>();
+            if (spellNode != null)
+                GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
+            Destroy(node.gameObject);
+        }
     }
 
     public void OnDrop(PointerEventData eventData)

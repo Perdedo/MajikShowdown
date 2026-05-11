@@ -19,6 +19,8 @@ public abstract class SpellNode : ScriptableObject
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Spell OwnerSpell;
+    public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
+    public bool IsInUse;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {

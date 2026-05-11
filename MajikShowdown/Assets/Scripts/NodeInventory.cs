@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 public class NodeInventory : MonoBehaviour, IDropZone
 {
-    [Header("Prefab Nodes")] public List<SpellNodeInterface> nodePrefabs = new List<SpellNodeInterface>();
+    //[Header("Prefab Nodes")]
+    //public List<SpellNodeInterface> nodePrefabs = new List<SpellNodeInterface>();
     private List<SpellNodeInterface> activeNodes = new List<SpellNodeInterface>();
     public ContentSizeFitter contentSizeFitter;
     public LayoutGroup layoutGroup;
@@ -15,9 +16,12 @@ public class NodeInventory : MonoBehaviour, IDropZone
     public Toggle recentOrderToggle;
     int currentOrder = 0;
     private NodeFilter currentFilter = new NodeFilter();
+    private Dictionary<DraggableNode, int> usageCount = new();
+    public SpellCaster caster;
+    private Dictionary<SpellNode, SpellNodeInterface> nodeMap = new();
     void Start()
     {
-        GenerateInventory();
+        ShowNodeInventory();
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
             "All Runes",
@@ -55,21 +59,40 @@ public class NodeInventory : MonoBehaviour, IDropZone
         if (layoutGroup != null) layoutGroup.enabled = true;
         if (contentSizeFitter != null) contentSizeFitter.enabled = true;
     }
-    public void GenerateInventory()
+    public void ShowNodeInventory()
     {
-        foreach (var prefab in nodePrefabs)
+        foreach (var nodeData in caster.runtimeNodes)
         {
-            var instance = Instantiate(prefab, transform);
-            instance.acquisitionOrder = currentOrder++;
-            instance.linkedDescription = nodeDescription;
-            activeNodes.Add(instance);
-            var draggable = instance.GetComponent<DraggableNode>();
-            if (draggable != null)
-            {
-                draggable.SetOriginZone(this as IDropZone);
-            }
+            ShowNode(nodeData);
         }
     }
+
+    public void ShowNode(SpellNode nodeData)
+    {
+        SpellNodeInterface instance = Instantiate(caster.genericNodePrefab, transform);
+        instance.Setup(nodeData);
+        instance.acquisitionOrder = activeNodes.Count;
+        instance.linkedDescription = nodeDescription;
+        RectTransform rect = instance.GetComponent<RectTransform>();
+        rect.localScale = Vector3.one;
+        rect.localRotation = Quaternion.identity;
+        nodeMap[nodeData] = instance;
+        activeNodes.Add(instance);
+        var draggable = instance.GetComponent<DraggableNode>();
+        if (draggable != null)
+        {
+            draggable.SetOriginZone(this as IDropZone);
+        }
+    }
+
+    public void RefreshNodeState(SpellNode nodeData)
+    {
+        if (nodeMap.TryGetValue(nodeData, out var visual))
+        {
+            visual.SetUsed(nodeData.IsInUse);
+        }
+    }
+
     public void AddNodeToInventory(SpellNodeInterface node)
     {
         node.linkedDescription = nodeDescription;
@@ -126,5 +149,17 @@ public class NodeInventory : MonoBehaviour, IDropZone
             node.gameObject.SetActive(true);
             node.transform.SetSiblingIndex(index++);
         }
+    }
+
+    public void SetNodeInUse(DraggableNode node, bool inUse)
+    {
+        if (!usageCount.ContainsKey(node))
+            usageCount[node] = 0;
+
+        usageCount[node] += inUse ? 1 : -1;
+        if (usageCount[node] < 0) usageCount[node] = 0;
+
+        var spellNode = node.GetComponent<SpellNodeInterface>();
+        spellNode?.SetUsed(usageCount[node] > 0);
     }
 }
