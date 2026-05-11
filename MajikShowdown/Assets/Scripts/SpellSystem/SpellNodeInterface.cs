@@ -13,9 +13,30 @@ public class SpellNodeInterface : MonoBehaviour
     public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
     public NodeConection[] conections;
     public SpellNodeInfos info;
-    Image borderImg;
+    public NodeInventory inventory;
+    public Image borderImg;
 
     void Awake()
+    {
+        Initialize();
+        /*Node = Instantiate(PrefabNode);
+        Node.Interface = this;
+        Node.Initialize();
+        InitializeConections();
+        this.GetComponent<Image>().color *= PrefabNode.color;
+        this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        rect = GetComponent<RectTransform>();
+        borderImg = transform.GetChild(0).GetComponent<Image>();*/
+    }
+
+    private void Start()
+    {
+        SetNodeBorder(borderImg);
+    }
+
+    [ContextMenu("Initialize")]
+
+    public void Initialize()
     {
         Node = Instantiate(PrefabNode);
         Node.Interface = this;
@@ -25,14 +46,9 @@ public class SpellNodeInterface : MonoBehaviour
         this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         rect = GetComponent<RectTransform>();
         borderImg = transform.GetChild(0).GetComponent<Image>();
+        //inventory.commander.InitializeSNI(this);
+        GameManager.Instance.uiController.playerUI.caster.commander.InitializeSNI(this);
     }
-
-    private void Start()
-    {
-        SetNodeBorder(borderImg);
-    }
-
-    [ContextMenu("Initialize")]
     public void InitializeConections()
     {
         conections = new NodeConection[] { new(Node), new(Node), new(Node), new(Node), new(Node), new(Node) };
@@ -89,7 +105,8 @@ public class SpellNodeInterface : MonoBehaviour
                 spell.UpdateSpell();
             }
         }
-
+        //inventory.commander.BreakSNIConnection(this, Index);
+        GameManager.Instance.uiController.playerUI.caster.commander.BreakSNIConnection(this, Index);
     }
     public void UpdateConected()
     {
@@ -104,6 +121,8 @@ public class SpellNodeInterface : MonoBehaviour
                 Node.ConectedNodes[i] = null;
             }
         }
+        //inventory.commander.UpdateSNIConnected(this);
+        GameManager.Instance.uiController.playerUI.caster.commander.UpdateSNIConnected(this);
     }
     public void UpdateConectionPorts()
     {
@@ -114,6 +133,8 @@ public class SpellNodeInterface : MonoBehaviour
                 conections[i].conectionType = ConectionPorts[i];
             }
         }
+        //inventory.commander.UpdateSNIConnectionPorts(this);
+        GameManager.Instance.uiController.playerUI.caster.commander.UpdateSNIConnectionPorts(this);
     }
 
     public void SelectNode()

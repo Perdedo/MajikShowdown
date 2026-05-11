@@ -12,7 +12,7 @@ public class SpellCardUI : MonoBehaviour
     public Button editButton;
     public Button deleteButton;
 
-    Spell boundSpell;
+    public Spell boundSpell;
     bool isSelected;
     Image cardColor;
 
@@ -66,6 +66,7 @@ public class SpellCardUI : MonoBehaviour
         deleteButton.gameObject.SetActive(true);
         cardColor.color = Color.cyan; 
         GameManager.Instance.uiController.playerUI.StartEquipSpell(boundSpell);
+        boundSpell.Caster.commander.SelectSCUI(this);
     }
 
     public void Deselect()
@@ -82,7 +83,7 @@ public class SpellCardUI : MonoBehaviour
         GameManager.Instance.uiController.playerUI.OpenEditSpellHUD(boundSpell);
     }
 
-    void RefreshUI()
+    public void RefreshUI()
     {
         if (boundSpell == null) return; 
         spellNameLabel.text = boundSpell.spellName;
@@ -92,6 +93,7 @@ public class SpellCardUI : MonoBehaviour
     void Delete()
     {
         if (boundSpell == null) return;
+        boundSpell.Caster.commander.DeleteSCUI(this);
         for (int i = 0; i < boundSpell.Caster.equippedSpells.Length; i++)
         {
             if (boundSpell.Caster.equippedSpells[i] == boundSpell)

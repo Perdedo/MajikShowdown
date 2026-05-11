@@ -27,6 +27,7 @@ public class SpellInventoryUI : NetworkBehaviour
             newSpell.spellName = GenerateSpellName();
             HexGrid newGrid = Instantiate(gridPrefab, gridParent);
             newGrid.caster = caster;
+            caster.commander.grids.Add(newGrid);
             newGrid.SetSpell(newSpell);
             newGrid.Initialize();
             newGrid.gameObject.SetActive(false);
@@ -37,7 +38,32 @@ public class SpellInventoryUI : NetworkBehaviour
             caster.spells.Add(newSpell);
             CreateSpellCard(newSpell);
             GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
+            if(!isServer && network)
+            {
+                CMDCreateNewSpell();
+            }
         }
+    }
+
+    [Command]
+    public void CMDCreateNewSpell()
+    {
+        DeselectAllCards();
+        Spell newSpell = new Spell(caster);
+        newSpell.spellName = GenerateSpellName();
+        HexGrid newGrid = Instantiate(gridPrefab, gridParent);
+        newGrid.caster = caster;
+        caster.commander.grids.Add(newGrid);
+        newGrid.SetSpell(newSpell);
+        newGrid.Initialize();
+        newGrid.gameObject.SetActive(false);
+        newSpell.grid = newGrid;
+        Debug.Log(caster);
+        Debug.Log(caster.spells);
+        Debug.Log(newSpell);
+        caster.spells.Add(newSpell);
+        CreateSpellCard(newSpell);
+        GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
     }
 
     string GenerateSpellName()

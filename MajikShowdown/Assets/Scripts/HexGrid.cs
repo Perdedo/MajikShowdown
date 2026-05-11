@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Linq;
-
+using Mirror;
 public class HexGrid : MonoBehaviour
 {
     public List<HexGridNode> hexGridNodes = new List<HexGridNode>();
@@ -162,7 +162,7 @@ public class HexGrid : MonoBehaviour
         }
 
         spell.UpdateSpell();
-
+        caster.commander.ConfigurateSpell(this);
     }
 
     public void ReturnAllNodesToInventory()
@@ -214,5 +214,6 @@ public class HexGrid : MonoBehaviour
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
         ConfigurateSpell();
+        caster.commander.AddNodeToGrid(hex, node, this);
     }
 }

@@ -255,7 +255,7 @@ public class PlayerUI : NetworkBehaviour
 
         caster.equippedSpells[index] = spellToEquip;
         equipSlotTexts[index].text = spellToEquip.spellName;
-
+        CMDEquipSpell(index);
         spellToEquip = null;
 
         if (inventory != null)

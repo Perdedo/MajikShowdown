@@ -13,6 +13,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     public NodeInventory inventory;
     public SpellCollider ProjectilePrefab;
     public Transform CastingPoint;
+    public UICommandController commander;
 
     [Header("Collision Layers")]
     public LayerMask EnemyLayer;
@@ -48,14 +49,15 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         {
             if (equippedSpells[0] != null)
             {
-                if(network)
+                /*if(network)
                 {
                     CMDCastSpell(0);
                 }
                 else
                 {
                     CastSpell(0);
-                }
+                }*/
+                CMDCastSpell(0);
                 //Debug.Log(equippedSpells[0].spellName);
             }
         }

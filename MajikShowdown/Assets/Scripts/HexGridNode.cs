@@ -24,6 +24,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public void SetGrid(HexGrid Grid)
     {
         grid = Grid;
+        grid.caster.commander.InitializeHex(this);
     }
 
     public bool CanReceive(DraggableNode node)
@@ -43,6 +44,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         node.transform.localPosition = Vector3.zero;
         node.SetOriginZone(this);
         ConnectNode(spell);
+        grid.caster.commander.HexReceive(node,this);
     }
 
     public void Release(DraggableNode node)
@@ -55,6 +57,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         spellNode = null;
         SetNodeButtonState(true);
         grid.ConfigurateSpell();
+        grid.caster.commander.HexRelease(this);
     }
 
     public void OnDrop(PointerEventData eventData)
