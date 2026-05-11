@@ -47,6 +47,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
 
     public void Release(DraggableNode node)
     {
+        Debug.Log($"[HexGridNode] Release chamado - spellNode é nulo? {spellNode == null}");
         if (spellNode == null) return;
 
         VerifyNearbyBreakConections(spellNode);
@@ -62,7 +63,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
             var spellNode = node.inventorySource.GetComponent<SpellNodeInterface>();
             if (spellNode != null)
                 GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
-            Destroy(node.gameObject);
+            //Destroy(node.gameObject);
         }
     }
 
@@ -133,7 +134,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         {
             return true;
         }*/
-        for (int i  = 0; i < neighbours.Length; i++)
+        for (int i = 0; i < neighbours.Length; i++)
         {
             if (neighbours[i] != null && neighbours[i].spellNode != null && neighbours[i].spellNode != spell)
             {
@@ -148,9 +149,9 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
 
     public void VerifyNearbyBreakConections(SpellNodeInterface spellNode)
     {
-        for (int i = 0; i < neighbours.Length;i++)
+        for (int i = 0; i < neighbours.Length; i++)
         {
-            if(neighbours[i] != null && neighbours[i].spellNode != null)
+            if (neighbours[i] != null && neighbours[i].spellNode != null)
             {
                 spellNode.BreakConection(i);
             }

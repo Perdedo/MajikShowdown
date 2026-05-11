@@ -7,7 +7,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [HideInInspector] public Canvas canvas;
     [HideInInspector] public RectTransform rectTransform;
     [HideInInspector] public CanvasGroup canvasGroup;
-    int savedSiblingIndex;
+    int savedListIndex = 0;
 
     public IDropZone OriginZone { get; private set; }
     private IDropZone pendingDropZone;
@@ -35,13 +35,16 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!CanDrag()) return;
-
         pendingDropZone = null;
         canvas = GetComponentInParent<Canvas>();
         var node = GetComponent<SpellNodeInterface>();
         node?.SelectOnly();
         var inventory = OriginZone as NodeInventory;
-        savedSiblingIndex = transform.GetSiblingIndex();
+        var nodeInterface = GetComponent<SpellNodeInterface>();
+        if (inventory != null && nodeInterface != null)
+        {
+            savedListIndex = inventory.GetNodeIndex(nodeInterface);
+        }
         if (inventory != null && !isClone)
         {
             inventory.Freeze();
@@ -78,22 +81,36 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             clone.canvasGroup = cloneGO.GetComponent<CanvasGroup>();
             clone.canvasGroup.alpha = 1f;
             clone.canvasGroup.blocksRaycasts = true;
+
+            var cloneInterface = cloneGO.GetComponent<SpellNodeInterface>();
+            if (cloneInterface != null)
+            {
+                cloneInterface.linkedDescription = GameManager.Instance.uiController.playerUI.spellNodeDescription;
+            }
+
             pendingDropZone.Receive(clone);
             inventory.Receive(this);
-            transform.SetSiblingIndex(savedSiblingIndex);
+            var nodeInterface = GetComponent<SpellNodeInterface>();
+            if (nodeInterface != null)
+            {
+                inventory.InsertNodeAt(nodeInterface, savedListIndex);
+            }
             var spellNode = GetComponent<SpellNodeInterface>();
             if (spellNode != null)
+            {
                 GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, true);
+            }
         }
         else if (pendingDropZone != null)
         {
             if (isClone && pendingDropZone is NodeInventory)
             {
                 var source = inventorySource;
-                var inv = source.OriginZone as NodeInventory;
                 var spellNode = source.GetComponent<SpellNodeInterface>();
                 if (spellNode != null)
+                {
                     GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
+                }
                 Destroy(gameObject);
                 return;
             }
@@ -104,26 +121,32 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             if (isClone)
             {
                 var source = inventorySource;
-                var inv = source.OriginZone as NodeInventory;
                 var spellNode = source.GetComponent<SpellNodeInterface>();
                 if (spellNode != null)
+                {
                     GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
+                }
                 Destroy(gameObject);
                 return;
             }
-            OriginZone?.Receive(this);
-            transform.SetSiblingIndex(savedSiblingIndex);
+            inventory.Receive(this);
+            var nodeInterface = GetComponent<SpellNodeInterface>();
+            if (nodeInterface != null)
+            {
+                inventory.InsertNodeAt(nodeInterface, savedListIndex);
+            }
         }
-
         pendingDropZone = null;
     }
 
     private bool CanDrag()
     {
-        var node = GetComponent<SpellNodeInterface>();
-
-        if (node != null && node.Node.IsInUse) return false;
         if (!GameManager.Instance.uiController.playerUI.editSpellPanel.activeInHierarchy) return false;
+        if (!isClone)
+        {
+            var node = GetComponent<SpellNodeInterface>();
+            if (node != null && node.Node.IsInUse) return false;
+        }
         return true;
     }
 }

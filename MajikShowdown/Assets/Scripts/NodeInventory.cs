@@ -48,6 +48,7 @@ public class NodeInventory : MonoBehaviour, IDropZone
         node.SetOriginZone(this as IDropZone);
         var spellNode = node.GetComponent<SpellNodeInterface>();
         if (spellNode != null) AddNodeToInventory(spellNode);
+        ApplyFilter();
     }
     public void Freeze()
     {
@@ -154,12 +155,30 @@ public class NodeInventory : MonoBehaviour, IDropZone
     public void SetNodeInUse(DraggableNode node, bool inUse)
     {
         if (!usageCount.ContainsKey(node))
+        {
             usageCount[node] = 0;
+        }
 
         usageCount[node] += inUse ? 1 : -1;
         if (usageCount[node] < 0) usageCount[node] = 0;
 
         var spellNode = node.GetComponent<SpellNodeInterface>();
         spellNode?.SetUsed(usageCount[node] > 0);
+    }
+
+    public int GetNodeIndex(SpellNodeInterface node)
+    {
+        return activeNodes.IndexOf(node);
+    }
+
+    public void InsertNodeAt(SpellNodeInterface node, int index)
+    {
+        if (activeNodes.Contains(node))
+        {
+            activeNodes.Remove(node);
+        }
+        index = Mathf.Clamp(index, 0, activeNodes.Count);
+        activeNodes.Insert(index, node);
+        ApplyFilter();
     }
 }
