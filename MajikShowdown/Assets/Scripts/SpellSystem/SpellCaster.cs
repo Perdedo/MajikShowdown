@@ -37,6 +37,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         foreach (var nodeData in ownedNodes)
         {
             SpellNode runtimeNode = Instantiate(nodeData);
+            runtimeNode.Initialize();
             runtimeNodes.Add(runtimeNode);
         }
         /*foreach (var grid in SpellGrids)
