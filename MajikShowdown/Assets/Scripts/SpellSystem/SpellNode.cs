@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
@@ -9,7 +8,7 @@ public abstract class SpellNode : ScriptableObject
     public StatRandomizer statRandomizer;
     [Header("Display")]
     public string spellDescription;
-    public Color color = Color.white;
+    [HideInInspector] public Color color = Color.white;
     [Header("Final Stats Debug")]
     public float Cooldown = 0;
     public StatTypes BaseStats = new StatTypes();
@@ -19,6 +18,8 @@ public abstract class SpellNode : ScriptableObject
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Spell OwnerSpell;
+    [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
+    public bool IsInUse;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {
@@ -56,9 +57,21 @@ public abstract class SpellNode : ScriptableObject
     }*/
     public virtual void Initialize()
     {
+        SetupNodeVisual();
         RandomizeStats();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }
+
+    public virtual void SetupNodeVisual()
+    {
+    }
+
+    protected static Color HexToColor(string hex)
+    {
+        ColorUtility.TryParseHtmlString("#" + hex, out Color color);
+        return color;
+    }
+
     public virtual List<SpellNode> GetSpellList(List<SpellNode> list)
     {
         list.Add(this);
