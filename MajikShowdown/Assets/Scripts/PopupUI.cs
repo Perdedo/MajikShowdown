@@ -12,7 +12,6 @@ public class PopupUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public GameObject popup;
     public Vector2 popupOffsetPos;
     TextMeshProUGUI popupText;
-    public bool isElementPopup;
 
 
     void Start()
@@ -20,18 +19,14 @@ public class PopupUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (popup == null) return;
 
         popupText = popup.GetComponentInChildren<TextMeshProUGUI>();
+
         if (popupText != null)
         {
-            if(isElementPopup)
-            {
-                popupText.text = "bla";
-            }
-            else
-            {
-                popupText.text = text;
-            }
+            popupText.text = text;
         }
-        this.gameObject.GetComponent<Image>().color = Color.white * 1.5f;
+
+        GetComponent<Image>().color = Color.white * 1.5f;
+
         popup.SetActive(false);
     }
 
@@ -66,5 +61,15 @@ public class PopupUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     void HidePopup()
     {
         popup.SetActive(false);
+    }
+
+    public void SetElementText(string newText)
+    {
+        text = newText;
+
+        if (popupText != null)
+        {
+            popupText.text = text;
+        }
     }
 }

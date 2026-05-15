@@ -10,7 +10,7 @@ public class SpellNodeInterface : MonoBehaviour
 
     public SpellNode Node;
 
-    public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
+    //public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
     public NodeConection[] conections;
 
     public SpellNodeInfos info;
@@ -179,35 +179,30 @@ public class SpellNodeInterface : MonoBehaviour
 
     public void SetNodeBorder(Image img)
     {
-        if (Node.ConectionPorts[0] == NodeConection.Conections.Circle && Node.ConectionPorts[1] == NodeConection.Conections.Square)
+        switch (GetCategory())
         {
-            img.sprite = info.borderSprite[0];
-            return;
-        }
-        else if (Node.ConectionPorts[0] == NodeConection.Conections.None && Node.ConectionPorts[3] == NodeConection.Conections.Circle)
-        {
-            img.sprite = info.borderSprite[1];
-            return;
-        }
-        else if (Node.ConectionPorts[0] == NodeConection.Conections.None && Node.ConectionPorts[2] == NodeConection.Conections.Triangle)
-        {
-            img.sprite = info.borderSprite[2];
-            return;
-        }
-        else if (Node.ConectionPorts[0] == NodeConection.Conections.Square && Node.ConectionPorts[1] == NodeConection.Conections.None)
-        {
-            img.sprite = info.borderSprite[3];
-            return;
-        }
-        else if (Node.ConectionPorts[0] == NodeConection.Conections.None && Node.ConectionPorts[1] == NodeConection.Conections.Penta)
-        {
-            img.sprite = info.borderSprite[4];
-            return;
-        }
-        else
-        {
-            img.sprite = info.borderSprite[2];
-            return;
+            case NodeCategory.Type:
+                img.sprite = info.coreBorder;
+                break;
+
+            case NodeCategory.Effect:
+                img.sprite = info.effectBorder;
+                break;
+
+            case NodeCategory.Trajectory:
+                img.sprite = info.trajectoryBorder;
+                break;
+
+            case NodeCategory.Stat:
+                img.sprite = info.statBorder;
+                break;
+
+            case NodeCategory.Trigger:
+                img.sprite = info.triggerBorder;
+                break;
+            /*case NodeCategory.CastingPoint:
+                img.sprite = info.castingPointBorder;
+                break;*/
         }
     }
 
@@ -234,6 +229,8 @@ public class SpellNodeInterface : MonoBehaviour
         if (Node is SpellTrigger) return NodeCategory.Trigger;
 
         if (Node is SpellType) return NodeCategory.Type;
+
+        //if (Node as SpellCastingPoint) return NodeCategory.CastingPoint;
 
         return NodeCategory.All;
     }

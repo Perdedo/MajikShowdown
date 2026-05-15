@@ -24,12 +24,12 @@ public class NodeInventory : MonoBehaviour, IDropZone
         ShowNodeInventory();
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
-            "All Runes",
-            "Effect Runes Only",
-            "Stat Runes Only",
-            "Trajectory Runes Only",
-            "Trigger Runes Only",
-            "Core Runes Only"
+            "Show All Runes",
+            "Show Effect Runes",
+            "Show Stat Runes",
+            "Show Trajectory Runes",
+            "Show Trigger Runes",
+            "Show Core Runes"
         });
         onlyUnusedToggle.SetIsOnWithoutNotify(false);
         recentOrderToggle.SetIsOnWithoutNotify(false);

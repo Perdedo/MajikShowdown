@@ -349,6 +349,12 @@ public class SpellNodeDescription : MonoBehaviour
         elementIcon.gameObject.SetActive(true);
         elementIcon.sprite = GetElementSprite(typeNode.Element);
         elementIcon.color = Color.white;
+        PopupUI popup = elementIcon.GetComponent<PopupUI>();
+
+        if (popup != null)
+        {
+            popup.SetElementText(typeNode.Element.ToString());
+        }
     }
 
     Sprite GetElementSprite(Elements element)
