@@ -24,6 +24,8 @@ public class SpellCollider : NetworkBehaviour
     public Collider spellCol;
     [NonSerialized] public int inverseBounceMultiplier = 1;
     [HideInInspector] public bool UseAcceleration = false;
+    [NonSerialized] public Transform SpawnTransform;
+    [NonSerialized] public Vector3 SpawnPoint;
     public struct TrajectoryInfo
     {
         public Vector3 Forward;

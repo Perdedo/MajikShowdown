@@ -1,4 +1,5 @@
 using System;
+//using System.Numerics;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -37,8 +38,16 @@ public class SpellTrajectory : SpellNode
                 float rotationSpeed = 5;
                 float x = Mathf.Cos(collider.LifeTime * rotationSpeed) * radius;
                 float z = Mathf.Sin(collider.LifeTime * rotationSpeed) * radius;
-                Vector3 targetPos = collider.OwnerSpell.Caster.transform.position + new Vector3(x, 0, z);
-                dir = targetPos - collider.transform.position;
+                Vector3 center;
+                if (collider.SpawnTransform != null)
+                {
+                    center = collider.SpawnTransform.position;
+                }
+                else
+                {
+                    center = collider.SpawnPoint;
+                }
+                dir = center + new Vector3(x, 0, z) - collider.transform.position;
                 break;
 
             case TrajectoryType.FollowCaster:
