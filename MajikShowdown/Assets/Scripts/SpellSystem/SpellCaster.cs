@@ -101,17 +101,27 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
         if (spell.validSpell)
         {
-            InstantiateSpellCollider(spell, CastingPoint.position,transform.forward, true);
+            InstantiateSpellCollider(spell, CastingPoint,transform.forward, true);
         }
         
     }
 
     public void InstantiateSpellCollider(Spell Spell, Vector3 pos, Vector3 lookDir, bool primary = false)
     {
-        GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, Quaternion.LookRotation(lookDir,Vector3.up));
+        GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, Quaternion.LookRotation(lookDir, Vector3.up));
         SpellCollider col = g.GetComponent<SpellCollider>();
+        col.SpawnPoint = pos;
         //col.OwnerSpell = Spell;
         //col.primarySpell = primary;
+        col.Initialize(Spell, primary);
+        //NetworkServer.Spawn(g);
+    }
+    public void InstantiateSpellCollider(Spell Spell, Transform castPoint, Vector3 lookDir, bool primary = false)
+    {
+        GameObject g = Instantiate(ProjectilePrefab.gameObject, castPoint.position, Quaternion.LookRotation(lookDir,Vector3.up));
+        SpellCollider col = g.GetComponent<SpellCollider>();
+        col.SpawnTransform = castPoint;
+        col.SpawnPoint = castPoint.position;
         col.Initialize(Spell, primary);
         //NetworkServer.Spawn(g);
     }
