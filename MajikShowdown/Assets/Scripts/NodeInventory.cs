@@ -72,7 +72,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     [Command]
     public void CMDInitialize()
     {
-        //ShowNodeInventory();
+        ShowNodeInventory();
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
             "Show All Runes",
