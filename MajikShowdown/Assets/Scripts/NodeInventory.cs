@@ -72,7 +72,8 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     [Command]
     public void CMDInitialize()
     {
-        ShowNodeInventory();
+        //ShowNodeInventory();
+        ServerShowNodeInventory();
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
             "Show All Runes",
@@ -152,6 +153,28 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         foreach (var nodeData in caster.runtimeNodes)
         {
             ShowNode(nodeData);
+        }
+    }
+    public void ServerShowNodeInventory()
+    {
+        foreach (var nodeData in caster.runtimeNodes)
+        {
+            SpellNodeInterface instance = activeNodes[caster.runtimeNodes.IndexOf(nodeData)];
+            instance.Setup(nodeData);
+            instance.acquisitionOrder = activeNodes.Count;
+            instance.linkedDescription = nodeDescription;
+            RectTransform rect = instance.GetComponent<RectTransform>();
+            rect.localScale = Vector3.one;
+            rect.localRotation = Quaternion.identity;
+            nodeMap[nodeData] = instance;
+            //activeNodes.Add(instance);
+            //commander.drags.Add(instance.GetComponent<DraggableNode>());
+            //commander.interfaces.Add(instance);
+            var draggable = instance.GetComponent<DraggableNode>();
+            if (draggable != null)
+            {
+                draggable.SetOriginZone(this as IDropZone);
+            }
         }
     }
     public void ShowNode(SpellNode nodeData)
