@@ -52,8 +52,14 @@ public class Enemy : Character
         attackTimer.timedEvent.AddListener(AttackPlayer);
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
-        StartCoroutine(AICalculation());
+        StartCoroutine(StartAICalc());
         //targetLastSeen = targetVector;
+    }
+
+    IEnumerator StartAICalc()
+    {
+        yield return new WaitUntil(() => FlowFieldManager.instance != null);
+        StartCoroutine(AICalculation());
     }
     void Update()
     {

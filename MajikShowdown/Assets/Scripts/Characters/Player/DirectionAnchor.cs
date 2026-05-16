@@ -17,7 +17,7 @@ public class DirectionAnchor : NetworkBehaviour
             return;
         }
         MoveAnchor();
-        if(!isServer && player.network)
+        if(!isServer && player.network && NetworkClient.ready)
         {
             CMDMoveAnchor();
         }

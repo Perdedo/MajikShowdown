@@ -577,6 +577,10 @@ public class UIController : MonoBehaviour
     bool playerCardCreated = false;
     public void UpdatePlayerList()
     {
+        if(SceneManager.GetActiveScene().name != "Room")
+        {
+            return;
+        }
         if(!playerCardCreated)
         {
             CreateHostPlayerCard();

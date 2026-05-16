@@ -41,15 +41,37 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
             runtimeNode.Initialize();
             runtimeNodes.Add(runtimeNode);
         }
+        
         /*foreach (var grid in SpellGrids)
         {
             grid.caster = this;
         }*/
     }
 
+    public override void OnStartAuthority()
+    {
+        if (!isServer)
+        {
+            CMDInitialize();
+        }
+    }
+
+    [Command]
+    public void CMDInitialize()
+    {
+        DamageHandler = GetComponent<CharacterDamageHandler>();
+        equippedSpells = new Spell[4];
+        foreach (var nodeData in ownedNodes)
+        {
+            SpellNode runtimeNode = Instantiate(nodeData);
+            runtimeNode.Initialize();
+            runtimeNodes.Add(runtimeNode);
+        }
+    }
+
     private void Update()
     {
-        if((!isLocalPlayer || !isServer) && network)
+        if(!isLocalPlayer && network)
         {
             return;
         }
@@ -69,6 +91,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
                 {
                     CastSpell(0);
                 }*/
+                Debug.Log("Cast");
                 CMDCastSpell(0);
                 //Debug.Log(equippedSpells[0].spellName);
             }

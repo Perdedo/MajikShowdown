@@ -2,6 +2,7 @@ using Mirror;
 using Mirror.BouncyCastle.Utilities.Encoders;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using static NodeConection;
@@ -9,12 +10,31 @@ using static NodeConection;
 public class UICommandController : NetworkBehaviour
 {
     public List<HexGrid> grids = new List<HexGrid>();
+    public List<SpellCardUI> cards = new List<SpellCardUI>();
+    public List<DraggableNode> drags = new List<DraggableNode>();
+    public List<SpellNodeInterface> interfaces = new List<SpellNodeInterface>();
+
+
     public void ConfigurateSpell(HexGrid grid)
     {
         if(isLocalPlayer && !isServer)
         {
-            CMDConfigurateSpell(grids.IndexOf(grid));
+            /*if(NetworkClient.ready)
+            {
+                CMDConfigurateSpell(grids.IndexOf(grid));
+            }
+            else
+            {
+                StartCoroutine(WaitConfigurateSpell(grid));
+            }*/
+            StartCoroutine(WaitConfigurateSpell(grid));
         }
+    }
+    IEnumerator WaitConfigurateSpell(HexGrid grid)
+    {
+        yield return new WaitUntil(() => grids.Contains(grid));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
     [Command]
@@ -40,7 +60,6 @@ public class UICommandController : NetworkBehaviour
             grids[ind].spell.validSpell = false;
             grids[ind].spell.primaryNode = null;
         }
-
         grids[ind].spell.UpdateSpell();
     }
 
@@ -49,8 +68,23 @@ public class UICommandController : NetworkBehaviour
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDReturnAllNodesToInventory(grids.IndexOf(grid));
+            /*if(NetworkClient.ready)
+            {
+                CMDReturnAllNodesToInventory(grids.IndexOf(grid));
+            }
+            else
+            {
+                StartCoroutine(WaitReturnAllNodesToInventory(grid));
+            }*/
+            StartCoroutine(WaitReturnAllNodesToInventory(grid));
         }
+    }
+
+    IEnumerator WaitReturnAllNodesToInventory(HexGrid grid)
+    {
+        yield return new WaitUntil(() => grids.Contains(grid));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDReturnAllNodesToInventory(grids.IndexOf(grid));
     }
 
     [Command]
@@ -83,21 +117,35 @@ public class UICommandController : NetworkBehaviour
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDAddNodeToGrid(hex.gameObject, node.gameObject, grids.IndexOf(grid));
+            /*if (NetworkClient.ready)
+            {
+                CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), interfaces.IndexOf(node), grids.IndexOf(grid));
+            }
+            else
+            {
+                StartCoroutine(WaitAddNodeToGrid(hex, node, grid));
+            }*/
+            StartCoroutine(WaitAddNodeToGrid(hex, node, grid));
         }
+    }
+    IEnumerator WaitAddNodeToGrid(HexGridNode hex, SpellNodeInterface node, HexGrid grid)
+    {
+        yield return new WaitUntil(() => interfaces.Contains(node));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), interfaces.IndexOf(node), grids.IndexOf(grid));
     }
 
     [Command]
-    public void CMDAddNodeToGrid(GameObject goHex, GameObject goNode, int ind)
+    public void CMDAddNodeToGrid(int hexInd, int nodeInd, int gridInd)
     {
-        HexGridNode hex = goHex.GetComponent<HexGridNode>();
-        SpellNodeInterface node = goNode.GetComponent<SpellNodeInterface>();
+        HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
+        SpellNodeInterface node = interfaces[nodeInd];
         if (node == null) return;
-        if (grids[ind].caster == null || grids[ind].caster.inventory == null)
+        if (grids[gridInd].caster == null || grids[gridInd].caster.inventory == null)
         {
             return;
         }
-        grids[ind].caster.inventory.RemoveNodeFromInventory(node);
+        grids[gridInd].caster.inventory.RemoveNodeFromInventory(node);
         if (node.hexGridNode != null)
         {
             node.hexGridNode.VerifyNearbyBreakConections(node);
@@ -106,29 +154,34 @@ public class UICommandController : NetworkBehaviour
         }
         hex.spellNode = node;
         node.hexGridNode = hex;
-        grids[ind].spellNodes[hex.index] = node;
+        grids[gridInd].spellNodes[hex.index] = node;
         hex.SetNodeButtonState(false);
         RectTransform rect = node.GetComponent<RectTransform>();
-        node.transform.SetParent(grids[ind].nodeContainer, false);
+        node.transform.SetParent(grids[gridInd].nodeContainer, false);
         rect.position = hex.rect.position;
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
-        grids[ind].ConfigurateSpell();
+        grids[gridInd].ConfigurateSpell();
     }
 
-    public void InitializeSNI(SpellNodeInterface sni)
+    /*public void InitializeSNI(SpellNodeInterface sni)
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDInitializeSNI(sni.gameObject);
+            CMDInitializeSNI(interfaces.IndexOf(sni));
         }
     }
 
     [Command]
-    public void CMDInitializeSNI(GameObject go)
+    public void CMDInitializeSNI(int index)
     {
-        SpellNodeInterface sni = go.GetComponent<SpellNodeInterface>();
-        sni.Node = Instantiate(sni.PrefabNode);
+        SpellNodeInterface sni = interfaces[index];
+        sni.rect = GetComponent<RectTransform>();
+
+        sni.borderImg = transform.GetChild(0).GetComponent<Image>();
+
+        sni.usedNodeImg = transform.GetChild(1).gameObject;
+        /*sni.Node = Instantiate(sni.PrefabNode);
         sni.Node.Interface = sni;
         sni.Node.Initialize();
         sni.InitializeConections();
@@ -136,21 +189,35 @@ public class UICommandController : NetworkBehaviour
         sni.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         sni.rect = sni.GetComponent<RectTransform>();
         sni.borderImg = sni.transform.GetChild(0).GetComponent<Image>();
-    }
+    }*/
 
 
     public void UpdateSNIConnected(SpellNodeInterface sni)
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDUpdateSNIConnected(sni.gameObject);
+            /*if (NetworkClient.ready)
+            {
+                CMDUpdateSNIConnected(interfaces.IndexOf(sni));
+            }
+            else
+            {
+                StartCoroutine(WaitUpdateSNIConnected(sni));
+            }*/
+            StartCoroutine(WaitUpdateSNIConnected(sni));
         }
+    }
+    IEnumerator WaitUpdateSNIConnected(SpellNodeInterface sni)
+    {
+        yield return new WaitUntil(() => interfaces.Contains(sni));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDUpdateSNIConnected(interfaces.IndexOf(sni));
     }
 
     [Command]
-    public void CMDUpdateSNIConnected(GameObject go)
+    public void CMDUpdateSNIConnected(int index)
     {
-        SpellNodeInterface sni = go.GetComponent<SpellNodeInterface>();
+        SpellNodeInterface sni = interfaces[index];
         for (int i = 0; i < sni.conections.Length; i++)
         {
             if (sni.conections[i] != null)
@@ -167,14 +234,28 @@ public class UICommandController : NetworkBehaviour
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDBreakSNIConnection(sni.gameObject, Index);
+            /*if (NetworkClient.ready)
+            {
+                CMDBreakSNIConnection(interfaces.IndexOf(sni), Index);
+            }
+            else
+            {
+                StartCoroutine(WaitBreakSNIConnection(sni, Index));
+            }*/
+            StartCoroutine(WaitBreakSNIConnection(sni, Index));
         }
+    }
+    IEnumerator WaitBreakSNIConnection(SpellNodeInterface sni, int Index)
+    {
+        yield return new WaitUntil(() => interfaces.Contains(sni));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDBreakSNIConnection(interfaces.IndexOf(sni), Index);
     }
 
     [Command]
-    public void CMDBreakSNIConnection(GameObject go, int Index)
+    public void CMDBreakSNIConnection(int nodeInd, int Index)
     {
-        SpellNodeInterface sni = go.GetComponent<SpellNodeInterface>();
+        SpellNodeInterface sni = interfaces[nodeInd];
         if (Index >= sni.conections.Length)
         {
             return;
@@ -196,39 +277,83 @@ public class UICommandController : NetworkBehaviour
         }
     }
 
-    public void UpdateSNIConnectionPorts(SpellNodeInterface sni)
+    /*public void UpdateSNIConnectionPorts(SpellNodeInterface sni)
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDUpdateSNIConnectionPorts(sni.gameObject);
+            CMDUpdateSNIConnectionPorts(interfaces.IndexOf(sni));
         }
     }
-
     [Command]
-    public void CMDUpdateSNIConnectionPorts(GameObject go)
+    public void CMDUpdateSNIConnectionPorts(int index)
     {
-        SpellNodeInterface sni = go.GetComponent<SpellNodeInterface>();
+        SpellNodeInterface sni = interfaces[index];
         for (int i = 0; i < sni.conections.Length; i++)
         {
             if (sni.conections[i] != null)
             {
-                sni.conections[i].conectionType = sni.ConectionPorts[i];
+                sni.conections[i].conectionType = sni.Node.ConectionPorts[i];
             }
         }
+    }*/
+
+    public void SetUsedSNI(SpellNodeInterface sni, bool used)
+    {
+        if (isLocalPlayer && !isServer)
+        {
+            /*if (NetworkClient.ready)
+            {
+                CMDSetUsedSNI(interfaces.IndexOf(sni), used);
+            }
+            else
+            {
+                StartCoroutine(WaitSetUsedSNI(sni, used));
+            }*/
+            StartCoroutine(WaitSetUsedSNI(sni, used));
+        }
+    }
+    IEnumerator WaitSetUsedSNI(SpellNodeInterface sni, bool used)
+    {
+        yield return new WaitUntil(() => interfaces.Contains(sni));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSetUsedSNI(interfaces.IndexOf(sni), used);
+    }
+
+    [Command]
+    public void CMDSetUsedSNI(int index, bool used)
+    {
+        SpellNodeInterface sni = interfaces[index];
+        sni.Node.IsInUse = used;
+
+        sni.usedNodeImg.SetActive(used);
     }
 
     public void DeleteSCUI(SpellCardUI scui)
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDDeleteSCUI(scui.gameObject);
+            /*if (NetworkClient.ready)
+            {
+                CMDDeleteSCUI(cards.IndexOf(scui));
+            }
+            else
+            {
+                StartCoroutine(WaitDeleteSCUI(scui));
+            }*/
+            StartCoroutine(WaitDeleteSCUI(scui));
         }
+    }
+    IEnumerator WaitDeleteSCUI(SpellCardUI scui)
+    {
+        yield return new WaitUntil(() => cards.Contains(scui));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDDeleteSCUI(cards.IndexOf(scui));
     }
 
     [Command]
-    public void CMDDeleteSCUI(GameObject go)
+    public void CMDDeleteSCUI(int index)
     {
-        SpellCardUI scui = go.GetComponent<SpellCardUI>();
+        SpellCardUI scui = cards[index];
         if (scui.boundSpell == null) return;
         for (int i = 0; i < scui.boundSpell.Caster.equippedSpells.Length; i++)
         {
@@ -253,14 +378,28 @@ public class UICommandController : NetworkBehaviour
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDSelectSCUI(scui.gameObject);
+            /*if (NetworkClient.ready)
+            {
+                CMDSelectSCUI(cards.IndexOf(scui));
+            }
+            else
+            {
+                StartCoroutine(WaitSelectSCUI(scui));
+            }*/
+            StartCoroutine(WaitSelectSCUI(scui));
         }
+    }
+    IEnumerator WaitSelectSCUI(SpellCardUI scui)
+    {
+        yield return new WaitUntil(() => cards.Contains(scui));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSelectSCUI(cards.IndexOf(scui));
     }
 
     [Command]
-    public void CMDSelectSCUI(GameObject go)
+    public void CMDSelectSCUI(int index)
     {
-        SpellCardUI scui = go.GetComponent<SpellCardUI>();
+        SpellCardUI scui = cards[index];
         GameManager.Instance.uiController.playerUI.StartEquipSpell(scui.boundSpell);
     }
 
@@ -268,14 +407,28 @@ public class UICommandController : NetworkBehaviour
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDInitializeHex(hex.gameObject);
+            /*if (NetworkClient.ready)
+            {
+                CMDInitializeHex(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
+            }
+            else
+            {
+                StartCoroutine(WaitInitializeHex(hex));
+            }*/
+            StartCoroutine(WaitInitializeHex(hex));
         }
+    }
+    IEnumerator WaitInitializeHex(HexGridNode hex)
+    {
+        yield return new WaitUntil(() => grids.Contains(hex.grid));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDInitializeHex(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
 
     [Command]
-    public void CMDInitializeHex(GameObject go)
+    public void CMDInitializeHex(int hexInd, int gridInd)
     {
-        HexGridNode hex = go.GetComponent<HexGridNode>();
+        HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         hex.rect = GetComponent<RectTransform>();
         hex.button = GetComponent<Button>();
         hex.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
@@ -285,15 +438,29 @@ public class UICommandController : NetworkBehaviour
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDHexReceive(node.gameObject, hex.gameObject);
+            /*if (NetworkClient.ready)
+            {
+                CMDHexReceive(drags.IndexOf(node), hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
+            }
+            else
+            {
+                StartCoroutine(WaitHexReceive(node, hex));
+            }*/
+            StartCoroutine(WaitHexReceive(node, hex));
         }
+    }
+    IEnumerator WaitHexReceive(DraggableNode node, HexGridNode hex)
+    {
+        yield return new WaitUntil(() => drags.Contains(node));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDHexReceive(drags.IndexOf(node), hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
 
     [Command]
-    public void CMDHexReceive(GameObject goNode, GameObject goHex)
+    public void CMDHexReceive(int nodeInd, int hexInd, int gridInd)
     {
-        DraggableNode node = goNode.GetComponent<DraggableNode>();
-        HexGridNode hex = goHex.GetComponent<HexGridNode>();
+        DraggableNode node = drags[nodeInd];
+        HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         var spell = node.GetComponent<SpellNodeInterface>();
         if (spell == null) return;
 
@@ -303,18 +470,33 @@ public class UICommandController : NetworkBehaviour
         hex.ConnectNode(spell);
     }
 
-    public void HexRelease(HexGridNode hex)
+    public void HexRelease(HexGridNode hex, DraggableNode node)
     {
         if (isLocalPlayer && !isServer)
         {
-            CMDHexRelease(hex.gameObject);
+            /*if (NetworkClient.ready)
+            {
+                CMDHexRelease(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid), drags.IndexOf(node));
+            }
+            else
+            {
+                StartCoroutine(WaitHexRelease(hex,node));
+            }*/
+            StartCoroutine(WaitHexRelease(hex,node));
         }
+    }
+    IEnumerator WaitHexRelease(HexGridNode hex, DraggableNode node)
+    {
+        yield return new WaitUntil(() => drags.Contains(node));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDHexRelease(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid), drags.IndexOf(node));
     }
 
     [Command]
-    public void CMDHexRelease(GameObject go)
+    public void CMDHexRelease(int hexInd, int gridInd, int nodeInd)
     {
-        HexGridNode hex = go.GetComponent<HexGridNode>();
+        HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
+        DraggableNode node = drags[nodeInd];
         if (hex.spellNode == null) return;
 
         hex.VerifyNearbyBreakConections(hex.spellNode);
@@ -323,5 +505,13 @@ public class UICommandController : NetworkBehaviour
         hex.spellNode = null;
         hex.SetNodeButtonState(true);
         hex.grid.ConfigurateSpell();
+        if (node.isClone && node.inventorySource != null)
+        {
+            var inventory = node.inventorySource.OriginZone as NodeInventory;
+            var spellNode = node.inventorySource.GetComponent<SpellNodeInterface>();
+            if (spellNode != null)
+                GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
+            //Destroy(node.gameObject);
+        }
     }
 }

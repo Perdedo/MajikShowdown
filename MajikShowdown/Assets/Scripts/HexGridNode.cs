@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -25,7 +26,14 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     {
         grid = Grid;
         grid.caster.commander.InitializeHex(this);
+        //StartCoroutine(WaitInitialize());
     }
+
+    /*IEnumerator WaitInitialize()
+    {
+        yield return new WaitUntil(() => grid.caster.commander.grids.Contains(grid));
+        grid.caster.commander.InitializeHex(this);
+    }*/
 
     public bool CanReceive(DraggableNode node)
     {
@@ -44,6 +52,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         node.transform.localPosition = Vector3.zero;
         node.SetOriginZone(this);
         ConnectNode(spell);
+        Debug.Log("Receive");
         grid.caster.commander.HexReceive(node,this);
     }
 
@@ -57,7 +66,15 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         spellNode = null;
         SetNodeButtonState(true);
         grid.ConfigurateSpell();
-        grid.caster.commander.HexRelease(this);
+        if (node.isClone && node.inventorySource != null)
+        {
+            var inventory = node.inventorySource.OriginZone as NodeInventory;
+            var spellNode = node.inventorySource.GetComponent<SpellNodeInterface>();
+            if (spellNode != null)
+                GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
+            //Destroy(node.gameObject);
+        }
+        grid.caster.commander.HexRelease(this, node);
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -93,6 +110,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         MakeNearbyConnections(node);
         grid.AddNodeToGrid(this, node);
         spellNode = node;
+        Debug.Log("Connect");
     }
 
     public bool VerifyNearbyConnections(SpellNodeInterface spell)

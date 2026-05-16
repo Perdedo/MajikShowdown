@@ -8,17 +8,25 @@ public class SpellNodeInterface : MonoBehaviour
     //COLOCAR CONECXÕES NESSE SCRIPT
     [HideInInspector] public RectTransform rect;
     [HideInInspector] public HexGridNode hexGridNode;
-    public SpellNode PrefabNode;
+    //public SpellNode PrefabNode;
     public SpellNode Node;
-    public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
+    //public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
     public NodeConection[] conections;
     public SpellNodeInfos info;
     public NodeInventory inventory;
+    public GameObject usedNodeImg;
     public Image borderImg;
+    [HideInInspector] public int acquisitionOrder;
+    [HideInInspector] public SpellNodeDescription linkedDescription;
 
     void Awake()
     {
-        Initialize();
+        rect = GetComponent<RectTransform>();
+
+        borderImg = transform.GetChild(0).GetComponent<Image>();
+
+        usedNodeImg = transform.GetChild(1).gameObject;
+        //Initialize();
         /*Node = Instantiate(PrefabNode);
         Node.Interface = this;
         Node.Initialize();
@@ -29,26 +37,38 @@ public class SpellNodeInterface : MonoBehaviour
         borderImg = transform.GetChild(0).GetComponent<Image>();*/
     }
 
-    private void Start()
+    public void Setup(SpellNode nodeData)
+    {
+        rect = GetComponent<RectTransform>();
+
+        borderImg = transform.GetChild(0).GetComponent<Image>();
+
+        usedNodeImg = transform.GetChild(1).gameObject;
+
+        Node = nodeData;
+        Node.Interface = this;
+        InitializeConections();
+        GetComponent<Image>().color = Node.color;
+        GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        SetNodeBorder(borderImg);
+        usedNodeImg.SetActive(Node.IsInUse);
+    }
+    /*private void Start()
     {
         SetNodeBorder(borderImg);
-    }
+    }*/
 
     [ContextMenu("Initialize")]
 
-    public void Initialize()
+    /*public void Initialize()
     {
-        Node = Instantiate(PrefabNode);
-        Node.Interface = this;
-        Node.Initialize();
-        InitializeConections();
-        this.GetComponent<Image>().color *= PrefabNode.color;
-        this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         rect = GetComponent<RectTransform>();
+
         borderImg = transform.GetChild(0).GetComponent<Image>();
-        //inventory.commander.InitializeSNI(this);
+
+        usedNodeImg = transform.GetChild(1).gameObject;
         GameManager.Instance.uiController.playerUI.caster.commander.InitializeSNI(this);
-    }
+    }*/
     public void InitializeConections()
     {
         conections = new NodeConection[] { new(Node), new(Node), new(Node), new(Node), new(Node), new(Node) };
@@ -130,26 +150,29 @@ public class SpellNodeInterface : MonoBehaviour
         {
             if (conections[i] != null)
             {
-                conections[i].conectionType = ConectionPorts[i];
+                conections[i].conectionType = Node.ConectionPorts[i];
             }
         }
         //inventory.commander.UpdateSNIConnectionPorts(this);
-        GameManager.Instance.uiController.playerUI.caster.commander.UpdateSNIConnectionPorts(this);
+        //GameManager.Instance.uiController.playerUI.caster.commander.UpdateSNIConnectionPorts(this);
     }
 
     public void SelectNode()
     {
+        var description = linkedDescription ?? GameManager.Instance.uiController.playerUI.spellNodeDescription;
         var ui = GameManager.Instance.uiController.playerUI;
 
         if (ui.selectedNode == this)
         {
-            ui.spellNodeDescription.HideDescription();
+            description.HideDescription();
+            //ui.spellNodeDescription.HideDescription();
             ui.selectedNode = null;
         }
         else
         {
             ui.selectedNode = this;
-            ui.spellNodeDescription.ShowDescription(Node);
+            //ui.spellNodeDescription.ShowDescription(Node);
+            description.ShowDescription(Node);
         }
     }
 
@@ -158,40 +181,67 @@ public class SpellNodeInterface : MonoBehaviour
         var ui = GameManager.Instance.uiController.playerUI;
         if (ui.selectedNode == this) return;
         ui.selectedNode = this;
-        ui.spellNodeDescription.ShowDescription(Node);
+        var description = linkedDescription ?? ui.spellNodeDescription;
+        description.ShowDescription(Node);
+        //ui.spellNodeDescription.ShowDescription(Node);
     }
 
     public void SetNodeBorder(Image img)
     {
+        switch (GetCategory())
+        {
+            case NodeCategory.Type:
+                img.sprite = info.coreBorder;
+                break;
 
-        if (ConectionPorts[0] == NodeConection.Conections.Circle && ConectionPorts[1] == NodeConection.Conections.Square)
-        {
-            img.sprite = info.borderSprite[0];
-            return;
+            case NodeCategory.Effect:
+                img.sprite = info.effectBorder;
+                break;
+
+            case NodeCategory.Trajectory:
+                img.sprite = info.trajectoryBorder;
+                break;
+
+            case NodeCategory.Stat:
+                img.sprite = info.statBorder;
+                break;
+
+            case NodeCategory.Trigger:
+                img.sprite = info.triggerBorder;
+                break;
+                /*case NodeCategory.CastingPoint:
+                    img.sprite = info.castingPointBorder;
+                    break;*/
         }
-        else if (ConectionPorts[0] == NodeConection.Conections.None && ConectionPorts[3] == NodeConection.Conections.Circle)
-        {
-            img.sprite = info.borderSprite[1];
-            return;
-        }
-        else if (ConectionPorts[0] == NodeConection.Conections.None && ConectionPorts[2] == NodeConection.Conections.Triangle)
-        {
-            img.sprite = info.borderSprite[2];
-            return;
-        }
-        else if (ConectionPorts[0] == NodeConection.Conections.Square && ConectionPorts[1] == NodeConection.Conections.None)
-        {
-            img.sprite = info.borderSprite[3];
-            return;
-        }
-        else if (ConectionPorts[0] == NodeConection.Conections.None && ConectionPorts[1] == NodeConection.Conections.Penta)
-        {
-            img.sprite = info.borderSprite[4];
-            return;
-        }
-        else
-        {
-            Debug.Log("No Border Found");
-        }
+    }
+    public bool IsUsed()
+    {
+        return Node.IsInUse;
+    }
+
+    public void SetUsed(bool used)
+    {
+        Node.IsInUse = used;
+
+        usedNodeImg.SetActive(used);
+
+        GameManager.Instance.uiController.playerUI.caster.commander.SetUsedSNI(this, used);
+    }
+
+    public NodeCategory GetCategory()
+    {
+        if (Node is SpellEffect) return NodeCategory.Effect;
+
+        if (Node is SpellStat) return NodeCategory.Stat;
+
+        if (Node is SpellTrajectory) return NodeCategory.Trajectory;
+
+        if (Node is SpellTrigger) return NodeCategory.Trigger;
+
+        if (Node is SpellType) return NodeCategory.Type;
+
+        //if (Node as SpellCastingPoint) return NodeCategory.CastingPoint;
+
+        return NodeCategory.All;
     }
 }

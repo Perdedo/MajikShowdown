@@ -96,10 +96,10 @@ public class HexGrid : MonoBehaviour
         RectTransform hex = Instantiate(hexPrefab, hexContainer);
         hex.anchoredPosition = pos;
         HexGridNode node = hex.GetComponent<HexGridNode>();
-        node.SetGrid(this);
         node.index = hexGridNodes.Count;
         node.Layer = Layer;
         hexGridNodes.Add(node);
+        node.SetGrid(this);
     }
 
     Vector2 HexToPixel(int q, int r)
@@ -188,10 +188,12 @@ public class HexGrid : MonoBehaviour
             spellNodes[i] = null;
         }
         ConfigurateSpell();
+        caster.commander.ReturnAllNodesToInventory(this);
     }
 
     public void AddNodeToGrid(HexGridNode hex, SpellNodeInterface node)
     {
+        Debug.Log("Add");
         if (node == null) return;
         if (caster == null || caster.inventory == null)
         {

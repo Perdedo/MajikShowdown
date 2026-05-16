@@ -233,6 +233,7 @@ public class PlayerUI : NetworkBehaviour
 
     public void EquipSpellToSlot(int index)
     {
+        Debug.Log(spellToEquip.spellNodes.Count);
         if (!isLocalPlayer && network)
         {
             return;
@@ -270,17 +271,31 @@ public class PlayerUI : NetworkBehaviour
     [Command]
     public void CMDEquipSpell(int index)
     {
+        Debug.Log(spellToEquip.spellNodes.Count);
+        if (spellToEquip == null) return;
+        if (caster.equippedSpells[index] == spellToEquip)
+        {
+            spellToEquip = null;
+            return;
+        }
+
         for (int i = 0; i < caster.equippedSpells.Length; i++)
         {
             if (caster.equippedSpells[i] == spellToEquip)
             {
                 caster.equippedSpells[i] = null;
+                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
             }
         }
 
         caster.equippedSpells[index] = spellToEquip;
-
+        equipSlotTexts[index].text = spellToEquip.spellName;
         spellToEquip = null;
+
+        if (inventory != null)
+        {
+            inventory.DeselectAllCards();
+        }
     }
 
     public void OnSpellNameInputSelected(string currentText)

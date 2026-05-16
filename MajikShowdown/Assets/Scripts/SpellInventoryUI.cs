@@ -1,4 +1,5 @@
 using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,11 +41,22 @@ public class SpellInventoryUI : NetworkBehaviour
             GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
             if(!isServer && network)
             {
-                CMDCreateNewSpell();
+                if(NetworkClient.ready)
+                {
+                    CMDCreateNewSpell();
+                }
+                else
+                {
+                    StartCoroutine(WaitCreateNewSpell());
+                }
             }
         }
     }
-
+    IEnumerator WaitCreateNewSpell()
+    {
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDCreateNewSpell();
+    }
     [Command]
     public void CMDCreateNewSpell()
     {
@@ -77,6 +89,7 @@ public class SpellInventoryUI : NetworkBehaviour
         cardObj.transform.SetSiblingIndex(createSpellCard.GetSiblingIndex());
         SpellCardUI cardUI = cardObj.GetComponent<SpellCardUI>();
         cardUI.Setup(spell);
+        caster.commander.cards.Add(cardUI);
         createSpellCard.SetAsLastSibling();
     }
 

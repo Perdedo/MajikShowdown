@@ -61,7 +61,6 @@ public class Player : Character
         HitGround.AddListener(StopCoyoteTime);
         HitGround.AddListener(PeformJumpBuffering);
         input = GetComponent<PlayerInput>();
-        input.enabled = true;
         damageHandler = GetComponent<PlayerDamageHandler>();
         //cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
@@ -71,6 +70,7 @@ public class Player : Character
     {
         base.OnStartLocalPlayer();
         playerCamera.Priority = 2;
+        input.enabled = true;
     }
     protected override void FixedUpdate()
     {
