@@ -112,11 +112,25 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     {
         Spell spell = equippedSpells[spellInd];
 
-        if (spell.validSpell)
+        /*if (spell.validSpell)
         {
             ServerInstantiateSpellCollider(spell, CastingPoint.position,transform.forward, true);
+        }*/
+        if (spell.coreNode.castPoint == null)
+        {
+            ServerInstantiateSpellCollider(spell, CastingPoint, (AimController.AimPoint - CastingPoint.position).normalized, true);
         }
-        
+        else
+        {
+            Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, AimController.AimPoint);
+            Vector3 dir = (AimController.AimPoint - castPos).normalized;
+            if (dir == Vector3.zero)
+            {
+                dir = AimController.AimPoint - transform.position;
+            }
+            ServerInstantiateSpellCollider(spell, castPos, dir, true);
+        }
+
     }
 
     [Server]
@@ -129,6 +143,18 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         col.Initialize(Spell, primary);
         NetworkServer.Spawn(g);
     }
+
+    [Server]
+    public void ServerInstantiateSpellCollider(Spell Spell, Transform castPoint, Vector3 lookDir, bool primary = false)
+    {
+        GameObject g = Instantiate(ProjectilePrefab.gameObject, castPoint.position, Quaternion.LookRotation(lookDir, Vector3.up));
+        SpellCollider col = g.GetComponent<SpellCollider>();
+        col.SpawnTransform = castPoint;
+        col.SpawnPoint = castPoint.position;
+        col.Initialize(Spell, primary);
+        //NetworkServer.Spawn(g);
+    }
+
     public void CastSpell(int spellInd)
     {
         Spell spell = equippedSpells[spellInd];
