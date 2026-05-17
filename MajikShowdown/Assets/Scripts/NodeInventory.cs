@@ -171,7 +171,6 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         if (draggable != null)
         {
             draggable.SetOriginZone(this as IDropZone);
-            draggable.acquisitionOrder = activeNodes.Count - 1;
         }
     }
 

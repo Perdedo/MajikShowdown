@@ -7,7 +7,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [HideInInspector] public Canvas canvas;
     [HideInInspector] public RectTransform rectTransform;
     [HideInInspector] public CanvasGroup canvasGroup;
-    [HideInInspector] public int acquisitionOrder;
     int savedListIndex = 0;
 
     public IDropZone OriginZone { get; private set; }
