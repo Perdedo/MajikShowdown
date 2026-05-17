@@ -87,7 +87,10 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
 
     public void SetNodeButtonState(bool state)
     {
-        button.interactable = state;
+        if (button != null)
+        {
+            button.interactable = state;
+        }
     }
 
     public void AddNeighbours(HexGridNode node, int index)
