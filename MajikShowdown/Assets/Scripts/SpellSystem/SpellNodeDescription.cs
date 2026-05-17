@@ -4,6 +4,7 @@ using TMPro;
 using UnityEditor;
 using System.Collections.Generic;
 using Mirror;
+using System.Collections;
 //using UnityEditor.Experimental.GraphView;
 
 public class SpellNodeDescription : NetworkBehaviour
@@ -236,6 +237,28 @@ public class SpellNodeDescription : NetworkBehaviour
 
     void TriggerDescription(SpellNode node)
     {
+        currentTrigger = node as SpellTrigger;
+        bool isTrigger = currentTrigger != null;
+        spellDropdown.gameObject.SetActive(isTrigger);
+        triggerDropdown.gameObject.SetActive(isTrigger);
+        if (!isTrigger) return;
+        spellDropdown.onValueChanged.RemoveListener(SetTriggerSpell);
+        triggerDropdown.onValueChanged.RemoveListener(SetTriggerType);
+        SetupSpellDropdown();
+        SetupTriggerDropdown();
+        RefreshTriggerUI();
+        spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
+        triggerDropdown.onValueChanged.AddListener(SetTriggerType);
+        if(!isServer)
+        {
+            CMDTriggerDescription(node.Interface.acquisitionOrder);
+        }
+    }
+
+    [Command]
+    void CMDTriggerDescription(int index)
+    {
+        SpellNode node = caster.commander.interfaces.Find(i => i.acquisitionOrder == index).Node;
         currentTrigger = node as SpellTrigger;
         bool isTrigger = currentTrigger != null;
         spellDropdown.gameObject.SetActive(isTrigger);
