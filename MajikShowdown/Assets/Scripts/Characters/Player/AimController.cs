@@ -5,7 +5,7 @@ public class AimController : MonoBehaviour
 {
     public Transform Follow;
     public Vector3 FollowOffset;
-    public float MaxRayDistance = float.MaxValue;
+    public float MaxRayDistance = 1000;
     public LayerMask HitLayer;
     public bool ShowHit = true;
     RaycastHit Hit;
