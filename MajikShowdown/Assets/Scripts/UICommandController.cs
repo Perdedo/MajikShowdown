@@ -241,6 +241,10 @@ public class UICommandController : NetworkBehaviour
                 sni.Node.ConectedNodes[i] = null;
             }
         }
+        if (sni.hexGridNode != null)
+        {
+            sni.hexGridNode.grid.ConfigurateSpell();
+        }
     }
     public void BreakSNIConnection(SpellNodeInterface sni, int Index)
     {

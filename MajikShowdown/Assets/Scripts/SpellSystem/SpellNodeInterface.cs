@@ -146,6 +146,11 @@ public class SpellNodeInterface : MonoBehaviour
                 Node.ConectedNodes[i] = null;
             }
         }
+
+        if(hexGridNode != null)
+        {
+            hexGridNode.grid.ConfigurateSpell();
+        }
         //inventory.commander.UpdateSNIConnected(this);
         GameManager.Instance.uiController.playerUI.caster.commander.UpdateSNIConnected(this);
     }

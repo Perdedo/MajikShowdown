@@ -27,6 +27,7 @@ public class Spell
 
     public void UpdateSpell()
     {
+        Debug.Log("spellUpdate");
         //CreateSubSpells();
         if (primaryNode == null)
         {
