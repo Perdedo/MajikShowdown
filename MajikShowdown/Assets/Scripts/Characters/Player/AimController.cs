@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
-
-public class AimController : MonoBehaviour
+using Mirror;
+public class AimController : NetworkBehaviour
 {
     public Transform Follow;
     public Vector3 FollowOffset;
@@ -9,7 +9,7 @@ public class AimController : MonoBehaviour
     public LayerMask HitLayer;
     public bool ShowHit = true;
     RaycastHit Hit;
-    [NonSerialized]public Vector3 AimPoint;
+    [NonSerialized][SyncVar]public Vector3 AimPoint;
     Vector2 screenCenter;
     int previousScreenWidth, previousScreenHeight;
     void Awake()
