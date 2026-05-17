@@ -13,10 +13,10 @@ public class SpellCardUI : MonoBehaviour
     public Button deleteButton;
 
     public Spell boundSpell;
-    bool isSelected;
-    Image cardColor;
+    public bool isSelected;
+    public Image cardColor;
     public int instanceIndex;
-
+    public SpellInventoryUI spellInventory;
     public void Setup(Spell spell)
     {
         cardColor = cardButton.GetComponent<Image>();
@@ -57,7 +57,7 @@ public class SpellCardUI : MonoBehaviour
 
     void Select()
     {
-        var spellInventory = FindAnyObjectByType<SpellInventoryUI>();
+        //var spellInventory = FindAnyObjectByType<SpellInventoryUI>();
         if (spellInventory != null)
         {
             spellInventory.DeselectAllCards();
@@ -76,6 +76,7 @@ public class SpellCardUI : MonoBehaviour
         editButton.gameObject.SetActive(false);
         deleteButton.gameObject.SetActive(false);
         cardColor.color = Color.white;
+        boundSpell.Caster.commander.DeselectSCUI(this);
     }
 
     void OpenEdit()

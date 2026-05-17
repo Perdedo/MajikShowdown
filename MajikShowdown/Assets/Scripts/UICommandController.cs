@@ -426,7 +426,41 @@ public class UICommandController : NetworkBehaviour
     {
         //SpellCardUI scui = cards[index];
         SpellCardUI scui = cards.Find(c => c.instanceIndex == index);
+        if (scui.spellInventory != null)
+        {
+            scui.spellInventory.DeselectAllCards();
+        }
+        scui.isSelected = true;
+        scui.editButton.gameObject.SetActive(true);
+        scui.deleteButton.gameObject.SetActive(true);
+        scui.cardColor.color = Color.cyan;
         GameManager.Instance.uiController.playerUI.StartEquipSpell(scui.boundSpell);
+    }
+    public void DeselectSCUI(SpellCardUI scui)
+    {
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitDeselectSCUI(scui));
+        }
+    }
+    IEnumerator WaitDeselectSCUI(SpellCardUI scui)
+    {
+        //yield return new WaitUntil(() => cards.Contains(scui));
+        yield return new WaitUntil(() => cards.Exists(c => c.instanceIndex == scui.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDDeselectSCUI(scui.instanceIndex);
+        //CMDSelectSCUI(cards.IndexOf(scui));
+    }
+
+    [Command]
+    public void CMDDeselectSCUI(int index)
+    {
+        //SpellCardUI scui = cards[index];
+        SpellCardUI scui = cards.Find(c => c.instanceIndex == index);
+        scui.isSelected = false;
+        scui.editButton.gameObject.SetActive(false);
+        scui.deleteButton.gameObject.SetActive(false);
+        scui.cardColor.color = Color.white;
     }
 
     public void InitializeHex(HexGridNode hex)

@@ -91,6 +91,7 @@ public class SpellInventoryUI : NetworkBehaviour
         GameObject cardObj = Instantiate(spellCardPrefab, content);
         cardObj.transform.SetSiblingIndex(createSpellCard.GetSiblingIndex());
         SpellCardUI cardUI = cardObj.GetComponent<SpellCardUI>();
+        cardUI.spellInventory = this;
         cardUI.Setup(spell);
         cardUI.instanceIndex = caster.commander.cards.Count;
         caster.commander.cards.Add(cardUI);

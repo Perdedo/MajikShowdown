@@ -246,6 +246,7 @@ public class PlayerUI : NetworkBehaviour
     [Command]
     public void CMDStartEquipSpell(int index)
     {
+        Debug.Log(index + "spell eqip");
         spellToEquip = caster.spells.Find(s => s.instanceIndex == index);
     }
 
