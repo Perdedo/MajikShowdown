@@ -15,12 +15,14 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public HexGrid grid;
     public int index;
     public int Layer;
+    public GameObject coreHexGridNode;
 
     private void Awake()
     {
         rect = GetComponent<RectTransform>();
         button = GetComponent<Button>();
         this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        coreHexGridNode.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
     }
     public void SetGrid(HexGrid Grid)
     {

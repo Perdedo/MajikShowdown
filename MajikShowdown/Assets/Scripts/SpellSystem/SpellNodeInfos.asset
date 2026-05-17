@@ -12,9 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0e11923f0f076a42841a7a1a415594b, type: 3}
   m_Name: SpellNodeInfos
   m_EditorClassIdentifier: Assembly-CSharp::SpellNodeInfos
-  coreBorder: {fileID: 21300000, guid: 09d10f3d400f521428fa42c54a0bec05, type: 3}
-  effectBorder: {fileID: 21300000, guid: beac72a4ac72fd945adbf83f2ae0fc24, type: 3}
-  trajectoryBorder: {fileID: 21300000, guid: af35f0c5821f62a4e89f1829f3c811ef, type: 3}
-  statBorder: {fileID: -1424723596, guid: 08575472590241248a550d9e51d8d5d3, type: 3}
-  triggerBorder: {fileID: 21300000, guid: 8bcf5ac672bbd2541afa04c34d6eda21, type: 3}
-  castingPointBorder: {fileID: 21300000, guid: 41963fa2b0e41bd41aa97d0715aad8e2, type: 3}
+  core:
+    color: {r: 0.4, g: 0.0627451, b: 0.0627451, a: 1}
+    internSymbolColor: {r: 1, g: 0, b: 0, a: 1}
+    borderSprite: {fileID: 21300000, guid: b86bb9c3e84dcf94888d6d4c2ee26f31, type: 3}
+    connections: 010000000300000002000000030000000400000003000000
+  effect:
+    color: {r: 0.38039216, g: 0.050980393, b: 0.38039216, a: 1}
+    internSymbolColor: {r: 1, g: 0, b: 1, a: 1}
+    borderSprite: {fileID: 21300000, guid: b5fc1edb6908ec647b7e202acb4bd38a, type: 3}
+    connections: 000000000000000002000000000000000000000002000000
+  trajectory:
+    color: {r: 0.090196066, g: 0.1492894, b: 0.40392157, a: 1}
+    internSymbolColor: {r: 0, g: 0.74509805, b: 1, a: 1}
+    borderSprite: {fileID: 21300000, guid: 2634e716525da894baee9457e3d0e3c8, type: 3}
+    connections: 000000000000000000000000010000000000000000000000
+  stat:
+    color: {r: 0.28235295, g: 0.2509804, b: 0.28627452, a: 1}
+    internSymbolColor: {r: 1, g: 1, b: 1, a: 1}
+    borderSprite: {fileID: 21300000, guid: d502f8a30039db94f9f6cb0b8d71bb2b, type: 3}
+    connections: 000000000000000000000000000000000000000000000000
+  trigger:
+    color: {r: 0.5019608, g: 0.2627451, b: 0.05882353, a: 1}
+    internSymbolColor: {r: 1, g: 0.58431375, b: 0, a: 1}
+    borderSprite: {fileID: 21300000, guid: 56082ac61a97159468d4a0877a38f626, type: 3}
+    connections: 020000000000000002000000000000000200000000000000
+  castingPoint:
+    color: {r: 0.25232238, g: 0.4339623, b: 0.06755074, a: 1}
+    internSymbolColor: {r: 0.5, g: 1, b: 0, a: 1}
+    borderSprite: {fileID: 21300000, guid: 704e262618c63064eb47e9ba2bda2648, type: 3}
+    connections: 000000000400000000000000000000000000000000000000

@@ -93,21 +93,6 @@ public class SpellType : SpellNode
         if(list.Count != 0) return list;
         return base.GetSpellList(list);
     }
-
-    public override void SetupNodeVisual()
-    {
-        color = HexToColor("E84A4A");
-
-        ConectionPorts = new NodeConection.Conections[]
-        {
-        NodeConection.Conections.Circle,
-        NodeConection.Conections.Square,
-        NodeConection.Conections.Triangle,
-        NodeConection.Conections.Square,
-        NodeConection.Conections.Penta,
-        NodeConection.Conections.Square
-        };
-    }
 }
 
 /*public class TypeArea : SpellType

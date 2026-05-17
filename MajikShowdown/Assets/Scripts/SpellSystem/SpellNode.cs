@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
@@ -20,6 +21,9 @@ public abstract class SpellNode : ScriptableObject
     public Spell OwnerSpell;
     [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
     public bool IsInUse;
+    public SpellNodeInfos spellInfos;
+    public Sprite nodeSymbolSprite;
+    [HideInInspector] public Color symbolColor;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {
@@ -62,7 +66,7 @@ public abstract class SpellNode : ScriptableObject
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }
 
-    public virtual void SetupNodeVisual()
+    /*public virtual void SetupNodeVisual()
     {
     }
 
@@ -70,6 +74,32 @@ public abstract class SpellNode : ScriptableObject
     {
         ColorUtility.TryParseHtmlString("#" + hex, out Color color);
         return color;
+    }*/
+
+    public NodeCategory GetCategory()
+    {
+        if (this is SpellEffect) return NodeCategory.Effect;
+
+        if (this is SpellStat) return NodeCategory.Stat;
+
+        if (this is SpellTrajectory) return NodeCategory.Trajectory;
+
+        if (this is SpellTrigger) return NodeCategory.Trigger;
+
+        if (this is SpellType) return NodeCategory.Type;
+
+        //if (this as SpellCastingPoint) return NodeCategory.CastingPoint;
+
+        return NodeCategory.All;
+    }
+
+    public void SetupNodeVisual()
+    {
+        if (spellInfos == null) return;
+        NodeVisualInfo info = spellInfos.GetInfo(GetCategory());
+        color = info.color;
+        symbolColor = info.internSymbolColor;
+        ConectionPorts = info.connections;
     }
 
     public virtual List<SpellNode> GetSpellList(List<SpellNode> list)
