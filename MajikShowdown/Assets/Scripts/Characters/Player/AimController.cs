@@ -9,7 +9,7 @@ public class AimController : NetworkBehaviour
     public LayerMask HitLayer;
     public bool ShowHit = true;
     RaycastHit Hit;
-    [SyncVar]public Vector3 AimPoint;
+    public Vector3 AimPoint;
     Vector2 screenCenter;
     int previousScreenWidth, previousScreenHeight;
     void Awake()

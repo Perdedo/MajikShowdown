@@ -92,23 +92,23 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         {
             if (equippedSpells[0] != null)
             {
-                /*if(network)
+                Debug.Log("Cast");
+                if(network)
                 {
-                    CMDCastSpell(0);
+                    CMDCastSpell(0, AimController.AimPoint);
                 }
                 else
                 {
                     CastSpell(0);
-                }*/
-                Debug.Log("Cast");
-                CMDCastSpell(0);
+                }
+                //CMDCastSpell(0, AimController.AimPoint);
                 //Debug.Log(equippedSpells[0].spellName);
             }
         }
     }
 
     [Command]
-    public void CMDCastSpell(int spellInd)
+    public void CMDCastSpell(int spellInd, Vector3 aimPoint)
     {
         Spell spell = equippedSpells[spellInd];
 
@@ -118,15 +118,19 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         }*/
         if (spell.coreNode.castPoint == null)
         {
-            ServerInstantiateSpellCollider(spell, CastingPoint, (AimController.AimPoint - CastingPoint.position).normalized, true);
+            ServerInstantiateSpellCollider(spell, CastingPoint, (aimPoint - CastingPoint.position).normalized, true);
+            //ServerInstantiateSpellCollider(spell, CastingPoint, (AimController.AimPoint - CastingPoint.position).normalized, true);
         }
         else
         {
-            Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, AimController.AimPoint);
-            Vector3 dir = (AimController.AimPoint - castPos).normalized;
+            Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, aimPoint);
+            Vector3 dir = (aimPoint - castPos).normalized;
+            //Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, AimController.AimPoint);
+            //Vector3 dir = (AimController.AimPoint - castPos).normalized;
             if (dir == Vector3.zero)
             {
-                dir = AimController.AimPoint - transform.position;
+                dir = aimPoint - transform.position;
+                //dir = AimController.AimPoint - transform.position;
             }
             ServerInstantiateSpellCollider(spell, castPos, dir, true);
         }
