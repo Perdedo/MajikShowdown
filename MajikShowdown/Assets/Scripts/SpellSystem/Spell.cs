@@ -19,6 +19,7 @@ public class Spell
     public List<SpellEffect> spellEffects = new List<SpellEffect>();
     public bool validSpell;
     public HexGrid grid;
+    public int instanceIndex;
     [HideInInspector] public System.Action OnSpellUpdated;
     public Spell(SpellCaster owner)
     {

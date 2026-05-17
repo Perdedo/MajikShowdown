@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Cinemachine;
@@ -229,6 +230,23 @@ public class PlayerUI : NetworkBehaviour
             return;
         }
         spellToEquip = spell;
+        if(!isServer)
+        {
+            StartCoroutine(WaitStartEquipSpell(spell));
+        }
+    }
+
+    IEnumerator WaitStartEquipSpell(Spell spell)
+    {
+        yield return new WaitUntil(() => caster.spells.Exists(s => s.instanceIndex == spell.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDStartEquipSpell(spell.instanceIndex);
+    }
+
+    [Command]
+    public void CMDStartEquipSpell(int index)
+    {
+        spellToEquip = caster.spells.Find(s => s.instanceIndex == index);
     }
 
     public void EquipSpellToSlot(int index)
