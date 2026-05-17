@@ -169,7 +169,7 @@ public class SpellCollider : NetworkBehaviour
         {
             if (!trigger.SpellOnCooldown)
             {
-                OwnerSpell.Caster.InstantiateSpellCollider(spell, transform.position, transform.forward);
+                OwnerSpell.Caster.ServerInstantiateSpellCollider(spell, transform.position, transform.forward);
                 trigger.SpellOnCooldown = true;
             }
         };
