@@ -130,19 +130,16 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitAddNodeToGrid(HexGridNode hex, SpellNodeInterface node, HexGrid grid)
     {
-        yield return new WaitUntil(() => GameManager.Instance.uiController.playerUI.caster.inventory.activeNodes.Contains(node));
-        //yield return new WaitUntil(() => interfaces.Contains(node));
+        yield return new WaitUntil(() => interfaces.Contains(node));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), GameManager.Instance.uiController.playerUI.caster.inventory.activeNodes.IndexOf(node), grids.IndexOf(grid));
-        //CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), interfaces.IndexOf(node), grids.IndexOf(grid));
+        CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), interfaces.IndexOf(node), grids.IndexOf(grid));
     }
 
     [Command]
     public void CMDAddNodeToGrid(int hexInd, int nodeInd, int gridInd)
     {
         HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
-        //SpellNodeInterface node = interfaces[nodeInd];
-        SpellNodeInterface node = GameManager.Instance.uiController.playerUI.caster.inventory.activeNodes[nodeInd];
+        SpellNodeInterface node = interfaces[nodeInd];
         if (node == null) return;
         if (grids[gridInd].caster == null || grids[gridInd].caster.inventory == null)
         {
