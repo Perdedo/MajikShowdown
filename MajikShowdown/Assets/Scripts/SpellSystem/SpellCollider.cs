@@ -33,6 +33,8 @@ public class SpellCollider : NetworkBehaviour
         public Vector3 Up;
     }
     public TrajectoryInfo TrajectoryTransform;
+
+    [Server]
     public void Initialize(Spell owner, bool isPrimary)
     {
         SetTrajectoryForward(transform.forward);
@@ -58,6 +60,7 @@ public class SpellCollider : NetworkBehaviour
         spellCol = GetComponent<Collider>();
 
     }
+    [Server]
     void Update()
     {
         if (HitOnCooldown)
@@ -100,6 +103,7 @@ public class SpellCollider : NetworkBehaviour
 
 
     }
+    [Server]
     public void SetTrajectoryForward(Vector3 forward)
     {
         if (forward == Vector3.zero) return;
@@ -107,6 +111,7 @@ public class SpellCollider : NetworkBehaviour
         TrajectoryTransform.Right = new Vector3(TrajectoryTransform.Forward.z, 0, -TrajectoryTransform.Forward.x).normalized;
         TrajectoryTransform.Up = Vector3.Cross(TrajectoryTransform.Right, TrajectoryTransform.Forward);
     }
+    [Server]
     public void InitiateTriggeredSpells()
     {
         foreach (SpellTrigger t in OwnerSpell.triggers)
@@ -130,6 +135,7 @@ public class SpellCollider : NetworkBehaviour
             }
         }
     }
+    [Server]
     public void AddSpellToEvent(UnityEvent e, Spell spell, TriggerInfo trigger)
     {
         UnityAction action = () =>
@@ -142,11 +148,14 @@ public class SpellCollider : NetworkBehaviour
         };
         e.AddListener(action);
     }
+    [Server]
     public Vector3 ToTrajDirection(Vector3 rawDir)
     {
         return TrajectoryTransform.Forward * rawDir.z + TrajectoryTransform.Up * rawDir.y + TrajectoryTransform.Right * rawDir.x;
     }
     bool routineStarted;
+
+    [Server]
     IEnumerator StartHitCooldown()
     {
         routineStarted = true;
@@ -155,6 +164,8 @@ public class SpellCollider : NetworkBehaviour
         HitTimer.SetTimer(0);
         routineStarted = false;
     }
+
+    [Server]
     void OnTriggerEnter(Collider other)
     {
         if (!OwnerSpell.primaryNode.HitOnStay)
@@ -162,6 +173,8 @@ public class SpellCollider : NetworkBehaviour
             HandleTrigger(other);
         }
     }
+
+    [Server]
     void OnTriggerStay(Collider other)
     {
         if (OwnerSpell.primaryNode.HitOnStay)
@@ -169,6 +182,8 @@ public class SpellCollider : NetworkBehaviour
             HandleTrigger(other);
         }
     }
+
+    [Server]
     public void HandleTrigger(Collider other)
     {
         if (HitOnCooldown) return;
@@ -190,10 +205,13 @@ public class SpellCollider : NetworkBehaviour
         }
     }
 
+    [Server]
     public void CollideObject(CollisionData data)
     {
         CheckBounce(data);
     }
+
+    [Server]
     public void CollideCreature(CollisionData data)
     {
         Character character = data.collision.GetComponent<Character>();
@@ -215,6 +233,8 @@ public class SpellCollider : NetworkBehaviour
             CheckBounce(data);
         }
     }
+
+    [Server]
     public void CheckBounce(CollisionData data)
     {
         if (bounceCount >= 1)
@@ -230,6 +250,8 @@ public class SpellCollider : NetworkBehaviour
             }
         }
     }
+
+    [Server]
     public void Bounce(CollisionData data)
     {
         previousVelocity = Vector3.zero;
@@ -256,6 +278,8 @@ public class SpellCollider : NetworkBehaviour
             previousDir = Vector3.zero;
         }*/
     }
+
+    [Server]
     public void Die()
     {
         OnDeath.Invoke();
