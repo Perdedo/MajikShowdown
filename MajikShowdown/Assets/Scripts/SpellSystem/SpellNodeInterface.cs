@@ -1,5 +1,6 @@
 using Mirror.BouncyCastle.Asn1.Mozilla;
 using Mirror.BouncyCastle.Math.Field;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +15,8 @@ public class SpellNodeInterface : MonoBehaviour
     public NodeConection[] conections;
     public SpellNodeInfos info;
     public NodeInventory inventory;
+    [SerializeField] private Image mainImage;
+    [SerializeField] private Image nodeSymbol;
     public GameObject usedNodeImg;
     public Image borderImg;
     [HideInInspector] public int acquisitionOrder;
@@ -22,10 +25,6 @@ public class SpellNodeInterface : MonoBehaviour
     void Awake()
     {
         rect = GetComponent<RectTransform>();
-
-        borderImg = transform.GetChild(0).GetComponent<Image>();
-
-        usedNodeImg = transform.GetChild(1).gameObject;
         //Initialize();
         /*Node = Instantiate(PrefabNode);
         Node.Interface = this;
@@ -40,17 +39,38 @@ public class SpellNodeInterface : MonoBehaviour
     public void Setup(SpellNode nodeData)
     {
         rect = GetComponent<RectTransform>();
-
-        borderImg = transform.GetChild(0).GetComponent<Image>();
-
-        usedNodeImg = transform.GetChild(1).gameObject;
-
         Node = nodeData;
         Node.Interface = this;
         InitializeConections();
-        GetComponent<Image>().color = Node.color;
-        GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        SetupMainVisual();
+        SetupBorder();
+        SetupBackground();
+        SetupUsedState();
+    }
+    private void SetupMainVisual()
+    {
+        mainImage.color = Node.color;
+        mainImage.alphaHitTestMinimumThreshold = 0.1f;
+    }
+
+    private void SetupBorder()
+    {
         SetNodeBorder(borderImg);
+        borderImg.alphaHitTestMinimumThreshold = 0.1f;
+    }
+
+    private void SetupBackground()
+    {
+        bool hasBackground = Node.nodeSymbolSprite != null;
+        nodeSymbol.gameObject.SetActive(hasBackground);
+        if (!hasBackground) return;
+        nodeSymbol.sprite = Node.nodeSymbolSprite;
+        nodeSymbol.color = Node.symbolColor;
+        nodeSymbol.alphaHitTestMinimumThreshold = 0.1f;
+    }
+
+    private void SetupUsedState()
+    {
         usedNodeImg.SetActive(Node.IsInUse);
     }
     /*private void Start()
@@ -201,23 +221,23 @@ public class SpellNodeInterface : MonoBehaviour
         switch (GetCategory())
         {
             case NodeCategory.Type:
-                img.sprite = info.coreBorder;
+                img.sprite = info.core.borderSprite;
                 break;
 
             case NodeCategory.Effect:
-                img.sprite = info.effectBorder;
+                img.sprite = info.effect.borderSprite;
                 break;
 
             case NodeCategory.Trajectory:
-                img.sprite = info.trajectoryBorder;
+                img.sprite = info.trajectory.borderSprite;
                 break;
 
             case NodeCategory.Stat:
-                img.sprite = info.statBorder;
+                img.sprite = info.stat.borderSprite;
                 break;
 
             case NodeCategory.Trigger:
-                img.sprite = info.triggerBorder;
+                img.sprite = info.trigger.borderSprite;
                 break;
                 /*case NodeCategory.CastingPoint:
                     img.sprite = info.castingPointBorder;
@@ -240,18 +260,6 @@ public class SpellNodeInterface : MonoBehaviour
 
     public NodeCategory GetCategory()
     {
-        if (Node is SpellEffect) return NodeCategory.Effect;
-
-        if (Node is SpellStat) return NodeCategory.Stat;
-
-        if (Node is SpellTrajectory) return NodeCategory.Trajectory;
-
-        if (Node is SpellTrigger) return NodeCategory.Trigger;
-
-        if (Node is SpellType) return NodeCategory.Type;
-
-        //if (Node as SpellCastingPoint) return NodeCategory.CastingPoint;
-
-        return NodeCategory.All;
+        return Node.GetCategory();
     }
 }

@@ -68,7 +68,7 @@ public class HexGrid : MonoBehaviour
 
     void GenerateGrid()
     {
-        CreateHex(0, 0, 0);
+        CreateHex(0, 0, 0, true);
 
         for (int layer = 1; layer <= hexGridRadius; layer++)
         {
@@ -85,13 +85,13 @@ public class HexGrid : MonoBehaviour
         {
             for (int step = 0; step < layer; step++)
             {
-                CreateHex(hex.x, hex.y, layer);
+                CreateHex(hex.x, hex.y, layer, false);
                 hex += directions[side];
             }
         }
     }
 
-    void CreateHex(int q, int r, int Layer)
+    void CreateHex(int q, int r, int Layer, bool first)
     {
         Vector2 pos = HexToPixel(q, r);
         RectTransform hex = Instantiate(hexPrefab, hexContainer);
@@ -100,6 +100,14 @@ public class HexGrid : MonoBehaviour
         node.index = hexGridNodes.Count;
         node.Layer = Layer;
         hexGridNodes.Add(node);
+        if (first)
+        {
+            node.coreHexGridNode.SetActive(true);
+        }
+        else
+        {
+            node.coreHexGridNode.SetActive(false);
+        }
         node.SetGrid(this);
     }
 
