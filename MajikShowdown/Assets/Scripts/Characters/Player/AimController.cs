@@ -50,7 +50,8 @@ public class AimController : NetworkBehaviour
         if (ShowHit)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(Hit.point, 0.3f);
+            Gizmos.DrawSphere(AimPoint, 0.3f);
+            //Gizmos.DrawSphere(Hit.point, 0.3f);
         }
         
     }

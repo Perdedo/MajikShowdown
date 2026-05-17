@@ -47,6 +47,10 @@ public class PlayerUI : NetworkBehaviour
         {
             gameObject.SetActive(false);
         }
+        if(spellPanel != null)
+        {
+            spellPanel.SetActive(false);
+        }
         InitializeStatsUI();
     }
 
