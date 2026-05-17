@@ -454,8 +454,12 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitHexReceive(DraggableNode node, HexGridNode hex)
     {
-        yield return new WaitUntil(() => drags.Contains(node));
+        Debug.Log("Receive 1");
+        //yield return new WaitUntil(() => drags.Contains(node));
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
+        Debug.Log("Receive 2");
         yield return new WaitUntil(() => NetworkClient.ready);
+        Debug.Log("Receive 3");
         CMDHexReceive(drags.IndexOf(node), hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
 
