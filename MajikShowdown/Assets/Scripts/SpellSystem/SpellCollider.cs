@@ -32,12 +32,13 @@ public class SpellCollider : NetworkBehaviour
         public Vector3 Right;
         public Vector3 Up;
     }
+    bool expanding = true;
     public TrajectoryInfo TrajectoryTransform;
     public void Initialize(Spell owner, bool isPrimary)
     {
         SetTrajectoryForward(transform.forward);
         //projectileConfig.CalculateFinalStats();
-        OwnerSpell = owner; ;
+        OwnerSpell = owner;
         primarySpell = isPrimary;
         stats = OwnerSpell.coreNode.FinalStats;
         transform.localScale = Vector3.one * stats.Size;
@@ -51,10 +52,11 @@ public class SpellCollider : NetworkBehaviour
         }
         OnCast.Invoke();
 
-        if (OwnerSpell.coreNode.Type == SpellType.SpellTypes.Explosion)
+        /*if (OwnerSpell.coreNode.Type == SpellType.SpellTypes.Explosion)
         {
             transform.localScale = Vector3.zero;
-        }
+        }*/
+        transform.localScale = Vector3.zero;
         spellCol = GetComponent<Collider>();
 
     }
@@ -66,7 +68,7 @@ public class SpellCollider : NetworkBehaviour
         }
         if (UseAcceleration)
         {
-            rb.LerpToVelocity(OwnerSpell.coreNode.GetVelocity(this), stats.Speed*2);
+            rb.LerpToVelocity(OwnerSpell.coreNode.GetVelocity(this), stats.Speed * 2);
             SetTrajectoryForward(rb.Velocity);
         }
         else
@@ -80,12 +82,7 @@ public class SpellCollider : NetworkBehaviour
             t.UpdateTrigger();
         }
 
-        switch (OwnerSpell.coreNode.Type)
-        {
-            case SpellType.SpellTypes.Explosion:
-                transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * stats.Size, LifeTime / stats.Duration);
-                break;
-        }
+        Expand();
 
         LifeTime += Time.deltaTime;
         if (OwnerSpell.coreNode.trajectory == null || OwnerSpell.coreNode.trajectory.trajectoryType != SpellTrajectory.TrajectoryType.Boomerang)
@@ -99,6 +96,31 @@ public class SpellCollider : NetworkBehaviour
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
 
 
+    }
+    void Expand()
+    {
+        if (expanding)
+        {
+            float scaleTime;
+            switch (OwnerSpell.coreNode.Type)
+            {
+                case SpellType.SpellTypes.Explosion:
+                    scaleTime = stats.Duration;
+                    break;
+                default:
+                    scaleTime = 0.3f;
+                    break;
+            }
+            if (LifeTime <= scaleTime)
+            {
+                transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * stats.Size, LifeTime / scaleTime);
+            }
+            else
+            {
+                transform.localScale = Vector3.one * stats.Size;
+                expanding = false;
+            }
+        }
     }
     public void SetTrajectoryForward(Vector3 forward)
     {
