@@ -152,7 +152,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         col.SpawnTransform = castPoint;
         col.SpawnPoint = castPoint.position;
         col.Initialize(Spell, primary);
-        //NetworkServer.Spawn(g);
+        NetworkServer.Spawn(g);
     }
 
     public void CastSpell(int spellInd)
