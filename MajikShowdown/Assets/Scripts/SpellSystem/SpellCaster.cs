@@ -109,7 +109,12 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
             else
             {
                 Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, AimController.AimPoint);
-                InstantiateSpellCollider(spell, castPos, (AimController.AimPoint - castPos).normalized, true);
+                Vector3 dir = (AimController.AimPoint - castPos).normalized;
+                if(dir == Vector3.zero)
+                {
+                    dir = AimController.AimPoint - transform.position;
+                }
+                InstantiateSpellCollider(spell, castPos, dir, true);
             }
             
         }
