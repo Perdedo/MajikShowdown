@@ -196,7 +196,7 @@ public class HexGrid : MonoBehaviour
     {
         Debug.Log("Add");
         if (node == null) return;
-        if (!VerifyNode(node)) return;
+        if (VerifyNode(node)) return;
         if (caster == null || caster.inventory == null)
         {
             return;
