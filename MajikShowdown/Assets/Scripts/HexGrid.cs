@@ -196,7 +196,7 @@ public class HexGrid : MonoBehaviour
     {
         Debug.Log("Add");
         if (node == null) return;
-        if (spellNodes.Exists(n => n.acquisitionOrder == node.acquisitionOrder)) return;
+        if (!VerifyNode(node)) return;
         if (caster == null || caster.inventory == null)
         {
             return;
@@ -220,5 +220,22 @@ public class HexGrid : MonoBehaviour
         rect.localRotation = Quaternion.identity;
         ConfigurateSpell();
         caster.commander.AddNodeToGrid(hex, node, this);
+    }
+
+    public bool VerifyNode(SpellNodeInterface node)
+    {
+        bool found = false;
+        for(int i = 0; i < spellNodes.Count; i++)
+        {
+            if(spellNodes[i] != null)
+            {
+                if (spellNodes[i].acquisitionOrder == node.acquisitionOrder)
+                {
+                    found = true;
+                    i = spellNodes.Count;
+                }
+            }
+        }
+        return found;
     }
 }

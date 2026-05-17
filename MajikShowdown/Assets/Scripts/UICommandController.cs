@@ -151,7 +151,7 @@ public class UICommandController : NetworkBehaviour
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
         SpellNodeInterface node = interfaces.Find(i => i.acquisitionOrder == nodeInd);
         if (node == null) return;
-        if (grid.spellNodes.Exists(n => n.acquisitionOrder == node.acquisitionOrder)) return;
+        if (!grid.VerifyNode(node)) return;
         if (grid.caster == null || grid.caster.inventory == null)
         {
             return;
