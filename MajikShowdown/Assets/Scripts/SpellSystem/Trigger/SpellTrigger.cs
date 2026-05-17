@@ -67,7 +67,7 @@ public class TriggerInfo
     {
         if (SpellOnCooldown)
         {
-            SpellOnCooldown = TriggerTimer.timer(Trigger.OwnerSpell.primaryNode.SpawnTriggeredSpellCooldown, Time.deltaTime, true, true);
+            SpellOnCooldown = TriggerTimer.timer(Trigger.OwnerSpell.coreNode.SpawnTriggeredSpellCooldown, Time.deltaTime, true, true);
         }
     }
 }

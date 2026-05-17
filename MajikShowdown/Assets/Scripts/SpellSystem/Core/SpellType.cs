@@ -17,13 +17,12 @@ public class SpellType : SpellNode
     public float SpawnTriggeredSpellCooldown = 0.5f;
     public bool DieOnObjectCollide = true;
 
-    //public bool DealDamage = true;
-    //public SpellType Type;
     [Header("Debug")]
     public Elements Element;
     public StatTypes FinalStats;
     public List<StatTypes> StatBuffs = new List<StatTypes>();
-    [NonSerialized]public SpellTrajectory trajectory;
+    [NonSerialized] public SpellTrajectory trajectory;
+    [NonSerialized] public SpellCastPoint castPoint;
 
     // public SubSpell subSpell;
     public override void RandomizeStats()
@@ -67,21 +66,27 @@ public class SpellType : SpellNode
         return traj * FinalStats.Speed;
 
     }
-    public void GetTrajectory()
+    public void GetConectedNodes()
     {
         trajectory = null;
+        castPoint = null;
         foreach (SpellNode c in ConectedNodes)
         {
             if (c is SpellTrajectory t)
             {
                 trajectory = t;
             }
+            else if (c is SpellCastPoint cp)
+            {
+                castPoint = cp;
+            }
         }
+        
     }
     public void UpdateNode()
     {
         CalculateFinalStats();
-        GetTrajectory();
+        GetConectedNodes();
     }
     public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {

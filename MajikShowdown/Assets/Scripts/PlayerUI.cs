@@ -187,13 +187,13 @@ public class PlayerUI : NetworkBehaviour
         if (!isLocalPlayer && network) return;
         if (activeSpell == null) return;
         spellCooldownText.text = FormatStat(activeSpell.SpellCooldown) + "s";
-        if (activeSpell.primaryNode == null)
+        if (activeSpell.coreNode == null)
         {
             InitializeStatsUI();
             return;
         }
 
-        var stats = activeSpell.primaryNode.FinalStats;
+        var stats = activeSpell.coreNode.FinalStats;
         spellStats[0].text = FormatStat(stats.Speed);
         spellStats[1].text = FormatStat(stats.Duration) + "s";
         spellStats[2].text = FormatStat(stats.Size);

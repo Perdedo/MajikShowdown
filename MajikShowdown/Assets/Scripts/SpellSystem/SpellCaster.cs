@@ -6,6 +6,7 @@ using UnityEngine;
 public class SpellCaster : NetworkBehaviour, IGameCharacter
 {
     public CharacterDamageHandler DamageHandler { get; private set; }
+    public AimController AimController;
     [Header("Generic Node")]
     public SpellNodeInterface genericNodePrefab;
     [Header("Player Nodes")]
@@ -83,7 +84,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         {
             return;
         }
-        if(!canCast)
+        if (!canCast)
         {
             return;
         }
@@ -134,7 +135,21 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
         if (spell.validSpell)
         {
-            InstantiateSpellCollider(spell, CastingPoint,transform.forward, true);
+            if (spell.coreNode.castPoint == null)
+            {
+                InstantiateSpellCollider(spell, CastingPoint, (AimController.AimPoint - CastingPoint.position).normalized, true);
+            }
+            else
+            {
+                Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, AimController.AimPoint);
+                Vector3 dir = (AimController.AimPoint - castPos).normalized;
+                if(dir == Vector3.zero)
+                {
+                    dir = AimController.AimPoint - transform.position;
+                }
+                InstantiateSpellCollider(spell, castPos, dir, true);
+            }
+            
         }
         
     }
