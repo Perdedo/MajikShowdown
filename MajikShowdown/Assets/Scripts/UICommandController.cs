@@ -42,6 +42,7 @@ public class UICommandController : NetworkBehaviour
     [Command]
     public void CMDConfigurateSpell(int ind)
     {
+        Debug.Log("Config cmd");
         HexGrid grid = grids.Find(g => g.instanceIndex == ind);
         grid.spell.spellNodes.Clear();
         foreach (var node in grid.spellNodes)
@@ -144,15 +145,18 @@ public class UICommandController : NetworkBehaviour
     [Command]
     public void CMDAddNodeToGrid(int hexInd, int nodeInd, int gridInd)
     {
+        Debug.Log("Add cmd");
         //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
+        HexGrid grid = grids.Find(g => g.instanceIndex == gridInd);
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
         SpellNodeInterface node = interfaces.Find(i => i.acquisitionOrder == nodeInd);
         if (node == null) return;
-        if (grids[gridInd].caster == null || grids[gridInd].caster.inventory == null)
+        if (grid.spellNodes.Exists(n => n.acquisitionOrder == node.acquisitionOrder)) return;
+        if (grid.caster == null || grid.caster.inventory == null)
         {
             return;
         }
-        grids[gridInd].caster.inventory.RemoveNodeFromInventory(node);
+        grid.caster.inventory.RemoveNodeFromInventory(node);
         if (node.hexGridNode != null)
         {
             node.hexGridNode.VerifyNearbyBreakConections(node);
@@ -161,14 +165,14 @@ public class UICommandController : NetworkBehaviour
         }
         hex.spellNode = node;
         node.hexGridNode = hex;
-        grids[gridInd].spellNodes[hex.index] = node;
+        grid.spellNodes[hex.index] = node;
         //hex.SetNodeButtonState(false);
         RectTransform rect = node.GetComponent<RectTransform>();
-        node.transform.SetParent(grids[gridInd].nodeContainer, false);
+        node.transform.SetParent(grid.nodeContainer, false);
         rect.position = hex.rect.position;
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
-        grids[gridInd].ConfigurateSpell();
+        grid.ConfigurateSpell();
     }
 
     /*public void InitializeSNI(SpellNodeInterface sni)
@@ -483,6 +487,7 @@ public class UICommandController : NetworkBehaviour
     [Command]
     public void CMDHexReceive(int nodeInd, int hexInd, int gridInd)
     {
+        Debug.Log("receive cmd");
         //DraggableNode node = drags[nodeInd];
         DraggableNode node = drags.Find(d => d.acquisitionOrder == nodeInd);
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);

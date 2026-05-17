@@ -196,6 +196,7 @@ public class HexGrid : MonoBehaviour
     {
         Debug.Log("Add");
         if (node == null) return;
+        if (spellNodes.Exists(n => n.acquisitionOrder == node.acquisitionOrder)) return;
         if (caster == null || caster.inventory == null)
         {
             return;
@@ -203,6 +204,7 @@ public class HexGrid : MonoBehaviour
         caster.inventory.RemoveNodeFromInventory(node);
         if (node.hexGridNode != null)
         {
+            Debug.Log("Quebrou aqui");
             node.hexGridNode.VerifyNearbyBreakConections(node);
             node.hexGridNode.spellNode = null;
             node.hexGridNode.SetNodeButtonState(true);

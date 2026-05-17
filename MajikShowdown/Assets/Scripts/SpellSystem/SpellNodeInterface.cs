@@ -76,6 +76,7 @@ public class SpellNodeInterface : MonoBehaviour
     }
     public bool TryConectNode(SpellNodeInterface con, int index)
     {
+        Debug.Log("tryCon");
         int mirrorIndex = (index + 3) % 6;
         if (index < conections.Length)
         {
@@ -106,6 +107,7 @@ public class SpellNodeInterface : MonoBehaviour
     }
     public void BreakConection(int Index)
     {
+        Debug.Log("break");
         if (Index >= conections.Length)
         {
             return;
@@ -130,14 +132,17 @@ public class SpellNodeInterface : MonoBehaviour
     }
     public void UpdateConected()
     {
+        Debug.Log("updatecon");
         for (int i = 0; i < conections.Length; i++)
         {
             if (conections[i] != null)
             {
+                Debug.Log(conections[i].GetNode());
                 Node.ConectedNodes[i] = conections[i].GetNode();
             }
             else
             {
+                Debug.Log("else");
                 Node.ConectedNodes[i] = null;
             }
         }
