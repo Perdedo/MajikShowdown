@@ -175,11 +175,13 @@ public class SpellCollider : NetworkBehaviour
         };
         e.AddListener(action);
     }
+    [Server]
     public Vector3 ToTrajDirection(Vector3 rawDir)
     {
         return TrajectoryTransform.Forward * rawDir.z + TrajectoryTransform.Up * rawDir.y + TrajectoryTransform.Right * rawDir.x;
     }
     bool routineStarted;
+    [Server]
     IEnumerator StartHitCooldown()
     {
         routineStarted = true;
