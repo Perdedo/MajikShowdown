@@ -460,15 +460,13 @@ public class UICommandController : NetworkBehaviour
         Debug.Log("Receive 2");
         yield return new WaitUntil(() => NetworkClient.ready);
         Debug.Log("Receive 3");
-        CMDHexReceive(node.acquisitionOrder, hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
-        //CMDHexReceive(drags.IndexOf(node), hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
+        CMDHexReceive(drags.IndexOf(node), hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
 
     [Command]
     public void CMDHexReceive(int nodeInd, int hexInd, int gridInd)
     {
-        //DraggableNode node = drags[nodeInd];
-        DraggableNode node = drags.Find(d => d.acquisitionOrder == nodeInd);
+        DraggableNode node = drags[nodeInd];
         HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         var spell = node.GetComponent<SpellNodeInterface>();
         if (spell == null) return;
