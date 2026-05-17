@@ -15,7 +15,6 @@ public class SpellCardUI : MonoBehaviour
     public Spell boundSpell;
     bool isSelected;
     Image cardColor;
-    public int instanceIndex;
 
     public void Setup(Spell spell)
     {

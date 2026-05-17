@@ -32,38 +32,35 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitConfigurateSpell(HexGrid grid)
     {
-        //yield return new WaitUntil(() => grids.Contains(grid));
-        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
+        yield return new WaitUntil(() => grids.Contains(grid));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDConfigurateSpell(grid.instanceIndex);
-        //CMDConfigurateSpell(grids.IndexOf(grid));
+        CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
     [Command]
     public void CMDConfigurateSpell(int ind)
     {
-        HexGrid grid = grids.Find(g => g.instanceIndex == ind);
-        grid.spell.spellNodes.Clear();
-        foreach (var node in grid.spellNodes)
+        grids[ind].spell.spellNodes.Clear();
+        foreach (var node in grids[ind].spellNodes)
         {
             if (node != null)
             {
                 node.Node.hierarchy = node.hexGridNode.Layer;
-                grid.spell.spellNodes.Add(node.Node);
+                grids[ind].spell.spellNodes.Add(node.Node);
             }
 
         }
-        if (grid.hexGridNodes[0].spellNode != null && grid.hexGridNodes[0].spellNode.Node is SpellType t)
+        if (grids[ind].hexGridNodes[0].spellNode != null && grids[ind].hexGridNodes[0].spellNode.Node is SpellType t)
         {
-            grid.spell.validSpell = true;
-            grid.spell.primaryNode = t;
+            grids[ind].spell.validSpell = true;
+            grids[ind].spell.primaryNode = t;
         }
         else
         {
-            grid.spell.validSpell = false;
-            grid.spell.primaryNode = null;
+            grids[ind].spell.validSpell = false;
+            grids[ind].spell.primaryNode = null;
         }
-        grid.spell.UpdateSpell();
+        grids[ind].spell.UpdateSpell();
     }
 
 
@@ -85,18 +82,17 @@ public class UICommandController : NetworkBehaviour
 
     IEnumerator WaitReturnAllNodesToInventory(HexGrid grid)
     {
-        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
+        yield return new WaitUntil(() => grids.Contains(grid));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDReturnAllNodesToInventory(grid.instanceIndex);
+        CMDReturnAllNodesToInventory(grids.IndexOf(grid));
     }
 
     [Command]
     public void CMDReturnAllNodesToInventory(int ind)
     {
-        HexGrid grid = grids.Find(g => g.instanceIndex == ind);
-        if (grid.caster == null || grid.caster.inventory == null) return;
+        if (grids[ind].caster == null || grids[ind].caster.inventory == null) return;
 
-        foreach (var node in grid.spellNodes)
+        foreach (var node in grids[ind].spellNodes)
         {
             if (node != null)
             {
@@ -107,14 +103,14 @@ public class UICommandController : NetworkBehaviour
                 }
                 node.hexGridNode = null;
                 node.Node.ResetNode();
-                grid.caster.inventory.AddNodeToInventory(node);
+                grids[ind].caster.inventory.AddNodeToInventory(node);
             }
         }
-        for (int i = 0; i < grid.spellNodes.Count; i++)
+        for (int i = 0; i < grids[ind].spellNodes.Count; i++)
         {
-            grid.spellNodes[i] = null;
+            grids[ind].spellNodes[i] = null;
         }
-        grid.ConfigurateSpell();
+        grids[ind].ConfigurateSpell();
     }
 
     public void AddNodeToGrid(HexGridNode hex, SpellNodeInterface node, HexGrid grid)
@@ -134,18 +130,15 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitAddNodeToGrid(HexGridNode hex, SpellNodeInterface node, HexGrid grid)
     {
-        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex) && hex.grid.hexGridNodes.Exists(h => h.index == hex.index));
         yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDAddNodeToGrid(hex.index, node.acquisitionOrder, grid.instanceIndex);
-        //CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), node.acquisitionOrder, grids.IndexOf(grid));
+        CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), node.acquisitionOrder, grids.IndexOf(grid));
     }
 
     [Command]
     public void CMDAddNodeToGrid(int hexInd, int nodeInd, int gridInd)
     {
-        //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
-        HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
+        HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         SpellNodeInterface node = interfaces.Find(i => i.acquisitionOrder == nodeInd);
         if (node == null) return;
         if (grids[gridInd].caster == null || grids[gridInd].caster.inventory == null)
@@ -357,18 +350,15 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitDeleteSCUI(SpellCardUI scui)
     {
-        //yield return new WaitUntil(() => cards.Contains(scui));
-        yield return new WaitUntil(() => cards.Exists(c => c.instanceIndex == scui.instanceIndex));
+        yield return new WaitUntil(() => cards.Contains(scui));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDDeleteSCUI(scui.instanceIndex);
-        //CMDDeleteSCUI(cards.IndexOf(scui));
+        CMDDeleteSCUI(cards.IndexOf(scui));
     }
 
     [Command]
     public void CMDDeleteSCUI(int index)
     {
-        //SpellCardUI scui = cards[index];
-        SpellCardUI scui = cards.Find(c => c.instanceIndex == index);
+        SpellCardUI scui = cards[index];
         if (scui.boundSpell == null) return;
         for (int i = 0; i < scui.boundSpell.Caster.equippedSpells.Length; i++)
         {
@@ -406,18 +396,15 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitSelectSCUI(SpellCardUI scui)
     {
-        //yield return new WaitUntil(() => cards.Contains(scui));
-        yield return new WaitUntil(() => cards.Exists(c => c.instanceIndex == scui.instanceIndex));
+        yield return new WaitUntil(() => cards.Contains(scui));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDSelectSCUI(scui.instanceIndex);
-        //CMDSelectSCUI(cards.IndexOf(scui));
+        CMDSelectSCUI(cards.IndexOf(scui));
     }
 
     [Command]
     public void CMDSelectSCUI(int index)
     {
-        //SpellCardUI scui = cards[index];
-        SpellCardUI scui = cards.Find(c => c.instanceIndex == index);
+        SpellCardUI scui = cards[index];
         GameManager.Instance.uiController.playerUI.StartEquipSpell(scui.boundSpell);
     }
 
@@ -438,18 +425,15 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitInitializeHex(HexGridNode hex)
     {
-        //yield return new WaitUntil(() => grids.Contains(hex.grid));
-        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == hex.grid.instanceIndex) && hex.grid.hexGridNodes.Exists(h => h.index == hex.index));
+        yield return new WaitUntil(() => grids.Contains(hex.grid));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDInitializeHex(hex.index, hex.grid.instanceIndex);
-        //CMDInitializeHex(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
+        CMDInitializeHex(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
 
     [Command]
     public void CMDInitializeHex(int hexInd, int gridInd)
     {
-        HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
-        //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
+        HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         hex.rect = GetComponent<RectTransform>();
         hex.button = GetComponent<Button>();
         hex.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
@@ -473,10 +457,9 @@ public class UICommandController : NetworkBehaviour
     IEnumerator WaitHexReceive(DraggableNode node, HexGridNode hex)
     {
         //yield return new WaitUntil(() => drags.Contains(node));
-        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == hex.grid.instanceIndex) && hex.grid.hexGridNodes.Exists(h => h.index == hex.index));
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDHexReceive(node.acquisitionOrder, hex.index, hex.grid.instanceIndex);
+        CMDHexReceive(node.acquisitionOrder, hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
         //CMDHexReceive(drags.IndexOf(node), hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
 
@@ -485,8 +468,7 @@ public class UICommandController : NetworkBehaviour
     {
         //DraggableNode node = drags[nodeInd];
         DraggableNode node = drags.Find(d => d.acquisitionOrder == nodeInd);
-        HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
-        //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
+        HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         var spell = node.GetComponent<SpellNodeInterface>();
         if (spell == null) return;
 
@@ -514,18 +496,16 @@ public class UICommandController : NetworkBehaviour
     IEnumerator WaitHexRelease(HexGridNode hex, DraggableNode node)
     {
         //yield return new WaitUntil(() => drags.Contains(node));
-        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == hex.grid.instanceIndex) && hex.grid.hexGridNodes.Exists(h => h.index == hex.index));
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
         //CMDHexRelease(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid), drags.IndexOf(node));
-        CMDHexRelease(hex.index, hex.grid.instanceIndex, node.acquisitionOrder);
+        CMDHexRelease(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid), node.acquisitionOrder);
     }
 
     [Command]
     public void CMDHexRelease(int hexInd, int gridInd, int nodeInd)
     {
-        //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
-        HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
+        HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         DraggableNode node = drags.Find(d => d.acquisitionOrder == nodeInd);
         //DraggableNode node = drags[nodeInd];
         if (hex.spellNode == null) return;

@@ -18,7 +18,6 @@ public class HexGrid : MonoBehaviour
     public Spell spell;
     public Transform hexContainer;
     public Transform nodeContainer;
-    public int instanceIndex;
 
     Vector2Int[] directions =
     {
