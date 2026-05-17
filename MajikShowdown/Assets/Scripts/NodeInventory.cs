@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 public class NodeInventory : NetworkBehaviour, IDropZone
@@ -121,18 +120,15 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
     IEnumerator WaitReceive(DraggableNode node)
     {
-        //yield return new WaitUntil(() => commander.drags.Contains(node));
-        yield return new WaitUntil(() => commander.drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
+        yield return new WaitUntil(() => commander.drags.Contains(node));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDReceive(node.acquisitionOrder);
-        //CMDReceive(commander.drags.IndexOf(node));
+        CMDReceive(commander.drags.IndexOf(node));
     }
 
     [Command]
     public void CMDReceive(int index)
     {
-        //DraggableNode node = commander.drags[index];
-        DraggableNode node = commander.drags.Find(d => d.acquisitionOrder == index);
+        DraggableNode node = commander.drags[index];
         node.SetOriginZone(this as IDropZone);
         var spellNode = node.GetComponent<SpellNodeInterface>();
         if (spellNode != null)
@@ -241,18 +237,15 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
     IEnumerator WaitAddNodeToInventory(SpellNodeInterface node)
     {
-        //yield return new WaitUntil(() => commander.interfaces.Contains(node));
-        yield return new WaitUntil(() => commander.interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder));
+        yield return new WaitUntil(() => commander.interfaces.Contains(node));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDAddNodeToInventory(node.acquisitionOrder);
-        //CMDAddNodeToInventory(commander.interfaces.IndexOf(node));
+        CMDAddNodeToInventory(commander.interfaces.IndexOf(node));
     }
 
     [Command]
     public void CMDAddNodeToInventory(int index)
     {
-        //SpellNodeInterface node = commander.interfaces[index];
-        SpellNodeInterface node = commander.interfaces.Find(i => i.acquisitionOrder == index);
+        SpellNodeInterface node = commander.interfaces[index];
         node.linkedDescription = nodeDescription;
         if (!activeNodes.Contains(node))
             activeNodes.Add(node);
@@ -285,17 +278,15 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     }
     IEnumerator WaitRemoveNodeFromInventory(SpellNodeInterface node)
     {
-        //yield return new WaitUntil(() => commander.interfaces.Contains(node));
-        yield return new WaitUntil(() => commander.interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder));
+        yield return new WaitUntil(() => commander.interfaces.Contains(node));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDRemoveNodeFromInventory(node.acquisitionOrder);
+        CMDRemoveNodeFromInventory(activeNodes.IndexOf(node));
     }
 
     [Command]
     public void CMDRemoveNodeFromInventory(int ind)
     {
-        SpellNodeInterface node = commander.interfaces.Find(i => i.acquisitionOrder == ind);
-        activeNodes.Remove(node);
+        activeNodes.RemoveAt(ind);
     }
 
     void OnFilterChanged(int _)
@@ -389,18 +380,15 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     }
     IEnumerator WaitSetNodeInUse(DraggableNode node, bool inUse)
     {
-        //yield return new WaitUntil(() => commander.drags.Contains(node));
-        yield return new WaitUntil(() => commander.drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
+        yield return new WaitUntil(() => commander.drags.Contains(node));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDSetNodeInUse(node.acquisitionOrder, inUse);
-        //CMDSetNodeInUse(commander.drags.IndexOf(node), inUse);
+        CMDSetNodeInUse(commander.drags.IndexOf(node), inUse);
     }
 
     [Command]
     public void CMDSetNodeInUse(int index, bool inUse)
     {
-        //DraggableNode node = commander.drags[index];
-        DraggableNode node = commander.drags.Find(d => d.acquisitionOrder == index);
+        DraggableNode node = commander.drags[index];
         if (!usageCount.ContainsKey(node))
         {
             usageCount[node] = 0;
@@ -442,17 +430,15 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     }
     IEnumerator WaitInsertNodeAt(SpellNodeInterface node, int index)
     {
-        //yield return new WaitUntil(() => commander.interfaces.Contains(node));
-        yield return new WaitUntil(() => commander.interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder));
+        yield return new WaitUntil(() => commander.interfaces.Contains(node));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDInsertNodeAt(node.acquisitionOrder, index);
+        CMDInsertNodeAt(commander.interfaces.IndexOf(node), index);
     }
 
     [Command]
     public void CMDInsertNodeAt(int nodeInd, int index)
     {
-        SpellNodeInterface node = commander.interfaces.Find(i => i.acquisitionOrder == nodeInd);
-        //SpellNodeInterface node = commander.interfaces[nodeInd];
+        SpellNodeInterface node = commander.interfaces[nodeInd];
         if (activeNodes.Contains(node))
         {
             activeNodes.Remove(node);
