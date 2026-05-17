@@ -420,6 +420,7 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitInitializeHex(HexGridNode hex)
     {
+        //yield return new WaitUntil(() => grids.Contains(hex.grid));
         yield return new WaitUntil(() => grids.Contains(hex.grid));
         yield return new WaitUntil(() => NetworkClient.ready);
         CMDInitializeHex(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
@@ -451,7 +452,7 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitHexReceive(DraggableNode node, HexGridNode hex)
     {
-        yield return new WaitUntil(() => drags.Contains(node));
+        yield return new WaitUntil(() => drags.Exists(d => d.GetInstanceID() == node.GetInstanceID()));
         yield return new WaitUntil(() => NetworkClient.ready);
         CMDHexReceive(drags.IndexOf(node), hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
