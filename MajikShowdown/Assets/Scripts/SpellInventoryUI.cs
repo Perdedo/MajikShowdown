@@ -26,6 +26,7 @@ public class SpellInventoryUI : NetworkBehaviour
             DeselectAllCards();
             Spell newSpell = new Spell(caster);
             newSpell.spellName = GenerateSpellName();
+            newSpell.instanceIndex = caster.spells.Count;
             HexGrid newGrid = Instantiate(gridPrefab, gridParent);
             newGrid.caster = caster;
             newGrid.instanceIndex = caster.spells.Count;

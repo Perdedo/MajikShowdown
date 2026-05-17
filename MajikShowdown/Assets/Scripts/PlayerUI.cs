@@ -238,6 +238,7 @@ public class PlayerUI : NetworkBehaviour
 
     IEnumerator WaitStartEquipSpell(Spell spell)
     {
+        Debug.Log(spell.instanceIndex + "bound spell");
         yield return new WaitUntil(() => caster.spells.Exists(s => s.instanceIndex == spell.instanceIndex));
         yield return new WaitUntil(() => NetworkClient.ready);
         CMDStartEquipSpell(spell.instanceIndex);

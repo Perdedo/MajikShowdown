@@ -58,6 +58,7 @@ public class SpellCardUI : MonoBehaviour
     void Select()
     {
         //var spellInventory = FindAnyObjectByType<SpellInventoryUI>();
+        Debug.Log(boundSpell.instanceIndex + "bound spell");
         if (spellInventory != null)
         {
             spellInventory.DeselectAllCards();
