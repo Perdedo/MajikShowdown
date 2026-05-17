@@ -36,6 +36,10 @@ public class SpellCollider : NetworkBehaviour
     public TrajectoryInfo TrajectoryTransform;
     public void Initialize(Spell owner, bool isPrimary)
     {
+        if (!isServer)
+        {
+            return;
+        }
         SetTrajectoryForward(transform.forward);
         //projectileConfig.CalculateFinalStats();
         OwnerSpell = owner;
@@ -62,6 +66,10 @@ public class SpellCollider : NetworkBehaviour
     }
     void Update()
     {
+        if (!isServer)
+        {
+            return;
+        }
         if (HitOnCooldown)
         {
             HitOnCooldown = HitTimer.timer(OwnerSpell.coreNode.HitCooldown, Time.deltaTime, true, false);
@@ -179,6 +187,10 @@ public class SpellCollider : NetworkBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
+        if (!isServer)
+        {
+            return;
+        }
         if (!OwnerSpell.coreNode.HitOnStay)
         {
             HandleTrigger(other);
@@ -186,6 +198,10 @@ public class SpellCollider : NetworkBehaviour
     }
     void OnTriggerStay(Collider other)
     {
+        if (!isServer)
+        {
+            return;
+        }
         if (OwnerSpell.coreNode.HitOnStay)
         {
             HandleTrigger(other);

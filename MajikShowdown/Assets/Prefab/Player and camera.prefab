@@ -10747,7 +10747,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00015258789}
+  m_AnchoredPosition: {x: 0, y: 0.0008544922}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &6150298183587537734
@@ -17949,7 +17949,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AimController
   Follow: {fileID: 5642760642209226531}
   FollowOffset: {x: 0, y: 0, z: 0}
-  MaxRayDistance: 3.4028235e+38
+  MaxRayDistance: 1000
   HitLayer:
     serializedVersion: 2
     m_Bits: 1015
@@ -17969,6 +17969,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  AimController: {fileID: 6982475888199955597}
   genericNodePrefab: {fileID: 4987073506986097210, guid: 90062ac18eaa795429e3132159484390, type: 3}
   ownedNodes:
   - {fileID: 11400000, guid: fbc1f1f918bdb3744b82ca58741bc8dc, type: 2}
@@ -20877,11 +20878,12 @@ MonoBehaviour:
     spellName: 
     spellNodes: []
     SpellCooldown: 0
-    primaryNode: {fileID: 0}
+    coreNode: {fileID: 0}
     triggers: []
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
+    instanceIndex: 0
   equipSlotButtons:
   - {fileID: 1029939578754313762}
   - {fileID: 4260372554714590006}

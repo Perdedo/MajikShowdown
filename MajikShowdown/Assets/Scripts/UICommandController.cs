@@ -57,12 +57,12 @@ public class UICommandController : NetworkBehaviour
         if (grid.hexGridNodes[0].spellNode != null && grid.hexGridNodes[0].spellNode.Node is SpellType t)
         {
             grid.spell.validSpell = true;
-            grid.spell.primaryNode = t;
+            grid.spell.coreNode = t;
         }
         else
         {
             grid.spell.validSpell = false;
-            grid.spell.primaryNode = null;
+            grid.spell.coreNode = null;
         }
         grid.spell.UpdateSpell();
     }
