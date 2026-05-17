@@ -1,18 +1,55 @@
+using System;
 using UnityEngine;
+
+[Serializable]
+public struct NodeVisualInfo
+{
+    public Color color;
+    public Color internSymbolColor;
+    public Sprite borderSprite;
+    public NodeConection.Conections[] connections;
+}
 
 [CreateAssetMenu(fileName = "SpellNodeInfos", menuName = "Scriptable Objects/SpellNodeInfos")]
 public class SpellNodeInfos : ScriptableObject
 {
-    [Header("Borders")]
-    public Sprite coreBorder;
+    [Header("Node Types")]
+    public NodeVisualInfo core;
 
-    public Sprite effectBorder;
+    public NodeVisualInfo effect;
 
-    public Sprite trajectoryBorder;
+    public NodeVisualInfo trajectory;
 
-    public Sprite statBorder;
+    public NodeVisualInfo stat;
 
-    public Sprite triggerBorder;
+    public NodeVisualInfo trigger;
 
-    public Sprite castingPointBorder;
+    public NodeVisualInfo castingPoint;
+
+    public NodeVisualInfo GetInfo(NodeCategory category)
+    {
+        switch (category)
+        {
+            case NodeCategory.Type:
+                return core;
+
+            case NodeCategory.Effect:
+                return effect;
+
+            case NodeCategory.Trajectory:
+                return trajectory;
+
+            case NodeCategory.Stat:
+                return stat;
+
+            case NodeCategory.Trigger:
+                return trigger;
+
+            /*case NodeCategory.CastingPoint:
+                return castingPoint;*/
+
+            default:
+                return core;
+        }
+    }
 }

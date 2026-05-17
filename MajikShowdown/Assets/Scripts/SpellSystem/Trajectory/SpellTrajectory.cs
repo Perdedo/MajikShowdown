@@ -134,21 +134,6 @@ public class SpellTrajectory : SpellNode
         }
         return (target.position - collider.transform.position).normalized;
     }
-
-    public override void SetupNodeVisual()
-    {
-        color = HexToColor("357CDB");
-
-        ConectionPorts = new NodeConection.Conections[]
-        {
-        NodeConection.Conections.None,
-        NodeConection.Conections.None,
-        NodeConection.Conections.None,
-        NodeConection.Conections.Circle,
-        NodeConection.Conections.None,
-        NodeConection.Conections.None
-        };
-    }
 }
 
 /*public class TrajectoryLobbed : SpellTrajectory

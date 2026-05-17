@@ -38,21 +38,6 @@ public class SpellTrigger : SpellNode
         }
         return aux;
     }*/
-
-    public override void SetupNodeVisual()
-    {
-        color = HexToColor("A84B0D");
-
-        ConectionPorts = new NodeConection.Conections[]
-        {
-        NodeConection.Conections.Square,
-        NodeConection.Conections.None,
-        NodeConection.Conections.Square,
-        NodeConection.Conections.None,
-        NodeConection.Conections.Square,
-        NodeConection.Conections.None
-        };
-    }
 }
 public class TriggerInfo
 {

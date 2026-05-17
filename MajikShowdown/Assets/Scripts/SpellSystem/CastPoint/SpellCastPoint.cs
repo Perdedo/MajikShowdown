@@ -20,18 +20,4 @@ public class SpellCastPoint : SpellNode
                 return caster.position;
         }
     }
-    public override void SetupNodeVisual()
-    {
-        color = HexToColor("E84A4A");
-
-        ConectionPorts = new NodeConection.Conections[]
-        {
-        NodeConection.Conections.None,
-        NodeConection.Conections.Penta,
-        NodeConection.Conections.None,
-        NodeConection.Conections.None,
-        NodeConection.Conections.None,
-        NodeConection.Conections.None
-        };
-    }
 }
