@@ -167,10 +167,8 @@ public class SpellCollider : NetworkBehaviour
     {
         UnityAction action = () =>
         {
-            Debug.Log("act");
             if (!trigger.SpellOnCooldown)
             {
-                Debug.Log("act if");
                 OwnerSpell.Caster.ServerInstantiateSpellCollider(spell, transform.position, transform.forward);
                 trigger.SpellOnCooldown = true;
             }

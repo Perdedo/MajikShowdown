@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Mirror;
 //using UnityEditor.Experimental.GraphView;
 
-public class SpellNodeDescription : MonoBehaviour
+public class SpellNodeDescription : NetworkBehaviour
 {
     [Header("Description Texts")]
     public Image cooldownIcon;
@@ -264,20 +264,59 @@ public class SpellNodeDescription : MonoBehaviour
             availableSpells.Add(s);
         }
         spellDropdown.AddOptions(names);
+        if(!isServer)
+        {
+            CMDSetupSpellDropdown();
+        }
     }
+
+    [Command]
+    void CMDSetupSpellDropdown()
+    {
+        var spells = caster.spells;
+        spellDropdown.ClearOptions();
+        availableSpells.Clear();
+        List<string> names = new List<string>();
+        names.Add("None");
+        availableSpells.Add(null);
+        foreach (var s in spells)
+        {
+            names.Add(s.spellName);
+            availableSpells.Add(s);
+        }
+        spellDropdown.AddOptions(names);
+    }
+
 
     void SetupTriggerDropdown()
     {
         triggerDropdown.ClearOptions();
         var enumNames = System.Enum.GetNames(typeof(SpellTrigger.Triggers));
         triggerDropdown.AddOptions(new List<string>(enumNames));
+        if(!isServer)
+        {
+            CMDSetupTriggerDropdown();
+        }
     }
+
+    [Command]
+    void CMDSetupTriggerDropdown()
+    {
+        triggerDropdown.ClearOptions();
+        var enumNames = System.Enum.GetNames(typeof(SpellTrigger.Triggers));
+        triggerDropdown.AddOptions(new List<string>(enumNames));
+    }
+    
 
     void SetTriggerSpell(int index)
     {
         if (currentTrigger == null) return;
         if (index < 0 || index >= availableSpells.Count) return;
         currentTrigger.TriggeredSpell = availableSpells[index];
+        if(!isServer)
+        {
+            CMDSetTriggerSpell(index);
+        }
     }
 
     void SetTriggerType(int index)
@@ -288,9 +327,55 @@ public class SpellNodeDescription : MonoBehaviour
         {
             currentTrigger.trigger = (SpellTrigger.Triggers)index;
         }
+
+        if(!isServer)
+        {
+            CMDSetTriggerType(index);
+        }
+    }
+
+    [Command]
+    void CMDSetTriggerSpell(int index)
+    {
+        if (currentTrigger == null) return;
+        if (index < 0 || index >= availableSpells.Count) return;
+        currentTrigger.TriggeredSpell = availableSpells[index];
+    }
+
+    [Command]
+    void CMDSetTriggerType(int index)
+    {
+        if (currentTrigger == null) return;
+
+        if (System.Enum.IsDefined(typeof(SpellTrigger.Triggers), index))
+        {
+            currentTrigger.trigger = (SpellTrigger.Triggers)index;
+        }
     }
 
     public void RefreshTriggerUI()
+    {
+        if (currentTrigger == null) return;
+        int spellIndex = availableSpells.IndexOf(currentTrigger.TriggeredSpell);
+        if (spellIndex < 0)
+        {
+            spellIndex = 0;
+        }
+        spellDropdown.SetValueWithoutNotify(spellIndex);
+        int triggerIndex = (int)currentTrigger.trigger;
+        if (triggerIndex < 0 || triggerIndex >= triggerDropdown.options.Count)
+        {
+            triggerIndex = 0;
+        }
+        triggerDropdown.SetValueWithoutNotify(triggerIndex);
+        if(!isServer)
+        {
+            CMDRefreshTriggerUI();
+        }
+    }
+
+    [Command]
+    public void CMDRefreshTriggerUI()
     {
         if (currentTrigger == null) return;
         int spellIndex = availableSpells.IndexOf(currentTrigger.TriggeredSpell);
