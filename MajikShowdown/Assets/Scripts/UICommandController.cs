@@ -103,7 +103,7 @@ public class UICommandController : NetworkBehaviour
                 if (node.hexGridNode != null)
                 {
                     node.hexGridNode.spellNode = null;
-                    node.hexGridNode.SetNodeButtonState(true);
+                    //node.hexGridNode.SetNodeButtonState(true);
                 }
                 node.hexGridNode = null;
                 node.Node.ResetNode();
@@ -157,12 +157,12 @@ public class UICommandController : NetworkBehaviour
         {
             node.hexGridNode.VerifyNearbyBreakConections(node);
             node.hexGridNode.spellNode = null;
-            node.hexGridNode.SetNodeButtonState(true);
+            //node.hexGridNode.SetNodeButtonState(true);
         }
         hex.spellNode = node;
         node.hexGridNode = hex;
         grids[gridInd].spellNodes[hex.index] = node;
-        hex.SetNodeButtonState(false);
+        //hex.SetNodeButtonState(false);
         RectTransform rect = node.GetComponent<RectTransform>();
         node.transform.SetParent(grids[gridInd].nodeContainer, false);
         rect.position = hex.rect.position;
@@ -534,7 +534,7 @@ public class UICommandController : NetworkBehaviour
         hex.grid.spellNodes[hex.index] = null;
         hex.spellNode.hexGridNode = null;
         hex.spellNode = null;
-        hex.SetNodeButtonState(true);
+        //hex.SetNodeButtonState(true);
         hex.grid.ConfigurateSpell();
         if (node.isClone && node.inventorySource != null)
         {
