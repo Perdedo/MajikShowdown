@@ -14,7 +14,7 @@ public class Spell
     //public List<SubSpell> SubSpells = new List<SubSpell>();
     public List<SpellNode> spellNodes = new List<SpellNode>();
     public float SpellCooldown = 0;
-    public SpellType primaryNode;
+    public SpellType coreNode;
     public List<SpellTrigger> triggers = new List<SpellTrigger>();
     public List<SpellEffect> spellEffects = new List<SpellEffect>();
     public bool validSpell;
@@ -28,7 +28,7 @@ public class Spell
     public void UpdateSpell()
     {
         //CreateSubSpells();
-        if (primaryNode == null)
+        if (coreNode == null)
         {
             SpellCooldown = 0;
             spellNodes.Clear();
@@ -38,11 +38,11 @@ public class Spell
             OnSpellUpdated?.Invoke();
             return;
         }
-        primaryNode.hierarchy = 0;
+        coreNode.hierarchy = 0;
         SpellCooldown = 0;
 
-        spellNodes = primaryNode.GetSpellList(new List<SpellNode>());
-        primaryNode.StatBuffs.Clear();
+        spellNodes = coreNode.GetSpellList(new List<SpellNode>());
+        coreNode.StatBuffs.Clear();
         triggers.Clear();
         spellEffects.Clear();
         foreach (SpellNode s in spellNodes)
@@ -60,13 +60,13 @@ public class Spell
             }
             
             SpellCooldown += s.Cooldown;
-            if (s != primaryNode)
+            if (s != coreNode)
             {
-                primaryNode.AddBuff(s.BaseStats);
+                coreNode.AddBuff(s.BaseStats);
             }
             s.OwnerSpell = this;
         }
-        primaryNode.UpdateNode();
+        coreNode.UpdateNode();
         OnSpellUpdated?.Invoke();
         /*foreach(SubSpell s in SubSpells)
         {

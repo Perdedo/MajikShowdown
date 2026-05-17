@@ -39,19 +39,19 @@ public class SpellCollider : NetworkBehaviour
         //projectileConfig.CalculateFinalStats();
         OwnerSpell = owner; ;
         primarySpell = isPrimary;
-        stats = OwnerSpell.primaryNode.FinalStats;
+        stats = OwnerSpell.coreNode.FinalStats;
         transform.localScale = Vector3.one * stats.Size;
         //Invoke("Die", stats.Duration);
         pierceCount = stats.Piercing;
         bounceCount = stats.Bounce;
-        OnHit.AddListener(() => { if (OwnerSpell.primaryNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown()); });
+        OnHit.AddListener(() => { if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown()); });
         if (primarySpell)
         {
             InitiateTriggeredSpells();
         }
         OnCast.Invoke();
 
-        if (OwnerSpell.primaryNode.Type == SpellType.SpellTypes.Explosion)
+        if (OwnerSpell.coreNode.Type == SpellType.SpellTypes.Explosion)
         {
             transform.localScale = Vector3.zero;
         }
@@ -62,17 +62,17 @@ public class SpellCollider : NetworkBehaviour
     {
         if (HitOnCooldown)
         {
-            HitOnCooldown = HitTimer.timer(OwnerSpell.primaryNode.HitCooldown, Time.deltaTime, true, false);
+            HitOnCooldown = HitTimer.timer(OwnerSpell.coreNode.HitCooldown, Time.deltaTime, true, false);
         }
         if (UseAcceleration)
         {
-            rb.LerpToVelocity(OwnerSpell.primaryNode.GetVelocity(this), stats.Speed*2);
+            rb.LerpToVelocity(OwnerSpell.coreNode.GetVelocity(this), stats.Speed*2);
             SetTrajectoryForward(rb.Velocity);
         }
         else
         {
             rb.CancelLerp();
-            rb.Velocity = OwnerSpell.primaryNode.GetVelocity(this);
+            rb.Velocity = OwnerSpell.coreNode.GetVelocity(this);
         }
         previousVelocity = rb.Velocity;
         foreach (TriggerInfo t in triggerInfos)
@@ -80,7 +80,7 @@ public class SpellCollider : NetworkBehaviour
             t.UpdateTrigger();
         }
 
-        switch (OwnerSpell.primaryNode.Type)
+        switch (OwnerSpell.coreNode.Type)
         {
             case SpellType.SpellTypes.Explosion:
                 transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * stats.Size, LifeTime / stats.Duration);
@@ -88,7 +88,7 @@ public class SpellCollider : NetworkBehaviour
         }
 
         LifeTime += Time.deltaTime;
-        if (OwnerSpell.primaryNode.trajectory == null || OwnerSpell.primaryNode.trajectory.trajectoryType != SpellTrajectory.TrajectoryType.Boomerang)
+        if (OwnerSpell.coreNode.trajectory == null || OwnerSpell.coreNode.trajectory.trajectoryType != SpellTrajectory.TrajectoryType.Boomerang)
         {
             if (LifeTime >= stats.Duration)
             {
@@ -157,14 +157,14 @@ public class SpellCollider : NetworkBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if (!OwnerSpell.primaryNode.HitOnStay)
+        if (!OwnerSpell.coreNode.HitOnStay)
         {
             HandleTrigger(other);
         }
     }
     void OnTriggerStay(Collider other)
     {
-        if (OwnerSpell.primaryNode.HitOnStay)
+        if (OwnerSpell.coreNode.HitOnStay)
         {
             HandleTrigger(other);
         }
@@ -173,17 +173,17 @@ public class SpellCollider : NetworkBehaviour
     {
         if (HitOnCooldown) return;
         CollisionData ColData = new CollisionData(other, this);
-        if (OwnerSpell.primaryNode.Collisions.Enemies && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.EnemyLayer))
+        if (OwnerSpell.coreNode.Collisions.Enemies && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.EnemyLayer))
         {
             OnHit.Invoke();
             CollideCreature(ColData);
         }
-        else if (OwnerSpell.primaryNode.Collisions.Players && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.PlayerLayer))
+        else if (OwnerSpell.coreNode.Collisions.Players && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.PlayerLayer))
         {
             OnHit.Invoke();
             CollideCreature(ColData);
         }
-        else if (OwnerSpell.primaryNode.Collisions.Objects && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.ObjectLayer))
+        else if (OwnerSpell.coreNode.Collisions.Objects && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.ObjectLayer))
         {
             OnHit.Invoke();
             CollideObject(ColData);
@@ -224,7 +224,7 @@ public class SpellCollider : NetworkBehaviour
         }
         else
         {
-            if (OwnerSpell.primaryNode.DieOnObjectCollide)
+            if (OwnerSpell.coreNode.DieOnObjectCollide)
             {
                 Die();
             }
@@ -234,7 +234,7 @@ public class SpellCollider : NetworkBehaviour
     {
         previousVelocity = Vector3.zero;
         inverseBounceMultiplier *= -1;
-        if (OwnerSpell.primaryNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
+        if (OwnerSpell.coreNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
         {
             float upDot = Vector3.Dot(data.hitNormal, Vector3.up);
             if (upDot < 0.5f)

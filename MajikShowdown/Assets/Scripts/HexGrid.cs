@@ -153,12 +153,12 @@ public class HexGrid : MonoBehaviour
         if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
         {
             spell.validSpell = true;
-            spell.primaryNode = t;
+            spell.coreNode = t;
         }
         else
         {
             spell.validSpell = false;
-            spell.primaryNode = null;
+            spell.coreNode = null;
         }
 
         spell.UpdateSpell();
