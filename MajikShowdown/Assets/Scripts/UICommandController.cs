@@ -130,19 +130,16 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitAddNodeToGrid(HexGridNode hex, SpellNodeInterface node, HexGrid grid)
     {
-        yield return new WaitUntil(() => GameManager.Instance.uiController.playerUI.caster.inventory.activeNodes.Contains(node));
-        //yield return new WaitUntil(() => interfaces.Contains(node));
+        yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), GameManager.Instance.uiController.playerUI.caster.inventory.activeNodes.IndexOf(node), grids.IndexOf(grid));
-        //CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), interfaces.IndexOf(node), grids.IndexOf(grid));
+        CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), node.acquisitionOrder, grids.IndexOf(grid));
     }
 
     [Command]
     public void CMDAddNodeToGrid(int hexInd, int nodeInd, int gridInd)
     {
         HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
-        //SpellNodeInterface node = interfaces[nodeInd];
-        SpellNodeInterface node = GameManager.Instance.uiController.playerUI.caster.inventory.activeNodes[nodeInd];
+        SpellNodeInterface node = interfaces.Find(i => i.acquisitionOrder == nodeInd);
         if (node == null) return;
         if (grids[gridInd].caster == null || grids[gridInd].caster.inventory == null)
         {
@@ -212,15 +209,16 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitUpdateSNIConnected(SpellNodeInterface sni)
     {
-        yield return new WaitUntil(() => interfaces.Contains(sni));
+        //yield return new WaitUntil(() => interfaces.Contains(sni));
+        yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == sni.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDUpdateSNIConnected(interfaces.IndexOf(sni));
+        CMDUpdateSNIConnected(sni.acquisitionOrder);
     }
 
     [Command]
     public void CMDUpdateSNIConnected(int index)
     {
-        SpellNodeInterface sni = interfaces[index];
+        SpellNodeInterface sni = interfaces.Find(i => i.acquisitionOrder == index);
         for (int i = 0; i < sni.conections.Length; i++)
         {
             if (sni.conections[i] != null)
@@ -250,15 +248,17 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitBreakSNIConnection(SpellNodeInterface sni, int Index)
     {
-        yield return new WaitUntil(() => interfaces.Contains(sni));
+        //yield return new WaitUntil(() => interfaces.Contains(sni));
+        yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == sni.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDBreakSNIConnection(interfaces.IndexOf(sni), Index);
+        CMDBreakSNIConnection(sni.acquisitionOrder, Index);
+        //CMDBreakSNIConnection(interfaces.IndexOf(sni), Index);
     }
 
     [Command]
     public void CMDBreakSNIConnection(int nodeInd, int Index)
     {
-        SpellNodeInterface sni = interfaces[nodeInd];
+        SpellNodeInterface sni = interfaces.Find(i => i.acquisitionOrder == nodeInd);
         if (Index >= sni.conections.Length)
         {
             return;
@@ -317,15 +317,17 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitSetUsedSNI(SpellNodeInterface sni, bool used)
     {
-        yield return new WaitUntil(() => interfaces.Contains(sni));
+        //yield return new WaitUntil(() => interfaces.Contains(sni));
+        yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == sni.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDSetUsedSNI(interfaces.IndexOf(sni), used);
+        CMDSetUsedSNI(sni.acquisitionOrder, used);
+        //CMDSetUsedSNI(interfaces.IndexOf(sni), used);
     }
 
     [Command]
     public void CMDSetUsedSNI(int index, bool used)
     {
-        SpellNodeInterface sni = interfaces[index];
+        SpellNodeInterface sni = interfaces.Find(i => i.acquisitionOrder == index);
         sni.Node.IsInUse = used;
 
         sni.usedNodeImg.SetActive(used);
@@ -454,12 +456,9 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitHexReceive(DraggableNode node, HexGridNode hex)
     {
-        Debug.Log("Receive 1");
         //yield return new WaitUntil(() => drags.Contains(node));
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
-        Debug.Log("Receive 2");
         yield return new WaitUntil(() => NetworkClient.ready);
-        Debug.Log("Receive 3");
         CMDHexReceive(node.acquisitionOrder, hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
         //CMDHexReceive(drags.IndexOf(node), hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
@@ -496,16 +495,19 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitHexRelease(HexGridNode hex, DraggableNode node)
     {
-        yield return new WaitUntil(() => drags.Contains(node));
+        //yield return new WaitUntil(() => drags.Contains(node));
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
-        CMDHexRelease(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid), drags.IndexOf(node));
+        //CMDHexRelease(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid), drags.IndexOf(node));
+        CMDHexRelease(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid), node.acquisitionOrder);
     }
 
     [Command]
     public void CMDHexRelease(int hexInd, int gridInd, int nodeInd)
     {
         HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
-        DraggableNode node = drags[nodeInd];
+        DraggableNode node = drags.Find(d => d.acquisitionOrder == nodeInd);
+        //DraggableNode node = drags[nodeInd];
         if (hex.spellNode == null) return;
 
         hex.VerifyNearbyBreakConections(hex.spellNode);
