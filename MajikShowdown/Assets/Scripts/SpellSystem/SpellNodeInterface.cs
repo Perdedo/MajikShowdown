@@ -1,6 +1,5 @@
 using Mirror.BouncyCastle.Asn1.Mozilla;
 using Mirror.BouncyCastle.Math.Field;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
