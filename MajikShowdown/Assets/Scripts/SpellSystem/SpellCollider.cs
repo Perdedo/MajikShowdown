@@ -65,7 +65,7 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void Update()
     {
-        if (!isServer && OwnerSpell.Caster.network)
+        if (!isServer && GameManager.Instance.uiController.playerUI.network)
         {
             return;
         }
@@ -193,7 +193,7 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void OnTriggerEnter(Collider other)
     {
-        if (!isServer && OwnerSpell.Caster.network)
+        if (!isServer && GameManager.Instance.uiController.playerUI.network)
         {
             return;
         }
@@ -205,7 +205,7 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void OnTriggerStay(Collider other)
     {
-        if (!isServer && OwnerSpell.Caster.network)
+        if (!isServer && GameManager.Instance.uiController.playerUI.network)
         {
             return;
         }
