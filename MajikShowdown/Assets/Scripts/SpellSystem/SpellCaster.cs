@@ -34,15 +34,19 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
     private void Awake()
     {
-        /*DamageHandler = GetComponent<CharacterDamageHandler>();
-        equippedSpells = new Spell[4];
-        foreach (var nodeData in ownedNodes)
+        if (!network)
         {
-            SpellNode runtimeNode = Instantiate(nodeData);
-            runtimeNode.Initialize();
-            runtimeNodes.Add(runtimeNode);
-        }*/
-        
+            DamageHandler = GetComponent<CharacterDamageHandler>();
+            equippedSpells = new Spell[4];
+            foreach (var nodeData in ownedNodes)
+            {
+                SpellNode runtimeNode = Instantiate(nodeData);
+                runtimeNode.Initialize();
+                runtimeNodes.Add(runtimeNode);
+            }
+        }
+
+
         /*foreach (var grid in SpellGrids)
         {
             grid.caster = this;
@@ -80,7 +84,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
     private void Update()
     {
-        if(!isLocalPlayer && network)
+        if (!isLocalPlayer && network)
         {
             return;
         }
@@ -93,7 +97,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
             if (equippedSpells[0] != null)
             {
                 Debug.Log("Cast");
-                if(network)
+                if (network)
                 {
                     CMDCastSpell(0, AimController.AimPoint);
                 }
@@ -140,7 +144,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     [Server]
     public void ServerInstantiateSpellCollider(Spell Spell, Vector3 pos, Vector3 lookDir, bool primary = false)
     {
-        GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, Quaternion.LookRotation(lookDir,Vector3.up));
+        GameObject g = Instantiate(ProjectilePrefab.gameObject, pos, Quaternion.LookRotation(lookDir, Vector3.up));
         SpellCollider col = g.GetComponent<SpellCollider>();
         //col.OwnerSpell = Spell;
         //col.primarySpell = primary;
@@ -173,15 +177,15 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
             {
                 Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, AimController.AimPoint);
                 Vector3 dir = (AimController.AimPoint - castPos).normalized;
-                if(dir == Vector3.zero)
+                if (dir == Vector3.zero)
                 {
                     dir = AimController.AimPoint - transform.position;
                 }
                 InstantiateSpellCollider(spell, castPos, dir, true);
             }
-            
+
         }
-        
+
     }
 
     public void InstantiateSpellCollider(Spell Spell, Vector3 pos, Vector3 lookDir, bool primary = false)
@@ -196,7 +200,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     }
     public void InstantiateSpellCollider(Spell Spell, Transform castPoint, Vector3 lookDir, bool primary = false)
     {
-        GameObject g = Instantiate(ProjectilePrefab.gameObject, castPoint.position, Quaternion.LookRotation(lookDir,Vector3.up));
+        GameObject g = Instantiate(ProjectilePrefab.gameObject, castPoint.position, Quaternion.LookRotation(lookDir, Vector3.up));
         SpellCollider col = g.GetComponent<SpellCollider>();
         col.SpawnTransform = castPoint;
         col.SpawnPoint = castPoint.position;

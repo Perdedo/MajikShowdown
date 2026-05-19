@@ -23,6 +23,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     private Dictionary<DraggableNode, int> usageCount = new();
     public SpellCaster caster;
     private Dictionary<SpellNode, SpellNodeInterface> nodeMap = new();
+    public bool network = true;
 
     void Start()
     {
@@ -53,7 +54,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         onlyUnusedToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         recentOrderToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         ApplyFilter();
-        if(!isServer)
+        if(!isServer && network)
         {
             if(NetworkClient.ready)
             {
@@ -105,7 +106,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         if (spellNode != null)
             AddNodeToInventory(spellNode);
         ApplyFilter();
-        if(!isServer)
+        if(!isServer && network)
         {
             /*if(NetworkClient.ready)
             {
@@ -225,7 +226,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         RectTransform rect = node.GetComponent<RectTransform>();
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
-        if(!isServer)
+        if(!isServer && network)
         {
             /*if(NetworkClient.ready)
             {
@@ -268,7 +269,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     {
         if (activeNodes.Contains(node))
         {
-            if(!isServer)
+            if(!isServer && network)
             {
                 /*if(NetworkClient.ready)
                 {
@@ -304,7 +305,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         currentFilter.onlyUnused = onlyUnusedToggle.isOn;
         currentFilter.orderByRecent = recentOrderToggle.isOn;
         ApplyFilter();
-        if(!isServer)
+        if(!isServer && network)
         {
             if(NetworkClient.ready)
             {
@@ -374,7 +375,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         var spellNode = node.GetComponent<SpellNodeInterface>();
         spellNode?.SetUsed(usageCount[node] > 0);
-        if(!isServer)
+        if(!isServer && network)
         {
             /*if(NetworkClient.ready)
             {
@@ -427,7 +428,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         index = Mathf.Clamp(index, 0, activeNodes.Count);
         activeNodes.Insert(index, node);
         ApplyFilter();
-        if(!isServer)
+        if(!isServer && network)
         {
             /*if(NetworkClient.ready)
             {

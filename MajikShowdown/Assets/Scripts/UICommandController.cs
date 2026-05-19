@@ -13,10 +13,12 @@ public class UICommandController : NetworkBehaviour
     public List<SpellCardUI> cards = new List<SpellCardUI>();
     public List<DraggableNode> drags = new List<DraggableNode>();
     public List<SpellNodeInterface> interfaces = new List<SpellNodeInterface>();
+    public bool network = true;
 
 
     public void ConfigurateSpell(HexGrid grid)
     {
+        if(!network) return;
         if(isLocalPlayer && !isServer)
         {
             /*if(NetworkClient.ready)
@@ -70,6 +72,7 @@ public class UICommandController : NetworkBehaviour
 
     public void ReturnAllNodesToInventory(HexGrid grid)
     {
+        if(!network) return;
         if (isLocalPlayer && !isServer)
         {
             /*if(NetworkClient.ready)
@@ -120,6 +123,7 @@ public class UICommandController : NetworkBehaviour
 
     public void AddNodeToGrid(HexGridNode hex, SpellNodeInterface node, HexGrid grid)
     {
+        if(!network) return;
         if (isLocalPlayer && !isServer)
         {
             /*if (NetworkClient.ready)
@@ -207,6 +211,7 @@ public class UICommandController : NetworkBehaviour
     {
         if (isLocalPlayer && !isServer)
         {
+            if(!network) return;
             /*if (NetworkClient.ready)
             {
                 CMDUpdateSNIConnected(interfaces.IndexOf(sni));
@@ -250,6 +255,7 @@ public class UICommandController : NetworkBehaviour
     {
         if (isLocalPlayer && !isServer)
         {
+            if(!network) return;
             /*if (NetworkClient.ready)
             {
                 CMDBreakSNIConnection(interfaces.IndexOf(sni), Index);
@@ -317,6 +323,7 @@ public class UICommandController : NetworkBehaviour
 
     public void SetUsedSNI(SpellNodeInterface sni, bool used)
     {
+        if(!network) return;
         if (isLocalPlayer && !isServer)
         {
             /*if (NetworkClient.ready)
@@ -350,6 +357,7 @@ public class UICommandController : NetworkBehaviour
 
     public void DeleteSCUI(SpellCardUI scui)
     {
+        if(!network) return;
         if (isLocalPlayer && !isServer)
         {
             /*if (NetworkClient.ready)
@@ -399,6 +407,7 @@ public class UICommandController : NetworkBehaviour
 
     public void SelectSCUI(SpellCardUI scui)
     {
+        if(!network) return;
         if (isLocalPlayer && !isServer)
         {
             /*if (NetworkClient.ready)
@@ -438,6 +447,7 @@ public class UICommandController : NetworkBehaviour
     }
     public void DeselectSCUI(SpellCardUI scui)
     {
+        if(!network) return;
         if (isLocalPlayer && !isServer)
         {
             StartCoroutine(WaitDeselectSCUI(scui));
@@ -465,6 +475,7 @@ public class UICommandController : NetworkBehaviour
 
     public void InitializeHex(HexGridNode hex)
     {
+        if(!network) return;
         if (isLocalPlayer && !isServer)
         {
             /*if (NetworkClient.ready)
@@ -499,6 +510,7 @@ public class UICommandController : NetworkBehaviour
 
     public void HexReceive(DraggableNode node, HexGridNode hex)
     {
+        if(!network) return;
         if (isLocalPlayer && !isServer)
         {
             /*if (NetworkClient.ready)
@@ -541,6 +553,7 @@ public class UICommandController : NetworkBehaviour
 
     public void HexRelease(HexGridNode hex, DraggableNode node)
     {
+        if(!network) return;
         if (isLocalPlayer && !isServer)
         {
             /*if (NetworkClient.ready)

@@ -151,6 +151,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 338260379660625902, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
+      propertyPath: network
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 398792914025255036, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_Name
       value: Player and camera
@@ -267,6 +271,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4453426358881861390, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
+      propertyPath: network
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4602189823582634873, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_Value
       value: 1
@@ -287,9 +295,17 @@ PrefabInstance:
       propertyPath: network
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6150298183587537734, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
+      propertyPath: network
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6257298815884864150, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0.000061035156
+      objectReference: {fileID: 0}
+    - target: {fileID: 6723739018361911861, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
+      propertyPath: network
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6932264981861579884, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: network
@@ -318,6 +334,10 @@ PrefabInstance:
     - target: {fileID: 8204233925789890373, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8741527678291227972, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
+      propertyPath: network
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -744,6 +764,7 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
+    instanceIndex: 0
   - spellName: 
     spellNodes: []
     SpellCooldown: 0
@@ -752,6 +773,7 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
+    instanceIndex: 0
   - spellName: 
     spellNodes: []
     SpellCooldown: 0
@@ -760,6 +782,7 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
+    instanceIndex: 0
   - spellName: 
     spellNodes: []
     SpellCooldown: 0
@@ -768,9 +791,11 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
+    instanceIndex: 0
   inventory: {fileID: 0}
   ProjectilePrefab: {fileID: 3981877690685951420, guid: 797a4b56813750b4f9730eea5b06fff7, type: 3}
   CastingPoint: {fileID: 460988639}
+  commander: {fileID: 0}
   EnemyLayer:
     serializedVersion: 2
     m_Bits: 128

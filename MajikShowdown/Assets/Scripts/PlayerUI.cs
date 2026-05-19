@@ -234,7 +234,7 @@ public class PlayerUI : NetworkBehaviour
             return;
         }
         spellToEquip = spell;
-        if(!isServer)
+        if(!isServer && network)
         {
             StartCoroutine(WaitStartEquipSpell(spell));
         }
@@ -280,7 +280,7 @@ public class PlayerUI : NetworkBehaviour
 
         caster.equippedSpells[index] = spellToEquip;
         equipSlotTexts[index].text = spellToEquip.spellName;
-        if(!isServer)
+        if(!isServer && network)
         {
             CMDEquipSpell(index);
         }
