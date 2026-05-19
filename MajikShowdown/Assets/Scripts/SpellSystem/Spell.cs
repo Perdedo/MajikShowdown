@@ -21,6 +21,7 @@ public class Spell
     public HexGrid grid;
     public int instanceIndex;
     [HideInInspector] public System.Action OnSpellUpdated;
+    [NonSerialized] public LayerMask spellCollisionLayers;
     public Spell(SpellCaster owner)
     {
         Caster = owner;
@@ -67,6 +68,19 @@ public class Spell
                 coreNode.AddBuff(s.BaseStats);
             }
             s.OwnerSpell = this;
+        }
+        spellCollisionLayers = 0;
+        if (coreNode.Collisions.Objects)
+        {
+            spellCollisionLayers |= Caster.ObjectLayer;
+        }
+        if (coreNode.Collisions.Players)
+        {
+            spellCollisionLayers |= Caster.PlayerLayer;
+        }
+        if (coreNode.Collisions.Enemies)
+        {
+            spellCollisionLayers |= Caster.EnemyLayer;
         }
         coreNode.UpdateNode();
         OnSpellUpdated?.Invoke();

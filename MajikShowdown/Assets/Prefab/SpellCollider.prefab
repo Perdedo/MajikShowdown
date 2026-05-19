@@ -56,7 +56,7 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
@@ -103,11 +103,12 @@ MonoBehaviour:
     spellName: 
     spellNodes: []
     SpellCooldown: 0
-    primaryNode: {fileID: 0}
+    coreNode: {fileID: 0}
     triggers: []
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
+    instanceIndex: 0
   primarySpell: 0
   OnCast:
     m_PersistentCalls:
@@ -118,7 +119,7 @@ MonoBehaviour:
   OnDeath:
     m_PersistentCalls:
       m_Calls: []
-  spellCol: {fileID: 0}
+  UseAcceleration: 0
 --- !u!33 &1586992893179240707
 MeshFilter:
   m_ObjectHideFlags: 0

@@ -21,7 +21,8 @@ public class SpellCollider : NetworkBehaviour
     [NonSerialized] public Vector3 previousVelocity;
 
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
-    public Collider spellCol;
+    //public Collider spellCol;
+    public RaycastHit[] collisions;
     [NonSerialized] public int inverseBounceMultiplier = 1;
     [HideInInspector] public bool UseAcceleration = false;
     [NonSerialized] public Transform SpawnTransform;
@@ -33,6 +34,7 @@ public class SpellCollider : NetworkBehaviour
         public Vector3 Up;
     }
     bool expanding = true;
+    float currentSize = 0;
     public TrajectoryInfo TrajectoryTransform;
 
     [Server]
@@ -43,11 +45,11 @@ public class SpellCollider : NetworkBehaviour
         OwnerSpell = owner;
         primarySpell = isPrimary;
         stats = OwnerSpell.coreNode.FinalStats;
-        transform.localScale = Vector3.one * stats.Size;
+        //transform.localScale = Vector3.one * stats.Size;
         //Invoke("Die", stats.Duration);
         pierceCount = stats.Piercing;
         bounceCount = stats.Bounce;
-        OnHit.AddListener(() => { if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown()); });
+        //OnHit.AddListener(() => { if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown()); });
         if (primarySpell)
         {
             InitiateTriggeredSpells();
@@ -58,8 +60,8 @@ public class SpellCollider : NetworkBehaviour
         {
             transform.localScale = Vector3.zero;
         }*/
-        transform.localScale = Vector3.zero;
-        spellCol = GetComponent<Collider>();
+        //transform.localScale = Vector3.zero;
+        //spellCol = GetComponent<Collider>();
 
     }
     [Server]
@@ -69,6 +71,7 @@ public class SpellCollider : NetworkBehaviour
         {
             return;
         }
+        CheckColisions();
         if (HitOnCooldown)
         {
             HitOnCooldown = HitTimer.timer(OwnerSpell.coreNode.HitCooldown, Time.deltaTime, true, false);
@@ -105,6 +108,32 @@ public class SpellCollider : NetworkBehaviour
 
     }
     [Server]
+    void CheckColisions()
+    {
+        collisions = Physics.SphereCastAll(transform.position, currentSize, rb.Velocity.normalized, stats.Speed * Time.deltaTime, OwnerSpell.spellCollisionLayers);
+        foreach (RaycastHit hit in collisions)
+        {
+            if (hit.collider.gameObject == this) continue;
+            CollisionData ColData = new CollisionData(hit, this);
+            if (LayerMaskUtility.BelongsInMask(hit.collider.gameObject.layer, OwnerSpell.Caster.EnemyLayer | OwnerSpell.Caster.PlayerLayer))
+            {
+                if (HitOnCooldown) return;
+                OnHit.Invoke();
+                CollideCreature(ColData);
+            }
+            else
+            {
+                OnHit.Invoke();
+                CollideObject(ColData);
+            }
+        }
+
+    }
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(transform.position+rb.Velocity.normalized * stats.Speed*Time.deltaTime, currentSize);
+    }
+    [Server]
     void Expand()
     {
         if (expanding)
@@ -121,11 +150,11 @@ public class SpellCollider : NetworkBehaviour
             }
             if (LifeTime <= scaleTime)
             {
-                transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * stats.Size, LifeTime / scaleTime);
+                currentSize = Mathf.Lerp(0, stats.Size, LifeTime / scaleTime);
             }
             else
             {
-                transform.localScale = Vector3.one * stats.Size;
+                currentSize = stats.Size;
                 expanding = false;
             }
         }
@@ -190,7 +219,7 @@ public class SpellCollider : NetworkBehaviour
         HitTimer.SetTimer(0);
         routineStarted = false;
     }
-    [Server]
+    /*[Server]
     void OnTriggerEnter(Collider other)
     {
         if (!isServer)
@@ -217,15 +246,17 @@ public class SpellCollider : NetworkBehaviour
     [Server]
     public void HandleTrigger(Collider other)
     {
-        if (HitOnCooldown) return;
+
         CollisionData ColData = new CollisionData(other, this);
         if (OwnerSpell.coreNode.Collisions.Enemies && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.EnemyLayer))
         {
+            if (HitOnCooldown) return;
             OnHit.Invoke();
             CollideCreature(ColData);
         }
         else if (OwnerSpell.coreNode.Collisions.Players && LayerMaskUtility.BelongsInMask(other.gameObject.layer, OwnerSpell.Caster.PlayerLayer))
         {
+            if (HitOnCooldown) return;
             OnHit.Invoke();
             CollideCreature(ColData);
         }
@@ -234,7 +265,7 @@ public class SpellCollider : NetworkBehaviour
             OnHit.Invoke();
             CollideObject(ColData);
         }
-    }
+    }*/
 
     [Server]
     public void CollideObject(CollisionData data)
@@ -245,6 +276,7 @@ public class SpellCollider : NetworkBehaviour
     [Server]
     public void CollideCreature(CollisionData data)
     {
+        if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
         Character character = data.collision.GetComponent<Character>();
         if (character != null)
         {
@@ -331,13 +363,13 @@ public struct CollisionData
     public Vector3 hitPoint;
     public Vector3 hitNormal;
     public float Distance;
-    public CollisionData(Collider col, SpellCollider obj)
+    public CollisionData(RaycastHit col, SpellCollider obj)
     {
-        collision = col;
+        collision = col.collider;
         Object = obj;
-        Physics.ComputePenetration(obj.spellCol, obj.transform.position, obj.transform.rotation, col, col.transform.position, col.transform.rotation, out hitNormal, out Distance);
-        Physics.SphereCast(obj.transform.position, Distance + 0.1f, Vector3.zero, out RaycastHit hitInfo, 0, col.gameObject.layer);
-        hitPoint = hitInfo.point;
+        hitPoint = col.point;
+        hitNormal = col.normal;
+        Distance = col.distance;
         //Physics.Raycast(obj.transform.position, obj.rb.Velocity.normalized, out RaycastHit hit, Distance+0.1f);
         //hitPoint = hit.point;
     }
