@@ -141,7 +141,7 @@ public class SpellCollider : NetworkBehaviour
                 }
             }
         }
-        if (amount > 0)
+        if (amount > 0 && closest.collider != null)
         {
             if (pierceCount < 1 || LayerMaskUtility.BelongsInMask(closest.collider.gameObject.layer, OwnerSpell.Caster.ObjectLayer))
             {

@@ -436,6 +436,7 @@ GameObject:
   - component: {fileID: 370151435}
   - component: {fileID: 370151434}
   - component: {fileID: 370151433}
+  - component: {fileID: 370151440}
   - component: {fileID: 370151438}
   - component: {fileID: 370151439}
   m_Layer: 7
@@ -460,7 +461,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  MaxHealth: 100
+  MaxHealth: 1000000
   Health: 0
   Resistances: []
   network: 0
@@ -603,6 +604,57 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &370151440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 370151432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 797b542de60360d46bb0b5038ce37454, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Character
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  maxVelocity: 0
+  floatingHeight: 0
+  gravityMultiplier: 0
+  terrainBuffer: 0
+  BaseFriction: 0.5
+  Fell:
+    m_PersistentCalls:
+      m_Calls: []
+  HitGround:
+    m_PersistentCalls:
+      m_Calls: []
+  StartedMoving:
+    m_PersistentCalls:
+      m_Calls: []
+  StoppedMoving:
+    m_PersistentCalls:
+      m_Calls: []
+  RayTriggerInteraction: 0
+  RayMasks:
+    serializedVersion: 2
+    m_Bits: 0
+  raycastNumber: 0
+  raycastRadius: 0
+  speed: 0
+  accelerate: 0
+  accelerationTime: 0
+  jumpForce: 0
+  jumpTime: 0
+  jumpingSpeedMultiplier: 0
+  jumpCooldown: 0
+  Jumped:
+    m_PersistentCalls:
+      m_Calls: []
+  FellOnJump:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &409704875
 GameObject:
   m_ObjectHideFlags: 0
