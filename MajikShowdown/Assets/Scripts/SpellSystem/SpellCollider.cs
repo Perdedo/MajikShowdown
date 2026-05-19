@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using Mirror.Examples.Billiards;
 using Unity.Mathematics;
@@ -9,11 +10,12 @@ using UnityEngine.Events;
 
 public class SpellCollider : NetworkBehaviour
 {
+    public GameObject mesh;
     public StaticRB rb;
     public StatTypes stats;
     public Spell OwnerSpell;
-    float pierceCount, bounceCount;
-    public bool primarySpell;
+    [NonSerialized] float pierceCount, bounceCount;
+    [NonSerialized] public bool primarySpell;
     bool HitOnCooldown;
     Timer HitTimer = new Timer();
     [NonSerialized] public float LifeTime = 0;
@@ -22,7 +24,8 @@ public class SpellCollider : NetworkBehaviour
 
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
     //public Collider spellCol;
-    public RaycastHit[] collisions;
+    [NonSerialized] public RaycastHit[] collisionBuffer = new RaycastHit[64];
+    [NonSerialized] public RaycastHit[] previousColisions;
     [NonSerialized] public int inverseBounceMultiplier = 1;
     [HideInInspector] public bool UseAcceleration = false;
     [NonSerialized] public Transform SpawnTransform;
@@ -103,6 +106,7 @@ public class SpellCollider : NetworkBehaviour
             }
         }
         transform.LookAt(transform.position + rb.Velocity.normalized);
+        mesh.transform.localScale = Vector3.one * currentSize;
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
 
 
@@ -110,28 +114,96 @@ public class SpellCollider : NetworkBehaviour
     [Server]
     void CheckColisions()
     {
-        collisions = Physics.SphereCastAll(transform.position, currentSize, rb.Velocity.normalized, stats.Speed * Time.deltaTime, OwnerSpell.spellCollisionLayers);
-        foreach (RaycastHit hit in collisions)
+        int amount = Physics.SphereCastNonAlloc(transform.position, currentSize / 2, rb.Velocity.normalized, collisionBuffer, stats.Speed * Time.deltaTime, OwnerSpell.spellCollisionLayers);
+        RaycastHit closest = default;
+        float closestDist = float.MaxValue;
+        if (amount == collisionBuffer.Length)
         {
-            if (hit.collider.gameObject == this) continue;
-            CollisionData ColData = new CollisionData(hit, this);
-            if (LayerMaskUtility.BelongsInMask(hit.collider.gameObject.layer, OwnerSpell.Caster.EnemyLayer | OwnerSpell.Caster.PlayerLayer))
+            RaycastHit[] temporaryBuffer = Physics.SphereCastAll(transform.position, currentSize / 2, rb.Velocity.normalized, stats.Speed * Time.deltaTime, OwnerSpell.spellCollisionLayers); ;
+            foreach (RaycastHit hit in temporaryBuffer)
             {
-                if (HitOnCooldown) return;
-                OnHit.Invoke();
-                CollideCreature(ColData);
+                if (isValidHit(hit))
+                {
+                    HandleCollision(hit);
+                    getClosest(hit);
+                }
+
             }
-            else
+        }
+        else
+        {
+            for (int i = 0; i < amount; i++)
             {
-                OnHit.Invoke();
-                CollideObject(ColData);
+                if (isValidHit(collisionBuffer[i]))
+                {
+                    HandleCollision(collisionBuffer[i]);
+                    getClosest(collisionBuffer[i]);
+                }
             }
+        }
+        if (amount > 0)
+        {
+            if (pierceCount < 1 || LayerMaskUtility.BelongsInMask(closest.collider.gameObject.layer, OwnerSpell.Caster.ObjectLayer))
+            {
+                CheckBounce(closest);
+            }
+        }
+        if (!OwnerSpell.coreNode.HitOnStay)
+        {
+            previousColisions = collisionBuffer.Take(amount).ToArray();
+        }
+        void getClosest(RaycastHit hit)
+        {
+            if (closest.collider == null)
+            {
+                closest = hit;
+                closestDist = hit.distance;
+                return;
+            }
+            bool hitIsObject = LayerMaskUtility.BelongsInMask(hit.collider.gameObject.layer, OwnerSpell.Caster.ObjectLayer);
+            bool closestIsObject = LayerMaskUtility.BelongsInMask(closest.collider.gameObject.layer, OwnerSpell.Caster.ObjectLayer);
+            if (hitIsObject && !closestIsObject)
+            {
+                closest = hit;
+                closestDist = hit.distance;
+                return;
+            }
+            if (!hitIsObject && closestIsObject)
+            {
+                return;
+            }
+            if (hit.distance < closestDist)
+            {
+                closest = hit;
+                closestDist = hit.distance;
+            }
+        }
+        bool isValidHit(RaycastHit hit)
+        {
+            if (hit.collider.gameObject == this) return false;
+            if (!OwnerSpell.coreNode.HitOnStay && previousColisions.Contains(hit)) return false;
+            return true;
         }
 
     }
+    [Server]
+    void HandleCollision(RaycastHit hit)
+    {
+        if (LayerMaskUtility.BelongsInMask(hit.collider.gameObject.layer, OwnerSpell.Caster.EnemyLayer | OwnerSpell.Caster.PlayerLayer))
+        {
+            if (HitOnCooldown) return;
+            OnHit.Invoke();
+            CollideCreature(hit);
+        }
+        else
+        {
+            OnHit.Invoke();
+            CollideObject(hit);
+        }
+    }
     void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(transform.position+rb.Velocity.normalized * stats.Speed*Time.deltaTime, currentSize);
+        Gizmos.DrawSphere(transform.position + rb.Velocity.normalized * stats.Speed * Time.deltaTime, currentSize / 2);
     }
     [Server]
     void Expand()
@@ -268,37 +340,33 @@ public class SpellCollider : NetworkBehaviour
     }*/
 
     [Server]
-    public void CollideObject(CollisionData data)
+    public void CollideObject(RaycastHit data)
     {
-        CheckBounce(data);
+
     }
 
     [Server]
-    public void CollideCreature(CollisionData data)
+    public void CollideCreature(RaycastHit data)
     {
         if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
-        Character character = data.collision.GetComponent<Character>();
+        Character character = data.collider.GetComponent<Character>();
         if (character != null)
         {
             foreach (SpellEffect e in OwnerSpell.spellEffects)
             {
                 e.ApplyEffect(character.damageHandler);
             }
-            character.KnockBack(((data.collision.transform.position - data.Object.transform.position) + data.Object.rb.Velocity).normalized, stats.Knockback);
+            character.KnockBack(((data.collider.transform.position - transform.position) + rb.Velocity).normalized, stats.Knockback);
 
         }
         if (pierceCount >= 1)
         {
             pierceCount--;
         }
-        else
-        {
-            CheckBounce(data);
-        }
     }
 
     [Server]
-    public void CheckBounce(CollisionData data)
+    public void CheckBounce(RaycastHit data)
     {
         if (bounceCount >= 1)
         {
@@ -315,16 +383,16 @@ public class SpellCollider : NetworkBehaviour
     }
 
     [Server]
-    public void Bounce(CollisionData data)
+    public void Bounce(RaycastHit data)
     {
         previousVelocity = Vector3.zero;
         inverseBounceMultiplier *= -1;
         if (OwnerSpell.coreNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
         {
-            float upDot = Vector3.Dot(data.hitNormal, Vector3.up);
+            float upDot = Vector3.Dot(data.normal, Vector3.up);
             if (upDot < 0.5f)
             {
-                Vector3 reflection = Vector3.Reflect(new Vector3(rb.Velocity.x, 0, rb.Velocity.z), data.hitNormal);
+                Vector3 reflection = Vector3.Reflect(new Vector3(rb.Velocity.x, 0, rb.Velocity.z), data.normal);
                 reflection.y = rb.Velocity.y;
                 SetTrajectoryForward(reflection);
             }
@@ -333,7 +401,7 @@ public class SpellCollider : NetworkBehaviour
         else
         {
             //SetTrajectoryForward(Vector3.Reflect(TrajectoryTransform.Forward, data.hitNormal));
-            SetTrajectoryForward(Vector3.Reflect(rb.Velocity, data.hitNormal));
+            SetTrajectoryForward(Vector3.Reflect(rb.Velocity, data.normal));
         }
 
         /*if(OwnerSpell.primaryNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
