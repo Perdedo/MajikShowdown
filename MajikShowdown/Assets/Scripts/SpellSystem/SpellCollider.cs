@@ -1,12 +1,11 @@
-using Mirror;
-using Mirror.Examples.Billiards;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
+using Mirror.Examples.Billiards;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public class SpellCollider : NetworkBehaviour
 {
@@ -39,10 +38,6 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     public void Initialize(Spell owner, bool isPrimary)
     {
-        if(!isServer && owner.Caster.network)
-        {
-            return;
-        }
         SetTrajectoryForward(transform.forward);
         //projectileConfig.CalculateFinalStats();
         OwnerSpell = owner;
@@ -70,7 +65,7 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void Update()
     {
-        if (!isServer && OwnerSpell.Caster.network)
+        if (!isServer)
         {
             return;
         }
@@ -198,7 +193,7 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void OnTriggerEnter(Collider other)
     {
-        if (!isServer && OwnerSpell.Caster.network)
+        if (!isServer)
         {
             return;
         }
@@ -210,7 +205,7 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void OnTriggerStay(Collider other)
     {
-        if (!isServer && OwnerSpell.Caster.network)
+        if (!isServer)
         {
             return;
         }
@@ -318,10 +313,6 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     public void Die()
     {
-        if (!isServer && OwnerSpell.Caster.network)
-        {
-            return;
-        }
         OnDeath.Invoke();
         if (isServer && OwnerSpell.Caster.network)
         {
