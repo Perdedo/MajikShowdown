@@ -71,6 +71,7 @@ public class SpellNodeDescription : NetworkBehaviour
     public Sprite poisonIcon;
     public Sprite noneIcon;
 
+    public bool network = true;
     void Start()
     {
         playersToggle.onValueChanged.AddListener(SetPlayersCollision);
@@ -249,7 +250,7 @@ public class SpellNodeDescription : NetworkBehaviour
         RefreshTriggerUI();
         spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.AddListener(SetTriggerType);
-        if(!isServer)
+        if(!isServer && network)
         {
             CMDTriggerDescription(node.Interface.acquisitionOrder);
         }
@@ -287,7 +288,7 @@ public class SpellNodeDescription : NetworkBehaviour
             availableSpells.Add(s);
         }
         spellDropdown.AddOptions(names);
-        if(!isServer)
+        if(!isServer && network)
         {
             CMDSetupSpellDropdown();
         }
@@ -316,7 +317,7 @@ public class SpellNodeDescription : NetworkBehaviour
         triggerDropdown.ClearOptions();
         var enumNames = System.Enum.GetNames(typeof(SpellTrigger.Triggers));
         triggerDropdown.AddOptions(new List<string>(enumNames));
-        if(!isServer)
+        if(!isServer && network)
         {
             CMDSetupTriggerDropdown();
         }
@@ -336,7 +337,7 @@ public class SpellNodeDescription : NetworkBehaviour
         if (currentTrigger == null) return;
         if (index < 0 || index >= availableSpells.Count) return;
         currentTrigger.TriggeredSpell = availableSpells[index];
-        if(!isServer)
+        if(!isServer && network)
         {
             CMDSetTriggerSpell(index);
         }
@@ -351,7 +352,7 @@ public class SpellNodeDescription : NetworkBehaviour
             currentTrigger.trigger = (SpellTrigger.Triggers)index;
         }
 
-        if(!isServer)
+        if(!isServer && network)
         {
             CMDSetTriggerType(index);
         }
@@ -391,7 +392,7 @@ public class SpellNodeDescription : NetworkBehaviour
             triggerIndex = 0;
         }
         triggerDropdown.SetValueWithoutNotify(triggerIndex);
-        if(!isServer)
+        if(!isServer && network)
         {
             CMDRefreshTriggerUI();
         }

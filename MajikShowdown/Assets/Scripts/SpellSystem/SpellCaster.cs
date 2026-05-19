@@ -34,14 +34,17 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
     private void Awake()
     {
-        /*DamageHandler = GetComponent<CharacterDamageHandler>();
-        equippedSpells = new Spell[4];
-        foreach (var nodeData in ownedNodes)
+        if(!network)
         {
-            SpellNode runtimeNode = Instantiate(nodeData);
-            runtimeNode.Initialize();
-            runtimeNodes.Add(runtimeNode);
-        }*/
+            DamageHandler = GetComponent<CharacterDamageHandler>();
+            equippedSpells = new Spell[4];
+            foreach (var nodeData in ownedNodes)
+            {
+                SpellNode runtimeNode = Instantiate(nodeData);
+                runtimeNode.Initialize();
+                runtimeNodes.Add(runtimeNode);
+            }
+        }
         
         /*foreach (var grid in SpellGrids)
         {
