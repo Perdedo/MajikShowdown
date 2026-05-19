@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.Events;
 
 public class Timer
@@ -9,7 +10,7 @@ public class Timer
     public bool Paused
     {
         get { return paused; }
-        set { paused = value;}
+        set { paused = value; }
     }
     public UnityEvent timedEvent = new UnityEvent();
     public void SetTimer(float time)
@@ -53,7 +54,7 @@ public class Timer
         }
         if (timestamp >= time)
         {
-            if (timestamp >= timeIncrement+TimeBeforeReset)
+            if (timestamp >= timeIncrement + TimeBeforeReset)
             {
                 SetTimer(0);
             }
@@ -71,5 +72,19 @@ public class Timer
             }
             return defautResponse;
         }
+    }
+}
+public class WaitForFrames : CustomYieldInstruction
+{
+    private int _targetFrame;
+
+    public WaitForFrames(int frameCount)
+    {
+        _targetFrame = Time.frameCount + frameCount;
+    }
+
+    public override bool keepWaiting
+    {
+        get { return Time.frameCount < _targetFrame; }
     }
 }

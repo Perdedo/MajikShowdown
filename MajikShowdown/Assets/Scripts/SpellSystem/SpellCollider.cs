@@ -17,6 +17,7 @@ public class SpellCollider : NetworkBehaviour
     [NonSerialized] float pierceCount, bounceCount;
     [NonSerialized] public bool primarySpell;
     bool HitOnCooldown;
+    bool CollisionOnCooldown;
     Timer HitTimer = new Timer();
     [NonSerialized] public float LifeTime = 0;
     List<TriggerInfo> triggerInfos = new List<TriggerInfo>();
@@ -26,6 +27,8 @@ public class SpellCollider : NetworkBehaviour
     //public Collider spellCol;
     [NonSerialized] public RaycastHit[] collisionBuffer = new RaycastHit[64];
     [NonSerialized] public RaycastHit[] previousColisions;
+    [NonSerialized] public Collider[] staticCollisionsBuffer = new Collider[64];
+    [NonSerialized] public Collider[] previousStaticColisions;
     [NonSerialized] public int inverseBounceMultiplier = 1;
     [HideInInspector] public bool UseAcceleration = false;
     [NonSerialized] public Transform SpawnTransform;
@@ -74,11 +77,22 @@ public class SpellCollider : NetworkBehaviour
         {
             return;
         }
-        CheckColisions();
         if (HitOnCooldown)
         {
             HitOnCooldown = HitTimer.timer(OwnerSpell.coreNode.HitCooldown, Time.deltaTime, true, false);
         }
+        if (!CollisionOnCooldown)
+        {
+            if (rb.Velocity.sqrMagnitude > 0.01f)
+            {
+                CheckMovingColisions();
+            }
+            else if (!HitOnCooldown)
+            {
+                CheckStationaryCollisions();
+            }
+        }
+
         if (UseAcceleration)
         {
             rb.LerpToVelocity(OwnerSpell.coreNode.GetVelocity(this), stats.Speed * 2);
@@ -112,7 +126,7 @@ public class SpellCollider : NetworkBehaviour
 
     }
     //[Server]
-    void CheckColisions()
+    void CheckMovingColisions()
     {
         int amount = Physics.SphereCastNonAlloc(transform.position, currentSize / 2, rb.Velocity.normalized, collisionBuffer, stats.Speed * Time.deltaTime, OwnerSpell.spellCollisionLayers);
         RaycastHit closest = default;
@@ -124,7 +138,7 @@ public class SpellCollider : NetworkBehaviour
             {
                 if (isValidHit(hit))
                 {
-                    HandleCollision(hit);
+                    HandleCollision(hit.collider);
                     getClosest(hit);
                 }
 
@@ -136,7 +150,7 @@ public class SpellCollider : NetworkBehaviour
             {
                 if (isValidHit(collisionBuffer[i]))
                 {
-                    HandleCollision(collisionBuffer[i]);
+                    HandleCollision(collisionBuffer[i].collider);
                     getClosest(collisionBuffer[i]);
                 }
             }
@@ -186,25 +200,41 @@ public class SpellCollider : NetworkBehaviour
         }
 
     }
-    //[Server]
-    void HandleCollision(RaycastHit hit)
+    public void CheckStationaryCollisions()
     {
-        if (LayerMaskUtility.BelongsInMask(hit.collider.gameObject.layer, OwnerSpell.Caster.EnemyLayer | OwnerSpell.Caster.PlayerLayer))
+        int amount = Physics.OverlapSphereNonAlloc(transform.position, currentSize / 2, staticCollisionsBuffer, OwnerSpell.spellCollisionLayers);
+        for (int i = 0; i < amount; i++)
+        {
+            Collider col = staticCollisionsBuffer[i];
+            if (col.gameObject == this) continue;
+            if (!OwnerSpell.coreNode.HitOnStay && previousStaticColisions != null && previousStaticColisions.Contains(col)) continue;
+            HandleCollision(staticCollisionsBuffer[i]);
+        }
+        if (!OwnerSpell.coreNode.HitOnStay)
+        {
+            previousStaticColisions = staticCollisionsBuffer.Take(amount).ToArray();
+        }
+    }
+    //[Server]
+    void HandleCollision(Collider col)
+    {
+        if (LayerMaskUtility.BelongsInMask(col.gameObject.layer, OwnerSpell.Caster.EnemyLayer | OwnerSpell.Caster.PlayerLayer))
         {
             if (HitOnCooldown) return;
             OnHit.Invoke();
-            CollideCreature(hit);
+            CollideCreature(col);
         }
         else
         {
             OnHit.Invoke();
-            CollideObject(hit);
+            CollideObject(col);
+            //Debug.Log("Collided " + Time.time);
         }
     }
-    void OnDrawGizmos()
+    /*void OnDrawGizmos()
     {
         Gizmos.DrawSphere(transform.position + rb.Velocity.normalized * stats.Speed * Time.deltaTime, currentSize / 2);
-    }
+    }*/
     //[Server]
     void Expand()
     {
@@ -291,6 +321,12 @@ public class SpellCollider : NetworkBehaviour
         HitTimer.SetTimer(0);
         routineStarted = false;
     }
+    IEnumerator ColideCooldown(float cooldown)
+    {
+        CollisionOnCooldown = true;
+        yield return new WaitForSeconds(cooldown);
+        CollisionOnCooldown = false;
+    }
     /*[Server]
     void OnTriggerEnter(Collider other)
     {
@@ -340,23 +376,23 @@ public class SpellCollider : NetworkBehaviour
     }*/
 
     //[Server]
-    public void CollideObject(RaycastHit data)
+    public void CollideObject(Collider col)
     {
 
     }
 
     //[Server]
-    public void CollideCreature(RaycastHit data)
+    public void CollideCreature(Collider col)
     {
         if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
-        Character character = data.collider.GetComponent<Character>();
+        Character character = col.GetComponent<Character>();
         if (character != null)
         {
             foreach (SpellEffect e in OwnerSpell.spellEffects)
             {
                 e.ApplyEffect(character.damageHandler);
             }
-            character.KnockBack(((data.collider.transform.position - transform.position) + rb.Velocity).normalized, stats.Knockback);
+            character.KnockBack(((col.transform.position - transform.position) + rb.Velocity).normalized, stats.Knockback);
 
         }
         if (pierceCount >= 1)
@@ -372,6 +408,7 @@ public class SpellCollider : NetworkBehaviour
         {
             bounceCount--;
             Bounce(data);
+            StartCoroutine(ColideCooldown(0.1f));
         }
         else
         {
