@@ -26,7 +26,7 @@ public class SpellCollider : NetworkBehaviour
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
     //public Collider spellCol;
     [NonSerialized] public RaycastHit[] collisionBuffer = new RaycastHit[64];
-    [NonSerialized] public RaycastHit[] previousColisions;
+    [NonSerialized] public Collider[] previousColisions;
     [NonSerialized] public Collider[] staticCollisionsBuffer = new Collider[64];
     [NonSerialized] public Collider[] previousStaticColisions;
     [NonSerialized] public int inverseBounceMultiplier = 1;
@@ -128,12 +128,12 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void CheckMovingColisions()
     {
-        int amount = Physics.SphereCastNonAlloc(transform.position, currentSize / 2, rb.Velocity.normalized, collisionBuffer, stats.Speed * Time.deltaTime, OwnerSpell.spellCollisionLayers);
+        int amount = Physics.SphereCastNonAlloc(transform.position, currentSize / 2, rb.Velocity.normalized, collisionBuffer, rb.Velocity.magnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers);
         RaycastHit closest = default;
         float closestDist = float.MaxValue;
         if (amount == collisionBuffer.Length)
         {
-            RaycastHit[] temporaryBuffer = Physics.SphereCastAll(transform.position, currentSize / 2, rb.Velocity.normalized, stats.Speed * Time.deltaTime, OwnerSpell.spellCollisionLayers); ;
+            RaycastHit[] temporaryBuffer = Physics.SphereCastAll(transform.position, currentSize / 2, rb.Velocity.normalized, rb.Velocity.magnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers); ;
             foreach (RaycastHit hit in temporaryBuffer)
             {
                 if (isValidHit(hit))
@@ -164,7 +164,7 @@ public class SpellCollider : NetworkBehaviour
         }
         if (!OwnerSpell.coreNode.HitOnStay)
         {
-            previousColisions = collisionBuffer.Take(amount).ToArray();
+            previousColisions = collisionBuffer.Take(amount).Select(h => h.collider).ToArray();
         }
         void getClosest(RaycastHit hit)
         {
@@ -195,7 +195,7 @@ public class SpellCollider : NetworkBehaviour
         bool isValidHit(RaycastHit hit)
         {
             if (hit.collider.gameObject == this) return false;
-            if (!OwnerSpell.coreNode.HitOnStay && previousColisions.Contains(hit)) return false;
+            if (!OwnerSpell.coreNode.HitOnStay && previousColisions.Contains(hit.collider)) return false;
             return true;
         }
 
@@ -424,12 +424,17 @@ public class SpellCollider : NetworkBehaviour
     {
         previousVelocity = Vector3.zero;
         inverseBounceMultiplier *= -1;
+        Vector3 normal = data.normal;
+        if (Vector3.Dot(rb.Velocity, normal) > 0)
+        {
+            normal = -normal;
+        }
         if (OwnerSpell.coreNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
         {
-            float upDot = Vector3.Dot(data.normal, Vector3.up);
+            float upDot = Vector3.Dot(normal, Vector3.up);
             if (upDot < 0.5f)
             {
-                Vector3 reflection = Vector3.Reflect(new Vector3(rb.Velocity.x, 0, rb.Velocity.z), data.normal);
+                Vector3 reflection = Vector3.Reflect(new Vector3(rb.Velocity.x, 0, rb.Velocity.z), normal);
                 reflection.y = rb.Velocity.y;
                 SetTrajectoryForward(reflection);
             }
@@ -438,7 +443,7 @@ public class SpellCollider : NetworkBehaviour
         else
         {
             //SetTrajectoryForward(Vector3.Reflect(TrajectoryTransform.Forward, data.hitNormal));
-            SetTrajectoryForward(Vector3.Reflect(rb.Velocity, data.normal));
+            SetTrajectoryForward(Vector3.Reflect(rb.Velocity, normal));
         }
 
         /*if(OwnerSpell.primaryNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
