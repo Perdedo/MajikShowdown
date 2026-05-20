@@ -83,14 +83,14 @@ public class SpellCollider : NetworkBehaviour
         }
         if (!CollisionOnCooldown)
         {
-            if (rb.Velocity.sqrMagnitude > 0.01f)
-            {
-                CheckMovingColisions();
-            }
-            else if (!HitOnCooldown)
-            {
-                CheckStationaryCollisions();
-            }
+        if (rb.Velocity.sqrMagnitude > 0.01f)
+        {
+            CheckMovingColisions();
+        }
+        else if (!HitOnCooldown)
+        {
+            CheckStationaryCollisions();
+        }
         }
 
         if (UseAcceleration)
@@ -119,7 +119,10 @@ public class SpellCollider : NetworkBehaviour
                 Die();
             }
         }
-        transform.LookAt(transform.position + rb.Velocity.normalized);
+        if (rb.Velocity.sqrMagnitude > 0.0001f)
+        {
+            transform.LookAt(transform.position + rb.Velocity.normalized);
+        }
         mesh.transform.localScale = Vector3.one * currentSize;
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
 
@@ -128,12 +131,14 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void CheckMovingColisions()
     {
-        int amount = Physics.SphereCastNonAlloc(transform.position, currentSize / 2, rb.Velocity.normalized, collisionBuffer, rb.Velocity.magnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers);
+        float castRadius = Mathf.Max(0.001f, (currentSize * 0.5f) - 0.01f);
+        int amount = Physics.SphereCastNonAlloc(transform.position, castRadius, rb.Velocity.normalized, collisionBuffer, rb.Velocity.magnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers);
         RaycastHit closest = default;
         float closestDist = float.MaxValue;
+        bool foundClosest = false;
         if (amount == collisionBuffer.Length)
         {
-            RaycastHit[] temporaryBuffer = Physics.SphereCastAll(transform.position, currentSize / 2, rb.Velocity.normalized, rb.Velocity.magnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers); ;
+            RaycastHit[] temporaryBuffer = Physics.SphereCastAll(transform.position, castRadius, rb.Velocity.normalized, rb.Velocity.magnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers); ;
             foreach (RaycastHit hit in temporaryBuffer)
             {
                 if (isValidHit(hit))
@@ -143,6 +148,7 @@ public class SpellCollider : NetworkBehaviour
                 }
 
             }
+            SetPreviousCollisions(temporaryBuffer);
         }
         else
         {
@@ -154,24 +160,23 @@ public class SpellCollider : NetworkBehaviour
                     getClosest(collisionBuffer[i]);
                 }
             }
+            SetPreviousCollisions(collisionBuffer);
         }
-        if (amount > 0 && closest.collider != null)
+        if (foundClosest)
         {
             if (pierceCount < 1 || LayerMaskUtility.BelongsInMask(closest.collider.gameObject.layer, OwnerSpell.Caster.ObjectLayer))
             {
                 CheckBounce(closest);
             }
         }
-        if (!OwnerSpell.coreNode.HitOnStay)
-        {
-            previousColisions = collisionBuffer.Take(amount).Select(h => h.collider).ToArray();
-        }
+
         void getClosest(RaycastHit hit)
         {
             if (closest.collider == null)
             {
                 closest = hit;
                 closestDist = hit.distance;
+                foundClosest = true;
                 return;
             }
             bool hitIsObject = LayerMaskUtility.BelongsInMask(hit.collider.gameObject.layer, OwnerSpell.Caster.ObjectLayer);
@@ -180,6 +185,7 @@ public class SpellCollider : NetworkBehaviour
             {
                 closest = hit;
                 closestDist = hit.distance;
+                foundClosest = true;
                 return;
             }
             if (!hitIsObject && closestIsObject)
@@ -190,13 +196,28 @@ public class SpellCollider : NetworkBehaviour
             {
                 closest = hit;
                 closestDist = hit.distance;
+                foundClosest = true;
             }
         }
         bool isValidHit(RaycastHit hit)
         {
-            if (hit.collider.gameObject == this) return false;
-            if (!OwnerSpell.coreNode.HitOnStay && previousColisions.Contains(hit.collider)) return false;
+            if (hit.collider.gameObject == gameObject) return false;
+            if (!OwnerSpell.coreNode.HitOnStay && previousColisions != null && previousColisions.Contains(hit.collider)) return false;
+            float dot = Vector3.Dot(rb.Velocity.normalized, hit.normal);
+            if (dot >= 0) return false;
             return true;
+        }
+        void SetPreviousCollisions(RaycastHit[] buffer)
+        {
+            if (!OwnerSpell.coreNode.HitOnStay)
+            {
+                previousColisions = new Collider[amount];
+                for (int i = 0; i < amount; i++)
+                {
+                    if (buffer[i].collider.gameObject == gameObject) continue;
+                    previousColisions[i] = buffer[i].collider;
+                }
+            }
         }
 
     }
@@ -206,13 +227,17 @@ public class SpellCollider : NetworkBehaviour
         for (int i = 0; i < amount; i++)
         {
             Collider col = staticCollisionsBuffer[i];
-            if (col.gameObject == this) continue;
+            if (col.gameObject == gameObject) continue;
             if (!OwnerSpell.coreNode.HitOnStay && previousStaticColisions != null && previousStaticColisions.Contains(col)) continue;
             HandleCollision(staticCollisionsBuffer[i]);
         }
         if (!OwnerSpell.coreNode.HitOnStay)
         {
-            previousStaticColisions = staticCollisionsBuffer.Take(amount).ToArray();
+            previousStaticColisions = new Collider[amount];
+            for (int i = 0; i < amount; i++)
+            {
+                previousStaticColisions[i] = staticCollisionsBuffer[i];
+            }
         }
     }
     //[Server]
@@ -422,13 +447,32 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     public void Bounce(RaycastHit data)
     {
+        
         previousVelocity = Vector3.zero;
         inverseBounceMultiplier *= -1;
         Vector3 normal = data.normal;
+        if (data.point == Vector3.zero)
+        {
+            //normal = -rb.Velocity.normalized;
+            //Debug.DrawRay(transform.position, previousVelocity.normalized * currentSize * 10, Color.green, 2);
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, -data.normal, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
+            {
+                normal = hit.normal;
+            }
+           /* else if (Physics.Raycast(transform.position, previousVelocity.normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
+            {
+                //Debug.Log(normal);
+                normal = hit.normal;
+            }*/
+            
+
+        }
         if (Vector3.Dot(rb.Velocity, normal) > 0)
         {
             normal = -normal;
         }
+        //Debug.Log(normal);
         if (OwnerSpell.coreNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
         {
             float upDot = Vector3.Dot(normal, Vector3.up);
@@ -437,6 +481,7 @@ public class SpellCollider : NetworkBehaviour
                 Vector3 reflection = Vector3.Reflect(new Vector3(rb.Velocity.x, 0, rb.Velocity.z), normal);
                 reflection.y = rb.Velocity.y;
                 SetTrajectoryForward(reflection);
+                transform.position += normal * (currentSize / 2 + 0.01f);
             }
 
         }
@@ -444,6 +489,7 @@ public class SpellCollider : NetworkBehaviour
         {
             //SetTrajectoryForward(Vector3.Reflect(TrajectoryTransform.Forward, data.hitNormal));
             SetTrajectoryForward(Vector3.Reflect(rb.Velocity, normal));
+            transform.position += normal * (currentSize / 2 + 0.01f);
         }
 
         /*if(OwnerSpell.primaryNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
@@ -466,7 +512,7 @@ public class SpellCollider : NetworkBehaviour
         }
     }
 }
-public struct CollisionData
+/*public struct CollisionData
 {
     public Collider collision;
     public SpellCollider Object;
@@ -480,7 +526,5 @@ public struct CollisionData
         hitPoint = col.point;
         hitNormal = col.normal;
         Distance = col.distance;
-        //Physics.Raycast(obj.transform.position, obj.rb.Velocity.normalized, out RaycastHit hit, Distance+0.1f);
-        //hitPoint = hit.point;
     }
-}
+}*/
