@@ -42,6 +42,9 @@ public class SpellCollider : NetworkBehaviour
     bool expanding = true;
     float currentSize = 0;
     public TrajectoryInfo TrajectoryTransform;
+    float velocityMagnitude;
+    Vector3 velocityDir;
+    
 
     //[Server]
     public void Initialize(Spell owner, bool isPrimary)
@@ -77,13 +80,15 @@ public class SpellCollider : NetworkBehaviour
         {
             return;
         }
+        velocityMagnitude = rb.Velocity.magnitude;
+        velocityDir = velocityMagnitude > 0.0001f ? rb.Velocity / velocityMagnitude : Vector3.zero;
         if (HitOnCooldown)
         {
             HitOnCooldown = HitTimer.timer(OwnerSpell.coreNode.HitCooldown, Time.deltaTime, true, false);
         }
         if (!CollisionOnCooldown)
         {
-        if (rb.Velocity.sqrMagnitude > 0.01f)
+        if (velocityMagnitude > 0.1f)
         {
             CheckMovingColisions();
         }
@@ -119,9 +124,9 @@ public class SpellCollider : NetworkBehaviour
                 Die();
             }
         }
-        if (rb.Velocity.sqrMagnitude > 0.0001f)
+        if (velocityMagnitude > 0.01f)
         {
-            transform.LookAt(transform.position + rb.Velocity.normalized);
+            transform.rotation = Quaternion.LookRotation(velocityDir);
         }
         mesh.transform.localScale = Vector3.one * currentSize;
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
@@ -132,13 +137,13 @@ public class SpellCollider : NetworkBehaviour
     void CheckMovingColisions()
     {
         float castRadius = Mathf.Max(0.001f, (currentSize * 0.5f) - 0.01f);
-        int amount = Physics.SphereCastNonAlloc(transform.position, castRadius, rb.Velocity.normalized, collisionBuffer, rb.Velocity.magnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers);
+        int amount = Physics.SphereCastNonAlloc(transform.position, castRadius, velocityDir, collisionBuffer, velocityMagnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers);
         RaycastHit closest = default;
         float closestDist = float.MaxValue;
         bool foundClosest = false;
         if (amount == collisionBuffer.Length)
         {
-            RaycastHit[] temporaryBuffer = Physics.SphereCastAll(transform.position, castRadius, rb.Velocity.normalized, rb.Velocity.magnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers); ;
+            RaycastHit[] temporaryBuffer = Physics.SphereCastAll(transform.position, castRadius, velocityDir, velocityMagnitude * Time.deltaTime, OwnerSpell.spellCollisionLayers); ;
             foreach (RaycastHit hit in temporaryBuffer)
             {
                 if (isValidHit(hit))
@@ -179,6 +184,10 @@ public class SpellCollider : NetworkBehaviour
                 foundClosest = true;
                 return;
             }
+            else if (hit.point == Vector3.zero)
+            {
+                return;
+            }
             bool hitIsObject = LayerMaskUtility.BelongsInMask(hit.collider.gameObject.layer, OwnerSpell.Caster.ObjectLayer);
             bool closestIsObject = LayerMaskUtility.BelongsInMask(closest.collider.gameObject.layer, OwnerSpell.Caster.ObjectLayer);
             if (hitIsObject && !closestIsObject)
@@ -201,9 +210,10 @@ public class SpellCollider : NetworkBehaviour
         }
         bool isValidHit(RaycastHit hit)
         {
+            if (hit.collider == null) return false;
             if (hit.collider.gameObject == gameObject) return false;
             if (!OwnerSpell.coreNode.HitOnStay && previousColisions != null && previousColisions.Contains(hit.collider)) return false;
-            float dot = Vector3.Dot(rb.Velocity.normalized, hit.normal);
+            float dot = Vector3.Dot(velocityDir, hit.normal);
             if (dot >= 0) return false;
             return true;
         }
@@ -459,6 +469,18 @@ public class SpellCollider : NetworkBehaviour
             if (Physics.Raycast(transform.position, -data.normal, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
             {
                 normal = hit.normal;
+            }
+            else if (Physics.Raycast(transform.position, velocityDir, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
+            {
+                normal = hit.normal;
+            }
+            else if (Physics.Raycast(transform.position, (data.collider.transform.position-transform.position).normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
+            {
+                normal = hit.normal;
+            }
+            else
+            {
+                Debug.LogError("Failed to find normal for bounce, this should not happen. " + data.collider.gameObject.name);
             }
            /* else if (Physics.Raycast(transform.position, previousVelocity.normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
             {
