@@ -92,6 +92,16 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         {
             return;
         }
+        foreach (Spell spell in equippedSpells)
+        {
+            if (spell != null && spell.onCooldown)
+            {
+                if (spell.cooldownTimer.timer(spell.SpellCooldown, Time.deltaTime, false, true))
+                {
+                    spell.onCooldown = false;
+                }
+            }
+        }
         if (Input.GetKeyDown(KeyCode.E))
         {
             if (equippedSpells[0] != null)
@@ -115,30 +125,31 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     public void CMDCastSpell(int spellInd, Vector3 aimPoint)
     {
         Spell spell = equippedSpells[spellInd];
+        if (spell.onCooldown) return;
+        spell.onCooldown = true;
 
-        /*if (spell.validSpell)
+        if (spell.validSpell)
         {
-            ServerInstantiateSpellCollider(spell, CastingPoint.position,transform.forward, true);
-        }*/
-        if (spell.coreNode.castPoint == null)
-        {
-            ServerInstantiateSpellCollider(spell, CastingPoint, (aimPoint - CastingPoint.position).normalized, true);
-            //ServerInstantiateSpellCollider(spell, CastingPoint, (AimController.AimPoint - CastingPoint.position).normalized, true);
-        }
-        else
-        {
-            Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, aimPoint);
-            Vector3 dir = (aimPoint - castPos).normalized;
-            //Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, AimController.AimPoint);
-            //Vector3 dir = (AimController.AimPoint - castPos).normalized;
-            if (dir == Vector3.zero)
+            //ServerInstantiateSpellCollider(spell, CastingPoint.position,transform.forward, true);
+            if (spell.coreNode.castPoint == null)
             {
-                dir = aimPoint - transform.position;
-                //dir = AimController.AimPoint - transform.position;
+                ServerInstantiateSpellCollider(spell, CastingPoint, (aimPoint - CastingPoint.position).normalized, true);
+                //ServerInstantiateSpellCollider(spell, CastingPoint, (AimController.AimPoint - CastingPoint.position).normalized, true);
             }
-            ServerInstantiateSpellCollider(spell, castPos, dir, true);
+            else
+            {
+                Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, aimPoint);
+                Vector3 dir = (aimPoint - castPos).normalized;
+                //Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, AimController.AimPoint);
+                //Vector3 dir = (AimController.AimPoint - castPos).normalized;
+                if (dir == Vector3.zero)
+                {
+                    dir = aimPoint - transform.position;
+                    //dir = AimController.AimPoint - transform.position;
+                }
+                ServerInstantiateSpellCollider(spell, castPos, dir, true);
+            }
         }
-
     }
 
     [Server]
@@ -166,9 +177,10 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     public void CastSpell(int spellInd)
     {
         Spell spell = equippedSpells[spellInd];
-
+        if (spell.onCooldown) return;
         if (spell.validSpell)
         {
+            spell.onCooldown = true;
             if (spell.coreNode.castPoint == null)
             {
                 InstantiateSpellCollider(spell, CastingPoint, (AimController.AimPoint - CastingPoint.position).normalized, true);

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using Mirror.Examples.Billiards;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 
