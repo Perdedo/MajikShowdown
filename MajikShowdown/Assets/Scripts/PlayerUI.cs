@@ -27,6 +27,9 @@ public class PlayerUI : NetworkBehaviour
     public GameObject spellsInventoryPageButton;
     public GameObject runesInventoryPageButton;
     public TextMeshProUGUI[] spellStats;
+    public Slider healthSlider;
+    public Image[] cooldownFills;
+    public TMP_Text[] cooldownTexts;
 
     [HideInInspector]
     public ConfigData data;
@@ -36,6 +39,7 @@ public class PlayerUI : NetworkBehaviour
     public SpellNodeInterface selectedNode;
     public SpellInventoryUI inventory;
     public Player myPlayer;
+    PlayerDamageHandler damageHandler;
 
     [Header("Network")]
     public bool network = true;
@@ -54,6 +58,52 @@ public class PlayerUI : NetworkBehaviour
             spellPanel.SetActive(false);
         }
         InitializeStatsUI();
+        damageHandler = myPlayer.GetComponent<PlayerDamageHandler>();
+        healthSlider.maxValue = damageHandler.MaxHealth;
+        healthSlider.value = damageHandler.Health;
+    }
+
+    private void Update()
+    {
+        if (!isLocalPlayer && network) return;
+        UpdateHealthUI();
+        UpdateCooldownUI();
+    }
+
+    void UpdateCooldownUI()
+    {
+        for (int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            Spell spell = caster.equippedSpells[i];
+
+            if (spell == null)
+            {
+                cooldownFills[i].fillAmount = 0;
+                cooldownTexts[i].text = "";
+                continue;
+            }
+
+            if (spell.onCooldown)
+            {
+                float remaining = spell.SpellCooldown - spell.cooldownTimer.Timestamp;
+                remaining = Mathf.Max(remaining, 0);
+                cooldownFills[i].fillAmount = remaining / spell.SpellCooldown;
+                cooldownTexts[i].text = remaining.ToString("0.0") + "s";
+            }
+            else
+            {
+                cooldownFills[i].fillAmount = 0;
+                cooldownTexts[i].text = "Ok";
+            }
+        }
+    }
+
+    void UpdateHealthUI()
+    {
+        if (damageHandler == null) return;
+
+        healthSlider.maxValue = damageHandler.MaxHealth;
+        healthSlider.value = damageHandler.Health;
     }
 
     public void LeavePauseButton()
