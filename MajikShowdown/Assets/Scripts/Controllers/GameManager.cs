@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public UIController uiController;
     public List<Player> Players = new List<Player>();
     public NetworkAuxiliarControl netCtrl;
+    public HordeController hordeController;
 
     void Awake()
     {
@@ -31,6 +32,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         netCtrl?.ffManager.gameObject.SetActive(true);
+        hordeController.Initialize();
     }
 
     public void RemovePlayer(Player player)

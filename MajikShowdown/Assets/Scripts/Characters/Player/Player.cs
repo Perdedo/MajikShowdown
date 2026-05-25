@@ -36,8 +36,10 @@ public class Player : Character
     public PushableObject pushing;
     [HideInInspector] public PlayerInput input;
     bool Casting;
+    [SyncVar(hook = "GetReady")]public bool readyForHorde = false;
     [Header("Network")]
     public bool network = true;
+
 
     //public PlayerData data;
 
@@ -71,6 +73,7 @@ public class Player : Character
         base.OnStartLocalPlayer();
         playerCamera.Priority = 2;
         input.enabled = true;
+        readyForHorde = false;
     }
     protected override void FixedUpdate()
     {
@@ -108,11 +111,28 @@ public class Player : Character
                 gravityTimer.SetTimer(0);
             }
         }
+
+        if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
+        {
+            if(Input.GetKeyDown(KeyCode.R))
+            {
+                readyForHorde = true;
+            }
+        }
         /*if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             Dash(directionInput);
         }*/
         //RotateCamera();
+    }
+
+    public void GetReady(bool oldVal, bool newVal)
+    {
+        if(newVal)
+        {
+            Debug.Log("Ready");
+            GameManager.Instance.hordeController.CheckReadyPlayers();
+        }
     }
     /*void OnDrawGizmos()
     {
