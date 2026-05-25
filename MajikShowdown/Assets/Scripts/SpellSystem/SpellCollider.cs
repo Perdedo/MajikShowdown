@@ -16,8 +16,10 @@ public class SpellCollider : NetworkBehaviour
     [NonSerialized] float pierceCount, bounceCount;
     [NonSerialized] public bool primarySpell;
     bool HitOnCooldown;
+    int hitCounter =0;
     bool CollisionOnCooldown;
     Timer HitTimer = new Timer();
+    Timer CollisionTimer = new Timer();
     [NonSerialized] public float LifeTime = 0;
     List<TriggerInfo> triggerInfos = new List<TriggerInfo>();
     [NonSerialized] public Vector3 previousVelocity;
@@ -43,7 +45,7 @@ public class SpellCollider : NetworkBehaviour
     public TrajectoryInfo TrajectoryTransform;
     float velocityMagnitude;
     Vector3 velocityDir;
-    
+
 
     //[Server]
     public void Initialize(Spell owner, bool isPrimary)
@@ -79,22 +81,32 @@ public class SpellCollider : NetworkBehaviour
         {
             return;
         }
+        hitCounter = 0;
         velocityMagnitude = rb.Velocity.magnitude;
         velocityDir = velocityMagnitude > 0.0001f ? rb.Velocity / velocityMagnitude : Vector3.zero;
         if (HitOnCooldown)
         {
             HitOnCooldown = HitTimer.timer(OwnerSpell.coreNode.HitCooldown, Time.deltaTime, true, false);
         }
+        if (CollisionOnCooldown)
+        {
+            CollisionOnCooldown = CollisionTimer.timer(0.1f, Time.deltaTime, true, false);
+        }
         if (!CollisionOnCooldown)
         {
-        if (velocityMagnitude > 0.1f)
-        {
-            CheckMovingColisions();
-        }
-        else if (!HitOnCooldown)
-        {
-            CheckStationaryCollisions();
-        }
+            if (velocityMagnitude > 0.1f)
+            {
+                CheckMovingColisions();
+            }
+            else if (!HitOnCooldown)
+            {
+                CheckStationaryCollisions();
+            }
+            if(hitCounter > 0)
+            {
+                HitOnCooldown = true;
+                HitTimer.SetTimer(0);
+            }
         }
 
         if (UseAcceleration)
@@ -345,22 +357,22 @@ public class SpellCollider : NetworkBehaviour
     {
         return TrajectoryTransform.Forward * rawDir.z + TrajectoryTransform.Up * rawDir.y + TrajectoryTransform.Right * rawDir.x;
     }
-    bool routineStarted;
+    //bool routineStarted;
     //[Server]
-    IEnumerator StartHitCooldown()
+    /*IEnumerator StartHitCooldown()
     {
         routineStarted = true;
         yield return new WaitForEndOfFrame();
         HitOnCooldown = true;
         HitTimer.SetTimer(0);
         routineStarted = false;
-    }
-    IEnumerator ColideCooldown(float cooldown)
+    }*/
+    /*IEnumerator ColideCooldown(float cooldown)
     {
         CollisionOnCooldown = true;
         yield return new WaitForSeconds(cooldown);
         CollisionOnCooldown = false;
-    }
+    }*/
     /*[Server]
     void OnTriggerEnter(Collider other)
     {
@@ -418,7 +430,8 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     public void CollideCreature(Collider col)
     {
-        if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
+        //if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
+        hitCounter++;
         Character character = col.GetComponent<Character>();
         if (character != null)
         {
@@ -442,7 +455,9 @@ public class SpellCollider : NetworkBehaviour
         {
             bounceCount--;
             Bounce(data);
-            StartCoroutine(ColideCooldown(0.1f));
+            CollisionOnCooldown = true;
+            CollisionTimer.SetTimer(0);
+            //StartCoroutine(ColideCooldown(0.1f));
         }
         else
         {
@@ -456,7 +471,7 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     public void Bounce(RaycastHit data)
     {
-        
+
         previousVelocity = Vector3.zero;
         inverseBounceMultiplier *= -1;
         Vector3 normal = data.normal;
@@ -473,7 +488,7 @@ public class SpellCollider : NetworkBehaviour
             {
                 normal = hit.normal;
             }
-            else if (Physics.Raycast(transform.position, (data.collider.transform.position-transform.position).normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
+            else if (Physics.Raycast(transform.position, (data.collider.transform.position - transform.position).normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
             {
                 normal = hit.normal;
             }
@@ -481,12 +496,12 @@ public class SpellCollider : NetworkBehaviour
             {
                 Debug.LogError("Failed to find normal for bounce, this should not happen. " + data.collider.gameObject.name);
             }
-           /* else if (Physics.Raycast(transform.position, previousVelocity.normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
-            {
-                //Debug.Log(normal);
-                normal = hit.normal;
-            }*/
-            
+            /* else if (Physics.Raycast(transform.position, previousVelocity.normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
+             {
+                 //Debug.Log(normal);
+                 normal = hit.normal;
+             }*/
+
 
         }
         if (Vector3.Dot(rb.Velocity, normal) > 0)
