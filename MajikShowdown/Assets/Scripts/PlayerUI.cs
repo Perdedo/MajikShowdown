@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerUI : NetworkBehaviour
@@ -13,6 +14,7 @@ public class PlayerUI : NetworkBehaviour
     public GameObject spellPanel;
     public GameObject createSpellPanel;
     public GameObject editSpellPanel;
+    public GameObject pausePanel;
     public Spell spellToEquip;
     public Button[] equipSlotButtons;
     public TMP_Text[] equipSlotTexts;
@@ -54,39 +56,16 @@ public class PlayerUI : NetworkBehaviour
         InitializeStatsUI();
     }
 
-    public void Update()
+    public void LeavePauseButton()
     {
-        if(!isLocalPlayer && network)
+        if (!isLocalPlayer && network)
         {
             return;
         }
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            if (spellPanel.activeSelf)
-            {
-                if (editSpellPanel.activeSelf)
-                {
-                    CloseEditSpellHUD();
-                }
-                else
-                {
-                    spellPanel.SetActive(false);
-                    myPlayer.input.ActivateInput();
-                    myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
-                    caster.canCast = true;
-                }
-            }
-            else
-            {
-                spellPanel.SetActive(true);
-                ActivateSpellsInventoryPage();
-                Debug.Log(myPlayer);
-                Debug.Log(myPlayer.input);
-                myPlayer.input.DeactivateInput();
-                myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
-                caster.canCast = false;
-            }
-        }
+        pausePanel.SetActive(false);
+        myPlayer.input.ActivateInput();
+        myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+        caster.canCast = true;
     }
 
     void InitializeStatsUI()
@@ -248,10 +227,22 @@ public class PlayerUI : NetworkBehaviour
         CMDStartEquipSpell(spell.instanceIndex);
     }
 
+    public void UnequipSpell(Spell spell)
+    {
+        for (int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            if (caster.equippedSpells[i] == spell)
+            {
+                caster.equippedSpells[i] = null;
+                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+            }
+        }
+    }
+
     [Command]
     public void CMDStartEquipSpell(int index)
     {
-        Debug.Log(index + "spell eqip");
+        Debug.Log(index + "spell equip");
         spellToEquip = caster.spells.Find(s => s.instanceIndex == index);
     }
 
@@ -376,5 +367,79 @@ public class PlayerUI : NetworkBehaviour
 
         spellsInventoryPageButton.GetComponent<Image>().color = Color.white;
         spellPage.SetActive(true);
+    }
+
+    void SetGameplayInput(bool state)
+    {
+        if (state)
+        {
+            myPlayer.input.actions["Move"].Enable();
+            myPlayer.input.actions["Jump"].Enable();
+            myPlayer.input.actions["Dash"].Enable();
+            myPlayer.input.actions["CastFirstSpell"].Enable();
+            myPlayer.input.actions["CastSecondSpell"].Enable();
+            myPlayer.input.actions["CastThirdSpell"].Enable();
+            myPlayer.input.actions["CastFourthSpell"].Enable();
+        }
+        else
+        {
+            myPlayer.input.actions["Move"].Disable();
+            myPlayer.input.actions["Jump"].Disable();
+            myPlayer.input.actions["Dash"].Disable();
+            myPlayer.input.actions["CastFirstSpell"].Disable();
+            myPlayer.input.actions["CastSecondSpell"].Disable();
+            myPlayer.input.actions["CastThirdSpell"].Disable();
+            myPlayer.input.actions["CastFourthSpell"].Disable();
+        }
+    }
+
+    public void PauseInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+
+        if (pausePanel.activeSelf && !spellPanel.activeSelf)
+        {
+            pausePanel.SetActive(false);
+            SetGameplayInput(true);
+            myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+            caster.canCast = true;
+        }
+        else if (!pausePanel.activeSelf && !spellPanel.activeSelf)
+        {
+            pausePanel.SetActive(true);
+            SetGameplayInput(false);
+            myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
+            caster.canCast = false;
+        }
+    }
+
+    public void OpenSpellPanelInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+
+        if (spellPanel.activeSelf && !pausePanel.activeSelf)
+        {
+            if (editSpellPanel.activeSelf)
+            {
+                CloseEditSpellHUD();
+            }
+            else
+            {
+                spellPanel.SetActive(false);
+                SetGameplayInput(true);
+                myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+                caster.canCast = true;
+            }
+        }
+        else if (!spellPanel.activeSelf && !pausePanel.activeSelf)
+        {
+            spellPanel.SetActive(true);
+            ActivateSpellsInventoryPage();
+            SetGameplayInput(false);
+            myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
+            caster.canCast = false;
+        }
     }
 }

@@ -10,6 +10,7 @@ public class SpellCardUI : MonoBehaviour
 
     public Button cardButton;
     public Button editButton;
+    public Button unequipButton;
     public Button deleteButton;
 
     public Spell boundSpell;
@@ -28,11 +29,15 @@ public class SpellCardUI : MonoBehaviour
         //Edit Spell Button Events
         editButton.onClick.RemoveAllListeners();
         editButton.onClick.AddListener(OpenEdit);
+        //Unequip Spell Button Events
+        unequipButton.onClick.RemoveAllListeners();
+        unequipButton.onClick.AddListener(Unequip);
         //Delete Spell Button Events
         deleteButton.onClick.RemoveAllListeners();
         deleteButton.onClick.AddListener(Delete);
 
         editButton.gameObject.SetActive(false);
+        unequipButton.gameObject.SetActive(false);
         deleteButton.gameObject.SetActive(false);
         RefreshUI();
         boundSpell.OnSpellUpdated += RefreshUI;
@@ -65,6 +70,7 @@ public class SpellCardUI : MonoBehaviour
         }
         isSelected = true;
         editButton.gameObject.SetActive(true);
+        unequipButton.gameObject.SetActive(IsEquipped());
         deleteButton.gameObject.SetActive(true);
         cardColor.color = Color.cyan; 
         GameManager.Instance.uiController.playerUI.StartEquipSpell(boundSpell);
@@ -75,6 +81,7 @@ public class SpellCardUI : MonoBehaviour
     {
         isSelected = false;
         editButton.gameObject.SetActive(false);
+        unequipButton.gameObject.SetActive(false);
         deleteButton.gameObject.SetActive(false);
         cardColor.color = Color.white;
         boundSpell.Caster.commander.DeselectSCUI(this);
@@ -84,6 +91,25 @@ public class SpellCardUI : MonoBehaviour
     {
         Deselect();
         GameManager.Instance.uiController.playerUI.OpenEditSpellHUD(boundSpell);
+    }
+
+    void Unequip()
+    {
+        GameManager.Instance.uiController.playerUI.UnequipSpell(boundSpell);
+        Deselect();
+    }
+
+    bool IsEquipped()
+    {
+        foreach (Spell spell in boundSpell.Caster.equippedSpells)
+        {
+            if (spell == boundSpell)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void RefreshUI()
