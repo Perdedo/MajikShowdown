@@ -1,6 +1,8 @@
 using Mirror;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 public class SpellCaster : NetworkBehaviour, IGameCharacter
@@ -102,7 +104,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        /*if (Input.GetKeyDown(KeyCode.E))
         {
             if (equippedSpells[0] != null)
             {
@@ -118,7 +120,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
                 //CMDCastSpell(0, AimController.AimPoint);
                 //Debug.Log(equippedSpells[0].spellName);
             }
-        }
+        }*/
     }
 
     [Command]
@@ -237,5 +239,70 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         node.IsInUse = value;
         foreach (var inventory in inventories)
             inventory.RefreshNodeState(node);
+    }
+
+    public void CastFirstSpellInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+        if (!canCast) return;
+        if (equippedSpells[0] == null) return;
+
+        if (network)
+        {
+            CMDCastSpell(0, AimController.AimPoint);
+        }
+        else
+        {
+            CastSpell(0);
+        }
+    }
+
+    public void CastSecondSpellInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+        if (!canCast) return;
+        if (equippedSpells[1] == null) return;
+        if (network)
+        {
+            CMDCastSpell(1, AimController.AimPoint);
+        }
+        else
+        {
+            CastSpell(1);
+        }
+    }
+
+    public void CastThirdSpellInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+        if (!canCast) return;
+        if (equippedSpells[2] == null) return;
+        if (network)
+        {
+            CMDCastSpell(2, AimController.AimPoint);
+        }
+        else
+        {
+            CastSpell(2);
+        }
+    }
+
+    public void CastFourthSpellInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+        if (!canCast) return;
+        if (equippedSpells[3] == null) return;
+        if (network)
+        {
+            CMDCastSpell(3, AimController.AimPoint);
+        }
+        else
+        {
+            CastSpell(3);
+        }
     }
 }

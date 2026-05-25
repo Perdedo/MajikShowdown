@@ -120,7 +120,11 @@ public class UIController : MonoBehaviour
         GameManager.Instance.uiController = this;
         ResolutionDropdown();
         ScreenModeDropdown();
-        File.Delete(Application.persistentDataPath + "/configSave.json");
+
+        // sempre deixar comentado, só usar se quiser apagar o save, depois comente denovo
+        // File.Delete(Application.persistentDataPath + "/configSave.json");
+
+
         if (File.Exists(Application.persistentDataPath + "/configSave.json"))
         {
             SaveManager.LoadConfig();
@@ -129,15 +133,19 @@ public class UIController : MonoBehaviour
         else
         {
             data = new ConfigData(0, 0, 0f, -15f, -15f, false);
-            Debug.Log("Sem Save Carregado");
+            SaveManager.SaveConfig();
+            Debug.Log("Novo Save Criado");
         }
         ConfigUpdate();
-        if(vsyncToggle != null)
+        if (vsyncToggle != null)
         {
             vsyncToggle.onValueChanged.RemoveAllListeners();
             vsyncToggle.onValueChanged.AddListener(ChangeVsyncToggle);
         }
-        AudioController.instance.StartMusic();
+        if (!AudioController.instance.musicSource.isPlaying)
+        {
+            AudioController.instance.StartMusic();
+        }
     }
 
     /*public void Update()

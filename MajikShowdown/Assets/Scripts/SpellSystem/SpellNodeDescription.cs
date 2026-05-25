@@ -216,6 +216,7 @@ public class SpellNodeDescription : NetworkBehaviour
         col.Players = value;
         currentType.Collisions = col;
         playersToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
     }
 
     void SetEnemiesCollision(bool value)
@@ -225,6 +226,7 @@ public class SpellNodeDescription : NetworkBehaviour
         col.Enemies = value;
         currentType.Collisions = col;
         enemiesToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
     }
 
     void SetObjectsCollision(bool value)
@@ -234,6 +236,7 @@ public class SpellNodeDescription : NetworkBehaviour
         col.Objects = value;
         currentType.Collisions = col;
         objectsToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
     }
 
     void TriggerDescription(SpellNode node)
