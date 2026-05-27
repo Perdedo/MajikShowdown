@@ -139,7 +139,7 @@ public abstract class SpellNode : ScriptableObject
         return (T)Enum.Parse(typeof(T), name);
     }
 }
-//[Serializable]
+[Serializable]
 public class NodeConection
 {
     public NodeConection(SpellNode owner, int index)

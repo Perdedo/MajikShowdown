@@ -70,11 +70,25 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         if (node.isClone && node.inventorySource != null)
         {
             var inventory = node.inventorySource.OriginZone as NodeInventory;
-            var spellNode = node.inventorySource.GetComponent<SpellNodeInterface>();
-            if (spellNode != null)
-                GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
-            //Destroy(node.gameObject);
+            var sourceInterface = node.inventorySource.GetComponent<SpellNodeInterface>();
+            var cloneInterface = node.GetComponent<SpellNodeInterface>();
+
+            if (inventory != null && cloneInterface != null)
+            {
+                int cloneIndex = inventory.GetNodeIndex(cloneInterface);
+                inventory.RemoveNodeFromInventory(cloneInterface);
+                Destroy(node.gameObject);
+
+                if (sourceInterface != null)
+                {
+                    sourceInterface.Node.IsInUse = false;
+                    sourceInterface.usedNodeImg.SetActive(false);
+                    inventory.Receive(node.inventorySource);
+                    inventory.InsertNodeAt(sourceInterface, cloneIndex);
+                }
+            }
         }
+
         grid.caster.commander.HexRelease(this, node);
     }
 

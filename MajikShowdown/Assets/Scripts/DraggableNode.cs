@@ -15,6 +15,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public bool isClone = false;
     public DraggableNode inventorySource;
+    public DraggableNode inventoryClone;
 
     private void Awake()
     {
@@ -73,11 +74,11 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         if (pendingDropZone != null && inventory != null && !isClone && pendingDropZone is HexGridNode)
         {
+            var nodeInterface = GetComponent<SpellNodeInterface>();
             GameObject cloneGO = Instantiate(gameObject, canvas.transform);
             DraggableNode clone = cloneGO.GetComponent<DraggableNode>();
             clone.isClone = true;
             clone.inventorySource = this;
-            clone.SetOriginZone(null);
             clone.canvas = canvas;
             clone.rectTransform = cloneGO.GetComponent<RectTransform>();
             clone.canvasGroup = cloneGO.GetComponent<CanvasGroup>();
@@ -87,35 +88,44 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             var cloneInterface = cloneGO.GetComponent<SpellNodeInterface>();
             if (cloneInterface != null)
             {
-                cloneInterface.linkedDescription = GameManager.Instance.uiController.playerUI.spellNodeDescription;
+                //cloneInterface.Setup(nodeInterface.Node);
+                cloneInterface.usedNodeImg.SetActive(true);
             }
 
-            pendingDropZone.Receive(clone);
-            inventory.Receive(this);
-            var nodeInterface = GetComponent<SpellNodeInterface>();
-            if (nodeInterface != null)
-            {
-                inventory.InsertNodeAt(nodeInterface, savedListIndex);
-            }
-            var spellNode = GetComponent<SpellNodeInterface>();
-            if (spellNode != null)
-            {
-                GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, true);
-            }
+            inventoryClone = clone;
+
+            inventory.Receive(clone);
+            inventory.InsertNodeAt(cloneInterface, savedListIndex);
+            pendingDropZone.Receive(this);
         }
         else if (pendingDropZone != null)
         {
             if (isClone && pendingDropZone is NodeInventory)
             {
                 var source = inventorySource;
-                var spellNode = source.GetComponent<SpellNodeInterface>();
+                var spellNode = source?.GetComponent<SpellNodeInterface>();
                 if (spellNode != null)
                 {
-                    GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
+                    spellNode.Node.IsInUse = false;
+                    spellNode.usedNodeImg.SetActive(false);
                 }
                 Destroy(gameObject);
                 return;
             }
+            if (!isClone && pendingDropZone is NodeInventory targetInventory && inventoryClone != null)
+            {
+                var nodeInterface = GetComponent<SpellNodeInterface>();
+                var cloneInterface = inventoryClone.GetComponent<SpellNodeInterface>();
+                int cloneIndex = targetInventory.GetNodeIndex(cloneInterface);
+                targetInventory.RemoveNodeFromInventory(cloneInterface);
+                Destroy(inventoryClone.gameObject);
+                inventoryClone = null;
+                targetInventory.Receive(this);
+                if (nodeInterface != null)
+                    targetInventory.InsertNodeAt(nodeInterface, cloneIndex);
+                return;
+            }
+
             pendingDropZone.Receive(this);
         }
         else
@@ -123,10 +133,11 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             if (isClone)
             {
                 var source = inventorySource;
-                var spellNode = source.GetComponent<SpellNodeInterface>();
+                var spellNode = source?.GetComponent<SpellNodeInterface>();
                 if (spellNode != null)
                 {
-                    GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
+                    spellNode.Node.IsInUse = false;
+                    spellNode.usedNodeImg.SetActive(false);
                 }
                 Destroy(gameObject);
                 return;
@@ -135,7 +146,20 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             var nodeInterface = GetComponent<SpellNodeInterface>();
             if (nodeInterface != null)
             {
-                inventory.InsertNodeAt(nodeInterface, savedListIndex);
+                if (inventoryClone != null)
+                {
+                    var cloneInterface = inventoryClone.GetComponent<SpellNodeInterface>();
+                    int cloneIndex = inventory.GetNodeIndex(cloneInterface);
+                    Debug.Log($"cloneIndex={cloneIndex}");
+                    inventory.RemoveNodeFromInventory(cloneInterface);
+                    Destroy(inventoryClone.gameObject);
+                    inventoryClone = null;
+                    inventory.InsertNodeAt(nodeInterface, cloneIndex);
+                }
+                else
+                {
+                    inventory.InsertNodeAt(nodeInterface, savedListIndex);
+                }
             }
         }
         pendingDropZone = null;
@@ -144,11 +168,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private bool CanDrag()
     {
         if (!GameManager.Instance.uiController.playerUI.editSpellPanel.activeInHierarchy) return false;
-        if (!isClone)
-        {
-            var node = GetComponent<SpellNodeInterface>();
-            if (node != null && node.Node.IsInUse) return false;
-        }
+        if (isClone) return false;
         return true;
     }
 }

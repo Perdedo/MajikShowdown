@@ -20,7 +20,6 @@ public class SpellNodeInterface : MonoBehaviour
     public Image borderImg;
     [HideInInspector] public int acquisitionOrder;
     [HideInInspector] public SpellNodeDescription linkedDescription;
-    private bool _initialized = false;
 
     void Awake()
     {
@@ -46,7 +45,6 @@ public class SpellNodeInterface : MonoBehaviour
         SetupBorder();
         SetupBackground();
         SetupUsedState();
-        _initialized = true;
     }
     private void SetupMainVisual()
     {
@@ -95,21 +93,7 @@ public class SpellNodeInterface : MonoBehaviour
         conections = new NodeConection[] { new(Node, 0), new(Node, 1), new(Node, 2), new(Node, 3), new(Node, 4), new(Node, 5) };
         UpdateConectionPorts();
     }
-    void Update()
-    {
-        if(!_initialized) return;
-        foreach (var c in conections)
-        {
-            if (c == null)
-            {
-                Debug.LogError("Conection is null in " + Node.name);
-            }
-            else
-            {
-                Debug.Log("ok");
-            }
-        }
-    }
+
     public bool TryConectNode(SpellNodeInterface con, int index)
     {
         Debug.Log("tryCon");
