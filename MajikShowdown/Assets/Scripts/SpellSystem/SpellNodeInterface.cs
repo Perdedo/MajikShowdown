@@ -20,6 +20,7 @@ public class SpellNodeInterface : MonoBehaviour
     public Image borderImg;
     [HideInInspector] public int acquisitionOrder;
     [HideInInspector] public SpellNodeDescription linkedDescription;
+    private bool _initialized = false;
 
     void Awake()
     {
@@ -45,6 +46,7 @@ public class SpellNodeInterface : MonoBehaviour
         SetupBorder();
         SetupBackground();
         SetupUsedState();
+        _initialized = true;
     }
     private void SetupMainVisual()
     {
@@ -95,6 +97,7 @@ public class SpellNodeInterface : MonoBehaviour
     }
     void Update()
     {
+        if(!_initialized) return;
         foreach (var c in conections)
         {
             if (c == null)

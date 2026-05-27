@@ -61,6 +61,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!CanDrag()) return;
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
         var inventory = OriginZone as NodeInventory;
