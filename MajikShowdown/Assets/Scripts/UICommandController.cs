@@ -239,7 +239,7 @@ public class UICommandController : NetworkBehaviour
         {
             if (sni.conections[i] != null)
             {
-                sni.Node.ConectedNodes[i] = sni.conections[i].GetNode();
+                sni.Node.ConectedNodes[i] = sni.conections[i].conectedNode;
             }
             else
             {
@@ -285,7 +285,7 @@ public class UICommandController : NetworkBehaviour
             return;
         }
         //ConectedNodes[Index] = null;
-        SpellNode aux = sni.conections[Index].GetNode();
+        SpellNode aux = sni.conections[Index].conectedNode;
         //Debug.Log(aux);
         //Debug.Log(aux.Interface);
         if (aux != null)

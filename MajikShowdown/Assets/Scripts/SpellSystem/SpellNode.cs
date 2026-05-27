@@ -139,29 +139,32 @@ public abstract class SpellNode : ScriptableObject
         return (T)Enum.Parse(typeof(T), name);
     }
 }
-[Serializable]
+//[Serializable]
 public class NodeConection
 {
-    public NodeConection(SpellNode owner)
+    public NodeConection(SpellNode owner, int index)
     {
         ownerNode = owner;
+        this.index = index;
     }
     public SpellNode ownerNode;
+    public SpellNode conectedNode;
     public enum Conections { None, Circle, Triangle, Square, Penta, All }
     public Conections conectionType = Conections.None;
-    public NodeConection conection;
-    public SpellNode conectedNode;
+    public int index;
+    public int inverseIndex => (index + 3) % 6;
+    //public NodeConection conection;
     public bool TryConect(NodeConection c)
     {
         if (c.conectionType == conectionType && conectionType != Conections.None && c.conectionType != Conections.None)
         {
-            c.conection = this;
-            conection = c;
+            //c.conection = this;
+            //conection = c;
             c.conectedNode = ownerNode;
             conectedNode = c.ownerNode;
-            if (conection.ownerNode.hierarchy > ownerNode.hierarchy)
+            if (conectedNode.hierarchy > ownerNode.hierarchy)
             {
-                conection.ownerNode.hierarchy = ownerNode.hierarchy + 1;
+                conectedNode.hierarchy = ownerNode.hierarchy + 1;
             }
             return true;
         }
@@ -183,22 +186,15 @@ public class NodeConection
     }
     public void RemoveConection()
     {
-        if (conection != null)
+        if (conectedNode != null)
         {
+            conectedNode.Interface.conections[inverseIndex].conectedNode = null;
             conectedNode = null;
-            conection.conectedNode = null;
-            conection.conection = null;
-            conection = null;
+            //conection.conectedNode = null;
+            //conection.conection = null;
+            //conection = null;
         }
 
-    }
-    public SpellNode GetNode()
-    {
-        if (conection == null)
-        {
-            return null;
-        }
-        return conection.ownerNode;
     }
 }
 

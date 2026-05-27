@@ -90,8 +90,22 @@ public class SpellNodeInterface : MonoBehaviour
     }*/
     public void InitializeConections()
     {
-        conections = new NodeConection[] { new(Node), new(Node), new(Node), new(Node), new(Node), new(Node) };
+        conections = new NodeConection[] { new(Node, 0), new(Node, 1), new(Node, 2), new(Node, 3), new(Node, 4), new(Node, 5) };
         UpdateConectionPorts();
+    }
+    void Update()
+    {
+        foreach (var c in conections)
+        {
+            if (c == null)
+            {
+                Debug.LogError("Conection is null in " + Node.name);
+            }
+            else
+            {
+                Debug.Log("ok");
+            }
+        }
     }
     public bool TryConectNode(SpellNodeInterface con, int index)
     {
@@ -132,7 +146,7 @@ public class SpellNodeInterface : MonoBehaviour
             return;
         }
         //ConectedNodes[Index] = null;
-        SpellNode aux = conections[Index].GetNode();
+        SpellNode aux = conections[Index].conectedNode;
         //Debug.Log(aux);
         //Debug.Log(aux.Interface);
         if (aux != null)
@@ -156,12 +170,12 @@ public class SpellNodeInterface : MonoBehaviour
         {
             if (conections[i] != null)
             {
-                Debug.Log(conections[i].GetNode());
-                Node.ConectedNodes[i] = conections[i].GetNode();
+                //Debug.Log(conections[i].GetNode());
+                Node.ConectedNodes[i] = conections[i].conectedNode;
             }
             else
             {
-                Debug.Log("else");
+                //Debug.Log("else");
                 Node.ConectedNodes[i] = null;
             }
         }
