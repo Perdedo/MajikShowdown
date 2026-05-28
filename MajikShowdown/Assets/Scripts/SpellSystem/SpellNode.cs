@@ -8,7 +8,9 @@ public abstract class SpellNode : ScriptableObject
     [Header("Define Stat Randomization")]
     public StatRandomizer statRandomizer;
     [Header("Display")]
-    public string spellDescription;
+    public string runeName;
+    [HideInInspector]public string runeType;
+    public string runeDescription;
     [HideInInspector] public Color color = Color.white;
     [Header("Final Stats Debug")]
     public float Cooldown = 0;
@@ -63,6 +65,7 @@ public abstract class SpellNode : ScriptableObject
     {
         SetupNodeVisual();
         RandomizeStats();
+        runeType = GetCategory() == NodeCategory.Type ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }
 

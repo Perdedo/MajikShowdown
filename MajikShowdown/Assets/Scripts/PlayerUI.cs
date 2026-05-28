@@ -244,7 +244,7 @@ public class PlayerUI : NetworkBehaviour
         }
         editSpellPanel.gameObject.SetActive(false);
         spellNameInput.onValueChanged.RemoveAllListeners();
-        spellNodeDescription.HideDescription();
+        spellNodeDescription.HideAll();
 
         if (activeSpell != null)
             activeSpell.OnSpellUpdated -= RefreshSpellInfo;
