@@ -346,8 +346,15 @@ public class SpellCollider : NetworkBehaviour
         {
             if (!trigger.SpellOnCooldown)
             {
-                OwnerSpell.Caster.ServerInstantiateSpellCollider(spell, transform.position, transform.forward);
-                trigger.SpellOnCooldown = true;
+                if (OwnerSpell.Caster.network)
+                {
+                    OwnerSpell.Caster.ServerInstantiateSpellCollider(spell, transform.position, transform.forward);
+                }
+                else
+                {
+                    OwnerSpell.Caster.InstantiateSpellCollider(spell, transform.position, transform.forward);
+                }
+                    trigger.SpellOnCooldown = true;
             }
         };
         e.AddListener(action);
