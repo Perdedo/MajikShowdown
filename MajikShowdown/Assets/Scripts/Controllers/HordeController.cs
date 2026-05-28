@@ -17,7 +17,9 @@ public class HordeController : NetworkBehaviour
     public GameObject spawner;
     GameObject aux;
     Vector3 spawnPos;
-    [HideInInspector]public bool inHorde = false, inHordeTime = false, inPause = false;
+    [HideInInspector][SyncVar] public bool inHorde = false;
+    [HideInInspector][SyncVar] public bool inHordeTime = false;
+    [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
     [HideInInspector]public List<GameObject> enemies;
     bool running = false;
@@ -41,7 +43,14 @@ public class HordeController : NetworkBehaviour
             timer = Mathf.Round(hordeEndTime - Time.time);
             if(timer > 0)
             {
-                UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
+                if((int)timer % 60 >= 10)
+                {
+                    UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
+                }
+                else
+                {
+                    UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
+                }
             }
             else
             {
@@ -51,7 +60,14 @@ public class HordeController : NetworkBehaviour
         else
         {
             timer = Mathf.Round(pauseEndTime - Time.time);
-            UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
+            if ((int)timer % 60 >= 10)
+            {
+                UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
+            }
+            else
+            {
+                UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
+            }
         }
     }
 
