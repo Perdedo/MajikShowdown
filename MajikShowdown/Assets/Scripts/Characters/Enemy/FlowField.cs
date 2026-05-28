@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation;
 using UnityEngine.AI;
-
 public class FlowField
 {
     public Dictionary<Vector2Int, CellColumn> field = new Dictionary<Vector2Int, CellColumn>();
@@ -15,6 +14,7 @@ public class FlowField
     public bool DiagonalNeighbors = true;
     public FlowFieldManager manager;
     public int CurrentGeneration = 0;
+    public HashSet<FieldCell> destinationSet = new HashSet<FieldCell>();
     public FlowField(float CellSize, FlowFieldManager Manager, bool diagonalNeighbors = true)
     {
         //field = new FieldCell[width, depth];
@@ -271,11 +271,14 @@ public class FlowField
         DestinationCells = targets;
         if (DestinationCells.Count <= 0) return;
         Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
+        destinationSet.Clear();
         foreach(FieldCell cell in DestinationCells)
         {
             cell.BestCost = 0;
             cell.generation = CurrentGeneration;
             cellsToProcess.Enqueue(cell);
+            destinationSet.Add(cell);
+
         }
         while (cellsToProcess.Count > 0)
         {
@@ -319,7 +322,7 @@ public class FlowField
             foreach (FieldCell c in v.Value.Layers)
             {
                 if (c == null) { continue; }
-                if (DestinationCells.Contains(c))
+                if (destinationSet.Contains(c))
                 {
                     c.SetDirection(Vector3.zero);
                     continue;
