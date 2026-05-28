@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Mirror;
 using Mirror.Examples.Billiards;
 using UnityEngine;
@@ -27,9 +26,9 @@ public class SpellCollider : NetworkBehaviour
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();
     //public Collider spellCol;
     [NonSerialized] public RaycastHit[] collisionBuffer = new RaycastHit[64];
-    [NonSerialized] public Collider[] previousColisions;
+    [NonSerialized] public HashSet<Collider> previousColisions = new HashSet<Collider>();
     [NonSerialized] public Collider[] staticCollisionsBuffer = new Collider[64];
-    [NonSerialized] public Collider[] previousStaticColisions;
+    //[NonSerialized] public Collider[] previousStaticColisions;
     [NonSerialized] public int inverseBounceMultiplier = 1;
     [HideInInspector] public bool UseAcceleration = false;
     [NonSerialized] public Transform SpawnTransform;
@@ -230,13 +229,14 @@ public class SpellCollider : NetworkBehaviour
         }
         void SetPreviousCollisions(RaycastHit[] buffer)
         {
+            
             if (!OwnerSpell.coreNode.HitOnStay)
             {
-                previousColisions = new Collider[amount];
+                previousColisions.Clear();
                 for (int i = 0; i < amount; i++)
                 {
                     if (buffer[i].collider.gameObject == gameObject) continue;
-                    previousColisions[i] = buffer[i].collider;
+                    previousColisions.Add(buffer[i].collider);
                 }
             }
         }
@@ -249,15 +249,15 @@ public class SpellCollider : NetworkBehaviour
         {
             Collider col = staticCollisionsBuffer[i];
             if (col.gameObject == gameObject) continue;
-            if (!OwnerSpell.coreNode.HitOnStay && previousStaticColisions != null && previousStaticColisions.Contains(col)) continue;
+            if (!OwnerSpell.coreNode.HitOnStay && previousColisions != null && previousColisions.Contains(col)) continue;
             HandleCollision(staticCollisionsBuffer[i]);
         }
         if (!OwnerSpell.coreNode.HitOnStay)
         {
-            previousStaticColisions = new Collider[amount];
+            previousColisions.Clear();
             for (int i = 0; i < amount; i++)
             {
-                previousStaticColisions[i] = staticCollisionsBuffer[i];
+                previousColisions.Add(staticCollisionsBuffer[i]);
             }
         }
     }
