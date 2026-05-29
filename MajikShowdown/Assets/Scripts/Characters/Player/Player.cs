@@ -118,7 +118,7 @@ public class Player : Character
             {
                 readyForHorde = true;
             }
-        }*/
+        }
         /*if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             Dash(directionInput);
@@ -131,6 +131,13 @@ public class Player : Character
         if (!isLocalPlayer && network) return;
         if (!context.started) return;
         if (!GameManager.Instance.hordeController.inPause) return;
+        //readyForHorde = true;
+        CMDReadyInput();
+    }
+
+    [Command]
+    void CMDReadyInput()
+    {
         readyForHorde = true;
     }
 
