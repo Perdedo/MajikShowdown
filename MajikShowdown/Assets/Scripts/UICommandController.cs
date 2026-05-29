@@ -539,7 +539,6 @@ public class UICommandController : NetworkBehaviour
     {
         //DraggableNode node = drags[nodeInd];
         DraggableNode node = drags.Find(d => d.acquisitionOrder == nodeInd);
-        Debug.Log(drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
         //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         var spell = node.GetComponent<SpellNodeInterface>();
