@@ -10,8 +10,8 @@ using System.Collections;
 public class SpellNodeDescription : NetworkBehaviour
 {
     [Header("Description Sections")]
-    public GameObject elementSection;
     public GameObject descriptionSection;
+    public GameObject elementSection;
     public GameObject extraSection;
     public GameObject triggerSection;
     public GameObject collisionSection;
@@ -268,7 +268,7 @@ public class SpellNodeDescription : NetworkBehaviour
 
     public void NodeCoolDownDescription(SpellNode node)
     {
-        nodeCooldown.text = node.Cooldown + "s";
+        nodeCooldown.text = $"{node.Cooldown:F1}s";
     }
 
     void NodeInfosDescription(SpellNode node)
