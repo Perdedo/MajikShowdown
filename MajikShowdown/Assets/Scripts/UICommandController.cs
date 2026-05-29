@@ -583,22 +583,33 @@ public class UICommandController : NetworkBehaviour
         //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
         DraggableNode node = drags.Find(d => d.acquisitionOrder == nodeInd);
-        //DraggableNode node = drags[nodeInd];
-        if (hex.spellNode == null) return;
 
+        if (hex.spellNode == null) return;
         hex.VerifyNearbyBreakConections(hex.spellNode);
         hex.grid.spellNodes[hex.index] = null;
         hex.spellNode.hexGridNode = null;
         hex.spellNode = null;
-        //hex.SetNodeButtonState(true);
         hex.grid.ConfigurateSpell();
         if (node.isClone && node.inventorySource != null)
         {
             var inventory = node.inventorySource.OriginZone as NodeInventory;
-            var spellNode = node.inventorySource.GetComponent<SpellNodeInterface>();
-            if (spellNode != null)
-                GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(spellNode.Node, false);
-            //Destroy(node.gameObject);
+            var sourceInterface = node.inventorySource.GetComponent<SpellNodeInterface>();
+            var cloneInterface = node.GetComponent<SpellNodeInterface>();
+
+            if (inventory != null && cloneInterface != null)
+            {
+                int cloneIndex = inventory.GetNodeIndex(cloneInterface);
+                inventory.RemoveNodeFromInventory(cloneInterface);
+                Destroy(node.gameObject);
+
+                if (sourceInterface != null)
+                {
+                    sourceInterface.Node.IsInUse = false;
+                    sourceInterface.usedNodeImg.SetActive(false);
+                    inventory.Receive(node.inventorySource);
+                    inventory.InsertNodeAt(sourceInterface, cloneIndex);
+                }
+            }
         }
     }
 }

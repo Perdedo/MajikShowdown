@@ -67,6 +67,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         spellNode = null;
         SetNodeButtonState(true);
         grid.ConfigurateSpell();
+        grid.caster.commander.HexRelease(this, node);
         if (node.isClone && node.inventorySource != null)
         {
             var inventory = node.inventorySource.OriginZone as NodeInventory;
@@ -89,7 +90,6 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
             }
         }
 
-        grid.caster.commander.HexRelease(this, node);
     }
 
     public void OnDrop(PointerEventData eventData)
