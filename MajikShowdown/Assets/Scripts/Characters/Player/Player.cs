@@ -112,18 +112,26 @@ public class Player : Character
             }
         }
 
-        if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
+        /*if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
         {
             if(Input.GetKeyDown(KeyCode.R))
             {
                 readyForHorde = true;
             }
-        }
+        }*/
         /*if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             Dash(directionInput);
         }*/
         //RotateCamera();
+    }
+
+    public void ReadyInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+        if (!GameManager.Instance.hordeController.inPause) return;
+        readyForHorde = true;
     }
 
     public void GetReady(bool oldVal, bool newVal)
