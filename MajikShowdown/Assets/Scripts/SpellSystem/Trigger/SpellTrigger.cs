@@ -11,7 +11,19 @@ public class SpellTrigger : SpellNode
     public enum Triggers { OnCast, OnHit, OnDeath };
     
     
-    
+    public void UpdateTrigger()
+    {
+        
+        if (TriggeredSpell != null)
+        {
+            Cooldown = TriggeredSpell.auxCooldown;
+        }
+        else
+        {
+            Cooldown = 0;
+        }
+        OwnerSpell?.UpdateSpell(this);
+    }
     public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {
         /*if(hierarchy > list[0].hierarchy)

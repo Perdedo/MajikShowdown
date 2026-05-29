@@ -10,7 +10,7 @@ public abstract class SpellNode : ScriptableObject
     [Header("Display")]
     public string runeName;
     [HideInInspector]public string runeType;
-    public string runeDescription;
+    [TextArea(3, 10)]public string runeDescription;
     [HideInInspector] public Color color = Color.white;
     [Header("Final Stats Debug")]
     public float Cooldown = 0;
@@ -22,7 +22,7 @@ public abstract class SpellNode : ScriptableObject
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Spell OwnerSpell;
     [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
-    public bool IsInUse;
+    [NonSerialized]public bool IsInUse;
     public SpellNodeInfos spellInfos;
     public Sprite nodeSymbolSprite;
     [HideInInspector] public Color symbolColor;

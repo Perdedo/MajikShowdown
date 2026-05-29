@@ -266,7 +266,7 @@ public class SpellNodeDescription : NetworkBehaviour
         sixthSep.gameObject.SetActive(false);
     }
 
-    void NodeCoolDownDescription(SpellNode node)
+    public void NodeCoolDownDescription(SpellNode node)
     {
         nodeCooldown.text = node.Cooldown + "s";
     }
@@ -553,6 +553,8 @@ public class SpellNodeDescription : NetworkBehaviour
         if (currentTrigger == null) return;
         if (index < 0 || index >= availableSpells.Count) return;
         currentTrigger.TriggeredSpell = availableSpells[index];
+        currentTrigger.UpdateTrigger();
+        NodeCoolDownDescription(currentTrigger);
         if(!isServer && network)
         {
             CMDSetTriggerSpell(index);
@@ -580,6 +582,8 @@ public class SpellNodeDescription : NetworkBehaviour
         if (currentTrigger == null) return;
         if (index < 0 || index >= availableSpells.Count) return;
         currentTrigger.TriggeredSpell = availableSpells[index];
+        currentTrigger.UpdateTrigger();
+        NodeCoolDownDescription(currentTrigger);
     }
 
     [Command]
