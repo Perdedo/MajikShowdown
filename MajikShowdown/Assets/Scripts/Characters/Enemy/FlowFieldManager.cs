@@ -82,6 +82,42 @@ public class FlowFieldManager : MonoBehaviour
         StartCoroutine(FlowFieldGenerator());
     }
 
+    bool integrated = false;
+    public void GenerateFlowFieldIntegrations()
+    {
+        integrated = false;
+        StartCoroutine(GenerateFFIntegrations());
+    }
+
+    IEnumerator GenerateFFIntegrations()
+    {
+        if(!integrated)
+        {
+            integrated = flowField.GenerateIntegration();
+            yield return new WaitForEndOfFrame();
+            StartCoroutine(GenerateFFIntegrations());
+        }
+    }
+    bool directed = false;
+    public int cellCountAux;
+    public void GenerateFlowFieldDirections()
+    {
+        cellCountAux = 0;
+        directed = false;
+        StartCoroutine(GenerateFFDirections());
+    }
+
+    IEnumerator GenerateFFDirections()
+    {
+        if(!directed)
+        {
+            directed = flowField.GenerateDirections(ref cellCountAux);
+            yield return new WaitForEndOfFrame();
+            StartCoroutine(GenerateFFDirections());
+        }
+    }
+
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {

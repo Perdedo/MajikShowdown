@@ -175,12 +175,34 @@ public class FlowField
         GenerateIntegration(target);
         GenerateDirections();
     }
+
+    Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
+    List<FieldCell> processedCells = new List<FieldCell>();
+    int cellsPerDelayInt = 15000;
+    int cellsPerDelayDir = 15000;
+    int cellCount = 0;
+    float maxSqrDistance = 10000;
+
     public void GenerateFlowField(List<FieldCell> targets)
     {
         //ResetCost();
         CurrentGeneration++;
-        GenerateIntegration(targets);
-        GenerateDirections();
+        cellsToProcess.Clear();
+        processedCells.Clear();
+        DestinationCells = targets;
+        if (DestinationCells.Count <= 0) return;
+        //Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
+        destinationSet.Clear();
+        foreach (FieldCell cell in DestinationCells)
+        {
+            cell.BestCost = 0;
+            cell.generation = CurrentGeneration;
+            cellsToProcess.Enqueue(cell);
+            destinationSet.Add(cell);
+        }
+        manager.GenerateFlowFieldIntegrations();
+        //GenerateIntegration();
+        //GenerateDirections();
     }
     void GenerateIntegration(Vector2Int targetCellPos, int targetCellLayer)
     {
@@ -266,11 +288,11 @@ public class FlowField
             }
         }
     }
-    void GenerateIntegration(List<FieldCell> targets)
+    public bool GenerateIntegration()
     {
-        DestinationCells = targets;
+        /*DestinationCells = targets;
         if (DestinationCells.Count <= 0) return;
-        Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
+        //Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
         destinationSet.Clear();
         foreach(FieldCell cell in DestinationCells)
         {
@@ -278,13 +300,18 @@ public class FlowField
             cell.generation = CurrentGeneration;
             cellsToProcess.Enqueue(cell);
             destinationSet.Add(cell);
-
-        }
-        while (cellsToProcess.Count > 0)
+        }*/
+        cellCount = 0;
+        while (cellsToProcess.Count > 0 && cellCount < cellsPerDelayInt)
         {
             FieldCell currentCell = cellsToProcess.Dequeue();
             foreach (FieldCell.NeighborContext n in currentCell.Neighbors)
             {
+                n.neighborCell.directionToDestiny = GetDistanceToClosestDestinationCell(n.neighborCell);
+                if(n.neighborCell.directionToDestiny.sqrMagnitude > maxSqrDistance)
+                {
+                    continue;
+                }
                 if(currentCell.Neighbors.Count < 8)
                 {
                     n.neighborCell.BaseCost = manager.BorderCellWeight;
@@ -313,7 +340,118 @@ public class FlowField
                 }
 
             }
+            cellCount++;
+            processedCells.Add(currentCell);
         }
+
+        if(cellsToProcess.Count == 0)
+        {
+            //GenerateDirections();
+            manager.GenerateFlowFieldDirections();
+            return true;
+        }
+        return false;
+    }
+    public bool GenerateDirections(ref int cellCountAux)
+    {
+        cellCount = 0;
+        for(; cellCountAux < processedCells.Count; cellCountAux++)
+        {
+            if (processedCells[cellCountAux] == null) { continue; }
+            if (destinationSet.Contains(processedCells[cellCountAux]))
+            {
+                processedCells[cellCountAux].SetDirection(Vector3.zero);
+                continue;
+            }
+            /*if (c == DestinationCell)
+            {
+                DestinationCell.SetDirection(Vector3.zero);
+                continue;
+            }*/
+            /*if(c.closeToObstacle)
+            {
+                NavMeshPath path = new NavMeshPath();
+                if (NavMesh.CalculatePath(c.position, new Vector3(manager.Target.position.x, c.position.y, manager.Target.position.z), NavMesh.AllAreas, path))
+                {
+                    if (path.corners.Length > 1)
+                    {
+                        Vector3 navDir = path.corners[1] - c.position;
+                        c.SetDirection(navDir.normalized);
+                    }
+                    else
+                    {
+                        c.SetDirection(Vector3.zero);
+                    }
+                }
+                else
+                {
+                    c.SetDirection(Vector3.zero);
+                }
+                continue;
+            }*/
+            FieldCell lowest = null;
+            //Vector3 dirToDestiny = CellDistance(c, DestinationCell).normalized;
+            //Vector3 dirToDestiny = CellDistance(c, DestinationCell);
+            //Vector3 dirToDestiny = GetDistanceToClosestDestinationCell(processedCells[cellCountAux]);
+            Vector3 dirToDestiny = processedCells[cellCountAux].directionToDestiny;
+            dirToDestiny *= 1f / (Mathf.Abs(dirToDestiny.x) + Mathf.Abs(dirToDestiny.z) + 0.0001f);
+            float bestDot = float.MinValue;
+            Vector3 dirSum = Vector3.zero;
+            foreach (FieldCell.NeighborContext n in processedCells[cellCountAux].Neighbors)
+            {
+                if (n.context == FieldCell.NeighborContext.Context.Upper)
+                {
+                    continue;
+                }
+                if (n.neighborCell.BestCost > processedCells[cellCountAux].BestCost)
+                {
+                    continue;
+                }
+                dirSum += n.neighborDir * (1 + processedCells[cellCountAux].BestCost - n.neighborCell.BestCost);
+                if (lowest == null || n.neighborCell.BestCost < lowest.BestCost)
+                {
+                    lowest = n.neighborCell;
+                    bestDot = Vector3.Dot(dirToDestiny, n.neighborDir);
+                }
+                else if (n.neighborCell.BestCost == lowest.BestCost)
+                {
+                    //Vector3 dirToLowest = CellDistance(c, lowest).normalized;
+                    float dot = Vector3.Dot(dirToDestiny, n.neighborDir);
+                    if (dot > bestDot)
+                    {
+                        lowest = n.neighborCell;
+                        bestDot = dot;
+                    }
+                }
+            }
+            if (lowest == null)
+            {
+
+                processedCells[cellCountAux].SetDirection(Vector3.zero);
+                continue;
+            }
+            //c.SetDirection((new Vector3(lowest.position.x - c.position.x, 0, lowest.position.z - c.position.z).normalized + lowest.direction).normalized);
+            Vector3 dir = CellDistance(processedCells[cellCountAux], lowest).normalized;
+            /*Vector3 dist = DestinationCell.position - c.position;
+            float dot = Vector3.Dot(dir, dist.normalized);
+            if( dot> 0.3f)
+            {
+                dir += dist.normalized *Mathf.Clamp(20/dist.magnitude,0,10);
+                dir = dir.normalized;
+            }*/
+            processedCells[cellCountAux].SetDirection((dirSum * manager.NeighborSumDirectionStrenght + dir * manager.BestDirectionStrenght + dirToDestiny * manager.TargetDirectionStrenght).normalized);
+            cellCount++;
+            if(cellCount >= cellsPerDelayDir)
+            {
+                cellCount = 0;
+                break;
+            }
+        }
+        if(cellCountAux == processedCells.Count)
+        {
+            return true;
+        }
+        return false;
     }
     void GenerateDirections()
     {
@@ -327,32 +465,6 @@ public class FlowField
                     c.SetDirection(Vector3.zero);
                     continue;
                 }
-                /*if (c == DestinationCell)
-                {
-                    DestinationCell.SetDirection(Vector3.zero);
-                    continue;
-                }*/
-                /*if(c.closeToObstacle)
-                {
-                    NavMeshPath path = new NavMeshPath();
-                    if (NavMesh.CalculatePath(c.position, new Vector3(manager.Target.position.x, c.position.y, manager.Target.position.z), NavMesh.AllAreas, path))
-                    {
-                        if (path.corners.Length > 1)
-                        {
-                            Vector3 navDir = path.corners[1] - c.position;
-                            c.SetDirection(navDir.normalized);
-                        }
-                        else
-                        {
-                            c.SetDirection(Vector3.zero);
-                        }
-                    }
-                    else
-                    {
-                        c.SetDirection(Vector3.zero);
-                    }
-                    continue;
-                }*/
                 FieldCell lowest = null;
                 //Vector3 dirToDestiny = CellDistance(c, DestinationCell).normalized;
                 //Vector3 dirToDestiny = CellDistance(c, DestinationCell);
@@ -395,13 +507,6 @@ public class FlowField
                 }
                 //c.SetDirection((new Vector3(lowest.position.x - c.position.x, 0, lowest.position.z - c.position.z).normalized + lowest.direction).normalized);
                 Vector3 dir = CellDistance(c,lowest).normalized;
-                /*Vector3 dist = DestinationCell.position - c.position;
-                float dot = Vector3.Dot(dir, dist.normalized);
-                if( dot> 0.3f)
-                {
-                    dir += dist.normalized *Mathf.Clamp(20/dist.magnitude,0,10);
-                    dir = dir.normalized;
-                }*/
                 c.SetDirection((dirSum*manager.NeighborSumDirectionStrenght + dir*manager.BestDirectionStrenght + dirToDestiny*manager.TargetDirectionStrenght).normalized);
             }
         }
