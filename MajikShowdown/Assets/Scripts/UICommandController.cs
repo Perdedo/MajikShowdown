@@ -537,11 +537,12 @@ public class UICommandController : NetworkBehaviour
     [Command]
     public void CMDHexReceive(int nodeInd, int hexInd, int gridInd)
     {
-        Debug.Log("receive cmd");
         //DraggableNode node = drags[nodeInd];
         DraggableNode node = drags.Find(d => d.acquisitionOrder == nodeInd);
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
         //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
+        Debug.Log(node);
+        Debug.Log(node.GetComponent<SpellNodeInterface>());
         var spell = node.GetComponent<SpellNodeInterface>();
         if (spell == null) return;
 
