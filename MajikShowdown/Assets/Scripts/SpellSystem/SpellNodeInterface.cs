@@ -194,7 +194,7 @@ public class SpellNodeInterface : MonoBehaviour
 
         if (ui.selectedNode == this)
         {
-            description.HideDescription();
+            description.HideAll();
             //ui.spellNodeDescription.HideDescription();
             ui.selectedNode = null;
         }

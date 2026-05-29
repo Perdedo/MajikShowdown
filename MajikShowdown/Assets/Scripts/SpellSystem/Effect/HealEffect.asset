@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HealEffect
   statRandomizer:
     Cooldown:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 3
+      max: 5
     Speed:
       type: 0
       value: 0
@@ -53,7 +53,9 @@ MonoBehaviour:
       value: 0
       min: 0
       max: 0
-  spellDescription: Heal - Effect - Heals a target for 10 health
+  runeName: Heal
+  runeType: 
+  runeDescription: Adds a healing effect to the attached spell.
   color: {r: 0.62892425, g: 0.9528302, b: 0.27416337, a: 1}
   Cooldown: 0
   BaseStats:
@@ -84,7 +86,6 @@ MonoBehaviour:
     grid: {fileID: 0}
     instanceIndex: 0
   ConectionPorts: 020000000200000002000000020000000200000002000000
-  IsInUse: 0
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 21300000, guid: e689988f10eb7514899b0ba846838132, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}

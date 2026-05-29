@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpellType
   statRandomizer:
     Cooldown:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 0.2
+      max: 0.4
     Speed:
       type: 1
       value: 0
@@ -53,7 +53,9 @@ MonoBehaviour:
       value: 10
       min: 10
       max: 15
-  spellDescription: Projectile - Core - Spawns a projectile.
+  runeName: Projectile
+  runeType: 
+  runeDescription: Defines the spell as a single projectile.
   color: {r: 0.8962264, g: 0.47770557, b: 0.47770557, a: 1}
   Cooldown: 3
   BaseStats:
@@ -82,8 +84,8 @@ MonoBehaviour:
     spellEffects: []
     validSpell: 0
     grid: {fileID: 0}
+    instanceIndex: 0
   ConectionPorts: 010000000300000002000000030000000400000003000000
-  IsInUse: 0
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 1550706193, guid: af485cd32186b7a47bde73ccadd56d61, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}

@@ -9,15 +9,60 @@ using System.Collections;
 
 public class SpellNodeDescription : NetworkBehaviour
 {
-    [Header("Description Texts")]
+    [Header("Description Sections")]
+    public GameObject descriptionSection;
+    public GameObject elementSection;
+    public GameObject extraSection;
+    public GameObject triggerSection;
+    public GameObject collisionSection;
+    public GameObject statsSection;
+    public GameObject multipliersSection;
+
+    [Header("Separators")]
+    public GameObject firstSep;
+    public GameObject secondSep;
+    public GameObject thirdSep;
+    public GameObject fourthSep;
+    public GameObject fifthSep;
+    public GameObject sixthSep;
+
+    [Header("Rune Element Sprites")]
+    public Sprite fireIcon;
+    public Sprite iceIcon;
+    public Sprite earthIcon;
+    public Sprite lightningIcon;
+    public Sprite radianceIcon;
+    public Sprite darknessIcon;
+    public Sprite poisonIcon;
+    public Image elementIcon;
+
+    [Header("Rune Informations")]
     public Image cooldownIcon;
     public TextMeshProUGUI nodeCooldown;
+    public TextMeshProUGUI nodeName;
+    public TextMeshProUGUI nodeType;
     public TextMeshProUGUI descText;
-    public TextMeshProUGUI healText;
 
-    [Header("Stats UI")]
+    [Header("Extra")]
+    public TextMeshProUGUI extraText;
+
+    [Header("Trigger")]
+    public TMP_Dropdown spellDropdown;
+    public TMP_Dropdown triggerDropdown;
+
+    [Header("Collision")]
+    public Toggle playersToggle;
+    public Toggle enemiesToggle;
+    public Toggle objectsToggle;
+    public Image playersToggleIcon;
+    public Image enemiesToggleIcon;
+    public Image objectsToggleIcon;
+    public Sprite checkSprite;
+    public Sprite xSprite;
+
+
+    [Header("Rune Stats")]
     public GameObject nodeStatsContainer;
-
     public TextMeshProUGUI nodeSpeedText;
     public Image nodeSpeedImage;
     public TextMeshProUGUI nodeDurationText;
@@ -32,44 +77,35 @@ public class SpellNodeDescription : NetworkBehaviour
     public Image nodeBounceImage;
     public TextMeshProUGUI nodeKnockbackText;
     public Image nodeKnockbackImage;
-    [ShowInInspector]Color activeColor = Color.white;
-    [ShowInInspector]Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 1f);
 
-    [Header("Type Node")]
-    public TextMeshProUGUI multiplierText;
-    public TextMeshProUGUI collisionsText;
-    public Toggle playersToggle;
-    public Toggle enemiesToggle;
-    public Toggle objectsToggle;
-    public Image playersToggleIcon;
-    public Image enemiesToggleIcon;
-    public Image objectsToggleIcon;
-    public Image elementIcon;
+    [Header("Rune Multipliers")]
+    public GameObject nodeMultipliersContainer;
+    public TextMeshProUGUI multiSpeedText;
+    public Image multiSpeedImage;
+    public TextMeshProUGUI multiDurationText;
+    public Image multiDurationImage;
+    public TextMeshProUGUI multiSizeText;
+    public Image multiSizeImage;
+    public TextMeshProUGUI multiDamageText;
+    public Image multiDamageImage;
+    public TextMeshProUGUI multiPiercingText;
+    public Image multiPiercingImage;
+    public TextMeshProUGUI multiBounceText;
+    public Image multiBounceImage;
+    public TextMeshProUGUI multiKnockbackText;
+    public Image multiKnockbackImage;
 
-    public Sprite checkSprite;
-    public Sprite xSprite;
 
-    SpellType currentType;
-
-    [Header("Trigger")]
-    public TMP_Dropdown spellDropdown;
-    public TMP_Dropdown triggerDropdown;
-
-    SpellTrigger currentTrigger;
+    [Header("References and Helpers")]
     public SpellCaster caster;
-    List<Spell> availableSpells = new List<Spell>();
     public HexGrid grid;
+    Color activeColor = Color.white;
+    Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+    SpellType currentType;
+    SpellTrigger currentTrigger;
     SpellNode currentNode;
+    List<Spell> availableSpells = new List<Spell>();
 
-    [Header("Element Sprites")]
-    public Sprite fireIcon;
-    public Sprite iceIcon;
-    public Sprite earthIcon;
-    public Sprite lightningIcon;
-    public Sprite radianceIcon;
-    public Sprite darknessIcon;
-    public Sprite poisonIcon;
-    public Sprite noneIcon;
     public bool network = true;
 
     void Start()
@@ -84,55 +120,197 @@ public class SpellNodeDescription : NetworkBehaviour
     public void ShowDescription(SpellNode node)
     {
         currentNode = node;
-        NodeCoolDownDescription(node);
-        SpellDescription(node);
-        HealDescription(node);
+        //NodeCoolDownDescription(node);
+        UpdateElementIcon();
+        NodeInfosDescription(node);
+        ExtraDescription(node);
+        TriggerDescription(node);
+        CollisionDescription(node);
         StatsDescription(node);
         MultiplierDescription(node);
-        CollisionDescription(node);
-        TriggerDescription(node);
-        UpdateElementColor();
+        CheckNode(node);
     }
 
-    public void HideDescription()
+    void CheckNode(SpellNode node)
     {
-        cooldownIcon.gameObject.SetActive(false);
-        nodeCooldown.text = "";
-        descText.text = "";
-        healText.text = "";
-        nodeStatsContainer.gameObject.SetActive(false);
-        multiplierText.gameObject.SetActive(false);
-        collisionsText.gameObject.SetActive(false);
-        playersToggle.gameObject.SetActive(false);
-        enemiesToggle.gameObject.SetActive(false);
-        objectsToggle.gameObject.SetActive(false);
-        spellDropdown.gameObject.SetActive(false);
-        triggerDropdown.gameObject.SetActive(false);
-        elementIcon.gameObject.SetActive(false);
-    }
-
-    void NodeCoolDownDescription(SpellNode node)
-    {
-        cooldownIcon.gameObject.SetActive(true);
-        nodeCooldown.text = node.Cooldown + "s";
-    }
-
-    void SpellDescription(SpellNode node)
-    {
-        descText.text = node.spellDescription;
-    }
-
-    void HealDescription(SpellNode node)
-    {
-        if (node is HealEffect heal)
+        if (node != null)
         {
-            healText.gameObject.SetActive(true);
-            healText.text = $"Heal: +{FormatStat(heal.HealAmount)}";
+            if (node is SpellType)
+            {
+                CoreDesc();
+            }
+            else if (node is SpellTrigger)
+            {
+                TriggerDesc();
+            }
+            else if (node is SpellEffect)
+            {
+                EffectDesc();
+            }
+            else if (node is SpellTrajectory)
+            {
+                TrajectoryDesc();
+            }
+            else
+            {
+                HideAll();
+            }
+        }
+    }
+
+    void CoreDesc()
+    {
+        //Deactivate non-core sections
+        extraSection.gameObject.SetActive(false);
+        thirdSep.gameObject.SetActive(false);
+        triggerSection.gameObject.SetActive(false);
+        fourthSep.gameObject.SetActive(false);
+
+        //Activate core sections and separators
+        elementSection.gameObject.SetActive(true);
+        firstSep.gameObject.SetActive(true);
+        descriptionSection.gameObject.SetActive(true);
+        secondSep.gameObject.SetActive(true);
+        collisionSection.gameObject.SetActive(true);
+        fifthSep.gameObject.SetActive(true);
+        statsSection.gameObject.SetActive(true);
+        sixthSep.gameObject.SetActive(true);
+        multipliersSection.gameObject.SetActive(true);
+    }
+
+    void EffectDesc()
+    {
+        //Deactivate non-effect sections
+        elementSection.gameObject.SetActive(false);
+        firstSep.gameObject.SetActive(false);
+        triggerSection.gameObject.SetActive(false);
+        fourthSep.gameObject.SetActive(false);
+        collisionSection.gameObject.SetActive(false);
+        fifthSep.gameObject.SetActive(false);
+        sixthSep.gameObject.SetActive(false);
+        multipliersSection.gameObject.SetActive(false);
+
+        //Activate effect sections and separators
+        descriptionSection.gameObject.SetActive(true);
+        secondSep.gameObject.SetActive(true);
+        if(!string.IsNullOrWhiteSpace(extraText.text))
+        {
+            extraSection.gameObject.SetActive(true);
+            thirdSep.gameObject.SetActive(true);
         }
         else
         {
-            healText.text = "";
-            healText.gameObject.SetActive(false);
+            extraSection.gameObject.SetActive(false);
+            thirdSep.gameObject.SetActive(false);
+        }
+        statsSection.gameObject.SetActive(true);
+    }
+
+    void TriggerDesc()
+    {
+        //Deactivate non-trigger sections
+        elementSection.gameObject.SetActive(false);
+        firstSep.gameObject.SetActive(false);
+        extraSection.gameObject.SetActive(false);
+        thirdSep.gameObject.SetActive(false);
+        collisionSection.gameObject.SetActive(false);
+        fourthSep.gameObject.SetActive(false);
+        fifthSep.gameObject.SetActive(false);
+        statsSection.gameObject.SetActive(false);
+        sixthSep.gameObject.SetActive(false);
+        multipliersSection.gameObject.SetActive(false);
+
+        //Activate trigger sections and separators
+        descriptionSection.gameObject.SetActive(true);
+        secondSep.gameObject.SetActive(true);
+        triggerSection.gameObject.SetActive(true);
+    }   
+
+    void TrajectoryDesc()
+    {
+        //Deactivate non-trigger sections
+        elementSection.gameObject.SetActive(false);
+        firstSep.gameObject.SetActive(false);
+        extraSection.gameObject.SetActive(false);
+        thirdSep.gameObject.SetActive(false);
+        triggerSection.gameObject.SetActive(false);
+        fourthSep.gameObject.SetActive(false);
+        collisionSection.gameObject.SetActive(false);
+        fifthSep.gameObject.SetActive(false);
+        sixthSep.gameObject.SetActive(false);
+        multipliersSection.gameObject.SetActive(false);
+
+        //Activate trigger sections and separators
+        descriptionSection.gameObject.SetActive(true);
+        secondSep.gameObject.SetActive(true);
+        statsSection.gameObject.SetActive(true);
+    }
+
+    public void HideAll()
+    {
+        //Deactivate all sections
+        elementSection.gameObject.SetActive(false);
+        descriptionSection.gameObject.SetActive(false);
+        extraSection.gameObject.SetActive(false);
+        triggerSection.gameObject.SetActive(false);
+        collisionSection.gameObject.SetActive(false);
+        statsSection.gameObject.SetActive(false);
+        multipliersSection.gameObject.SetActive(false);
+
+        //Deactivate all separators
+        firstSep.gameObject.SetActive(false);
+        secondSep.gameObject.SetActive(false);
+        thirdSep.gameObject.SetActive(false);
+        fourthSep.gameObject.SetActive(false);
+        fifthSep.gameObject.SetActive(false);
+        sixthSep.gameObject.SetActive(false);
+    }
+
+    public void NodeCoolDownDescription(SpellNode node)
+    {
+        nodeCooldown.text = $"{node.Cooldown:F1}s";
+    }
+
+    void NodeInfosDescription(SpellNode node)
+    {
+        NodeCoolDownDescription(node);
+        nodeName.text = node.runeName;
+        nodeType.text = node.runeType;
+        ChangeTextColor(nodeType, node);
+        descText.text = node.runeDescription;
+    }
+
+    void ChangeTextColor(TextMeshProUGUI text, SpellNode node)
+    {
+        Color color = new Color(1f, 1f, 1f, 1f);
+        if(node is SpellType)
+        {
+            color = Color.red;
+        }
+        else if (node is SpellTrigger)
+        {
+            color = Color.orange;
+        }
+        else if (node is SpellEffect)
+        {
+            color = Color.purple;
+        }
+        else if (node is SpellTrajectory)
+        {
+            color = Color.blue;
+        }
+        text.color = color;
+    }
+
+    void ExtraDescription(SpellNode node)
+    {
+        if (node is HealEffect heal)
+        {
+            extraText.text = $"Heal: +{FormatStat(heal.HealAmount)}";
+        }
+        else
+        {
+            extraText.text = "";
         }
     }
 
@@ -159,6 +337,12 @@ public class SpellNodeDescription : NetworkBehaviour
         image.color = isActive ? activeColor : inactiveColor;
     }
 
+    void UpdateMultiplierVisual(TextMeshProUGUI text, Image image, float value)
+    {
+        text.text = $"x{FormatStat(value)}";
+        image.color = Color.white;
+    }
+
     string FormatStat(float value)
     {
         if (float.IsInfinity(value)) return value > 0 ? "+\u221E" : "-\u221E"; //infinity symbol, positive and negative
@@ -168,35 +352,27 @@ public class SpellNodeDescription : NetworkBehaviour
 
     void MultiplierDescription(SpellNode node)
     {
-        multiplierText.text = "";
         SpellType typeNode = node as SpellType;
         if (typeNode == null)
         {
-            multiplierText.gameObject.SetActive(false);
+            nodeMultipliersContainer.SetActive(false);
             return;
         }
-        multiplierText.gameObject.SetActive(true);
-        multiplierText.text = "Multipliers\n";
+        nodeMultipliersContainer.SetActive(true);
         var m = typeNode.StatMultipliers;
-        CreateMultiplierText("Speed: ", FormatStat(m.Speed));
-        CreateMultiplierText("Duration: ", FormatStat(m.Duration));
-        CreateMultiplierText("Size: ", FormatStat(m.Size));
-        CreateMultiplierText("Damage: ", FormatStat(m.Damage));
-        CreateMultiplierText("Piercing: ", FormatStat(m.Piercing));
-        CreateMultiplierText("Bounce: ", FormatStat(m.Bounce));
-        CreateMultiplierText("Knockback: ", FormatStat(m.Knockback));
-    }
-
-    void CreateMultiplierText(string stat, string value)
-    {
-        multiplierText.text += stat + " x" + value + "\n";
+        UpdateMultiplierVisual(multiSpeedText, multiSpeedImage, m.Speed);
+        UpdateMultiplierVisual(multiDurationText, multiDurationImage, m.Duration);
+        UpdateMultiplierVisual(multiSizeText, multiSizeImage, m.Size);
+        UpdateMultiplierVisual(multiDamageText, multiDamageImage, m.Damage);
+        UpdateMultiplierVisual(multiPiercingText, multiPiercingImage, m.Piercing);
+        UpdateMultiplierVisual(multiBounceText, multiBounceImage, m.Bounce);
+        UpdateMultiplierVisual(multiKnockbackText, multiKnockbackImage, m.Knockback);
     }
 
     void CollisionDescription(SpellNode node)
     {
         currentType = node as SpellType;
         bool isType = currentType != null;
-        collisionsText.gameObject.SetActive(isType);
         playersToggle.gameObject.SetActive(isType);
         enemiesToggle.gameObject.SetActive(isType);
         objectsToggle.gameObject.SetActive(isType);
@@ -314,8 +490,45 @@ public class SpellNodeDescription : NetworkBehaviour
         spellDropdown.AddOptions(names);
     }
 
+    string GetTriggerLabel(SpellTrigger.Triggers trigger)
+    {
+        switch (trigger)
+        {
+            case SpellTrigger.Triggers.OnCast: return "Is Cast";
+            case SpellTrigger.Triggers.OnHit: return "Hits";
+            case SpellTrigger.Triggers.OnDeath: return "Finish";
+            default: return trigger.ToString();
+        }
+    }
+
+    List<string> GetTriggerOptions()
+    {
+        List<string> options = new List<string>();
+        foreach (SpellTrigger.Triggers t in System.Enum.GetValues(typeof(SpellTrigger.Triggers)))
+        {
+            options.Add(GetTriggerLabel(t));
+        }
+        return options;
+    }
 
     void SetupTriggerDropdown()
+    {
+        triggerDropdown.ClearOptions();
+        triggerDropdown.AddOptions(GetTriggerOptions());
+        if (!isServer && network)
+        {
+            CMDSetupTriggerDropdown();
+        }
+    }
+
+    [Command]
+    void CMDSetupTriggerDropdown()
+    {
+        triggerDropdown.ClearOptions();
+        triggerDropdown.AddOptions(GetTriggerOptions());
+    }
+
+    /*void SetupTriggerDropdown()
     {
         triggerDropdown.ClearOptions();
         var enumNames = System.Enum.GetNames(typeof(SpellTrigger.Triggers));
@@ -332,7 +545,7 @@ public class SpellNodeDescription : NetworkBehaviour
         triggerDropdown.ClearOptions();
         var enumNames = System.Enum.GetNames(typeof(SpellTrigger.Triggers));
         triggerDropdown.AddOptions(new List<string>(enumNames));
-    }
+    }*/
     
 
     void SetTriggerSpell(int index)
@@ -340,6 +553,8 @@ public class SpellNodeDescription : NetworkBehaviour
         if (currentTrigger == null) return;
         if (index < 0 || index >= availableSpells.Count) return;
         currentTrigger.TriggeredSpell = availableSpells[index];
+        currentTrigger.UpdateTrigger();
+        NodeCoolDownDescription(currentTrigger);
         if(!isServer && network)
         {
             CMDSetTriggerSpell(index);
@@ -367,6 +582,8 @@ public class SpellNodeDescription : NetworkBehaviour
         if (currentTrigger == null) return;
         if (index < 0 || index >= availableSpells.Count) return;
         currentTrigger.TriggeredSpell = availableSpells[index];
+        currentTrigger.UpdateTrigger();
+        NodeCoolDownDescription(currentTrigger);
     }
 
     [Command]
@@ -419,38 +636,7 @@ public class SpellNodeDescription : NetworkBehaviour
         triggerDropdown.SetValueWithoutNotify(triggerIndex);
     }
 
-    /*public static Color GetElementColor(Elements element)
-    {
-        switch (element)
-        {
-            case Elements.Fire:
-                return Color.red;
-
-            case Elements.Ice:
-                return Color.lightBlue;
-
-            case Elements.Earth:
-                return new Color(0.735f, 0.535f, 0.380f);
-
-            case Elements.Lightning:
-                return Color.yellow;
-
-            case Elements.Radiance:
-                return new Color(1f, 0.985f, 0.61f);
-
-            case Elements.Darkness:
-                return new Color(0.825f, 0.45f, 1f); ;
-
-            case Elements.Poison:
-                return new Color(0.4f, 0.8f, 0.2f);
-
-            case Elements.None:
-            default:
-                return Color.white;
-        }
-    }*/
-
-    void UpdateElementColor()
+    void UpdateElementIcon()
     {
         SpellType typeNode = currentNode as SpellType;
         if (typeNode == null)
@@ -481,7 +667,7 @@ public class SpellNodeDescription : NetworkBehaviour
             case Elements.Darkness: return darknessIcon;
             case Elements.Poison: return poisonIcon;
             case Elements.None:
-            default: return noneIcon;
+            default: return null;
         }
     }
 }
