@@ -27,6 +27,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
     void Start()
     {
+        Debug.LogWarning("Initialize");
         /*if(isLocalPlayer)
         {
             GenerateInventory();
@@ -74,6 +75,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     [Command]
     public void CMDInitialize()
     {
+        Debug.LogWarning("Ini");
         ShowNodeInventory();
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
@@ -154,6 +156,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     }
     public void ShowNodeInventory()
     {
+        Debug.LogWarning("show");
         foreach (var nodeData in caster.runtimeNodes)
         {
             ShowNode(nodeData);
@@ -161,6 +164,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     }
     public void ShowNode(SpellNode nodeData)
     {
+        Debug.LogWarning("SHOW");
         SpellNodeInterface instance = Instantiate(caster.genericNodePrefab, transform);
         instance.Setup(nodeData);
         instance.acquisitionOrder = activeNodes.Count;
