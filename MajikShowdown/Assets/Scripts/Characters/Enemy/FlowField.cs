@@ -178,8 +178,8 @@ public class FlowField
 
     Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
     List<FieldCell> processedCells = new List<FieldCell>();
-    int cellsPerDelayInt = 15000;
-    int cellsPerDelayDir = 15000;
+    int cellsPerDelayInt = 10000;
+    int cellsPerDelayDir = 10000;
     int cellCount = 0;
     float maxSqrDistance = 10000;
 
