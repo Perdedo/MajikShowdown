@@ -89,7 +89,7 @@ public class SpellCollider : NetworkBehaviour
         }
         if (CollisionOnCooldown)
         {
-            CollisionOnCooldown = CollisionTimer.timer(0.1f, Time.deltaTime, true, false);
+            CollisionOnCooldown = CollisionTimer.timer(0.01f, Time.deltaTime, true, false);
         }
         if (!CollisionOnCooldown)
         {
@@ -501,7 +501,8 @@ public class SpellCollider : NetworkBehaviour
             }
             else
             {
-                Debug.LogError("Failed to find normal for bounce, this should not happen. " + data.collider.gameObject.name);
+                //normal = (transform.position - data.collider.transform.position).normalized;
+                Debug.LogWarning("Failed to find normal for bounce, this should not happen. " + data.collider.gameObject.name);
             }
             /* else if (Physics.Raycast(transform.position, previousVelocity.normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
              {
