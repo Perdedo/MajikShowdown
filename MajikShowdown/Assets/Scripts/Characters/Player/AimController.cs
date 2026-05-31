@@ -1,13 +1,15 @@
+using System;
 using UnityEngine;
-
-public class AimController : MonoBehaviour
+using Mirror;
+public class AimController : NetworkBehaviour
 {
     public Transform Follow;
     public Vector3 FollowOffset;
-    public float MaxRayDistance = float.MaxValue;
+    public float MaxRayDistance = 1000;
     public LayerMask HitLayer;
     public bool ShowHit = true;
     RaycastHit Hit;
+    public Vector3 AimPoint;
     Vector2 screenCenter;
     int previousScreenWidth, previousScreenHeight;
     void Awake()
@@ -33,11 +35,13 @@ public class AimController : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(screenCenter);
         if (Physics.Raycast(ray, out Hit, MaxRayDistance, HitLayer))
         {
-            transform.LookAt(Hit.point);
+            //transform.LookAt(Hit.point);
+            AimPoint = Hit.point;
         }
         else
         {
-            transform.LookAt(transform.position + ray.direction);
+            //transform.LookAt(transform.position + ray.direction);
+            AimPoint = transform.position + ray.direction * MaxRayDistance;
         }
         transform.position = Follow.transform.position + FollowOffset;
     }
@@ -46,7 +50,8 @@ public class AimController : MonoBehaviour
         if (ShowHit)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(Hit.point, 0.3f);
+            Gizmos.DrawSphere(AimPoint, 0.3f);
+            //Gizmos.DrawSphere(Hit.point, 0.3f);
         }
         
     }

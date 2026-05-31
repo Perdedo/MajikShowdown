@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Linq;
-
+using Mirror;
 public class HexGrid : MonoBehaviour
 {
     public List<HexGridNode> hexGridNodes = new List<HexGridNode>();
@@ -18,6 +18,7 @@ public class HexGrid : MonoBehaviour
     public Spell spell;
     public Transform hexContainer;
     public Transform nodeContainer;
+    public int instanceIndex;
 
     Vector2Int[] directions =
     {
@@ -67,7 +68,7 @@ public class HexGrid : MonoBehaviour
 
     void GenerateGrid()
     {
-        CreateHex(0, 0, 0);
+        CreateHex(0, 0, 0, true);
 
         for (int layer = 1; layer <= hexGridRadius; layer++)
         {
@@ -84,22 +85,30 @@ public class HexGrid : MonoBehaviour
         {
             for (int step = 0; step < layer; step++)
             {
-                CreateHex(hex.x, hex.y, layer);
+                CreateHex(hex.x, hex.y, layer, false);
                 hex += directions[side];
             }
         }
     }
 
-    void CreateHex(int q, int r, int Layer)
+    void CreateHex(int q, int r, int Layer, bool first)
     {
         Vector2 pos = HexToPixel(q, r);
         RectTransform hex = Instantiate(hexPrefab, hexContainer);
         hex.anchoredPosition = pos;
         HexGridNode node = hex.GetComponent<HexGridNode>();
-        node.SetGrid(this);
         node.index = hexGridNodes.Count;
         node.Layer = Layer;
         hexGridNodes.Add(node);
+        if (first)
+        {
+            node.coreHexGridNode.SetActive(true);
+        }
+        else
+        {
+            node.coreHexGridNode.SetActive(false);
+        }
+        node.SetGrid(this);
     }
 
     Vector2 HexToPixel(int q, int r)
@@ -153,16 +162,16 @@ public class HexGrid : MonoBehaviour
         if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
         {
             spell.validSpell = true;
-            spell.primaryNode = t;
+            spell.coreNode = t;
         }
         else
         {
             spell.validSpell = false;
-            spell.primaryNode = null;
+            spell.coreNode = null;
         }
 
         spell.UpdateSpell();
-
+        caster.commander.ConfigurateSpell(this);
     }
 
     public void ReturnAllNodesToInventory()
@@ -188,11 +197,14 @@ public class HexGrid : MonoBehaviour
             spellNodes[i] = null;
         }
         ConfigurateSpell();
+        caster.commander.ReturnAllNodesToInventory(this);
     }
 
     public void AddNodeToGrid(HexGridNode hex, SpellNodeInterface node)
     {
+        Debug.Log("Add");
         if (node == null) return;
+        if (VerifyNode(node)) return;
         if (caster == null || caster.inventory == null)
         {
             return;
@@ -200,6 +212,7 @@ public class HexGrid : MonoBehaviour
         caster.inventory.RemoveNodeFromInventory(node);
         if (node.hexGridNode != null)
         {
+            Debug.Log("Quebrou aqui");
             node.hexGridNode.VerifyNearbyBreakConections(node);
             node.hexGridNode.spellNode = null;
             node.hexGridNode.SetNodeButtonState(true);
@@ -214,5 +227,23 @@ public class HexGrid : MonoBehaviour
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
         ConfigurateSpell();
+        caster.commander.AddNodeToGrid(hex, node, this);
+    }
+
+    public bool VerifyNode(SpellNodeInterface node)
+    {
+        bool found = false;
+        for(int i = 0; i < spellNodes.Count; i++)
+        {
+            if(spellNodes[i] != null)
+            {
+                if (spellNodes[i].acquisitionOrder == node.acquisitionOrder)
+                {
+                    found = true;
+                    i = spellNodes.Count;
+                }
+            }
+        }
+        return found;
     }
 }

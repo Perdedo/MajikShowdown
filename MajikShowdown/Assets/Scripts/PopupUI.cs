@@ -19,11 +19,14 @@ public class PopupUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         if (popup == null) return;
 
         popupText = popup.GetComponentInChildren<TextMeshProUGUI>();
+
         if (popupText != null)
         {
             popupText.text = text;
         }
-        this.gameObject.GetComponent<Image>().color = Color.white * 1.5f;
+
+        GetComponent<Image>().color = Color.white * 1.5f;
+
         popup.SetActive(false);
     }
 
@@ -58,5 +61,15 @@ public class PopupUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     void HidePopup()
     {
         popup.SetActive(false);
+    }
+
+    public void SetElementText(string newText)
+    {
+        text = newText;
+
+        if (popupText != null)
+        {
+            popupText.text = text;
+        }
     }
 }

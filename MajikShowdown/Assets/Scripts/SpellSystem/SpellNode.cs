@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+//using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
@@ -8,8 +8,10 @@ public abstract class SpellNode : ScriptableObject
     [Header("Define Stat Randomization")]
     public StatRandomizer statRandomizer;
     [Header("Display")]
-    public string spellDescription;
-    public Color color = Color.white;
+    public string runeName;
+    [HideInInspector]public string runeType;
+    [TextArea(3, 10)]public string runeDescription;
+    [HideInInspector] public Color color = Color.white;
     [Header("Final Stats Debug")]
     public float Cooldown = 0;
     public StatTypes BaseStats = new StatTypes();
@@ -19,6 +21,11 @@ public abstract class SpellNode : ScriptableObject
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Spell OwnerSpell;
+    [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
+    [NonSerialized]public bool IsInUse;
+    public SpellNodeInfos spellInfos;
+    public Sprite nodeSymbolSprite;
+    [HideInInspector] public Color symbolColor;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {
@@ -56,9 +63,48 @@ public abstract class SpellNode : ScriptableObject
     }*/
     public virtual void Initialize()
     {
+        SetupNodeVisual();
         RandomizeStats();
+        runeType = GetCategory() == NodeCategory.Type ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }
+
+    /*public virtual void SetupNodeVisual()
+    {
+    }
+
+    protected static Color HexToColor(string hex)
+    {
+        ColorUtility.TryParseHtmlString("#" + hex, out Color color);
+        return color;
+    }*/
+
+    public NodeCategory GetCategory()
+    {
+        if (this is SpellEffect) return NodeCategory.Effect;
+
+        if (this is SpellStat) return NodeCategory.Stat;
+
+        if (this is SpellTrajectory) return NodeCategory.Trajectory;
+
+        if (this is SpellTrigger) return NodeCategory.Trigger;
+
+        if (this is SpellType) return NodeCategory.Type;
+
+        //if (this as SpellCastingPoint) return NodeCategory.CastingPoint;
+
+        return NodeCategory.All;
+    }
+
+    public void SetupNodeVisual()
+    {
+        if (spellInfos == null) return;
+        NodeVisualInfo info = spellInfos.GetInfo(GetCategory());
+        color = info.color;
+        symbolColor = info.internSymbolColor;
+        ConectionPorts = info.connections;
+    }
+
     public virtual List<SpellNode> GetSpellList(List<SpellNode> list)
     {
         list.Add(this);
@@ -79,6 +125,7 @@ public abstract class SpellNode : ScriptableObject
     public virtual void RandomizeStats()
     {
         Cooldown = statRandomizer.Cooldown.GetValue();
+        Debug.Log("cooldown: " + Cooldown);
         BaseStats.Randomize(statRandomizer);
     }
     public static T RandomizeEnum<T>(string[] exceptions = null)
@@ -98,26 +145,29 @@ public abstract class SpellNode : ScriptableObject
 [Serializable]
 public class NodeConection
 {
-    public NodeConection(SpellNode owner)
+    public NodeConection(SpellNode owner, int index)
     {
         ownerNode = owner;
+        this.index = index;
     }
     public SpellNode ownerNode;
+    public SpellNode conectedNode;
     public enum Conections { None, Circle, Triangle, Square, Penta, All }
     public Conections conectionType = Conections.None;
-    public NodeConection conection;
-    public SpellNode conectedNode;
+    public int index;
+    public int inverseIndex => (index + 3) % 6;
+    //public NodeConection conection;
     public bool TryConect(NodeConection c)
     {
-        if (c.conectionType == conectionType && conectionType != Conections.None && c.conectionType != Conections.None)
+        if (c.conectionType == conectionType /*&& conectionType != Conections.None && c.conectionType != Conections.None*/)
         {
-            c.conection = this;
-            conection = c;
+            //c.conection = this;
+            //conection = c;
             c.conectedNode = ownerNode;
             conectedNode = c.ownerNode;
-            if (conection.ownerNode.hierarchy > ownerNode.hierarchy)
+            if (conectedNode.hierarchy > ownerNode.hierarchy)
             {
-                conection.ownerNode.hierarchy = ownerNode.hierarchy + 1;
+                conectedNode.hierarchy = ownerNode.hierarchy + 1;
             }
             return true;
         }
@@ -139,22 +189,15 @@ public class NodeConection
     }
     public void RemoveConection()
     {
-        if (conection != null)
+        if (conectedNode != null)
         {
+            conectedNode.Interface.conections[inverseIndex].conectedNode = null;
             conectedNode = null;
-            conection.conectedNode = null;
-            conection.conection = null;
-            conection = null;
+            //conection.conectedNode = null;
+            //conection.conection = null;
+            //conection = null;
         }
 
-    }
-    public SpellNode GetNode()
-    {
-        if (conection == null)
-        {
-            return null;
-        }
-        return conection.ownerNode;
     }
 }
 

@@ -45,6 +45,14 @@ public class CharacterDamageHandler : NetworkBehaviour
 
     public virtual void Die()
     {
+        if(GameManager.Instance.hordeController.enemies.Contains(this.gameObject))
+        {
+            GameManager.Instance.hordeController.enemies.Remove(this.gameObject);
+            if(!GameManager.Instance.hordeController.inHordeTime)
+            {
+                GameManager.Instance.hordeController.CheckEnemyCount();
+            }
+        }
         if(network)
         {
             NetworkServer.Destroy(gameObject);

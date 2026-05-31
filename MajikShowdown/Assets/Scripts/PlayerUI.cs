@@ -1,9 +1,11 @@
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerUI : NetworkBehaviour
@@ -12,6 +14,7 @@ public class PlayerUI : NetworkBehaviour
     public GameObject spellPanel;
     public GameObject createSpellPanel;
     public GameObject editSpellPanel;
+    public GameObject pausePanel;
     public Spell spellToEquip;
     public Button[] equipSlotButtons;
     public TMP_Text[] equipSlotTexts;
@@ -24,6 +27,9 @@ public class PlayerUI : NetworkBehaviour
     public GameObject spellsInventoryPageButton;
     public GameObject runesInventoryPageButton;
     public TextMeshProUGUI[] spellStats;
+    public Slider healthSlider;
+    public Image[] cooldownFills;
+    public TMP_Text[] cooldownTexts;
 
     [HideInInspector]
     public ConfigData data;
@@ -33,6 +39,7 @@ public class PlayerUI : NetworkBehaviour
     public SpellNodeInterface selectedNode;
     public SpellInventoryUI inventory;
     public Player myPlayer;
+    PlayerDamageHandler damageHandler;
 
     [Header("Network")]
     public bool network = true;
@@ -46,42 +53,69 @@ public class PlayerUI : NetworkBehaviour
         {
             gameObject.SetActive(false);
         }
+        if(spellPanel != null)
+        {
+            spellPanel.SetActive(false);
+        }
         InitializeStatsUI();
+        damageHandler = myPlayer.GetComponent<PlayerDamageHandler>();
+        healthSlider.maxValue = damageHandler.MaxHealth;
+        healthSlider.value = damageHandler.Health;
     }
 
-    public void Update()
+    private void Update()
     {
-        if(!isLocalPlayer && network)
+        if (!isLocalPlayer && network) return;
+        UpdateHealthUI();
+        UpdateCooldownUI();
+    }
+
+    void UpdateCooldownUI()
+    {
+        for (int i = 0; i < caster.equippedSpells.Length; i++)
         {
-            return;
-        }
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            if (spellPanel.activeSelf)
+            Spell spell = caster.equippedSpells[i];
+
+            if (spell == null)
             {
-                if (editSpellPanel.activeSelf)
-                {
-                    CloseEditSpellHUD();
-                }
-                else
-                {
-                    spellPanel.SetActive(false);
-                    myPlayer.input.ActivateInput();
-                    myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
-                    caster.canCast = true;
-                }
+                cooldownFills[i].fillAmount = 0;
+                cooldownTexts[i].text = "";
+                continue;
+            }
+
+            if (spell.onCooldown)
+            {
+                float remaining = spell.SpellCooldown - spell.cooldownTimer.Timestamp;
+                remaining = Mathf.Max(remaining, 0);
+                cooldownFills[i].fillAmount = remaining / spell.SpellCooldown;
+                cooldownTexts[i].text = remaining.ToString("0.0") + "s";
             }
             else
             {
-                spellPanel.SetActive(true);
-                ActivateSpellsInventoryPage();
-                Debug.Log(myPlayer);
-                Debug.Log(myPlayer.input);
-                myPlayer.input.DeactivateInput();
-                myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
-                caster.canCast = false;
+                cooldownFills[i].fillAmount = 0;
+                cooldownTexts[i].text = "Ok";
             }
         }
+    }
+
+    void UpdateHealthUI()
+    {
+        if (damageHandler == null) return;
+
+        healthSlider.maxValue = damageHandler.MaxHealth;
+        healthSlider.value = damageHandler.Health;
+    }
+
+    public void LeavePauseButton()
+    {
+        if (!isLocalPlayer && network)
+        {
+            return;
+        }
+        pausePanel.SetActive(false);
+        myPlayer.input.ActivateInput();
+        myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+        caster.canCast = true;
     }
 
     void InitializeStatsUI()
@@ -186,13 +220,13 @@ public class PlayerUI : NetworkBehaviour
         if (!isLocalPlayer && network) return;
         if (activeSpell == null) return;
         spellCooldownText.text = FormatStat(activeSpell.SpellCooldown) + "s";
-        if (activeSpell.primaryNode == null)
+        if (activeSpell.coreNode == null)
         {
             InitializeStatsUI();
             return;
         }
 
-        var stats = activeSpell.primaryNode.FinalStats;
+        var stats = activeSpell.coreNode.FinalStats;
         spellStats[0].text = FormatStat(stats.Speed);
         spellStats[1].text = FormatStat(stats.Duration) + "s";
         spellStats[2].text = FormatStat(stats.Size);
@@ -210,7 +244,7 @@ public class PlayerUI : NetworkBehaviour
         }
         editSpellPanel.gameObject.SetActive(false);
         spellNameInput.onValueChanged.RemoveAllListeners();
-        spellNodeDescription.HideDescription();
+        spellNodeDescription.HideAll();
 
         if (activeSpell != null)
             activeSpell.OnSpellUpdated -= RefreshSpellInfo;
@@ -229,10 +263,42 @@ public class PlayerUI : NetworkBehaviour
             return;
         }
         spellToEquip = spell;
+        if(!isServer && network)
+        {
+            StartCoroutine(WaitStartEquipSpell(spell));
+        }
+    }
+
+    IEnumerator WaitStartEquipSpell(Spell spell)
+    {
+        Debug.Log(spell.instanceIndex + "bound spell");
+        yield return new WaitUntil(() => caster.spells.Exists(s => s.instanceIndex == spell.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDStartEquipSpell(spell.instanceIndex);
+    }
+
+    public void UnequipSpell(Spell spell)
+    {
+        for (int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            if (caster.equippedSpells[i] == spell)
+            {
+                caster.equippedSpells[i] = null;
+                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+            }
+        }
+    }
+
+    [Command]
+    public void CMDStartEquipSpell(int index)
+    {
+        Debug.Log(index + "spell equip");
+        spellToEquip = caster.spells.Find(s => s.instanceIndex == index);
     }
 
     public void EquipSpellToSlot(int index)
     {
+        Debug.Log(spellToEquip.spellNodes.Count);
         if (!isLocalPlayer && network)
         {
             return;
@@ -255,7 +321,10 @@ public class PlayerUI : NetworkBehaviour
 
         caster.equippedSpells[index] = spellToEquip;
         equipSlotTexts[index].text = spellToEquip.spellName;
-
+        if(!isServer && network)
+        {
+            CMDEquipSpell(index);
+        }
         spellToEquip = null;
 
         if (inventory != null)
@@ -267,17 +336,31 @@ public class PlayerUI : NetworkBehaviour
     [Command]
     public void CMDEquipSpell(int index)
     {
+        Debug.Log(spellToEquip.spellNodes.Count);
+        if (spellToEquip == null) return;
+        if (caster.equippedSpells[index] == spellToEquip)
+        {
+            spellToEquip = null;
+            return;
+        }
+
         for (int i = 0; i < caster.equippedSpells.Length; i++)
         {
             if (caster.equippedSpells[i] == spellToEquip)
             {
                 caster.equippedSpells[i] = null;
+                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
             }
         }
 
         caster.equippedSpells[index] = spellToEquip;
-
+        equipSlotTexts[index].text = spellToEquip.spellName;
         spellToEquip = null;
+
+        if (inventory != null)
+        {
+            inventory.DeselectAllCards();
+        }
     }
 
     public void OnSpellNameInputSelected(string currentText)
@@ -334,5 +417,79 @@ public class PlayerUI : NetworkBehaviour
 
         spellsInventoryPageButton.GetComponent<Image>().color = Color.white;
         spellPage.SetActive(true);
+    }
+
+    void SetGameplayInput(bool state)
+    {
+        if (state)
+        {
+            myPlayer.input.actions["Move"].Enable();
+            myPlayer.input.actions["Jump"].Enable();
+            myPlayer.input.actions["Dash"].Enable();
+            myPlayer.input.actions["CastFirstSpell"].Enable();
+            myPlayer.input.actions["CastSecondSpell"].Enable();
+            myPlayer.input.actions["CastThirdSpell"].Enable();
+            myPlayer.input.actions["CastFourthSpell"].Enable();
+        }
+        else
+        {
+            myPlayer.input.actions["Move"].Disable();
+            myPlayer.input.actions["Jump"].Disable();
+            myPlayer.input.actions["Dash"].Disable();
+            myPlayer.input.actions["CastFirstSpell"].Disable();
+            myPlayer.input.actions["CastSecondSpell"].Disable();
+            myPlayer.input.actions["CastThirdSpell"].Disable();
+            myPlayer.input.actions["CastFourthSpell"].Disable();
+        }
+    }
+
+    public void PauseInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+
+        if (pausePanel.activeSelf && !spellPanel.activeSelf)
+        {
+            pausePanel.SetActive(false);
+            SetGameplayInput(true);
+            myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+            caster.canCast = true;
+        }
+        else if (!pausePanel.activeSelf && !spellPanel.activeSelf)
+        {
+            pausePanel.SetActive(true);
+            SetGameplayInput(false);
+            myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
+            caster.canCast = false;
+        }
+    }
+
+    public void OpenSpellPanelInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+
+        if (spellPanel.activeSelf && !pausePanel.activeSelf)
+        {
+            if (editSpellPanel.activeSelf)
+            {
+                CloseEditSpellHUD();
+            }
+            else
+            {
+                spellPanel.SetActive(false);
+                SetGameplayInput(true);
+                myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+                caster.canCast = true;
+            }
+        }
+        else if (!spellPanel.activeSelf && !pausePanel.activeSelf)
+        {
+            spellPanel.SetActive(true);
+            ActivateSpellsInventoryPage();
+            SetGameplayInput(false);
+            myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
+            caster.canCast = false;
+        }
     }
 }

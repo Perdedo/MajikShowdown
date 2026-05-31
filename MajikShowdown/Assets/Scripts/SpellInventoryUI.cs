@@ -1,4 +1,5 @@
 using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,8 +26,11 @@ public class SpellInventoryUI : NetworkBehaviour
             DeselectAllCards();
             Spell newSpell = new Spell(caster);
             newSpell.spellName = GenerateSpellName();
+            newSpell.instanceIndex = caster.spells.Count;
             HexGrid newGrid = Instantiate(gridPrefab, gridParent);
             newGrid.caster = caster;
+            newGrid.instanceIndex = caster.spells.Count;
+            caster.commander.grids.Add(newGrid);
             newGrid.SetSpell(newSpell);
             newGrid.Initialize();
             newGrid.gameObject.SetActive(false);
@@ -37,7 +41,45 @@ public class SpellInventoryUI : NetworkBehaviour
             caster.spells.Add(newSpell);
             CreateSpellCard(newSpell);
             GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
+            if(!isServer && network)
+            {
+                if(NetworkClient.ready)
+                {
+                    CMDCreateNewSpell();
+                }
+                else
+                {
+                    StartCoroutine(WaitCreateNewSpell());
+                }
+            }
         }
+    }
+    IEnumerator WaitCreateNewSpell()
+    {
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDCreateNewSpell();
+    }
+    [Command]
+    public void CMDCreateNewSpell()
+    {
+        DeselectAllCards();
+        Spell newSpell = new Spell(caster);
+        newSpell.spellName = GenerateSpellName();
+        newSpell.instanceIndex = caster.spells.Count;
+        HexGrid newGrid = Instantiate(gridPrefab, gridParent);
+        newGrid.caster = caster;
+        newGrid.instanceIndex = caster.spells.Count;
+        caster.commander.grids.Add(newGrid);
+        newGrid.SetSpell(newSpell);
+        newGrid.Initialize();
+        newGrid.gameObject.SetActive(false);
+        newSpell.grid = newGrid;
+        Debug.Log(caster);
+        Debug.Log(caster.spells);
+        Debug.Log(newSpell);
+        caster.spells.Add(newSpell);
+        CreateSpellCard(newSpell);
+        GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
     }
 
     string GenerateSpellName()
@@ -50,7 +92,10 @@ public class SpellInventoryUI : NetworkBehaviour
         GameObject cardObj = Instantiate(spellCardPrefab, content);
         cardObj.transform.SetSiblingIndex(createSpellCard.GetSiblingIndex());
         SpellCardUI cardUI = cardObj.GetComponent<SpellCardUI>();
+        cardUI.spellInventory = this;
         cardUI.Setup(spell);
+        cardUI.instanceIndex = caster.commander.cards.Count;
+        caster.commander.cards.Add(cardUI);
         createSpellCard.SetAsLastSibling();
     }
 

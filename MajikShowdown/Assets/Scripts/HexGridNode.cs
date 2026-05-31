@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -14,17 +15,27 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public HexGrid grid;
     public int index;
     public int Layer;
+    public GameObject coreHexGridNode;
 
     private void Awake()
     {
         rect = GetComponent<RectTransform>();
         button = GetComponent<Button>();
         this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        coreHexGridNode.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
     }
     public void SetGrid(HexGrid Grid)
     {
         grid = Grid;
+        grid.caster.commander.InitializeHex(this);
+        //StartCoroutine(WaitInitialize());
     }
+
+    /*IEnumerator WaitInitialize()
+    {
+        yield return new WaitUntil(() => grid.caster.commander.grids.Contains(grid));
+        grid.caster.commander.InitializeHex(this);
+    }*/
 
     public bool CanReceive(DraggableNode node)
     {
@@ -43,18 +54,42 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         node.transform.localPosition = Vector3.zero;
         node.SetOriginZone(this);
         ConnectNode(spell);
+        Debug.Log("Receive");
+        grid.caster.commander.HexReceive(node,this);
     }
 
     public void Release(DraggableNode node)
     {
         if (spellNode == null) return;
-
         VerifyNearbyBreakConections(spellNode);
         grid.spellNodes[index] = null;
         spellNode.hexGridNode = null;
         spellNode = null;
         SetNodeButtonState(true);
         grid.ConfigurateSpell();
+        if (node.isClone && node.inventorySource != null)
+        {
+            var inventory = node.inventorySource.OriginZone as NodeInventory;
+            var sourceInterface = node.inventorySource.GetComponent<SpellNodeInterface>();
+            var cloneInterface = node.GetComponent<SpellNodeInterface>();
+
+            if (inventory != null && cloneInterface != null)
+            {
+                int cloneIndex = inventory.GetNodeIndex(cloneInterface);
+                inventory.RemoveNodeFromInventory(cloneInterface);
+                Destroy(node.gameObject);
+
+                if (sourceInterface != null)
+                {
+                    sourceInterface.Node.IsInUse = false;
+                    sourceInterface.usedNodeImg.SetActive(false);
+                    inventory.Receive(node.inventorySource);
+                    inventory.InsertNodeAt(sourceInterface, cloneIndex);
+                }
+            }
+        }
+
+        grid.caster.commander.HexRelease(this, node);
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -67,7 +102,10 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
 
     public void SetNodeButtonState(bool state)
     {
-        button.interactable = state;
+        if (button != null)
+        {
+            button.interactable = state;
+        }
     }
 
     public void AddNeighbours(HexGridNode node, int index)
@@ -87,6 +125,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public void ConnectNode(SpellNodeInterface node)
     {
         if (node == null) return;
+        Debug.Log("Connect");
         MakeNearbyConnections(node);
         grid.AddNodeToGrid(this, node);
         spellNode = node;
@@ -124,6 +163,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         {
             return true;
         }*/
+        Debug.Log("MakeCon");
         for (int i  = 0; i < neighbours.Length; i++)
         {
             if (neighbours[i] != null && neighbours[i].spellNode != null && neighbours[i].spellNode != spell)
