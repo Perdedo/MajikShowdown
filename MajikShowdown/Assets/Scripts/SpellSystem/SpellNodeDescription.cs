@@ -133,138 +133,86 @@ public class SpellNodeDescription : NetworkBehaviour
 
     void CheckNode(SpellNode node)
     {
-        if (node != null)
-        {
-            if (node is SpellType)
-            {
-                CoreDesc();
-            }
-            else if (node is SpellTrigger)
-            {
-                TriggerDesc();
-            }
-            else if (node is SpellEffect)
-            {
-                EffectDesc();
-            }
-            else if (node is SpellTrajectory)
-            {
-                TrajectoryDesc();
-            }
-            else
-            {
-                HideAll();
-            }
-        }
+        if (node is SpellType) CoreDesc();
+        else if (node is SpellTrigger) TriggerDesc();
+        else if (node is SpellEffect) EffectDesc();
+        else if (node is SpellTrajectory) TrajectoryDesc();
+        else if (node is SpellStat) StatDesc();
+        else HideAll();
     }
 
-    void CoreDesc()
+    private struct SectionConfig
     {
-        //Deactivate non-core sections
-        extraSection.gameObject.SetActive(false);
-        thirdSep.gameObject.SetActive(false);
-        triggerSection.gameObject.SetActive(false);
-        fourthSep.gameObject.SetActive(false);
-
-        //Activate core sections and separators
-        elementSection.gameObject.SetActive(true);
-        firstSep.gameObject.SetActive(true);
-        descriptionSection.gameObject.SetActive(true);
-        secondSep.gameObject.SetActive(true);
-        collisionSection.gameObject.SetActive(true);
-        fifthSep.gameObject.SetActive(true);
-        statsSection.gameObject.SetActive(true);
-        sixthSep.gameObject.SetActive(true);
-        multipliersSection.gameObject.SetActive(true);
+        public bool Element, Description, Extra, Trigger, Collision, Stats, Multipliers;
+        public bool Sep1, Sep2, Sep3, Sep4, Sep5, Sep6;
     }
+
+    void ApplyConfig(SectionConfig c)
+    {
+        elementSection.gameObject.SetActive(c.Element);
+        descriptionSection.gameObject.SetActive(c.Description);
+        extraSection.gameObject.SetActive(c.Extra);
+        triggerSection.gameObject.SetActive(c.Trigger);
+        collisionSection.gameObject.SetActive(c.Collision);
+        statsSection.gameObject.SetActive(c.Stats);
+        multipliersSection.gameObject.SetActive(c.Multipliers);
+
+        firstSep.gameObject.SetActive(c.Sep1);
+        secondSep.gameObject.SetActive(c.Sep2);
+        thirdSep.gameObject.SetActive(c.Sep3);
+        fourthSep.gameObject.SetActive(c.Sep4);
+        fifthSep.gameObject.SetActive(c.Sep5);
+        sixthSep.gameObject.SetActive(c.Sep6);
+    }
+
+    void CoreDesc() => ApplyConfig(new SectionConfig
+    {
+        Element = true,
+        Description = true,
+        Collision = true,
+        Stats = true,
+        Multipliers = true,
+        Sep1 = true,
+        Sep2 = true,
+        Sep5 = true,
+        Sep6 = true
+    });
 
     void EffectDesc()
     {
-        //Deactivate non-effect sections
-        elementSection.gameObject.SetActive(false);
-        firstSep.gameObject.SetActive(false);
-        triggerSection.gameObject.SetActive(false);
-        fourthSep.gameObject.SetActive(false);
-        collisionSection.gameObject.SetActive(false);
-        fifthSep.gameObject.SetActive(false);
-        sixthSep.gameObject.SetActive(false);
-        multipliersSection.gameObject.SetActive(false);
-
-        //Activate effect sections and separators
-        descriptionSection.gameObject.SetActive(true);
-        secondSep.gameObject.SetActive(true);
-        if(!string.IsNullOrWhiteSpace(extraText.text))
+        bool hasExtra = !string.IsNullOrWhiteSpace(extraText.text);
+        ApplyConfig(new SectionConfig
         {
-            extraSection.gameObject.SetActive(true);
-            thirdSep.gameObject.SetActive(true);
-        }
-        else
-        {
-            extraSection.gameObject.SetActive(false);
-            thirdSep.gameObject.SetActive(false);
-        }
-        statsSection.gameObject.SetActive(true);
+            Description = true,
+            Stats = true,
+            Extra = hasExtra,
+            Sep2 = true,
+            Sep3 = hasExtra
+        });
     }
 
-    void TriggerDesc()
+    void StatDesc() => ApplyConfig(new SectionConfig
     {
-        //Deactivate non-trigger sections
-        elementSection.gameObject.SetActive(false);
-        firstSep.gameObject.SetActive(false);
-        extraSection.gameObject.SetActive(false);
-        thirdSep.gameObject.SetActive(false);
-        collisionSection.gameObject.SetActive(false);
-        fourthSep.gameObject.SetActive(false);
-        fifthSep.gameObject.SetActive(false);
-        statsSection.gameObject.SetActive(false);
-        sixthSep.gameObject.SetActive(false);
-        multipliersSection.gameObject.SetActive(false);
+        Description = true,
+        Stats = true,
+        Sep2 = true
+    });
 
-        //Activate trigger sections and separators
-        descriptionSection.gameObject.SetActive(true);
-        secondSep.gameObject.SetActive(true);
-        triggerSection.gameObject.SetActive(true);
-    }   
-
-    void TrajectoryDesc()
+    void TriggerDesc() => ApplyConfig(new SectionConfig
     {
-        //Deactivate non-trigger sections
-        elementSection.gameObject.SetActive(false);
-        firstSep.gameObject.SetActive(false);
-        extraSection.gameObject.SetActive(false);
-        thirdSep.gameObject.SetActive(false);
-        triggerSection.gameObject.SetActive(false);
-        fourthSep.gameObject.SetActive(false);
-        collisionSection.gameObject.SetActive(false);
-        fifthSep.gameObject.SetActive(false);
-        sixthSep.gameObject.SetActive(false);
-        multipliersSection.gameObject.SetActive(false);
+        Description = true,
+        Trigger = true,
+        Sep2 = true
+    });
 
-        //Activate trigger sections and separators
-        descriptionSection.gameObject.SetActive(true);
-        secondSep.gameObject.SetActive(true);
-        statsSection.gameObject.SetActive(true);
-    }
-
-    public void HideAll()
+    void TrajectoryDesc() => ApplyConfig(new SectionConfig
     {
-        //Deactivate all sections
-        elementSection.gameObject.SetActive(false);
-        descriptionSection.gameObject.SetActive(false);
-        extraSection.gameObject.SetActive(false);
-        triggerSection.gameObject.SetActive(false);
-        collisionSection.gameObject.SetActive(false);
-        statsSection.gameObject.SetActive(false);
-        multipliersSection.gameObject.SetActive(false);
+        Description = true,
+        Stats = true,
+        Sep2 = true
+    });
 
-        //Deactivate all separators
-        firstSep.gameObject.SetActive(false);
-        secondSep.gameObject.SetActive(false);
-        thirdSep.gameObject.SetActive(false);
-        fourthSep.gameObject.SetActive(false);
-        fifthSep.gameObject.SetActive(false);
-        sixthSep.gameObject.SetActive(false);
-    }
+    public void HideAll() => ApplyConfig(new SectionConfig());
 
     public void NodeCoolDownDescription(SpellNode node)
     {
