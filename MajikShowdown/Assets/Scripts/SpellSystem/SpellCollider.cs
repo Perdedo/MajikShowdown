@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using Mirror.Examples.Billiards;
@@ -38,6 +37,12 @@ public class SpellCollider : NetworkBehaviour
         public Vector3 Forward;
         public Vector3 Right;
         public Vector3 Up;
+        public void Reset()
+        {
+            Forward = Vector3.zero;
+            Right = Vector3.zero;
+            Up = Vector3.zero;
+        }
     }
     bool expanding = true;
     float currentSize = 0;
@@ -58,7 +63,6 @@ public class SpellCollider : NetworkBehaviour
         //Invoke("Die", stats.Duration);
         pierceCount = stats.Piercing;
         bounceCount = stats.Bounce;
-        //OnHit.AddListener(() => { if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown()); });
         if (primarySpell)
         {
             InitiateTriggeredSpells();
@@ -554,6 +558,34 @@ public class SpellCollider : NetworkBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    public void ResetCollider()
+    {
+        OwnerSpell = null;
+        pierceCount = 0;
+        bounceCount = 0;
+        HitOnCooldown = false;
+        CollisionOnCooldown = false;
+        hitCounter = 0;
+        LifeTime = 0;
+        triggerInfos.Clear();
+        previousColisions.Clear();
+        inverseBounceMultiplier = 1;
+        UseAcceleration = false;
+        HitTimer.ResetTimer();
+        CollisionTimer.ResetTimer();
+        previousVelocity = Vector3.zero;
+        OnCast.RemoveAllListeners();
+        OnHit.RemoveAllListeners();
+        OnDeath.RemoveAllListeners();
+        primarySpell = false;
+        SpawnTransform = null;
+        SpawnPoint = Vector3.zero;
+        expanding = true;
+        currentSize = 0;
+        velocityMagnitude = 0;
+        velocityDir = Vector3.zero;
+        TrajectoryTransform.Reset();
     }
 }
 /*public struct CollisionData
