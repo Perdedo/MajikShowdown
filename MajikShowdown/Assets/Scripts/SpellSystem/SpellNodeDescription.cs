@@ -5,6 +5,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using Mirror;
 using System.Collections;
+using System;
 //using UnityEditor.Experimental.GraphView;
 
 public class SpellNodeDescription : NetworkBehaviour
@@ -44,7 +45,24 @@ public class SpellNodeDescription : NetworkBehaviour
     public TextMeshProUGUI descText;
 
     [Header("Extra")]
-    public TextMeshProUGUI extraText;
+    public ExtraSlot[] extraSlots;
+    Vector2[] oneExtra =
+    {
+        new Vector2(0, -25)
+    };
+
+    Vector2[] twoExtras =
+    {
+    new Vector2(-75, -25),
+    new Vector2(75, -25)
+    };
+
+    Vector2[] threeExtras =
+    {
+    new Vector2(-125, -25),
+    new Vector2(0, -25),
+    new Vector2(125, -25)
+    };
 
     [Header("Trigger")]
     public TMP_Dropdown spellDropdown;
@@ -120,7 +138,6 @@ public class SpellNodeDescription : NetworkBehaviour
     public void ShowDescription(SpellNode node)
     {
         currentNode = node;
-        //NodeCoolDownDescription(node);
         UpdateElementIcon();
         NodeInfosDescription(node);
         ExtraDescription(node);
@@ -129,6 +146,7 @@ public class SpellNodeDescription : NetworkBehaviour
         StatsDescription(node);
         MultiplierDescription(node);
         CheckNode(node);
+        UpdateExtraSection(node);
     }
 
     void CheckNode(SpellNode node)
@@ -139,6 +157,22 @@ public class SpellNodeDescription : NetworkBehaviour
         else if (node is SpellTrajectory) TrajectoryDesc();
         else if (node is SpellStat) StatDesc();
         else HideAll();
+    }
+
+    void UpdateExtraSection(SpellNode node)
+    {
+        bool hasExtra = NodeHasExtras(node);
+
+        extraSection.SetActive(hasExtra);
+
+        if (hasExtra)
+        {
+            thirdSep.SetActive(true);
+        }
+        else
+        {
+            thirdSep.SetActive(false);
+        }
     }
 
     private struct SectionConfig
@@ -180,16 +214,14 @@ public class SpellNodeDescription : NetworkBehaviour
 
     void EffectDesc()
     {
-        bool hasExtra = !string.IsNullOrWhiteSpace(extraText.text);
         ApplyConfig(new SectionConfig
         {
             Description = true,
             Stats = true,
-            Extra = hasExtra,
             Sep2 = true,
-            Sep3 = hasExtra
         });
     }
+
 
     void StatDesc() => ApplyConfig(new SectionConfig
     {
@@ -213,6 +245,19 @@ public class SpellNodeDescription : NetworkBehaviour
     });
 
     public void HideAll() => ApplyConfig(new SectionConfig());
+
+    bool NodeHasExtras(SpellNode node)
+    {
+        var fields = node.GetType().GetFields();
+
+        foreach (var field in fields)
+        {
+            if (Attribute.GetCustomAttribute(field, typeof(AddExtraVar)) != null)
+                return true;
+        }
+
+        return false;
+    }
 
     public void NodeCoolDownDescription(SpellNode node)
     {
@@ -252,14 +297,45 @@ public class SpellNodeDescription : NetworkBehaviour
 
     void ExtraDescription(SpellNode node)
     {
-        if (node is HealEffect heal)
+        foreach (var slot in extraSlots)
         {
-            extraText.text = $"Heal: +{FormatStat(heal.HealAmount)}";
+            slot.gameObject.SetActive(false);
         }
-        else
+        var extras = new List<(AddExtraVar attr, SpellNode.ExtraVar extra)>();
+        foreach (var field in node.GetType().GetFields())
         {
-            extraText.text = "";
+            var extraAttr = (AddExtraVar)Attribute.GetCustomAttribute(field, typeof(AddExtraVar));
+            if (extraAttr == null) continue;
+            SpellNode.ExtraVar extra = (SpellNode.ExtraVar)field.GetValue(node);
+
+            extras.Add((extraAttr, extra));
         }
+        Vector2[] positions = GetExtraPositions(extras.Count);
+        for (int i = 0; i < extras.Count && i < extraSlots.Length; i++)
+        {
+            ExtraSlot slot = extraSlots[i];
+            slot.gameObject.SetActive(true);
+            RectTransform rect = slot.GetComponent<RectTransform>();
+            rect.anchoredPosition = positions[i];
+            slot.nameText.text = extras[i].attr.DisplayName;
+            slot.valueText.text = FormatStat(extras[i].extra.Value);
+            slot.icon.sprite = extras[i].extra.Icon;
+            PopupUI popup = slot.icon.GetComponent<PopupUI>();
+            if (popup != null)
+            {
+                popup.SetElementText(extras[i].attr.DisplayName);
+            }
+        }
+    }
+
+    Vector2[] GetExtraPositions(int count)
+    {
+        return count switch
+        {
+            1 => oneExtra,
+            2 => twoExtras,
+            _ => threeExtras
+        };
     }
 
     void StatsDescription(SpellNode node)

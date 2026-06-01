@@ -484,9 +484,16 @@ public class PlayerUI : NetworkBehaviour
                 caster.canCast = true;
             }
         }
-        else if (!spellPanel.activeSelf && !pausePanel.activeSelf && GameManager.Instance.hordeController.inPause)
+        else if (!spellPanel.activeSelf && !pausePanel.activeSelf)
         {
-            GameManager.Instance.hordeController.timerTxt.gameObject.SetActive(false);
+            if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.inPause)
+            {
+                return;
+            }
+            if(GameManager.Instance.hordeController != null)
+            {
+                GameManager.Instance.hordeController.timerTxt.gameObject.SetActive(false);
+            }
             spellPanel.SetActive(true);
             ActivateSpellsInventoryPage();
             SetGameplayInput(false);

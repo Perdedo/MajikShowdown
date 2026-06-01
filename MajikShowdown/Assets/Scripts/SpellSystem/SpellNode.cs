@@ -61,6 +61,14 @@ public abstract class SpellNode : ScriptableObject
         ConectedNodes[Index] = null;
         conections[Index].RemoveConection();
     }*/
+    [Serializable]
+    public struct ExtraVar
+    {
+        [HideInInspector] public float Value;
+        public SimpleFloat Randomizer;
+        public Sprite Icon;
+    }
+
     public virtual void Initialize()
     {
         SetupNodeVisual();
@@ -127,7 +135,24 @@ public abstract class SpellNode : ScriptableObject
         Cooldown = statRandomizer.Cooldown.GetValue();
         Debug.Log("cooldown: " + Cooldown);
         BaseStats.Randomize(statRandomizer);
+        RandomizeExtras();
     }
+
+    void RandomizeExtras()
+    {
+        var fields = GetType().GetFields();
+        foreach (var field in fields)
+        {
+            if (field.FieldType != typeof(ExtraVar)) continue;
+            ExtraVar extra = (ExtraVar)field.GetValue(this);
+            if (extra.Randomizer != null)
+            {
+                extra.Value = extra.Randomizer.GetValue();
+                field.SetValue(this, extra);
+            }
+        }
+    }
+
     public static T RandomizeEnum<T>(string[] exceptions = null)
     {
         List<string> validNames = new List<string>(Enum.GetNames(typeof(T)));
