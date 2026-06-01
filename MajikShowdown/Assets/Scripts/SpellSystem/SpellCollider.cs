@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using Mirror.Examples.Billiards;
@@ -38,12 +37,19 @@ public class SpellCollider : NetworkBehaviour
         public Vector3 Forward;
         public Vector3 Right;
         public Vector3 Up;
+        public void Reset()
+        {
+            Forward = Vector3.zero;
+            Right = Vector3.zero;
+            Up = Vector3.zero;
+        }
     }
     bool expanding = true;
     float currentSize = 0;
     public TrajectoryInfo TrajectoryTransform;
     float velocityMagnitude;
     Vector3 velocityDir;
+    bool MarkedToDie = false;
 
 
     //[Server]
@@ -58,7 +64,6 @@ public class SpellCollider : NetworkBehaviour
         //Invoke("Die", stats.Duration);
         pierceCount = stats.Piercing;
         bounceCount = stats.Bounce;
-        //OnHit.AddListener(() => { if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown()); });
         if (primarySpell)
         {
             InitiateTriggeredSpells();
@@ -69,17 +74,13 @@ public class SpellCollider : NetworkBehaviour
         {
             transform.localScale = Vector3.zero;
         }*/
-        //transform.localScale = Vector3.zero;
+        mesh.transform.localScale = Vector3.zero;
         //spellCol = GetComponent<Collider>();
 
     }
     //[Server]
-    void Update()
+    public void UpdateCollider()
     {
-        if (!isServer && GameManager.Instance.uiController.playerUI.network)
-        {
-            return;
-        }
         hitCounter = 0;
         velocityMagnitude = rb.Velocity.magnitude;
         velocityDir = velocityMagnitude > 0.0001f ? rb.Velocity / velocityMagnitude : Vector3.zero;
@@ -89,7 +90,7 @@ public class SpellCollider : NetworkBehaviour
         }
         if (CollisionOnCooldown)
         {
-            CollisionOnCooldown = CollisionTimer.timer(0.1f, Time.deltaTime, true, false);
+            CollisionOnCooldown = CollisionTimer.timer(0.01f, Time.deltaTime, true, false);
         }
         if (!CollisionOnCooldown)
         {
@@ -131,7 +132,7 @@ public class SpellCollider : NetworkBehaviour
         {
             if (LifeTime >= stats.Duration)
             {
-                Die();
+                MarkedToDie = true;
             }
         }
         if (velocityMagnitude > 0.01f)
@@ -140,7 +141,10 @@ public class SpellCollider : NetworkBehaviour
         }
         mesh.transform.localScale = Vector3.one * currentSize;
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
-
+        if(MarkedToDie)
+        {
+            Die();
+        }
 
     }
     //[Server]
@@ -348,11 +352,11 @@ public class SpellCollider : NetworkBehaviour
             {
                 if (OwnerSpell.Caster.network)
                 {
-                    OwnerSpell.Caster.ServerInstantiateSpellCollider(spell, transform.position, transform.forward);
+                    SpellColliderManager.Instance.ServerInitializeSpellCollider(spell, transform.position, transform.forward);
                 }
                 else
                 {
-                    OwnerSpell.Caster.InstantiateSpellCollider(spell, transform.position, transform.forward);
+                    SpellColliderManager.Instance.InitializeSpellCollider(spell, transform.position, transform.forward);
                 }
                     trigger.SpellOnCooldown = true;
             }
@@ -470,7 +474,7 @@ public class SpellCollider : NetworkBehaviour
         {
             if (OwnerSpell.coreNode.DieOnObjectCollide)
             {
-                Die();
+                MarkedToDie = true;
             }
         }
     }
@@ -501,7 +505,8 @@ public class SpellCollider : NetworkBehaviour
             }
             else
             {
-                Debug.LogError("Failed to find normal for bounce, this should not happen. " + data.collider.gameObject.name);
+                //normal = (transform.position - data.collider.transform.position).normalized;
+                Debug.LogWarning("Failed to find normal for bounce, this should not happen. " + data.collider.gameObject.name);
             }
             /* else if (Physics.Raycast(transform.position, previousVelocity.normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
              {
@@ -547,12 +552,41 @@ public class SpellCollider : NetworkBehaviour
         OnDeath.Invoke();
         if (isServer && OwnerSpell.Caster.network)
         {
-            NetworkServer.Destroy(this.gameObject);
+            SpellColliderManager.Instance.ServerDeactivateSpellCollider(this);
         }
         else
         {
-            Destroy(gameObject);
+            SpellColliderManager.Instance.DeactivateSpellCollider(this);
         }
+    }
+    public void ResetCollider()
+    {
+        OwnerSpell = null;
+        pierceCount = 0;
+        bounceCount = 0;
+        HitOnCooldown = false;
+        CollisionOnCooldown = false;
+        hitCounter = 0;
+        LifeTime = 0;
+        triggerInfos.Clear();
+        previousColisions.Clear();
+        inverseBounceMultiplier = 1;
+        UseAcceleration = false;
+        HitTimer.ResetTimer();
+        CollisionTimer.ResetTimer();
+        previousVelocity = Vector3.zero;
+        OnCast.RemoveAllListeners();
+        OnHit.RemoveAllListeners();
+        OnDeath.RemoveAllListeners();
+        primarySpell = false;
+        SpawnTransform = null;
+        SpawnPoint = Vector3.zero;
+        expanding = true;
+        currentSize = 0;
+        velocityMagnitude = 0;
+        velocityDir = Vector3.zero;
+        TrajectoryTransform.Reset();
+        MarkedToDie = false;
     }
 }
 /*public struct CollisionData

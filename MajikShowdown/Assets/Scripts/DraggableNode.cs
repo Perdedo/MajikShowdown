@@ -9,7 +9,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [HideInInspector] public CanvasGroup canvasGroup;
     [HideInInspector] public int acquisitionOrder;
     int savedListIndex = 0;
-
+    private Vector2 savedPosition;
+    private Transform savedParent;
     public IDropZone OriginZone { get; private set; }
     private IDropZone pendingDropZone;
 
@@ -39,6 +40,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (!CanDrag()) return;
         pendingDropZone = null;
         canvas = GetComponentInParent<Canvas>();
+        savedPosition = rectTransform.anchoredPosition;
+        savedParent = transform.parent;
         var node = GetComponent<SpellNodeInterface>();
         node?.SelectOnly();
         var inventory = OriginZone as NodeInventory;
@@ -142,24 +145,33 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 Destroy(gameObject);
                 return;
             }
-            inventory.Receive(this);
-            var nodeInterface = GetComponent<SpellNodeInterface>();
-            if (nodeInterface != null)
+
+            if (inventory != null)
             {
-                if (inventoryClone != null)
+                inventory.Receive(this);
+                var nodeInterface = GetComponent<SpellNodeInterface>();
+                if (nodeInterface != null)
                 {
-                    var cloneInterface = inventoryClone.GetComponent<SpellNodeInterface>();
-                    int cloneIndex = inventory.GetNodeIndex(cloneInterface);
-                    Debug.Log($"cloneIndex={cloneIndex}");
-                    inventory.RemoveNodeFromInventory(cloneInterface);
-                    Destroy(inventoryClone.gameObject);
-                    inventoryClone = null;
-                    inventory.InsertNodeAt(nodeInterface, cloneIndex);
+                    if (inventoryClone != null)
+                    {
+                        var cloneInterface = inventoryClone.GetComponent<SpellNodeInterface>();
+                        int cloneIndex = inventory.GetNodeIndex(cloneInterface);
+                        inventory.RemoveNodeFromInventory(cloneInterface);
+                        Destroy(inventoryClone.gameObject);
+                        inventoryClone = null;
+                        inventory.InsertNodeAt(nodeInterface, cloneIndex);
+                    }
+                    else
+                    {
+                        inventory.InsertNodeAt(nodeInterface, savedListIndex);
+                    }
                 }
-                else
-                {
-                    inventory.InsertNodeAt(nodeInterface, savedListIndex);
-                }
+            }
+            else // Se já está na grid e não foi dropado em nenhum lugar permitido, volta para a posição original
+            {
+                transform.SetParent(savedParent, true);
+                rectTransform.anchoredPosition = savedPosition;
+                OriginZone?.Receive(this);
             }
         }
         pendingDropZone = null;

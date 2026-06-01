@@ -159,7 +159,7 @@ public class NodeConection
     //public NodeConection conection;
     public bool TryConect(NodeConection c)
     {
-        if (c.conectionType == conectionType && conectionType != Conections.None && c.conectionType != Conections.None)
+        if (c.conectionType == conectionType /*&& conectionType != Conections.None && c.conectionType != Conections.None*/)
         {
             //c.conection = this;
             //conection = c;
