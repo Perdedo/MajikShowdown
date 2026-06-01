@@ -55,7 +55,8 @@ MonoBehaviour:
       max: 0
   runeName: Invoker
   runeType: 
-  runeDescription: 
+  runeDescription: Invokes a spell when conditions are met. Only works if this is
+    not an invoked spell.
   color: {r: 0.6415094, g: 0.5025569, b: 0.44482023, a: 1}
   Cooldown: 2
   BaseStats:
@@ -79,6 +80,7 @@ MonoBehaviour:
     spellName: 
     spellNodes: []
     SpellCooldown: 0
+    auxCooldown: 0
     coreNode: {fileID: 0}
     triggers: []
     spellEffects: []
@@ -86,7 +88,6 @@ MonoBehaviour:
     grid: {fileID: 0}
     instanceIndex: 0
   ConectionPorts: 030000000000000003000000000000000300000000000000
-  IsInUse: 0
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 2042149789, guid: 7b59b860a51d085489e84edfc3172e50, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}
