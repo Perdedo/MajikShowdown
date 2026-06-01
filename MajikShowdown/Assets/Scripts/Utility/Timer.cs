@@ -73,6 +73,12 @@ public class Timer
             return defautResponse;
         }
     }
+    public void ResetTimer()
+    {
+        timestamp = 0;
+        paused = false;
+        timedEvent.RemoveAllListeners();
+    }
 }
 public class WaitForFrames : CustomYieldInstruction
 {

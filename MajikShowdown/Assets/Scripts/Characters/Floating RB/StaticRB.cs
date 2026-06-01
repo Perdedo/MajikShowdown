@@ -4,13 +4,13 @@ public class StaticRB : MonoBehaviour
 {
     public Vector3 Velocity;
     public Vector3 Acceleration;
-    public Rigidbody rb;
+    //public Rigidbody rb;
     Vector3 velocityGoal;
     Vector3 previousGoal;
     bool lerpingVelocity = false;
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        //rb = GetComponent<Rigidbody>();
     }
     void FixedUpdate()
     {
@@ -26,8 +26,8 @@ public class StaticRB : MonoBehaviour
             }
         }
         Velocity += Acceleration * Time.fixedDeltaTime;
-        rb.MovePosition(transform.position + Velocity * Time.fixedDeltaTime);
-        //transform.Translate(Velocity * Time.deltaTime, Space.World);
+        //rb.MovePosition(transform.position + Velocity * Time.fixedDeltaTime);
+        transform.Translate(Velocity * Time.fixedDeltaTime, Space.World);
     }
     public void LerpToVelocity(Vector3 targetVelocity, float acceleration)
     {
