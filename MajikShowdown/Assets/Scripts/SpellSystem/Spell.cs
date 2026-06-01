@@ -78,6 +78,8 @@ public class Spell
             SpellCooldown += s.Cooldown;
             auxCooldown += s.Cooldown;
         }
+        SpellCooldown = Mathf.Max(SpellCooldown, 0.1f);
+        auxCooldown = Mathf.Max(auxCooldown, 0.1f);
         if (updatedCall != null)
         {
             if(callAux == 0)
