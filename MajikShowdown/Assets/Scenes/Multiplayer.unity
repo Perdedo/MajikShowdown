@@ -759,6 +759,76 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1993122347424673348, guid: c393348445899554c9edbeabdae0d77d, type: 3}
   m_PrefabInstance: {fileID: 144663436}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &154040968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 154040970}
+  - component: {fileID: 154040969}
+  - component: {fileID: 154040971}
+  m_Layer: 0
+  m_Name: SpellColliderManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &154040969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154040968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12f145ec466992048baac9461ed1cec8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpellColliderManager
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  SpellColliderPrefab: {fileID: 3981877690685951420, guid: 797a4b56813750b4f9730eea5b06fff7, type: 3}
+  spellColliders: []
+  activeSpellColliders: []
+  inactiveSpellColliders: []
+  network: 1
+--- !u!4 &154040970
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154040968}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &154040971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154040968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 2252088225
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &167768319
 GameObject:
   m_ObjectHideFlags: 0
@@ -2151,6 +2221,9 @@ MonoBehaviour:
   playerSpawnMethod: 0
   spawnPrefabs:
   - {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
+  - {fileID: 5184826410647254319, guid: 797a4b56813750b4f9730eea5b06fff7, type: 3}
+  - {fileID: 5452045144222140182, guid: cd01f523005fa364ba79119105b8aacd, type: 3}
+  - {fileID: 1272920518353865679, guid: 8785d2e793b49d54cb564707858f0f29, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -14535,3 +14608,4 @@ SceneRoots:
   - {fileID: 1820845681}
   - {fileID: 1719305577}
   - {fileID: 138050243}
+  - {fileID: 154040970}

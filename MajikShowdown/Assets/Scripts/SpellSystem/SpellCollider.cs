@@ -49,6 +49,7 @@ public class SpellCollider : NetworkBehaviour
     public TrajectoryInfo TrajectoryTransform;
     float velocityMagnitude;
     Vector3 velocityDir;
+    bool MarkedToDie = false;
 
 
     //[Server]
@@ -73,17 +74,13 @@ public class SpellCollider : NetworkBehaviour
         {
             transform.localScale = Vector3.zero;
         }*/
-        //transform.localScale = Vector3.zero;
+        mesh.transform.localScale = Vector3.zero;
         //spellCol = GetComponent<Collider>();
 
     }
     //[Server]
-    void Update()
+    public void UpdateCollider()
     {
-        if (!isServer && GameManager.Instance.uiController.playerUI.network)
-        {
-            return;
-        }
         hitCounter = 0;
         velocityMagnitude = rb.Velocity.magnitude;
         velocityDir = velocityMagnitude > 0.0001f ? rb.Velocity / velocityMagnitude : Vector3.zero;
@@ -135,7 +132,7 @@ public class SpellCollider : NetworkBehaviour
         {
             if (LifeTime >= stats.Duration)
             {
-                Die();
+                MarkedToDie = true;
             }
         }
         if (velocityMagnitude > 0.01f)
@@ -144,7 +141,10 @@ public class SpellCollider : NetworkBehaviour
         }
         mesh.transform.localScale = Vector3.one * currentSize;
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
-
+        if(MarkedToDie)
+        {
+            Die();
+        }
 
     }
     //[Server]
@@ -352,11 +352,11 @@ public class SpellCollider : NetworkBehaviour
             {
                 if (OwnerSpell.Caster.network)
                 {
-                    OwnerSpell.Caster.ServerInstantiateSpellCollider(spell, transform.position, transform.forward);
+                    SpellColliderManager.Instance.ServerInitializeSpellCollider(spell, transform.position, transform.forward);
                 }
                 else
                 {
-                    OwnerSpell.Caster.InstantiateSpellCollider(spell, transform.position, transform.forward);
+                    SpellColliderManager.Instance.InitializeSpellCollider(spell, transform.position, transform.forward);
                 }
                     trigger.SpellOnCooldown = true;
             }
@@ -474,7 +474,7 @@ public class SpellCollider : NetworkBehaviour
         {
             if (OwnerSpell.coreNode.DieOnObjectCollide)
             {
-                Die();
+                MarkedToDie = true;
             }
         }
     }
@@ -552,11 +552,11 @@ public class SpellCollider : NetworkBehaviour
         OnDeath.Invoke();
         if (isServer && OwnerSpell.Caster.network)
         {
-            NetworkServer.Destroy(this.gameObject);
+            SpellColliderManager.Instance.ServerDeactivateSpellCollider(this);
         }
         else
         {
-            Destroy(gameObject);
+            SpellColliderManager.Instance.DeactivateSpellCollider(this);
         }
     }
     public void ResetCollider()
@@ -586,6 +586,7 @@ public class SpellCollider : NetworkBehaviour
         velocityMagnitude = 0;
         velocityDir = Vector3.zero;
         TrajectoryTransform.Reset();
+        MarkedToDie = false;
     }
 }
 /*public struct CollisionData
