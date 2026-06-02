@@ -479,7 +479,10 @@ public class PlayerUI : NetworkBehaviour
             {
                 spellPanel.SetActive(false);
                 SetGameplayInput(true);
-                GameManager.Instance.hordeController.timerTxt.gameObject.SetActive(true);
+                if(GameManager.Instance.hordeController != null)
+                {
+                    GameManager.Instance.hordeController.timerTxt.gameObject.SetActive(true);
+                }
                 myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
                 caster.canCast = true;
             }
