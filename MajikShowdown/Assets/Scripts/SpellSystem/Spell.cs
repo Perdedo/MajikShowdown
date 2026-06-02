@@ -34,7 +34,6 @@ public class Spell
     int callAux = 0;
     public void UpdateSpell(SpellTrigger updatedCall = null)
     {
-        Debug.Log("spellUpdate");
         //CreateSubSpells();
         if (coreNode == null)
         {

@@ -202,7 +202,6 @@ public class HexGrid : MonoBehaviour
 
     public void AddNodeToGrid(HexGridNode hex, SpellNodeInterface node)
     {
-        Debug.Log("Add");
         if (node == null) return;
         if (VerifyNode(node)) return;
         if (caster == null || caster.inventory == null)
@@ -212,7 +211,6 @@ public class HexGrid : MonoBehaviour
         caster.inventory.RemoveNodeFromInventory(node);
         if (node.hexGridNode != null)
         {
-            Debug.Log("Quebrou aqui");
             node.hexGridNode.VerifyNearbyBreakConections(node);
             node.hexGridNode.spellNode = null;
             node.hexGridNode.SetNodeButtonState(true);

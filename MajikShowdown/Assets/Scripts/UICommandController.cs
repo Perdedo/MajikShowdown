@@ -43,8 +43,7 @@ public class UICommandController : NetworkBehaviour
 
     [Command]
     public void CMDConfigurateSpell(int ind)
-    {
-        Debug.Log("Config cmd");
+    { 
         HexGrid grid = grids.Find(g => g.instanceIndex == ind);
         grid.spell.spellNodes.Clear();
         foreach (var node in grid.spellNodes)
@@ -149,7 +148,6 @@ public class UICommandController : NetworkBehaviour
     [Command]
     public void CMDAddNodeToGrid(int hexInd, int nodeInd, int gridInd)
     {
-        Debug.Log("Add cmd");
         //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         HexGrid grid = grids.Find(g => g.instanceIndex == gridInd);
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
