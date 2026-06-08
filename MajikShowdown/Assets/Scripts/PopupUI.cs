@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -8,68 +7,37 @@ public class PopupUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [TextArea]
     public string text;
 
-    [Header("Popup")]
-    public GameObject popup;
-    public Vector2 popupOffsetPos;
-    TextMeshProUGUI popupText;
+    public bool isElement = false;
 
-
-    void Start()
+    private void Start()
     {
-        if (popup == null) return;
-
-        popupText = popup.GetComponentInChildren<TextMeshProUGUI>();
-
-        if (popupText != null)
+        Image image = GetComponent<Image>();
+        if (image != null && !isElement)
         {
-            popupText.text = text;
+            image.alphaHitTestMinimumThreshold = 0.1f;
         }
-
-        GetComponent<Image>().color = Color.white * 1.5f;
-
-        popup.SetActive(false);
     }
 
-    void Update()
+    private void OnDisable()
     {
-        if (popup.activeSelf)
+        if (PopupManager.Instance != null)
         {
-            popup.transform.position = Input.mousePosition + (Vector3)popupOffsetPos;
+            PopupManager.Instance.Hide();
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        ShowPopup();
+        PopupManager.Instance.Show(text);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        HidePopup();
-    }
-
-    void OnDisable()
-    {
-        HidePopup();
-    }
-
-    void ShowPopup()
-    {
-        popup.SetActive(true);
-    }
-
-    void HidePopup()
-    {
-        popup.SetActive(false);
+        PopupManager.Instance.Hide();
     }
 
     public void SetElementText(string newText)
     {
         text = newText;
-
-        if (popupText != null)
-        {
-            popupText.text = text;
-        }
     }
 }

@@ -128,13 +128,11 @@ public class UIController : MonoBehaviour
         if (File.Exists(Application.persistentDataPath + "/configSave.json"))
         {
             SaveManager.LoadConfig();
-            Debug.Log("Save Carregado");
         }
         else
         {
             data = new ConfigData(0, 0, 0f, -15f, -15f, false);
             SaveManager.SaveConfig();
-            Debug.Log("Novo Save Criado");
         }
         ConfigUpdate();
         if (vsyncToggle != null)
@@ -278,7 +276,6 @@ public class UIController : MonoBehaviour
     public void ChangeScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
-        Debug.Log("Loading Scene: " + sceneName);
     }
 
     public void OpenPanel(GameObject panel)
@@ -330,7 +327,6 @@ public class UIController : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
-        Debug.Log("Leaving Game");
     }
 
     public void IsMenuObjectsVisible(bool state)

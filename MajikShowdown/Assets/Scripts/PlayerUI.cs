@@ -271,7 +271,6 @@ public class PlayerUI : NetworkBehaviour
 
     IEnumerator WaitStartEquipSpell(Spell spell)
     {
-        Debug.Log(spell.instanceIndex + "bound spell");
         yield return new WaitUntil(() => caster.spells.Exists(s => s.instanceIndex == spell.instanceIndex));
         yield return new WaitUntil(() => NetworkClient.ready);
         CMDStartEquipSpell(spell.instanceIndex);
@@ -292,13 +291,11 @@ public class PlayerUI : NetworkBehaviour
     [Command]
     public void CMDStartEquipSpell(int index)
     {
-        Debug.Log(index + "spell equip");
         spellToEquip = caster.spells.Find(s => s.instanceIndex == index);
     }
 
     public void EquipSpellToSlot(int index)
     {
-        Debug.Log(spellToEquip.spellNodes.Count);
         if (!isLocalPlayer && network)
         {
             return;
@@ -336,7 +333,6 @@ public class PlayerUI : NetworkBehaviour
     [Command]
     public void CMDEquipSpell(int index)
     {
-        Debug.Log(spellToEquip.spellNodes.Count);
         if (spellToEquip == null) return;
         if (caster.equippedSpells[index] == spellToEquip)
         {

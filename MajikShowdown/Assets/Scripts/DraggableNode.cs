@@ -77,7 +77,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         if (pendingDropZone != null && inventory != null && !isClone && pendingDropZone is HexGridNode)
         {
-            var nodeInterface = GetComponent<SpellNodeInterface>();
             GameObject cloneGO = Instantiate(gameObject, canvas.transform);
             DraggableNode clone = cloneGO.GetComponent<DraggableNode>();
             clone.isClone = true;
@@ -91,12 +90,10 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             var cloneInterface = cloneGO.GetComponent<SpellNodeInterface>();
             if (cloneInterface != null)
             {
-                //cloneInterface.Setup(nodeInterface.Node);
                 cloneInterface.usedNodeImg.SetActive(true);
             }
 
             inventoryClone = clone;
-
             inventory.Receive(clone);
             inventory.InsertNodeAt(cloneInterface, savedListIndex);
             pendingDropZone.Receive(this);
@@ -125,10 +122,11 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 inventoryClone = null;
                 targetInventory.Receive(this);
                 if (nodeInterface != null)
+                {
                     targetInventory.InsertNodeAt(nodeInterface, cloneIndex);
+                }
                 return;
             }
-
             pendingDropZone.Receive(this);
         }
         else
@@ -145,7 +143,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 Destroy(gameObject);
                 return;
             }
-
             if (inventory != null)
             {
                 inventory.Receive(this);
