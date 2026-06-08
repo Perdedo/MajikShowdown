@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 public class FlowFieldManager : MonoBehaviour
 {
+    public FlowFieldAsset flowFieldAsset;
     public static FlowFieldManager instance;
     public Vector2 MapSize;
     public float MinHeight;
@@ -40,7 +41,8 @@ public class FlowFieldManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        GenerateGrid();
+        //GenerateGrid();
+        InitializeGrid();
         Target = GameManager.Instance.Players[0].transform;
         //lastTargetPos = WorldToGridPosition(Target.position);
         Targets.Clear();
@@ -204,12 +206,20 @@ public class FlowFieldManager : MonoBehaviour
         }
         return closest;
     }
+
+    public void InitializeGrid()
+    {
+        flowField = new FlowField(CellSize, this);
+        flowField.GetFieldFromAsset();
+    }
+
     [ContextMenu("GenerateGrid")]
     public void GenerateGrid()
     {
         flowField = new FlowField(CellSize, this);
         flowField.GenerateGrid(MapSize, MinHeight, MaxHeight);
     }
+
     [ContextMenu("Player Test")]
     public void PlayerTest()
     {

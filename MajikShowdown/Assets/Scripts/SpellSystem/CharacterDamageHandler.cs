@@ -8,10 +8,15 @@ public class CharacterDamageHandler : NetworkBehaviour
     public float MaxHealth;
     public float Health;
     public List<Resistance> Resistances;
-
+    public int enemyIndex;
     [Header("Network")]
     public bool network = true;
     void Awake()
+    {
+        Health = MaxHealth;
+    }
+
+    public void Initialize()
     {
         Health = MaxHealth;
     }
@@ -55,12 +60,22 @@ public class CharacterDamageHandler : NetworkBehaviour
         }
         if(network)
         {
-            NetworkServer.Destroy(gameObject);
+            //NetworkServer.Destroy(gameObject);
+            GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove(this.gameObject);
+            RPCDisable();
+            this.gameObject.SetActive(false);
         }
         else
         {
-            Destroy(gameObject);
+            this.gameObject.SetActive(false);
+            //Destroy(gameObject);
         }
+    }
+
+    [ClientRpc]
+    public void RPCDisable()
+    {
+        this.gameObject.SetActive(false);
     }
 }
 

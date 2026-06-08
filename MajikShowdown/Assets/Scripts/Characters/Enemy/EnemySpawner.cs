@@ -11,7 +11,7 @@ public class EnemySpawner : NetworkBehaviour
     public List<EnemySelection> enemies = new List<EnemySelection>();
     public Transform spawnPos;
     public float baseSpawnTime = 1.25f, minSpawnTime = 0.25f, spawnerLifeTime = 300f, baseDifficultyMult = 1, maxDifficultyMult = 1.5f, baseElemental = 5, maxElemental = 30;
-    float spawnTime, spawnerStartTime, randDifficulty, randElemental, totalSelection, sum, elementalChance;
+    float spawnTime, spawnerStartTime, randDifficulty, randElemental, totalSelection, sum, elementalChance, hordeStartTime, hordeDurationTime;
     bool isSpawning;
     GameObject aux;
     public AnimationCurve spawnRateCurve;
@@ -33,7 +33,7 @@ public class EnemySpawner : NetworkBehaviour
         }
     }*/
 
-    public void Initialize(List<EnemySelection> enemyList, float baseSpawn, float minSpawn, float lifetime, float baseDiff, float maxDiff, float baseEl, float maxEl)
+    public void Initialize(List<EnemySelection> enemyList, float baseSpawn, float minSpawn, float lifetime, float baseDiff, float maxDiff, float baseEl, float maxEl, float hordeStart, float hordeDuration)
     {
         if (isServer)
         {
@@ -49,15 +49,17 @@ public class EnemySpawner : NetworkBehaviour
             isSpawning = true;
             spawnTime = baseSpawnTime;
             elementalChance = baseElemental;
+            hordeStartTime = hordeStart;
+            hordeDurationTime = hordeDuration;
             foreach (EnemySelection e in enemies)
             {
                 if (e.difficult)
                 {
-                    e.chance = e.baseChance * Mathf.Lerp(baseDifficultyMult, maxDifficultyMult, difficultyCurve.Evaluate(0));
+                    e.chance = e.spawnCurve.Evaluate(0) * 100 * Mathf.Lerp(baseDifficultyMult, maxDifficultyMult, difficultyCurve.Evaluate(0));
                 }
                 else
                 {
-                    e.chance = e.baseChance;
+                    e.chance = e.spawnCurve.Evaluate(0) * 100;
                 }
             }
             StartCoroutine(SpawnEnemy());
@@ -82,14 +84,35 @@ public class EnemySpawner : NetworkBehaviour
             sum += enemies[i].chance;
             if(randDifficulty <= sum)
             {
-                aux = Instantiate(enemies[i].enemy, spawnPos.position, Quaternion.identity);
+                if (GameManager.Instance.hordeController.enemiesByType[i].Count <= GameManager.Instance.hordeController.usedEnemiesByType[i].Count)
+                {
+                    aux = Instantiate(enemies[i].enemy, spawnPos.position, Quaternion.identity);
+                    NetworkServer.Spawn(aux);
+                    GameManager.Instance.hordeController.enemiesByType[i].Add(aux);
+                }
+                else
+                {
+                    foreach(GameObject e in GameManager.Instance.hordeController.enemiesByType[i])
+                    {
+                        if (!GameManager.Instance.hordeController.usedEnemiesByType[i].Contains(e))
+                        {
+                            aux = e;
+                            aux.transform.position = spawnPos.position;
+                            aux.SetActive(true);
+                            break;
+                        }
+                    }
+                }
+                Enemy auxEnemy = aux.GetComponent<Enemy>();
                 GameManager.Instance.hordeController.enemies.Add(aux);
+                GameManager.Instance.hordeController.usedEnemiesByType[i].Add(aux);
                 randElemental = UnityEngine.Random.Range(0, 100);
                 if(randElemental < elementalChance)
                 {
-                    aux.GetComponent<Enemy>().element = (Elements)UnityEngine.Random.Range(0, Enum.GetNames(typeof(Elements)).Length);
+                    auxEnemy.element = (Elements)UnityEngine.Random.Range(0, Enum.GetNames(typeof(Elements)).Length);
                 }
-                NetworkServer.Spawn(aux);
+                aux.GetComponent<CharacterDamageHandler>().enemyIndex = i;
+                auxEnemy.Initialize();
                 i = enemies.Count;
             }
         }
@@ -97,10 +120,18 @@ public class EnemySpawner : NetworkBehaviour
         {
             foreach (EnemySelection e in enemies)
             {
-                if(e.difficult)
+                if (e.difficult)
+                {
+                    e.chance = e.spawnCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDurationTime, 0, 1)) * 100 * Mathf.Lerp(baseDifficultyMult, maxDifficultyMult, difficultyCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDurationTime, 0, 1)));
+                }
+                else
+                {
+                    e.chance = e.spawnCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDurationTime, 0, 1)) * 100;
+                }
+                /*if (e.difficult)
                 { 
                     e.chance = e.baseChance * (Mathf.Lerp(baseDifficultyMult, maxDifficultyMult, difficultyCurve.Evaluate(Mathf.Clamp((Time.time - spawnerStartTime) / spawnerLifeTime, 0, 1))));
-                }
+                }*/
             }
             elementalChance = Mathf.Lerp(baseElemental, maxElemental, elementalCurve.Evaluate(Mathf.Clamp((Time.time - spawnerStartTime) / spawnerLifeTime, 0, 1)));
             spawnTime = Mathf.Lerp(baseSpawnTime, minSpawnTime, spawnRateCurve.Evaluate(Mathf.Clamp((Time.time - spawnerStartTime)/spawnerLifeTime, 0, 1)));
@@ -125,7 +156,16 @@ public class EnemySpawner : NetworkBehaviour
         yield return new WaitForSeconds(spawnerLifeTime);
         isSpawning = false;
         StopAllCoroutines();
-        NetworkServer.Destroy(this.gameObject);
+        GameManager.Instance.hordeController.usedSpawners.Remove(this.gameObject);
+        Disable();
+        this.gameObject.SetActive(false);
+        //NetworkServer.Destroy(this.gameObject);
+    }
+
+    [ClientRpc]
+    public void Disable()
+    {
+        this.gameObject.SetActive(false);
     }
 }
 
@@ -133,7 +173,8 @@ public class EnemySpawner : NetworkBehaviour
 public class EnemySelection
 {
     public GameObject enemy;
-    public float baseChance;
+    //public float baseChance;
     public float chance;
     public bool difficult;
+    public AnimationCurve spawnCurve;
 }

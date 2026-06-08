@@ -570,13 +570,86 @@ MonoBehaviour:
   syncInterval: 0
   enemyChances:
   - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
-    baseChance: 95
     chance: 0
     difficult: 0
+    spawnCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: -0.16486116
+        outSlope: -0.16486116
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.372406
+        value: 0.9386047
+        inSlope: -0.46732855
+        outSlope: -0.46732855
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.19845152
+        outWeight: 0.5097596
+      - serializedVersion: 3
+        time: 0.6930926
+        value: 0.92913085
+        inSlope: 0.05756378
+        outSlope: 0.05756378
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.95
+        inSlope: -0.026299538
+        outSlope: -0.026299538
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.19391114
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   - enemy: {fileID: 1272920518353865679, guid: 8785d2e793b49d54cb564707858f0f29, type: 3}
-    baseChance: 5
     chance: 0
     difficult: 1
+    spawnCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.003345985
+        outSlope: 0.003345985
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.35872787
+      - serializedVersion: 3
+        time: 0.5
+        value: 0.15
+        inSlope: 0.012981638
+        outSlope: 0.012981638
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.075
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   difficulties:
   - difficulty: Easy
     indexes: 00000000
@@ -657,7 +730,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  spawnRadius: 10
+  minSpawnRadius: 10
+  maxSpawnRadius: 20
   hordeDuration: 300
   pauseDuration: 300
   maxSpawnTime: 30
@@ -671,6 +745,7 @@ MonoBehaviour:
   inPause: 0
   timerTxt: {fileID: 869467198}
   enemies: []
+  spawners: []
   spawnableLocations:
     serializedVersion: 2
     m_Bits: 512
@@ -8335,10 +8410,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd009c4a9499af3409cf13940f82b5f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flowFieldAsset: {fileID: 11400000, guid: 3d895224474359542860326eff94b804, type: 2}
   MapSize: {x: 510, y: 600}
   MinHeight: -70
   MaxHeight: 20
-  CellSize: 1
+  CellSize: 2
   Offset: {x: 0.5, y: 0, z: 0.5}
   ObstructionHeight: 2
   ObstructionLayer:
@@ -8360,7 +8436,7 @@ MonoBehaviour:
   flowFieldDelay: 0.5
   ShowCells: 0
   ShowFieldArea: 1
-  ShowDirections: 0
+  ShowDirections: 1
   ShowTargetPos: 0
   cellCountAux: 0
 --- !u!4 &1318178715
@@ -8944,7 +9020,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1414775988
 RectTransform:
   m_ObjectHideFlags: 0

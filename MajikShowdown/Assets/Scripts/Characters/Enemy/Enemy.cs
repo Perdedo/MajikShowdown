@@ -41,6 +41,24 @@ public class Enemy : Character
     Damage dmgCtrl;
     void Start()
     {
+        /*size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
+        for (int i = 0; i < Directions.Length; i++)
+        {
+            float angle = i * Mathf.PI * 2f / Directions.Length;
+            Directions[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+        }
+        updateRate = 1f / 30f;
+        dmgCtrl = new Damage(damage, element);
+        attackTimer.timedEvent.AddListener(AttackPlayer);
+        attackTimer.Paused = true;
+        attackCooldownTimer.Paused = true;
+        StartCoroutine(StartAICalc());*/
+        //targetLastSeen = targetVector;
+    }
+
+    public void Initialize()
+    {
+        damageHandler.Initialize();
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
         for (int i = 0; i < Directions.Length; i++)
         {
@@ -53,7 +71,6 @@ public class Enemy : Character
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
         StartCoroutine(StartAICalc());
-        //targetLastSeen = targetVector;
     }
 
     IEnumerator StartAICalc()
@@ -178,10 +195,10 @@ public class Enemy : Character
                 //Debug.Log("can see");
             }
             currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
-            forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);
             if (currentCell != null)
             {
-                if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance && Vector3.Dot(targetVector.normalized, currentCell.direction.normalized) > 0.5)
+                forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);
+                if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance /*&& Vector3.Dot(targetVector.normalized, currentCell.direction.normalized) > 0.5*/)
                 {
                     interestDirection = targetVector.normalized;
                 }

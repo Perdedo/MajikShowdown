@@ -12,8 +12,8 @@ public class HordeController : NetworkBehaviour
     public List<DifficultySetting> difficulties;
     public int difficulty;
     public AnimationCurve spawnerFrequencyCurve;
-    public float spawnRadius, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
-    float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime;
+    public float minSpawnRadius, maxSpawnRadius, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
+    float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime, randEnemy;
     public GameObject spawner;
     GameObject aux;
     Vector3 spawnPos;
@@ -21,7 +21,11 @@ public class HordeController : NetworkBehaviour
     [HideInInspector][SyncVar] public bool inHordeTime = false;
     [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
-    [HideInInspector]public List<GameObject> enemies;
+    [HideInInspector]public List<GameObject> enemies = new List<GameObject>();
+    [HideInInspector]public List<List<GameObject>> enemiesByType = new List<List<GameObject>>();
+    [HideInInspector]public List<HashSet<GameObject>> usedEnemiesByType = new List<HashSet<GameObject>>();
+    [HideInInspector]public List<GameObject> spawners = new List<GameObject>();
+    [HideInInspector]public HashSet<GameObject> usedSpawners = new HashSet<GameObject>();
     bool running = false;
     public LayerMask spawnableLocations;
     Vector2 dir;
@@ -30,6 +34,14 @@ public class HordeController : NetworkBehaviour
     private void Awake()
     {
         GameManager.Instance.hordeController = this;
+        spawners.Clear();
+        enemiesByType.Clear();
+        usedEnemiesByType.Clear();
+        for(int i = 0; i < enemyChances.Count; i++)
+        {
+            enemiesByType.Add(new List<GameObject>());
+            usedEnemiesByType.Add(new HashSet<GameObject>());
+        }
     }
 
     private void Update()
@@ -97,6 +109,12 @@ public class HordeController : NetworkBehaviour
         spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, spawnerFrequencyCurve.Evaluate(0));
         inHorde = true;
         inHordeTime = true;
+        usedSpawners.Clear();
+        enemies.Clear();
+        foreach(HashSet<GameObject> hs in usedEnemiesByType)
+        {
+            hs.Clear();
+        }
         StartCoroutine(StopSpawning());
         StartCoroutine(SpawnSpawner());
     }
@@ -113,14 +131,32 @@ public class HordeController : NetworkBehaviour
         foreach(Player p in GameManager.Instance.Players)
         {
             spawnPos = GetSpawnPos(p.transform.position);
-            aux = Instantiate(spawner, spawnPos, Quaternion.identity);
-            NetworkServer.Spawn(aux);
-            selections.Clear();
-            foreach(int i in difficulties[difficulty].indexes)
+            if(spawners.Count <= usedSpawners.Count)
+            {
+                aux = Instantiate(spawner, spawnPos, Quaternion.identity);
+                spawners.Add(aux);
+                NetworkServer.Spawn(aux);
+            }
+            else
+            {
+                foreach(GameObject s in spawners)
+                {
+                    if (!usedSpawners.Contains(s))
+                    {
+                        aux = s;
+                        aux.transform.position = spawnPos;
+                        aux.SetActive(true);
+                        break;
+                    }
+                }
+            }
+            //selections.Clear();
+            /*foreach(int i in difficulties[difficulty].indexes)
             {
                 selections.Add(enemyChances[i]);
-            }
-            aux.GetComponent<EnemySpawner>().Initialize(selections, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental);
+            }*/
+            aux.GetComponent<EnemySpawner>().Initialize(enemyChances, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental, hordeStartTime, hordeDuration);
+            usedSpawners.Add(aux);
         }
         if (inHorde)
         {
@@ -154,6 +190,7 @@ public class HordeController : NetworkBehaviour
         RaycastHit hit = new RaycastHit();
         Vector3 pos;
         possiblePos = false;
+        float radius;
         while(!possiblePos)
         {
             do
@@ -161,7 +198,8 @@ public class HordeController : NetworkBehaviour
                 dir = new Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)).normalized;
             }
             while (dir == Vector2.zero);
-            pos = playerPos + new Vector3(dir.x * spawnRadius, heightCheckPoint, dir.y * spawnRadius);
+            radius = UnityEngine.Random.Range(minSpawnRadius, maxSpawnRadius);
+            pos = playerPos + new Vector3(dir.x * radius, heightCheckPoint, dir.y * radius);
             if(Physics.Raycast(pos, Vector3.down, out hit, checkHeight, spawnableLocations))
             {
                 possiblePos = true;

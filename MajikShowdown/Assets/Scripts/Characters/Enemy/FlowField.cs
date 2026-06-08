@@ -24,7 +24,8 @@ public class FlowField
     }
     public void GenerateGrid(Vector2 mapSize, float minY, float maxY)
     {
-        field.Clear();
+        //field.Clear();
+        manager.flowFieldAsset.fieldAsset.Clear();
         int width = Mathf.CeilToInt(mapSize.x / cellSize);
         int depth = Mathf.CeilToInt(mapSize.y / cellSize);
         fieldSize = new Vector2Int(width, depth);
@@ -52,8 +53,28 @@ public class FlowField
                 }
 
                 if (column.Layers.Count > 0)
-                    field.Add(gridPos, column);
+                {
+                    //field.Add(gridPos, column);
+                    manager.flowFieldAsset.fieldAsset.Add(new FlowFieldDivision(column, gridPos));
+                }
             }
+        }
+        //foreach (var v in field)
+        foreach(FlowFieldDivision ffd in manager.flowFieldAsset.fieldAsset)
+        {
+            foreach (FieldCell cell in ffd.column.Layers)
+            {
+                cell.Neighbors = GetNeighbors(cell);
+                cell.closeToObstacle = CheckForObstacles(cell);
+            }
+        }
+    }
+
+    public void GetFieldFromAsset()
+    {
+        foreach (FlowFieldDivision ffd in manager.flowFieldAsset.fieldAsset)
+        {
+            field.Add(ffd.key, ffd.column);
         }
         foreach (var v in field)
         {
@@ -302,16 +323,17 @@ public class FlowField
             destinationSet.Add(cell);
         }*/
         cellCount = 0;
+
         while (cellsToProcess.Count > 0 && cellCount < cellsPerDelayInt)
         {
             FieldCell currentCell = cellsToProcess.Dequeue();
             foreach (FieldCell.NeighborContext n in currentCell.Neighbors)
             {
-                n.neighborCell.directionToDestiny = GetDistanceToClosestDestinationCell(n.neighborCell);
+                /*n.neighborCell.directionToDestiny = GetDistanceToClosestDestinationCell(n.neighborCell);
                 if(n.neighborCell.directionToDestiny.sqrMagnitude > maxSqrDistance)
                 {
                     continue;
-                }
+                }*/
                 if(currentCell.Neighbors.Count < 8)
                 {
                     n.neighborCell.BaseCost = manager.BorderCellWeight;
@@ -392,8 +414,8 @@ public class FlowField
             FieldCell lowest = null;
             //Vector3 dirToDestiny = CellDistance(c, DestinationCell).normalized;
             //Vector3 dirToDestiny = CellDistance(c, DestinationCell);
-            //Vector3 dirToDestiny = GetDistanceToClosestDestinationCell(processedCells[cellCountAux]);
-            Vector3 dirToDestiny = processedCells[cellCountAux].directionToDestiny;
+            Vector3 dirToDestiny = GetDistanceToClosestDestinationCell(processedCells[cellCountAux]);
+            //Vector3 dirToDestiny = processedCells[cellCountAux].directionToDestiny;
             dirToDestiny *= 1f / (Mathf.Abs(dirToDestiny.x) + Mathf.Abs(dirToDestiny.z) + 0.0001f);
             float bestDot = float.MinValue;
             Vector3 dirSum = Vector3.zero;
