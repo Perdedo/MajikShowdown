@@ -49,7 +49,7 @@ public class SpellCollider : NetworkBehaviour
     public TrajectoryInfo TrajectoryTransform;
     float velocityMagnitude;
     Vector3 velocityDir;
-    bool MarkedToDie = false;
+    public bool MarkedToDie = false;
 
 
     //[Server]
@@ -547,7 +547,7 @@ public class SpellCollider : NetworkBehaviour
     }
 
     //[Server]
-    public void Die()
+    void Die()
     {
         OnDeath.Invoke();
         if (isServer && OwnerSpell.Caster.network)

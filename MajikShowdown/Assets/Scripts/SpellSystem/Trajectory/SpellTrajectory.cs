@@ -88,7 +88,7 @@ public class SpellTrajectory : SpellNode
                     dir = distance.normalized * multiplier;
                     if (distance.magnitude < 0.1f)
                     {
-                        collider.Die();
+                        collider.MarkedToDie = true;
                     }
                 }
                 //dir = Vector3.forward * Mathf.Sin((lifetime/OwnerSpell.primaryNode.FinalStats.Duration)*Mathf.PI*2);
