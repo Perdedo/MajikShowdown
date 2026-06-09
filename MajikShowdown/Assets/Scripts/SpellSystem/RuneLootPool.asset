@@ -12,13 +12,155 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc8b72238e768d247910b68c7423d0cb, type: 3}
   m_Name: RuneLootPool
   m_EditorClassIdentifier: Assembly-CSharp::RuneLootPool
-  pool:
+  RarityChance:
     Entries:
     - Weight: 0.5
       label: Common
+      Value: 0
     - Weight: 0.3
       label: Uncommon
+      Value: 1
     - Weight: 0.15
       label: Rare
-    - Weight: 0.05
+      Value: 2
+    - Weight: 0.04
       label: Epic
+      Value: 3
+    - Weight: 0.01
+      label: Legendary
+      Value: 4
+  Common:
+    TypeChance:
+      Entries:
+      - Weight: 0.2
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0.2
+        label: Effect
+        Value: 2
+      - Weight: 0.3
+        label: Stat
+        Value: 3
+      - Weight: 0.1
+        label: Trigger
+        Value: 4
+      - Weight: 0.1
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory: []
+    Effect: []
+    Stat: []
+    Trigger: []
+    CastPoint: []
+  Uncommon:
+    TypeChance:
+      Entries:
+      - Weight: 0.2
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0.2
+        label: Effect
+        Value: 2
+      - Weight: 0.2
+        label: Stat
+        Value: 3
+      - Weight: 0.1
+        label: Trigger
+        Value: 4
+      - Weight: 0.1
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory: []
+    Effect: []
+    Stat: []
+    Trigger: []
+    CastPoint: []
+  Rare:
+    TypeChance:
+      Entries:
+      - Weight: 0.2
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0.2
+        label: Effect
+        Value: 2
+      - Weight: 0.2
+        label: Stat
+        Value: 3
+      - Weight: 0.1
+        label: Trigger
+        Value: 4
+      - Weight: 0.1
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory: []
+    Effect: []
+    Stat: []
+    Trigger: []
+    CastPoint: []
+  Epic:
+    TypeChance:
+      Entries:
+      - Weight: 0.2
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0.2
+        label: Effect
+        Value: 2
+      - Weight: 0.2
+        label: Stat
+        Value: 3
+      - Weight: 0.1
+        label: Trigger
+        Value: 4
+      - Weight: 0.1
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory: []
+    Effect: []
+    Stat: []
+    Trigger: []
+    CastPoint: []
+  Legendary:
+    TypeChance:
+      Entries:
+      - Weight: 0.2
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0.2
+        label: Effect
+        Value: 2
+      - Weight: 0.2
+        label: Stat
+        Value: 3
+      - Weight: 0.1
+        label: Trigger
+        Value: 4
+      - Weight: 0.1
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory: []
+    Effect: []
+    Stat: []
+    Trigger: []
+    CastPoint: []
