@@ -23,7 +23,7 @@ public class ProbabilitySlider<T>
             AddEntry(entry.label, entry.weight, entry.value);
         }
     }
-    public ProbabilityEntry<T> GetRandomEntry()
+    public T GetRandomEntry()
     {
         float totalWeight = Entries.Sum(e => e.Weight);
         float randomValue = UnityEngine.Random.Range(0f, totalWeight);
@@ -34,15 +34,15 @@ public class ProbabilitySlider<T>
             cumulativeWeight += entry.Weight;
             if (randomValue <= cumulativeWeight)
             {
-                return entry;
+                return entry.Value;
             }
         }
 
-        return Entries[Entries.Count - 1];
+        return Entries[Entries.Count - 1].Value; 
     }
 }
 [Serializable]
-public struct ProbabilityEntry<T>
+public class ProbabilityEntry<T>
 {
     [Range(0, 1)]
     public float Weight;
@@ -55,9 +55,17 @@ public class ProbabilitySliderDrawer : PropertyDrawer
     const float BAR_HEIGHT = 30f;
     const float HANDLE_WIDTH = 6f;
 
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    public override float GetPropertyHeight(
+    SerializedProperty property,
+    GUIContent label)
     {
-        return BAR_HEIGHT + EditorGUIUtility.singleLineHeight + 10;
+        SerializedProperty entries =
+            property.FindPropertyRelative("Entries");
+
+        return BAR_HEIGHT +
+               EditorGUIUtility.singleLineHeight +
+               entries.arraySize * (EditorGUIUtility.singleLineHeight + 2) +
+               30 + 10; // Extra space for total weight and padding
     }
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -101,7 +109,11 @@ public class ProbabilitySliderDrawer : PropertyDrawer
                 .GetArrayElementAtIndex(i)
                 .FindPropertyRelative("Weight")
                 .floatValue;
-
+            weights[i] = Mathf.Max(0f, weights[i]);
+            if (weights[i] < 0.0001f)
+            {
+                weights[i] = 0;
+            }
             total += weights[i];
         }
 
@@ -118,6 +130,7 @@ public class ProbabilitySliderDrawer : PropertyDrawer
         };
 
         float currentX = barRect.x;
+        float y = barRect.yMax + 5;
 
         for (int i = 0; i < entries.arraySize; i++)
         {
@@ -151,7 +164,46 @@ public class ProbabilitySliderDrawer : PropertyDrawer
                 labelStyle);
 
             currentX += width;
+
+            // Draw entry fields below the bar
+
+            SerializedProperty weightProp =
+                entry.FindPropertyRelative("Weight");
+
+            Rect rowRect = new Rect(
+                position.x,
+                y,
+                position.width,
+                EditorGUIUtility.singleLineHeight);
+
+            float percent =
+                total > 0
+                ? (weightProp.floatValue / total) * 100f
+                : 0f;
+
+            float trueValue;
+            trueValue = Mathf.Max(0f,weightProp.floatValue);
+            if (trueValue < 0.0001f)
+            {
+                trueValue = 0;
+            }
+            weightProp.floatValue =
+                EditorGUI.FloatField(
+                    rowRect,
+                    $"{Label} ({percent:F1}%)",
+                    trueValue);
+
+            y += EditorGUIUtility.singleLineHeight + 2;
         }
+        Rect totalRect = new Rect(
+        position.x,
+        y + 4,
+        position.width,
+        EditorGUIUtility.singleLineHeight);
+
+        EditorGUI.LabelField(
+            totalRect,
+            $"Total Weight: {total:F1}");
 
         HandleDragging(entries, barRect, weights, total);
 
