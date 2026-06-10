@@ -38,13 +38,12 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     {
         if (!network)
         {
+            player.caster = this;
             DamageHandler = GetComponent<CharacterDamageHandler>();
             equippedSpells = new Spell[4];
             foreach (var nodeData in ownedNodes)
             {
-                SpellNode runtimeNode = Instantiate(nodeData);
-                runtimeNode.Initialize();
-                runtimeNodes.Add(runtimeNode);
+                InstantiateNode(nodeData);
             }
         }
 
@@ -57,13 +56,12 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
     public override void OnStartAuthority()
     {
+        player.caster = this;
         DamageHandler = GetComponent<CharacterDamageHandler>();
         equippedSpells = new Spell[4];
         foreach (var nodeData in ownedNodes)
         {
-            SpellNode runtimeNode = Instantiate(nodeData);
-            runtimeNode.Initialize();
-            runtimeNodes.Add(runtimeNode);
+            InstantiateNode(nodeData);
         }
         if (!isServer)
         {
@@ -74,14 +72,24 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     [Command]
     public void CMDInitialize()
     {
+        player.caster = this;
         DamageHandler = GetComponent<CharacterDamageHandler>();
         equippedSpells = new Spell[4];
         foreach (var nodeData in ownedNodes)
         {
-            SpellNode runtimeNode = Instantiate(nodeData);
-            runtimeNode.Initialize();
-            runtimeNodes.Add(runtimeNode);
+            InstantiateNode(nodeData);
         }
+    }
+    void InstantiateNode(SpellNode nodePrefab)
+    {
+        SpellNode runtimeNode = Instantiate(nodePrefab);
+        runtimeNode.Initialize();
+        runtimeNodes.Add(runtimeNode);
+    }
+    public void AddRune(SpellNode nodePrefab)
+    {
+        ownedNodes.Add(nodePrefab);
+        InstantiateNode(nodePrefab);
     }
 
     private void Update()

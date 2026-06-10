@@ -40,7 +40,10 @@ public class Player : Character
     [Header("Network")]
     public bool network = true;
 
+    [Header("Spellcasting")]
+    public SpellCaster caster;
 
+    public InteractableObject currentInteraction;
     //public PlayerData data;
 
     /*[Serializable]
@@ -244,6 +247,21 @@ public class Player : Character
             AddExternalVelocity(v.normalized * DashForce);
             dashOnCooldown = true;
             gravityPaused = true;
+        }
+    }
+    public void InteractInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network)
+        {
+            return;
+        }
+
+    }
+    public void Interact()
+    {
+        if (currentInteraction != null)
+        {
+            currentInteraction.Interact(this);
         }
     }
     /*Vector2 lookInput;

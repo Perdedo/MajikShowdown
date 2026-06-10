@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
     public List<Player> Players = new List<Player>();
     public NetworkAuxiliarControl netCtrl;
     public HordeController hordeController;
+    [Header("Interactable Objects")]
+    public float interactionRadius = 2;
+    public List<InteractableObject> interactables;
 
     void Awake()
     {
