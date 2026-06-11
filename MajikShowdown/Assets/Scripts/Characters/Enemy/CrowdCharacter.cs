@@ -9,7 +9,7 @@ public class CrowdCharacter : CrowdRB
     [SerializeField] protected float speed;
     [SerializeField] protected bool accelerate;
     [SerializeField] protected float accelerationTime;
-    [SerializeField][Range(0, 1)] protected float SlopeAngle;
+    [SerializeField][Range(0, 1)] protected float SlopeAngle = 0.5f;
     protected float accelerationSpeed;
 
     [Header("Jump Options")]
@@ -60,7 +60,7 @@ public class CrowdCharacter : CrowdRB
         }
     }
 
-    protected override void FixedUpdate()
+    protected override void FixedRBUpdate()
     {
         if (CvState != CharVerticalState.jumping)
         {
@@ -145,14 +145,20 @@ public class CrowdCharacter : CrowdRB
         dir.y = 0;
         dir = Vector3.ClampMagnitude(dir, 1);
         float normalDot = Vector3.Dot(LastHitInfo.normal, Vector3.up);
-        if (normalDot >= SlopeAngle)
+        if (normalDot >= SlopeAngle && vState == VerticalState.grounded)
         {
             dir = Vector3.ProjectOnPlane(dir, LastHitInfo.normal);
-        }   
+            //transform.rotation = Quaternion.FromToRotation(transform.up, LastHitInfo.normal) * transform.rotation;
+        }
+        /*else
+        {
+            transform.rotation = Quaternion.FromToRotation(transform.up, Vector3.up) * transform.rotation;
+        }*/
+        
         if(accelerate && accelerationTime > 0)
         {
-            accelerationSpeed = speed / accelerationTime;
-            Vector3 velocityChange = new Vector3(dir.x * speed, localVelocity.y, dir.z * speed) - localVelocity;
+            //accelerationSpeed = speed / accelerationTime;
+            Vector3 velocityChange = (dir*speed) - localVelocity;
             SetAcceleration(velocityChange * accelerationSpeed);
         }
         else
@@ -162,7 +168,7 @@ public class CrowdCharacter : CrowdRB
             {
                 speed *= jumpingSpeedMultiplier;
             }
-            SetVelocity(new Vector3(dir.x * speed, localVelocity.y, dir.z * speed));
+            SetVelocity(dir*speed);
         }
         
     }
@@ -173,10 +179,15 @@ public class CrowdCharacter : CrowdRB
         dir = Vector3.ClampMagnitude(dir, 1);
         float speed = vel.magnitude;
         if (movePaused) dir = Vector3.zero;
+        float normalDot = Vector3.Dot(LastHitInfo.normal, Vector3.up);
+        if (normalDot >= SlopeAngle && vState == VerticalState.grounded)
+        {
+            dir = Vector3.ProjectOnPlane(dir, LastHitInfo.normal);
+        }
         if (accelerate && accelerationTime > 0)
         {
-            accelerationSpeed = speed / accelerationTime;
-            Vector3 velocityChange = new Vector3(dir.x * speed, localVelocity.y, dir.z * speed) - localVelocity;
+            //accelerationSpeed = speed / accelerationTime;
+            Vector3 velocityChange = (dir*speed) - localVelocity;
             SetAcceleration(velocityChange.normalized * accelerationSpeed);
         }
         else
@@ -186,7 +197,7 @@ public class CrowdCharacter : CrowdRB
             {
                 speed *= jumpingSpeedMultiplier;
             }
-            SetVelocity(new Vector3(dir.x * speed, localVelocity.y, dir.z * speed));
+            SetVelocity(dir*speed);
         }
 
     }

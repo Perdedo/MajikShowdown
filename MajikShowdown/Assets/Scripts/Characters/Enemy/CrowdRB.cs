@@ -1,7 +1,6 @@
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
-using System.Collections;
 using System;
 public class CrowdRB : NetworkBehaviour
 {
@@ -14,7 +13,7 @@ public class CrowdRB : NetworkBehaviour
     [SerializeField] protected float terrainBuffer;
     [SerializeField] protected float BaseFriction = 0.5f;
 
-    [NonSerialized] public Vector3 localVelocity, worldVelocity, parentVelocity, externalVelocity, lastHorizontalDirection, hDir, acceleration;
+    [NonSerialized] public Vector3 localVelocity, worldVelocity, parentVelocity, externalVelocity, lastHorizontalDirection, hDir, acceleration, verticalVelocity;
     public Vector3 HolrizontalDirection { get { return hDir; } }
     [System.NonSerialized] public Rigidbody rb;
     protected float height;
@@ -44,7 +43,7 @@ public class CrowdRB : NetworkBehaviour
         externalVelocity = Vector3.zero;
         //hits = new RaycastHit[raycastNumber + 1];
     }
-    protected virtual void FixedUpdate()
+    protected virtual void FixedRBUpdate()
     {
         Gravity();
         UpdateVelocity();
@@ -53,7 +52,7 @@ public class CrowdRB : NetworkBehaviour
     protected RaycastHit LastHitInfo;
     protected void RaycastGround()
     {
-        
+
         Physics.Raycast(rb.position, Vector3.down, out LastHitInfo, terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
     }
 
@@ -66,16 +65,16 @@ public class CrowdRB : NetworkBehaviour
         {
             if (LastHitInfo.collider != null || (groundDistance <= terrainBuffer && vState == VerticalState.grounded))
             {
-                localVelocity.y = 0;
+                verticalVelocity.y = 0;
             }
             else
             {
-                localVelocity += Vector3.up * Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
+                verticalVelocity += Vector3.up * Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
             }
         }
         else
         {
-            localVelocity.y = 0;
+            verticalVelocity.y = 0;
         }
 
         if (LastHitInfo.collider != null)
@@ -107,9 +106,10 @@ public class CrowdRB : NetworkBehaviour
 
     protected void SetVelocity(Vector3 vel)
     {
-        if (movePaused) vel = new Vector3(0, vel.y, 0);
+        if (movePaused) vel = Vector3.zero;
 
         localVelocity = vel;
+        Debug.DrawRay(transform.position, localVelocity * 5, Color.red);
     }
     /*protected void AccelerateToVelocity(Vector3 vel, float seconds)
     {
@@ -162,7 +162,7 @@ public class CrowdRB : NetworkBehaviour
         {
             parentVelocity = Vector3.zero;
         }*/
-        worldVelocity = parentVelocity + Vector3.ClampMagnitude(localVelocity, maxVelocity);
+        worldVelocity = parentVelocity + Vector3.ClampMagnitude(localVelocity, maxVelocity) + verticalVelocity;
         Vector3 atritionVector = externalVelocity.normalized * BaseFriction;
         if (externalVelocity.sqrMagnitude < 0.01f)
         {
@@ -172,12 +172,13 @@ public class CrowdRB : NetworkBehaviour
         {
             externalVelocity -= atritionVector;
         }
-        Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
+        rb.Move(rb.position + ((worldVelocity+externalVelocity) * Time.fixedDeltaTime), rb.rotation);
+        /*Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
 
         if (velocityChange.sqrMagnitude > 0.01f)
         {
             rb.AddForce(velocityChange, ForceMode.VelocityChange);
-        }
+        }*/
 
     }
     public void InvokeIfHasListener(UnityEvent e)
