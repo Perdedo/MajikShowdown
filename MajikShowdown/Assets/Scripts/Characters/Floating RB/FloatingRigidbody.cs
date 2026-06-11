@@ -4,7 +4,9 @@ using UnityEngine.Events;
 using Mirror;
 public class FloatingRigidbody : NetworkBehaviour
 {
+    [Header("Velocity Options")]
     [SerializeField] protected float maxVelocity;
+    public bool affectedByMovingGround = false;
     [Header("Floating Options")]
     [SerializeField] protected float floatingHeight;
     [SerializeField] protected float gravityMultiplier;
@@ -39,23 +41,25 @@ public class FloatingRigidbody : NetworkBehaviour
         height = gameObject.GetComponent<Collider>().bounds.size.y;
         lastHorizontalDirection = transform.forward;
         externalVelocity = Vector3.zero;
+        hits = new RaycastHit[raycastNumber + 1];
     }
     protected virtual void FixedUpdate()
     {
         Float();
         UpdateVelocity();
     }
+    RaycastHit[] hits;
+    IMovingGround movingGround;
     protected RaycastHit RaycastGround()
     {
         RaycastHit hitInfo;
-        RaycastHit[] hits;
+
         if (raycastNumber <= 1)
         {
             Physics.Raycast(rb.position, Vector3.down, out hitInfo, floatingHeight + terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
         }
         else
         {
-            hits = new RaycastHit[raycastNumber + 1];
             for (int i = 0; i < raycastNumber; i++)
             {
                 Quaternion rot = Quaternion.Euler(0, (360 / raycastNumber) * i, 0);
@@ -64,7 +68,7 @@ public class FloatingRigidbody : NetworkBehaviour
                 v = rot * v;
                 raypoint = rb.position + v;
                 Physics.Raycast(raypoint, Vector3.down, out hits[i], floatingHeight + terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
-                Debug.DrawRay(raypoint, Vector3.down * (floatingHeight + terrainBuffer + height / 2), Color.red, Time.fixedDeltaTime);
+                //Debug.DrawRay(raypoint, Vector3.down * (floatingHeight + terrainBuffer + height / 2), Color.red, Time.fixedDeltaTime);
             }
             Physics.Raycast(rb.position, Vector3.down, out hits[raycastNumber], floatingHeight + terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
             int shorter = 0;
@@ -77,17 +81,23 @@ public class FloatingRigidbody : NetworkBehaviour
             }
             hitInfo = hits[shorter];
         }
-        if (OnTopOf != hitInfo.collider?.gameObject && vState == VerticalState.grounded)
+        if (affectedByMovingGround && OnTopOf != hitInfo.collider?.gameObject)
         {
-            OnTopOf?.GetComponent<IMovingGround>()?.FRig.Remove(this);
-            OnTopOf = hitInfo.collider?.gameObject;
-            OnTopOf?.GetComponent<IMovingGround>()?.FRig.Add(this);
+            movingGround = OnTopOf?.GetComponent<IMovingGround>();
+            if (vState == VerticalState.grounded)
+            {
+                movingGround?.FRig.Remove(this);
+                OnTopOf = hitInfo.collider?.gameObject;
+                movingGround = OnTopOf?.GetComponent<IMovingGround>();
+                movingGround?.FRig.Add(this);
+            }
+            else
+            {
+                movingGround?.FRig.Remove(this);
+                OnTopOf = null;
+            }
         }
-        else if (vState != VerticalState.grounded)
-        {
-            OnTopOf?.GetComponent<IMovingGround>()?.FRig.Remove(this);
-            OnTopOf = null;
-        }
+
         return hitInfo;
     }
 
@@ -125,7 +135,7 @@ public class FloatingRigidbody : NetworkBehaviour
             if (vState == VerticalState.falling)
             {
                 vState = VerticalState.grounded;
-                HitGround.Invoke();
+                InvokeIfHasListener(HitGround);
             }
             else
             {
@@ -137,7 +147,7 @@ public class FloatingRigidbody : NetworkBehaviour
             if (vState == VerticalState.grounded)
             {
                 vState = VerticalState.falling;
-                Fell.Invoke();
+                InvokeIfHasListener(Fell);
             }
             else
             {
@@ -187,18 +197,18 @@ public class FloatingRigidbody : NetworkBehaviour
             if (movingState != HorizontalState.moving)
             {
                 movingState = HorizontalState.moving;
-                StartedMoving.Invoke();
+                InvokeIfHasListener(StartedMoving);
             }
         }
         else if (movingState != HorizontalState.idle)
         {
             movingState = HorizontalState.idle;
-            StoppedMoving.Invoke();
+            InvokeIfHasListener(StoppedMoving);
         }
 
-        if (OnTopOf?.GetComponent<IMovingGround>() != null)
+        if (affectedByMovingGround && movingGround != null)
         {
-            parentVelocity = OnTopOf.GetComponent<IMovingGround>().GetVelocity();
+            parentVelocity = movingGround.GetVelocity();
         }
         else
         {
@@ -215,15 +225,29 @@ public class FloatingRigidbody : NetworkBehaviour
             externalVelocity -= atritionVector;
         }
         Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
-        rb.AddForce(velocityChange, ForceMode.VelocityChange);
+        
+        if(velocityChange.sqrMagnitude > 0.01f)
+        {
+            rb.AddForce(velocityChange, ForceMode.VelocityChange);
+        }
+        
     }
+    public void InvokeIfHasListener(UnityEvent e)
+    {
+        if (e.GetPersistentEventCount() > 0)
+        {
+            e.Invoke();
+        }
+    }
+    ContactPoint[] contactBuffer = new ContactPoint[10];
     protected virtual void OnCollisionStay(Collision collision)
     {
         if (externalVelocity.sqrMagnitude != 0)
         {
-            foreach (ContactPoint p in collision.contacts)
+            int contactCount = collision.GetContacts(contactBuffer);
+            for (int i = 0; i < contactCount; i++)
             {
-                float dot = Vector3.Dot(p.normal, externalVelocity.normalized);
+                float dot = Vector3.Dot(contactBuffer[i].normal, externalVelocity.normalized);
                 if (dot < 0)
                 {
                     externalVelocity += externalVelocity * dot;
