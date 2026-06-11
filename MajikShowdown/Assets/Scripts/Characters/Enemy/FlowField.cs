@@ -7,7 +7,7 @@ public class FlowField
     public Dictionary<Vector2Int, CellColumn> field = new Dictionary<Vector2Int, CellColumn>();
     public Vector2Int fieldSize;
     public float cellSize = 1f;
-    public float maxStepOffset = 0.5f;
+    public float maxStepOffset = 1f;
     public float maxJumpHeight = 5f;
     public FieldCell DestinationCell;
     public List<FieldCell> DestinationCells;
