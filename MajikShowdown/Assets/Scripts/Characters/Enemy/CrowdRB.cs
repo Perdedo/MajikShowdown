@@ -23,6 +23,7 @@ public class CrowdRB : NetworkBehaviour
     [NonSerialized] public VerticalState vState;
 
     [Header("Movement Events")]
+    public bool callEvents = false;
     [SerializeField] protected UnityEvent Fell;
     [SerializeField] protected UnityEvent HitGround;
     [SerializeField] protected UnityEvent StartedMoving;
@@ -35,6 +36,7 @@ public class CrowdRB : NetworkBehaviour
     //[SerializeField] protected float raycastRadius;
     public GameObject OnTopOf { get; protected set; }
     [System.NonSerialized] public bool movePaused, gravityPaused;
+    Timer raycastTimer = new Timer(false);
     protected virtual void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody>();
@@ -43,7 +45,7 @@ public class CrowdRB : NetworkBehaviour
         externalVelocity = Vector3.zero;
         //hits = new RaycastHit[raycastNumber + 1];
     }
-    protected virtual void FixedRBUpdate()
+    public virtual void FixedRBUpdate()
     {
         Gravity();
         UpdateVelocity();
@@ -52,7 +54,11 @@ public class CrowdRB : NetworkBehaviour
     protected RaycastHit LastHitInfo;
     protected void RaycastGround()
     {
-
+        /*if(raycastTimer.timer(0.05f, Time.captureDeltaTime, false, false))
+        {
+            Physics.Raycast(rb.position, Vector3.down, out LastHitInfo, terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
+            raycastTimer.ResetTimer();
+        }*/
         Physics.Raycast(rb.position, Vector3.down, out LastHitInfo, terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
     }
 
@@ -82,7 +88,7 @@ public class CrowdRB : NetworkBehaviour
             if (vState == VerticalState.falling)
             {
                 vState = VerticalState.grounded;
-                InvokeIfHasListener(HitGround);
+                InvokeIfAllowed(HitGround);
             }
             else
             {
@@ -94,7 +100,7 @@ public class CrowdRB : NetworkBehaviour
             if (vState == VerticalState.grounded)
             {
                 vState = VerticalState.falling;
-                InvokeIfHasListener(Fell);
+                InvokeIfAllowed(Fell);
             }
             else
             {
@@ -109,7 +115,6 @@ public class CrowdRB : NetworkBehaviour
         if (movePaused) vel = Vector3.zero;
 
         localVelocity = vel;
-        Debug.DrawRay(transform.position, localVelocity * 5, Color.red);
     }
     /*protected void AccelerateToVelocity(Vector3 vel, float seconds)
     {
@@ -145,13 +150,13 @@ public class CrowdRB : NetworkBehaviour
             if (movingState != HorizontalState.moving)
             {
                 movingState = HorizontalState.moving;
-                InvokeIfHasListener(StartedMoving);
+                InvokeIfAllowed(StartedMoving);
             }
         }
         else if (movingState != HorizontalState.idle)
         {
             movingState = HorizontalState.idle;
-            InvokeIfHasListener(StoppedMoving);
+            InvokeIfAllowed(StoppedMoving);
         }
 
         /*if (affectedByMovingGround && movingGround != null)
@@ -172,18 +177,18 @@ public class CrowdRB : NetworkBehaviour
         {
             externalVelocity -= atritionVector;
         }
-        rb.Move(rb.position + ((worldVelocity+externalVelocity) * Time.fixedDeltaTime), rb.rotation);
-        /*Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
+        //rb.Move(rb.position + ((worldVelocity+externalVelocity) * Time.fixedDeltaTime), rb.rotation);
+        Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
 
         if (velocityChange.sqrMagnitude > 0.01f)
         {
             rb.AddForce(velocityChange, ForceMode.VelocityChange);
-        }*/
+        }
 
     }
-    public void InvokeIfHasListener(UnityEvent e)
+    public void InvokeIfAllowed(UnityEvent e)
     {
-        if (e.GetPersistentEventCount() > 0)
+        if (callEvents)
         {
             e.Invoke();
         }

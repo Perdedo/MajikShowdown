@@ -7,10 +7,15 @@ public class Timer
     public float Timestamp { get { return timestamp; } }
     bool paused = false;
     public bool currentResponse { get; private set; }
+    public bool callEvents = false;
     public bool Paused
     {
         get { return paused; }
         set { paused = value; }
+    }
+    public Timer(bool CallEvents)
+    {
+        callEvents = CallEvents;
     }
     public UnityEvent timedEvent = new UnityEvent();
     public void SetTimer(float time)
@@ -29,7 +34,7 @@ public class Timer
             {
                 SetTimer(0);
             }
-            if (!defautResponse && !paused)
+            if (!defautResponse && !paused && callEvents)
             {
                 timedEvent.Invoke();
             }
@@ -38,7 +43,7 @@ public class Timer
         }
         else
         {
-            if (defautResponse)
+            if (defautResponse && callEvents)
             {
                 timedEvent.Invoke();
             }
@@ -58,7 +63,7 @@ public class Timer
             {
                 SetTimer(0);
             }
-            if (!defautResponse && !paused)
+            if (!defautResponse && !paused && callEvents)
             {
                 timedEvent.Invoke();
             }
@@ -66,7 +71,7 @@ public class Timer
         }
         else
         {
-            if (defautResponse)
+            if (defautResponse && callEvents)
             {
                 timedEvent.Invoke();
             }

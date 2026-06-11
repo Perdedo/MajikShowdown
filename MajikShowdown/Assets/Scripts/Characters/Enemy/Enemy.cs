@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : Character
+public class Enemy : CrowdCharacter
 {
     public float rotationSpeed = 1;
     [Header("Target Avoidance Options")]
@@ -34,7 +34,7 @@ public class Enemy : Character
     FieldCell currentCell, forwardCell;
 
     bool attacked = true, onAttackCooldown = false;
-    Timer attackTimer = new Timer(), attackCooldownTimer = new Timer(), aiCalcTimer = new Timer();
+    Timer attackTimer = new Timer(true), attackCooldownTimer = new Timer(false), aiCalcTimer = new Timer(true);
     public float attackDuration = 0.3f, attackCooldown = 0.5f;
     public float damage = 1;
     public Elements element = Elements.None;
@@ -73,7 +73,15 @@ public class Enemy : Character
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
     }
-    void Update()
+    /*public void Update()
+    {
+        EnemyUpdate();
+    }
+    public void FixedUpdate()
+    {
+        FixedRBUpdate();
+    }*/
+    public void EnemyUpdate()
     {
         //target = GetClosestPlayer();
         if(FlowFieldManager.instance == null)
@@ -381,6 +389,7 @@ public class Enemy : Character
         {
             add += Directions[i] * Mathf.Clamp01(Interest[i] - Danger[i]);
         }
+        add.y = 0;
         return add.normalized;
     }
     public void FindObstacles()

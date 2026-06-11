@@ -19,7 +19,7 @@ public class Character : FloatingRigidbody
      [SerializeField]protected float  jumpCooldown;
     protected bool jumpOnCooldown = false;
     protected bool canJumpOnAir = false;
-    protected Timer jumpTimer = new Timer();
+    protected Timer jumpTimer = new Timer(true);
     [Header("Jump Events")]
     [SerializeField] protected UnityEvent Jumped;
     [SerializeField] protected UnityEvent FellOnJump;
