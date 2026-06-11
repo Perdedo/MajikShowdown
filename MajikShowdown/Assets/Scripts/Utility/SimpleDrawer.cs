@@ -18,9 +18,7 @@ public class SimpleDrawer : PropertyDrawer
             var value = property.FindPropertyRelative("value");
             var min = property.FindPropertyRelative("min");
             var max = property.FindPropertyRelative("max");
-            var curve = property.FindPropertyRelative("curve");
-            var curveMultiplier = property.FindPropertyRelative("curveMultiplier");
-            var curveTimeMax = property.FindPropertyRelative("curveTimeMax");
+
             y += EditorGUIUtility.singleLineHeight + 2f;
             EditorGUI.indentLevel++;
 
@@ -39,13 +37,6 @@ public class SimpleDrawer : PropertyDrawer
                     break;
                 case SimpleVar.ValueType.Infinity:
                     // nothing else to draw
-                    break;
-                case SimpleVar.ValueType.CurveRandom:
-                    EditorGUI.PropertyField(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), curve);
-                    y += EditorGUIUtility.singleLineHeight + 2f;
-                    EditorGUI.PropertyField(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), curveMultiplier);
-                    y += EditorGUIUtility.singleLineHeight + 2f;
-                    EditorGUI.PropertyField(new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight), curveTimeMax);
                     break;
             }
             EditorGUI.indentLevel--;
@@ -72,9 +63,6 @@ public class SimpleDrawer : PropertyDrawer
                 h += (EditorGUIUtility.singleLineHeight + 2f) * 2; // min + max
                 break;
             case SimpleVar.ValueType.Infinity:
-                break;
-            case SimpleVar.ValueType.CurveRandom:
-                h += (EditorGUIUtility.singleLineHeight + 2f) * 3; // curve + curveMultiplier + curveTimeMax
                 break;
         }
         return h;

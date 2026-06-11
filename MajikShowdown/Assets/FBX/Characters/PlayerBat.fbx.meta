@@ -3,22 +3,7 @@ guid: 256023c74ae569f4a8cc7893a53da5cc
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Body
-    second: {fileID: 2100000, guid: c02a050a7e07ddc4da22fc202ad9c29e, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Cape
-    second: {fileID: 2100000, guid: 4811fd0c2a938fd408f397fb03a805d5, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Weapon
-    second: {fileID: 2100000, guid: 60ac50c82534dcb40a3ffbf1a01cc952, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -47,10 +32,10 @@ ModelImporter:
     clipAnimations:
     - serializedVersion: 16
       name: Casting
-      takeName: PlayerBatArmature|CastingSpell
-      internalID: 8767922839757994222
+      takeName: Armature|CastingSpell
+      internalID: 6801779211355097566
       firstFrame: 0
-      lastFrame: 32
+      lastFrame: 29
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -75,38 +60,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Downed
-      takeName: PlayerBatArmature|DownedCycle
-      internalID: 7383801672094316500
-      firstFrame: 0
-      lastFrame: 448
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
       name: Idle
-      takeName: PlayerBatArmature|IdleCycle
-      internalID: 9058508083439905363
+      takeName: Armature|IdleCycle
+      internalID: 4643121897185618450
       firstFrame: 0
       lastFrame: 82
       wrapMode: 0
@@ -133,98 +89,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Landing
-      takeName: PlayerBatArmature|JumpLanding
-      internalID: 8150715108821510119
-      firstFrame: 0
-      lastFrame: 15
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: Jump
-      takeName: PlayerBatArmature|JumpUp
-      internalID: 659704192401908960
-      firstFrame: 0
-      lastFrame: 98
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: Reviving
-      takeName: PlayerBatArmature|RevivingCycle
-      internalID: -8821826672425058279
-      firstFrame: 0
-      lastFrame: 45
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
       name: RunBackward
-      takeName: PlayerBatArmature|RunBackwardCycle
-      internalID: -9066344777120301172
+      takeName: Armature|RunBackwardCycle
+      internalID: -3823659042847832908
       firstFrame: 0
-      lastFrame: 21
+      lastFrame: 20
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -250,8 +119,8 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: RunFoward
-      takeName: PlayerBatArmature|RunFowardCycle
-      internalID: 8700495394059694824
+      takeName: Armature|RunFowardCycle
+      internalID: -2362286055916745995
       firstFrame: 0
       lastFrame: 20
       wrapMode: 0
@@ -279,8 +148,8 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: RunLeft
-      takeName: PlayerBatArmature|RunLeftCycle
-      internalID: -4456030553956312890
+      takeName: Armature|RunLeftCycle
+      internalID: 2504015742832331943
       firstFrame: 0
       lastFrame: 20
       wrapMode: 0
@@ -308,8 +177,8 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: RunRight
-      takeName: PlayerBatArmature|RunRightCycle
-      internalID: -8682220469055826736
+      takeName: Armature|RunRightCycle
+      internalID: 6252786343414314133
       firstFrame: 0
       lastFrame: 20
       wrapMode: 0

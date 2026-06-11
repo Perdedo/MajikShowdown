@@ -54,6 +54,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         node.transform.localPosition = Vector3.zero;
         node.SetOriginZone(this);
         ConnectNode(spell);
+        Debug.Log("Receive");
         grid.caster.commander.HexReceive(node,this);
     }
 
@@ -124,6 +125,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public void ConnectNode(SpellNodeInterface node)
     {
         if (node == null) return;
+        Debug.Log("Connect");
         MakeNearbyConnections(node);
         grid.AddNodeToGrid(this, node);
         spellNode = node;
@@ -161,6 +163,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         {
             return true;
         }*/
+        Debug.Log("MakeCon");
         for (int i  = 0; i < neighbours.Length; i++)
         {
             if (neighbours[i] != null && neighbours[i].spellNode != null && neighbours[i].spellNode != spell)

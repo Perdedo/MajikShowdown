@@ -133,6 +133,7 @@ public abstract class SpellNode : ScriptableObject
     public virtual void RandomizeStats()
     {
         Cooldown = statRandomizer.Cooldown.GetValue();
+        Debug.Log("cooldown: " + Cooldown);
         BaseStats.Randomize(statRandomizer);
         RandomizeExtras();
     }
