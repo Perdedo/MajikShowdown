@@ -135,7 +135,7 @@ public class FloatingRigidbody : NetworkBehaviour
             if (vState == VerticalState.falling)
             {
                 vState = VerticalState.grounded;
-                InvokeIfHasListener(HitGround);
+                HitGround.Invoke();
             }
             else
             {
@@ -147,7 +147,7 @@ public class FloatingRigidbody : NetworkBehaviour
             if (vState == VerticalState.grounded)
             {
                 vState = VerticalState.falling;
-                InvokeIfHasListener(Fell);
+                Fell.Invoke();
             }
             else
             {
@@ -197,13 +197,13 @@ public class FloatingRigidbody : NetworkBehaviour
             if (movingState != HorizontalState.moving)
             {
                 movingState = HorizontalState.moving;
-                InvokeIfHasListener(StartedMoving);
+                StartedMoving.Invoke();
             }
         }
         else if (movingState != HorizontalState.idle)
         {
             movingState = HorizontalState.idle;
-            InvokeIfHasListener(StoppedMoving);
+            StoppedMoving.Invoke();
         }
 
         if (affectedByMovingGround && movingGround != null)
@@ -232,13 +232,13 @@ public class FloatingRigidbody : NetworkBehaviour
         }
         
     }
-    public void InvokeIfHasListener(UnityEvent e)
+    /*public void InvokeIfHasListener(UnityEvent e)
     {
         if (e.GetPersistentEventCount() > 0)
         {
             e.Invoke();
         }
-    }
+    }*/
     ContactPoint[] contactBuffer = new ContactPoint[10];
     protected virtual void OnCollisionStay(Collision collision)
     {

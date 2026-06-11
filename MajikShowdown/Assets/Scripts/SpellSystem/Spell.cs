@@ -24,7 +24,7 @@ public class Spell
     public int instanceIndex;
     [HideInInspector] public System.Action OnSpellUpdated;
     [NonSerialized] public LayerMask spellCollisionLayers;
-    public Timer cooldownTimer = new Timer();
+    public Timer cooldownTimer = new Timer(false);
     [NonSerialized] public bool onCooldown = false;
     public Spell(SpellCaster owner)
     {

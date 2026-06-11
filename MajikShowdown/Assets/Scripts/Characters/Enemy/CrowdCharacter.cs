@@ -19,7 +19,7 @@ public class CrowdCharacter : CrowdRB
      [SerializeField]protected float  jumpCooldown;
     protected bool jumpOnCooldown = false;
     protected bool canJumpOnAir = false;
-    protected Timer jumpTimer = new Timer();
+    protected Timer jumpTimer = new Timer(true);
     [Header("Jump Events")]
     [SerializeField] protected UnityEvent Jumped;
     [SerializeField] protected UnityEvent FellOnJump;
@@ -60,7 +60,7 @@ public class CrowdCharacter : CrowdRB
         }
     }
 
-    protected override void FixedRBUpdate()
+    public override void FixedRBUpdate()
     {
         if (CvState != CharVerticalState.jumping)
         {
