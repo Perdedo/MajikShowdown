@@ -88,15 +88,15 @@ public class EnemySpawner : NetworkBehaviour
                 {
                     aux = Instantiate(enemies[i].enemy, spawnPos.position, Quaternion.identity);
                     NetworkServer.Spawn(aux);
-                    GameManager.Instance.hordeController.enemiesByType[i].Add(aux);
+                    GameManager.Instance.hordeController.enemiesByType[i].Add(aux.GetComponent<Enemy>());
                 }
                 else
                 {
-                    foreach(GameObject e in GameManager.Instance.hordeController.enemiesByType[i])
+                    foreach(Enemy e in GameManager.Instance.hordeController.enemiesByType[i])
                     {
                         if (!GameManager.Instance.hordeController.usedEnemiesByType[i].Contains(e))
                         {
-                            aux = e;
+                            aux = e.gameObject;
                             aux.transform.position = spawnPos.position;
                             aux.SetActive(true);
                             break;
@@ -105,7 +105,7 @@ public class EnemySpawner : NetworkBehaviour
                 }
                 Enemy auxEnemy = aux.GetComponent<Enemy>();
                 GameManager.Instance.hordeController.enemies.Add(aux);
-                GameManager.Instance.hordeController.usedEnemiesByType[i].Add(aux);
+                GameManager.Instance.hordeController.usedEnemiesByType[i].Add(aux.GetComponent<Enemy>());
                 randElemental = UnityEngine.Random.Range(0, 100);
                 if(randElemental < elementalChance)
                 {

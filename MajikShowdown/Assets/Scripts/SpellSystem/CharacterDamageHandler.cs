@@ -61,7 +61,7 @@ public class CharacterDamageHandler : NetworkBehaviour
         if(network)
         {
             //NetworkServer.Destroy(gameObject);
-            GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove(this.gameObject);
+            GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove(this.gameObject.GetComponent<Enemy>());
             RPCDisable();
             this.gameObject.SetActive(false);
         }

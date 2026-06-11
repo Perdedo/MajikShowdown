@@ -34,7 +34,7 @@ public class Enemy : Character
     FieldCell currentCell, forwardCell;
 
     bool attacked = true, onAttackCooldown = false;
-    Timer attackTimer = new Timer(), attackCooldownTimer = new Timer();
+    Timer attackTimer = new Timer(), attackCooldownTimer = new Timer(), aiCalcTimer = new Timer();
     public float attackDuration = 0.3f, attackCooldown = 0.5f;
     public float damage = 1;
     public Elements element = Elements.None;
@@ -67,20 +67,20 @@ public class Enemy : Character
         }
         updateRate = 1f / 30f;
         dmgCtrl = new Damage(damage, element);
+        aiCalcTimer.timedEvent.AddListener(AICalculation);
+        aiCalcTimer.SetTimer(0);
         attackTimer.timedEvent.AddListener(AttackPlayer);
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
-        StartCoroutine(StartAICalc());
-    }
-
-    IEnumerator StartAICalc()
-    {
-        yield return new WaitUntil(() => FlowFieldManager.instance != null);
-        StartCoroutine(AICalculation());
     }
     void Update()
     {
         //target = GetClosestPlayer();
+        if(FlowFieldManager.instance == null)
+        {
+            return;
+        }
+        aiCalcTimer.timer(updateRate, Time.deltaTime, false, true);
         if(target == null)
         {
             return;
@@ -161,7 +161,7 @@ public class Enemy : Character
         PathToTarget(currentCell);
     }
 
-    IEnumerator AICalculation()
+    public void AICalculation()
     {
         target = GetClosestPlayer();
         if (target != null)
@@ -212,8 +212,6 @@ public class Enemy : Character
                 MoveDirection = GetBestDirection();
             }
         }
-        yield return new WaitForSeconds(updateRate);
-        StartCoroutine(AICalculation());
     }
 
     public Vector3 GetNavMeshDir(FieldCell c)

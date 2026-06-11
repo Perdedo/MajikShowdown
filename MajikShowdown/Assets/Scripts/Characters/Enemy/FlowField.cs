@@ -202,7 +202,7 @@ public class FlowField
     int cellsPerDelayInt = 10000;
     int cellsPerDelayDir = 10000;
     int cellCount = 0;
-    float maxSqrDistance = 10000;
+    //float maxSqrDistance = 10000;
 
     public void GenerateFlowField(List<FieldCell> targets)
     {

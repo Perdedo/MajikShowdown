@@ -22,8 +22,8 @@ public class HordeController : NetworkBehaviour
     [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
     [HideInInspector]public List<GameObject> enemies = new List<GameObject>();
-    [HideInInspector]public List<List<GameObject>> enemiesByType = new List<List<GameObject>>();
-    [HideInInspector]public List<HashSet<GameObject>> usedEnemiesByType = new List<HashSet<GameObject>>();
+    [HideInInspector]public List<List<Enemy>> enemiesByType = new List<List<Enemy>>();
+    [HideInInspector]public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
     [HideInInspector]public List<GameObject> spawners = new List<GameObject>();
     [HideInInspector]public HashSet<GameObject> usedSpawners = new HashSet<GameObject>();
     bool running = false;
@@ -39,8 +39,8 @@ public class HordeController : NetworkBehaviour
         usedEnemiesByType.Clear();
         for(int i = 0; i < enemyChances.Count; i++)
         {
-            enemiesByType.Add(new List<GameObject>());
-            usedEnemiesByType.Add(new HashSet<GameObject>());
+            enemiesByType.Add(new List<Enemy>());
+            usedEnemiesByType.Add(new HashSet<Enemy>());
         }
     }
 
@@ -111,7 +111,7 @@ public class HordeController : NetworkBehaviour
         inHordeTime = true;
         usedSpawners.Clear();
         enemies.Clear();
-        foreach(HashSet<GameObject> hs in usedEnemiesByType)
+        foreach(HashSet<Enemy> hs in usedEnemiesByType)
         {
             hs.Clear();
         }
