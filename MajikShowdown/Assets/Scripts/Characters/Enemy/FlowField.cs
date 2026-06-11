@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation;
 using UnityEngine.AI;
+using UnityEditor;
 public class FlowField
 {
     public Dictionary<Vector2Int, CellColumn> field = new Dictionary<Vector2Int, CellColumn>();
@@ -68,6 +69,8 @@ public class FlowField
                 cell.closeToObstacle = CheckForObstacles(cell);
             }
         }
+        EditorUtility.SetDirty(manager.flowFieldAsset);
+        AssetDatabase.SaveAssetIfDirty(manager.flowFieldAsset);
     }
 
     public void GetFieldFromAsset()
