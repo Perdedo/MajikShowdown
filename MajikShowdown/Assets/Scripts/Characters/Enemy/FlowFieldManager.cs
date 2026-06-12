@@ -87,6 +87,18 @@ public class FlowFieldManager : MonoBehaviour
         StartCoroutine(FlowFieldGenerator());
     }
 
+    public void UpdateFlowField()
+    {
+        Targets.Clear();
+        lastTargetsPos.Clear();
+        foreach (Player p in GameManager.Instance.Players)
+        {
+            Targets.Add(p.transform);
+            lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+        }
+        flowField.GenerateFlowField(lastTargetsPos);
+    }
+
     bool integrated = false;
     public void GenerateFlowFieldIntegrations()
     {

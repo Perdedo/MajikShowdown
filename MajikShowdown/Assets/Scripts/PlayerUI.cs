@@ -614,13 +614,29 @@ public class PlayerUI : NetworkBehaviour
         }
         else
         {
-
+            HandleClientLeave();
         }
     }
 
     [Command]
     public void HandleClientLeave()
     {
+        foreach(SpellCollider col in SpellColliderManager.Instance.activeSpellColliders)
+        {
+            if(col.OwnerSpell.Caster == this.caster)
+            {
+                col.OnDeath.RemoveAllListeners();
+                col.MarkedToDie = true;
+            }
+        }
+        GameManager.Instance.RemovePlayer(myPlayer);
+        FlowFieldManager.instance.UpdateFlowField();
+        ClientLeaveGame(this.connectionToClient);
+    }
 
+    [TargetRpc]
+    public void ClientLeaveGame(NetworkConnection target)
+    {
+        SteamLobby.instance.LeaveLobby();
     }
 }
