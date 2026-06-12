@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections;
 using UnityEngine;
 using Mirror;
 using Steamworks;
@@ -58,24 +57,6 @@ public class SteamLobby : MonoBehaviour
         {
             return;
         }
-        if(NetworkServer.active)
-        {
-            NetworkManager.singleton.StopServer();
-        }
-        if(NetworkClient.active)
-        {
-            NetworkManager.singleton.StopClient();
-        }
-        StartCoroutine(StartHostDelay(callback));
-        /*NetworkManager.singleton.StartHost();
-        SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HOSTADDRESSKEY, SteamUser.GetSteamID().ToString());
-        SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "name", SteamFriends.GetPersonaName().ToString() + "'s Lobby");
-        lobbyID = callback.m_ulSteamIDLobby;*/
-    }
-
-    IEnumerator StartHostDelay(LobbyCreated_t callback)
-    {
-        yield return new WaitForEndOfFrame();
         NetworkManager.singleton.StartHost();
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HOSTADDRESSKEY, SteamUser.GetSteamID().ToString());
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "name", SteamFriends.GetPersonaName().ToString() + "'s Lobby");
