@@ -53,7 +53,8 @@ public class CharacterDamageHandler : NetworkBehaviour
         if(GameManager.Instance.hordeController.enemies.Contains(this.gameObject))
         {
             GameManager.Instance.hordeController.enemies.Remove(this.gameObject);
-            if(!GameManager.Instance.hordeController.inHordeTime)
+            GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
+            if (!GameManager.Instance.hordeController.inHordeTime)
             {
                 GameManager.Instance.hordeController.CheckEnemyCount();
             }

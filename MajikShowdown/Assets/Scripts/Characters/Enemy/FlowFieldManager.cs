@@ -2,6 +2,9 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 public class FlowFieldManager : MonoBehaviour
 {
     public FlowFieldAsset flowFieldAsset;
@@ -119,6 +122,7 @@ public class FlowFieldManager : MonoBehaviour
         }
     }
 
+    public float maxSqrRenderDistance = 10000;
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
@@ -129,7 +133,7 @@ public class FlowFieldManager : MonoBehaviour
             {
                 foreach (FieldCell cell in v.Value.Layers)
                 {
-                    if (cell != null)
+                    if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                     {
                         Gizmos.color = Color.green;
                         Gizmos.DrawCube(cell.position, Vector3.one * CellSize * 0.9f);
@@ -152,7 +156,7 @@ public class FlowFieldManager : MonoBehaviour
                 {
                     foreach (FieldCell cell in v.Value.Layers)
                     {
-                        if (cell != null)
+                        if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                         {
                             Gizmos.color = Color.blue;
                             Gizmos.DrawRay(cell.position, cell.direction * CellSize * 0.5f);

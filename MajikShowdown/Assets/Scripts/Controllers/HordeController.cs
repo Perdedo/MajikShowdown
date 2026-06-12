@@ -30,7 +30,7 @@ public class HordeController : NetworkBehaviour
     public LayerMask spawnableLocations;
     Vector2 dir;
     bool possiblePos;
-
+    public TextMeshProUGUI enemyCounterTxt;
     private void Awake()
     {
         GameManager.Instance.hordeController = this;
@@ -41,6 +41,10 @@ public class HordeController : NetworkBehaviour
         {
             enemiesByType.Add(new List<Enemy>());
             usedEnemiesByType.Add(new HashSet<Enemy>());
+        }
+        if(isServer)
+        {
+            UpdateEnemyText(0);
         }
     }
 
@@ -123,6 +127,12 @@ public class HordeController : NetworkBehaviour
     public void UpdateTimerText(string txt)
     {
         timerTxt.text = txt;
+    }
+
+    [ClientRpc]
+    public void UpdateEnemyText(int ammount)
+    {
+        enemyCounterTxt.text = "Enemies left: " + ammount;
     }
 
     [Server]

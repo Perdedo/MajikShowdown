@@ -105,6 +105,7 @@ public class EnemySpawner : NetworkBehaviour
                 }
                 Enemy auxEnemy = aux.GetComponent<Enemy>();
                 GameManager.Instance.hordeController.enemies.Add(aux);
+                GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
                 GameManager.Instance.hordeController.usedEnemiesByType[i].Add(aux.GetComponent<Enemy>());
                 randElemental = UnityEngine.Random.Range(0, 100);
                 if(randElemental < elementalChance)
