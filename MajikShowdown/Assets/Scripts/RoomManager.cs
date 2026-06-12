@@ -48,6 +48,12 @@ public class RoomManager : NetworkRoomManager
         }
     }
 
+    public override void OnClientDisconnect()
+    {
+        Debug.Log(NetworkManager.singleton.mode);
+        base.OnClientDisconnect();
+    }
+
     public override void ReadyStatusChanged()
     {
         int CurrentPlayers = 0;
