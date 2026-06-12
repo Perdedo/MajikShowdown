@@ -57,6 +57,9 @@ public class SteamLobby : MonoBehaviour
         {
             return;
         }
+        Debug.LogWarning($"NetworkClient.active: {NetworkClient.active}");
+        Debug.LogWarning($"NetworkClient.isConnected: {NetworkClient.isConnected}");
+        Debug.LogWarning($"NetworkServer.active: {NetworkServer.active}");
         NetworkManager.singleton.StartHost();
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HOSTADDRESSKEY, SteamUser.GetSteamID().ToString());
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), "name", SteamFriends.GetPersonaName().ToString() + "'s Lobby");

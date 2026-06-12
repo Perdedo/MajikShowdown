@@ -45,13 +45,4 @@ public class RoomPlayer : NetworkRoomPlayer
     {
         this.PlayerNameUpdate(this.playerName, pName);
     }
-
-    [ClientRpc]
-    public void RPCStopNonHostClients()
-    {
-        if(!isServer)
-        {
-            NetworkManager.singleton.StopClient();
-        }
-    }
 }
