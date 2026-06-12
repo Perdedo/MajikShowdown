@@ -49,6 +49,7 @@ public class ProbabilityEntry<T>
     public string label;
     public T Value;
 }
+#if UNITY_EDITOR
 [CustomPropertyDrawer(typeof(ProbabilitySlider<>))]
 public class ProbabilitySliderDrawer : PropertyDrawer
 {
@@ -313,3 +314,4 @@ public class ProbabilitySliderDrawer : PropertyDrawer
         }
     }
 }
+#endif

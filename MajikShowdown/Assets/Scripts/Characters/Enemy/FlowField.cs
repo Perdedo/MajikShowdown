@@ -61,6 +61,7 @@ public class FlowField
             }
         }
         //foreach (var v in field)
+        #if UNITY_EDITOR
         foreach(FlowFieldDivision ffd in manager.flowFieldAsset.fieldAsset)
         {
             foreach (FieldCell cell in ffd.column.Layers)
@@ -71,6 +72,7 @@ public class FlowField
         }
         EditorUtility.SetDirty(manager.flowFieldAsset);
         AssetDatabase.SaveAssetIfDirty(manager.flowFieldAsset);
+        #endif
     }
 
     public void GetFieldFromAsset()
