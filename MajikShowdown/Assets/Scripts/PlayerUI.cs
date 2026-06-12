@@ -605,4 +605,22 @@ public class PlayerUI : NetworkBehaviour
     {
         customizationPanel.SetActive(false);
     }
+
+    public void LeaveGameButton()
+    {
+        if(isServer)
+        {
+            SteamLobby.instance.LeaveLobby();
+        }
+        else
+        {
+
+        }
+    }
+
+    [Command]
+    public void HandleClientLeave()
+    {
+
+    }
 }
