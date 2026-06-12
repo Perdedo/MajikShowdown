@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpellVisualDatabase : MonoBehaviour
+[CreateAssetMenu(menuName = "Database/Spell Visual Database")]
+public class SpellVisualDatabase : ScriptableObject
 {
-    public static SpellVisualDatabase Instance;
-
     public List<Sprite> icons;
 
     public Color[] colors =
@@ -18,9 +17,4 @@ public class SpellVisualDatabase : MonoBehaviour
         Color.blue,
         new Color(0.7f, 0f, 1f)
     };
-
-    private void Awake()
-    {
-        Instance = this;
-    }
 }

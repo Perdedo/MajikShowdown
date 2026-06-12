@@ -11,6 +11,8 @@ using static SpellTrigger;
 public class Spell
 {
     public string spellName;
+    public int colorIndex;
+    public int symbolIndex;
     public readonly SpellCaster Caster;
     //public List<SubSpell> SubSpells = new List<SubSpell>();
     public List<SpellNode> spellNodes = new List<SpellNode>();

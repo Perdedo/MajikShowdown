@@ -18,6 +18,8 @@ public class SpellCardUI : MonoBehaviour
     public Image cardColor;
     public int instanceIndex;
     public SpellInventoryUI spellInventory;
+    public Image spellIcon;
+    public SpellVisualDatabase visualDatabase;
     public void Setup(Spell spell)
     {
         cardColor = cardButton.GetComponent<Image>();
@@ -116,6 +118,8 @@ public class SpellCardUI : MonoBehaviour
         if (boundSpell == null) return; 
         spellNameLabel.text = boundSpell.spellName;
         cooldownLabel.text = boundSpell.SpellCooldown.ToString("0.0") + "s";
+        spellIcon.sprite = visualDatabase.icons[boundSpell.symbolIndex];
+        spellIcon.color = visualDatabase.colors[boundSpell.colorIndex];
     }
 
     void Delete()

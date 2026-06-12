@@ -29,7 +29,15 @@ public class PlayerUI : NetworkBehaviour
     public TextMeshProUGUI[] spellStats;
     public Slider healthSlider;
     public Image[] cooldownFills;
-    public TMP_Text[] cooldownTexts;
+
+    [Header("Spell Customization")]
+    [SerializeField] private SpellVisualDatabase visualDatabase;
+    [SerializeField] private GameObject customizationPanel;
+    [SerializeField] private Image previewImage;
+    [SerializeField] private Button[] colorButtons;
+    [SerializeField] private Image[] iconSlots;
+    [SerializeField] private Button[] iconButtons;
+    [SerializeField] private Image[] cooldownIcons;
 
     [HideInInspector]
     public ConfigData data;
@@ -61,16 +69,19 @@ public class PlayerUI : NetworkBehaviour
         damageHandler = myPlayer.GetComponent<PlayerDamageHandler>();
         healthSlider.maxValue = damageHandler.MaxHealth;
         healthSlider.value = damageHandler.Health;
+        SetupColors();
+        SetupIcons();
     }
 
     private void Update()
     {
         if (!isLocalPlayer && network) return;
         UpdateHealthUI();
-        UpdateCooldownUI();
+        UpdateCooldownFills();
+        UpdateCooldownIcon();
     }
 
-    void UpdateCooldownUI()
+    void UpdateCooldownIcon()
     {
         for (int i = 0; i < caster.equippedSpells.Length; i++)
         {
@@ -78,22 +89,34 @@ public class PlayerUI : NetworkBehaviour
 
             if (spell == null)
             {
-                cooldownFills[i].fillAmount = 0;
-                cooldownTexts[i].text = "";
+                cooldownIcons[i].enabled = false;
                 continue;
             }
+            cooldownIcons[i].enabled = true;
+            cooldownIcons[i].sprite = visualDatabase.icons[spell.symbolIndex];
+            cooldownIcons[i].color = visualDatabase.colors[spell.colorIndex];
+        }
+    }
 
+    void UpdateCooldownFills()
+    {
+        for (int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            Spell spell = caster.equippedSpells[i];
+            if (spell == null)
+            {
+                cooldownFills[i].fillAmount = 0;
+                continue;
+            }
             if (spell.onCooldown)
             {
                 float remaining = spell.SpellCooldown - spell.cooldownTimer.Timestamp;
                 remaining = Mathf.Max(remaining, 0);
                 cooldownFills[i].fillAmount = remaining / spell.SpellCooldown;
-                cooldownTexts[i].text = remaining.ToString("0.0") + "s";
             }
             else
             {
                 cooldownFills[i].fillAmount = 0;
-                cooldownTexts[i].text = "Ok";
             }
         }
     }
@@ -242,6 +265,7 @@ public class PlayerUI : NetworkBehaviour
         {
             return;
         }
+        CloseCustomizationPanel();
         editSpellPanel.gameObject.SetActive(false);
         spellNameInput.onValueChanged.RemoveAllListeners();
         spellNodeDescription.HideAll();
@@ -499,5 +523,86 @@ public class PlayerUI : NetworkBehaviour
             myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
             caster.canCast = false;
         }
+    }
+
+    void SetupColors()
+    {
+        for (int i = 0; i < colorButtons.Length; i++)
+        {
+            int index = i;
+            colorButtons[i].GetComponent<Image>().color = visualDatabase.colors[i];
+            colorButtons[i].onClick.RemoveAllListeners();
+            colorButtons[i].onClick.AddListener(() =>
+            {
+                SelectColor(index);
+            });
+        }
+    }
+
+    void SetupIcons()
+    {
+        int count = Mathf.Min(
+            iconSlots.Length,
+            visualDatabase.icons.Count
+        );
+        for (int i = 0; i < count; i++)
+        {
+            int index = i;
+            iconSlots[i].sprite = visualDatabase.icons[i];
+            iconButtons[i].onClick.RemoveAllListeners();
+            iconButtons[i].onClick.AddListener(() =>
+            {
+                SelectIcon(index);
+            });
+        }
+    }
+
+    public void SelectColor(int index)
+    {
+        if (activeSpell == null) return;
+
+        activeSpell.colorIndex = index;
+        activeSpell.OnSpellUpdated?.Invoke();
+        RefreshCustomizationPreview();
+    }
+
+    public void SelectIcon(int index)
+    {
+        if (activeSpell == null) return;
+
+        activeSpell.symbolIndex = index;
+        activeSpell.OnSpellUpdated?.Invoke();
+        RefreshCustomizationPreview();
+    }
+
+    void RefreshCustomizationPreview()
+    {
+        if (activeSpell == null) return;
+
+        previewImage.sprite = visualDatabase.icons[activeSpell.symbolIndex];
+        previewImage.color = visualDatabase.colors[activeSpell.colorIndex];
+    }
+
+    public void OpenCloseCustomizationPanel()
+    {
+        if (customizationPanel.activeSelf)
+        {
+            CloseCustomizationPanel();
+        }
+        else
+        {
+            OpenCustomizationPanel();
+        }
+    }
+
+    public void OpenCustomizationPanel()
+    {
+        customizationPanel.SetActive(true);
+        RefreshCustomizationPreview();
+    }
+
+    public void CloseCustomizationPanel()
+    {
+        customizationPanel.SetActive(false);
     }
 }
