@@ -99,42 +99,6 @@ public class RoomManager : NetworkRoomManager
         RoomUIChanges();
     }
 
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        Debug.LogWarning("Client started");
-    }
-
-    public override void OnStartHost()
-    {
-        base.OnStartClient();
-        Debug.LogWarning("Host started");
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartClient();
-        Debug.LogWarning("Server started");
-    }
-
-    public override void OnStopClient()
-    {
-        base.OnStartClient();
-        Debug.LogWarning("Client stopped");
-    }
-
-    public override void OnStopHost()
-    {
-        base.OnStartClient();
-        Debug.LogWarning("Host stopped");
-    }
-
-    public override void OnStopServer()
-    {
-        base.OnStartClient();
-        Debug.LogWarning("Server stopped");
-    }
-
     public void RoomUIChanges()
     {
         int CurrentPlayers = 0;
@@ -219,6 +183,9 @@ public class RoomManager : NetworkRoomManager
     IEnumerator SyncTextWhenReady(SyncedUIElement ui, string txt)
     {
         yield return new WaitUntil(() => NetworkClient.ready && ui.netId != 0);
-        ui.CMDSyncText(txt);
+        if(NetworkClient.active)
+        {
+            ui.CMDSyncText(txt);
+        }
     }
 }
