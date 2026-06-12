@@ -99,6 +99,18 @@ public class RoomManager : NetworkRoomManager
         RoomUIChanges();
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        Debug.LogWarning("Client started");
+    }
+
+    public override void OnStartHost()
+    {
+        base.OnStartClient();
+        Debug.LogWarning("Host started");
+    }
+
     public void RoomUIChanges()
     {
         int CurrentPlayers = 0;
