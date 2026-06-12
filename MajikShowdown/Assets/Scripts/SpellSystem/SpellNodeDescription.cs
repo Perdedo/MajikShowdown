@@ -156,6 +156,7 @@ public class SpellNodeDescription : NetworkBehaviour
         else if (node is SpellEffect) EffectDesc();
         else if (node is SpellTrajectory) TrajectoryDesc();
         else if (node is SpellStat) StatDesc();
+        else if (node is SpellCastPoint) CastPointDesc();
         else HideAll();
     }
 
@@ -244,7 +245,13 @@ public class SpellNodeDescription : NetworkBehaviour
         Sep2 = true
     });
 
-    public void HideAll() => ApplyConfig(new SectionConfig());
+    void CastPointDesc() => ApplyConfig(new SectionConfig
+    {
+        Description = true,
+        Sep2 = true
+    });
+
+public void HideAll() => ApplyConfig(new SectionConfig());
 
     bool NodeHasExtras(SpellNode node)
     {
@@ -291,6 +298,10 @@ public class SpellNodeDescription : NetworkBehaviour
         else if (node is SpellTrajectory)
         {
             color = Color.blue;
+        }
+        else if (node is SpellCastPoint)
+        {
+            color = Color.green;
         }
         text.color = color;
     }

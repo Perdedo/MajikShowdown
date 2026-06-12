@@ -43,6 +43,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
             "Show Stat Runes",
             "Show Trajectory Runes",
             "Show Trigger Runes",
+            "Show Cast Point Runes",
             "Show Core Runes"
         });
         onlyUnusedToggle.SetIsOnWithoutNotify(false);

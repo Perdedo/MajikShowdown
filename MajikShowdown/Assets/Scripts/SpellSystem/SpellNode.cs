@@ -101,7 +101,7 @@ public abstract class SpellNode : ScriptableObject
 
         if (this is SpellType) return NodeCategory.Type;
 
-        //if (this as SpellCastingPoint) return NodeCategory.CastingPoint;
+        if (this is SpellCastPoint) return NodeCategory.CastingPoint;
 
         return NodeCategory.All;
     }

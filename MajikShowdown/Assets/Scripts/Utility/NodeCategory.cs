@@ -5,5 +5,6 @@ public enum NodeCategory
     Stat,
     Trajectory,
     Trigger,
+    CastingPoint,
     Type
 }

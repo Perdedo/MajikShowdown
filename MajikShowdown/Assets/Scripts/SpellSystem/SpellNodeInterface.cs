@@ -236,9 +236,9 @@ public class SpellNodeInterface : MonoBehaviour
             case NodeCategory.Trigger:
                 img.sprite = info.trigger.borderSprite;
                 break;
-                /*case NodeCategory.CastingPoint:
-                    img.sprite = info.castingPointBorder;
-                    break;*/
+            case NodeCategory.CastingPoint:
+                img.sprite = info.castingPoint.borderSprite;
+                break;
         }
     }
     public bool IsUsed()
