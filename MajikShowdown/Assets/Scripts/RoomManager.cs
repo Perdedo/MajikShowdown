@@ -113,6 +113,10 @@ public class RoomManager : NetworkRoomManager
                     ReadyPlayers++;
             }
         }
+        if(CurrentPlayers == 0)
+        {
+            return;
+        }
         if (Utils.IsSceneActive(RoomScene))
         {
             if (NetworkClient.active)

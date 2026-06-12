@@ -108,5 +108,9 @@ public class SteamLobby : MonoBehaviour
         {
             NetworkManager.singleton.StopClient();
         }
+        else if (NetworkServer.active)
+        {
+            NetworkManager.singleton.StopServer();
+        }
     }
 }
