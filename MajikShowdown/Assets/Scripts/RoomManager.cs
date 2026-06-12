@@ -111,6 +111,30 @@ public class RoomManager : NetworkRoomManager
         Debug.LogWarning("Host started");
     }
 
+    public override void OnStartServer()
+    {
+        base.OnStartClient();
+        Debug.LogWarning("Server started");
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStartClient();
+        Debug.LogWarning("Client stopped");
+    }
+
+    public override void OnStopHost()
+    {
+        base.OnStartClient();
+        Debug.LogWarning("Host stopped");
+    }
+
+    public override void OnStopServer()
+    {
+        base.OnStartClient();
+        Debug.LogWarning("Server stopped");
+    }
+
     public void RoomUIChanges()
     {
         int CurrentPlayers = 0;
