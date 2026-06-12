@@ -31,6 +31,7 @@ public class HordeController : NetworkBehaviour
     Vector2 dir;
     bool possiblePos;
     public TextMeshProUGUI enemyCounterTxt;
+    public int maxEnemyCount = 500;
     private void Awake()
     {
         GameManager.Instance.hordeController = this;

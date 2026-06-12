@@ -72,49 +72,52 @@ public class EnemySpawner : NetworkBehaviour
     IEnumerator SpawnEnemy()
     {
         yield return new WaitForSeconds(spawnTime);
-        totalSelection = 0;
-        foreach(EnemySelection e in enemies)
+        if(GameManager.Instance.hordeController.enemies.Count < GameManager.Instance.hordeController.maxEnemyCount)
         {
-            totalSelection += e.chance;
-        }
-        randDifficulty = UnityEngine.Random.Range(0, totalSelection);
-        sum = 0;
-        for(int i = 0; i < enemies.Count; i++)
-        {
-            sum += enemies[i].chance;
-            if(randDifficulty <= sum)
+            totalSelection = 0;
+            foreach(EnemySelection e in enemies)
             {
-                if (GameManager.Instance.hordeController.enemiesByType[i].Count <= GameManager.Instance.hordeController.usedEnemiesByType[i].Count)
+                totalSelection += e.chance;
+            }
+            randDifficulty = UnityEngine.Random.Range(0, totalSelection);
+            sum = 0;
+            for(int i = 0; i < enemies.Count; i++)
+            {
+                sum += enemies[i].chance;
+                if(randDifficulty <= sum)
                 {
-                    aux = Instantiate(enemies[i].enemy, spawnPos.position, Quaternion.identity);
-                    NetworkServer.Spawn(aux);
-                    GameManager.Instance.hordeController.enemiesByType[i].Add(aux.GetComponent<Enemy>());
-                }
-                else
-                {
-                    foreach(Enemy e in GameManager.Instance.hordeController.enemiesByType[i])
+                    if (GameManager.Instance.hordeController.enemiesByType[i].Count <= GameManager.Instance.hordeController.usedEnemiesByType[i].Count)
                     {
-                        if (!GameManager.Instance.hordeController.usedEnemiesByType[i].Contains(e))
+                        aux = Instantiate(enemies[i].enemy, spawnPos.position, Quaternion.identity);
+                        NetworkServer.Spawn(aux);
+                        GameManager.Instance.hordeController.enemiesByType[i].Add(aux.GetComponent<Enemy>());
+                    }
+                    else
+                    {
+                        foreach(Enemy e in GameManager.Instance.hordeController.enemiesByType[i])
                         {
-                            aux = e.gameObject;
-                            aux.transform.position = spawnPos.position;
-                            aux.SetActive(true);
-                            break;
+                            if (!GameManager.Instance.hordeController.usedEnemiesByType[i].Contains(e))
+                            {
+                                aux = e.gameObject;
+                                aux.transform.position = spawnPos.position;
+                                aux.SetActive(true);
+                                break;
+                            }
                         }
                     }
+                    Enemy auxEnemy = aux.GetComponent<Enemy>();
+                    GameManager.Instance.hordeController.enemies.Add(aux);
+                    GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
+                    GameManager.Instance.hordeController.usedEnemiesByType[i].Add(aux.GetComponent<Enemy>());
+                    randElemental = UnityEngine.Random.Range(0, 100);
+                    if(randElemental < elementalChance)
+                    {
+                        auxEnemy.element = (Elements)UnityEngine.Random.Range(0, Enum.GetNames(typeof(Elements)).Length);
+                    }
+                    aux.GetComponent<CharacterDamageHandler>().enemyIndex = i;
+                    auxEnemy.Initialize();
+                    i = enemies.Count;
                 }
-                Enemy auxEnemy = aux.GetComponent<Enemy>();
-                GameManager.Instance.hordeController.enemies.Add(aux);
-                GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
-                GameManager.Instance.hordeController.usedEnemiesByType[i].Add(aux.GetComponent<Enemy>());
-                randElemental = UnityEngine.Random.Range(0, 100);
-                if(randElemental < elementalChance)
-                {
-                    auxEnemy.element = (Elements)UnityEngine.Random.Range(0, Enum.GetNames(typeof(Elements)).Length);
-                }
-                aux.GetComponent<CharacterDamageHandler>().enemyIndex = i;
-                auxEnemy.Initialize();
-                i = enemies.Count;
             }
         }
         if(isSpawning)
