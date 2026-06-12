@@ -50,8 +50,13 @@ public class RoomManager : NetworkRoomManager
 
     public override void OnClientDisconnect()
     {
-        Debug.Log(NetworkManager.singleton.mode);
         base.OnClientDisconnect();
+
+        if (SteamLobby.instance.lobbyID != 0)
+        {
+            SteamMatchmaking.LeaveLobby(new CSteamID(SteamLobby.instance.lobbyID));
+            SteamLobby.instance.lobbyID = 0;
+        }
     }
 
     public override void ReadyStatusChanged()
