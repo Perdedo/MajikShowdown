@@ -102,13 +102,17 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         {
             return;
         }
-        foreach (Spell spell in equippedSpells)
+        for (int i = 0; i < equippedSpells.Length; i++)
         {
-            if (spell != null && spell.onCooldown)
+            if (equippedSpells[i] != null && equippedSpells[i].onCooldown)
             {
-                if (spell.cooldownTimer.timer(spell.SpellCooldown, Time.deltaTime, false, true))
+                if (equippedSpells[i].cooldownTimer.timer(equippedSpells[i].SpellCooldown, Time.deltaTime, false, true))
                 {
-                    spell.onCooldown = false;
+                    equippedSpells[i].onCooldown = false;
+                    if(!isServer)
+                    {
+                        RemoveCooldown(i);
+                    }
                 }
             }
         }
@@ -130,6 +134,13 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
             }
         }*/
     }
+
+    [Command]
+    public void RemoveCooldown(int index)
+    {
+        equippedSpells[index].onCooldown = false;
+    }
+
 
     [Command]
     public void CMDCastSpell(int spellInd, Vector3 aimPoint)
