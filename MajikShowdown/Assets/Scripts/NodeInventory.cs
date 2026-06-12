@@ -18,7 +18,6 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     public TMP_Dropdown typeDropdown;
     public Toggle onlyUnusedToggle;
     public Toggle recentOrderToggle;
-    int currentOrder = 0;
     private NodeFilter currentFilter = new NodeFilter();
     private Dictionary<DraggableNode, int> usageCount = new();
     public SpellCaster caster;

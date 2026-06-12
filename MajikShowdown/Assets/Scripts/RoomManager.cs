@@ -99,6 +99,11 @@ public class RoomManager : NetworkRoomManager
         RoomUIChanges();
     }
 
+    public override void OnRoomStopHost()
+    {
+        playerList[0].RPCStopNonHostClients();
+    }
+
     public void RoomUIChanges()
     {
         int CurrentPlayers = 0;

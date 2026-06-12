@@ -102,22 +102,11 @@ public class SteamLobby : MonoBehaviour
         }
         if(NetworkServer.active && currentOwner == me)
         {
-            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
-            {
-                if (conn.connectionId != NetworkServer.localConnection.connectionId)
-                {
-                    conn.Disconnect();
-                }
-            }
             NetworkManager.singleton.StopHost();
         }
         else if(NetworkClient.isConnected)
         {
             NetworkManager.singleton.StopClient();
-        }
-        else if (NetworkServer.active)
-        {
-            NetworkManager.singleton.StopServer();
         }
     }
 }
