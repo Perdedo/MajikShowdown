@@ -21,11 +21,11 @@ public class HordeController : NetworkBehaviour
     [HideInInspector][SyncVar] public bool inHordeTime = false;
     [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
-    [HideInInspector]public List<GameObject> enemies = new List<GameObject>();
-    [HideInInspector]public List<List<Enemy>> enemiesByType = new List<List<Enemy>>();
-    [HideInInspector]public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
-    [HideInInspector]public List<GameObject> spawners = new List<GameObject>();
-    [HideInInspector]public HashSet<GameObject> usedSpawners = new HashSet<GameObject>();
+    [HideInInspector] public List<GameObject> enemies = new List<GameObject>();
+    [HideInInspector] public List<List<Enemy>> enemiesByType = new List<List<Enemy>>();
+    [HideInInspector] public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
+    [HideInInspector] public List<GameObject> spawners = new List<GameObject>();
+    [HideInInspector] public HashSet<GameObject> usedSpawners = new HashSet<GameObject>();
     bool running = false;
     public LayerMask spawnableLocations;
     Vector2 dir;
@@ -37,7 +37,7 @@ public class HordeController : NetworkBehaviour
         spawners.Clear();
         enemiesByType.Clear();
         usedEnemiesByType.Clear();
-        for(int i = 0; i < enemyChances.Count; i++)
+        for (int i = 0; i < enemyChances.Count; i++)
         {
             enemiesByType.Add(new List<Enemy>());
             usedEnemiesByType.Add(new HashSet<Enemy>());
@@ -50,16 +50,16 @@ public class HordeController : NetworkBehaviour
 
     private void Update()
     {
-        if(!isServer || !running)
+        if (!isServer || !running)
         {
             return;
         }
-        if(inHorde)
+        if (inHorde)
         {
             timer = Mathf.Round(hordeEndTime - Time.time);
-            if(timer > 0)
+            if (timer > 0)
             {
-                if((int)timer % 60 >= 10)
+                if ((int)timer % 60 >= 10)
                 {
                     UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
                 }
@@ -85,11 +85,38 @@ public class HordeController : NetworkBehaviour
                 UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
             }
         }
+        for (int i = 0; i < usedEnemiesByType.Count; i++)
+        {
+            foreach (Enemy e in usedEnemiesByType[i])
+            {
+                if (e != null)
+                {
+                    e.EnemyUpdate();
+                }
+            }
+        }
+    }
+    void FixedUpdate()
+    {
+        if (!isServer || !running)
+        {
+            return;
+        }
+        for (int i = 0; i < usedEnemiesByType.Count; i++)
+        {
+            foreach (Enemy e in usedEnemiesByType[i])
+            {
+                if (e != null)
+                {
+                    e.FixedRBUpdate();
+                }
+            }
+        }
     }
 
     public void Initialize()
     {
-        if(isServer)
+        if (isServer)
         {
             StartPause();
             running = true;
@@ -115,7 +142,7 @@ public class HordeController : NetworkBehaviour
         inHordeTime = true;
         usedSpawners.Clear();
         enemies.Clear();
-        foreach(HashSet<Enemy> hs in usedEnemiesByType)
+        foreach (HashSet<Enemy> hs in usedEnemiesByType)
         {
             hs.Clear();
         }
@@ -138,10 +165,10 @@ public class HordeController : NetworkBehaviour
     [Server]
     IEnumerator SpawnSpawner()
     {
-        foreach(Player p in GameManager.Instance.Players)
+        foreach (Player p in GameManager.Instance.Players)
         {
             spawnPos = GetSpawnPos(p.transform.position);
-            if(spawners.Count <= usedSpawners.Count)
+            if (spawners.Count <= usedSpawners.Count)
             {
                 aux = Instantiate(spawner, spawnPos, Quaternion.identity);
                 spawners.Add(aux);
@@ -149,7 +176,7 @@ public class HordeController : NetworkBehaviour
             }
             else
             {
-                foreach(GameObject s in spawners)
+                foreach (GameObject s in spawners)
                 {
                     if (!usedSpawners.Contains(s))
                     {
@@ -201,7 +228,7 @@ public class HordeController : NetworkBehaviour
         Vector3 pos;
         possiblePos = false;
         float radius;
-        while(!possiblePos)
+        while (!possiblePos)
         {
             do
             {
@@ -210,21 +237,21 @@ public class HordeController : NetworkBehaviour
             while (dir == Vector2.zero);
             radius = UnityEngine.Random.Range(minSpawnRadius, maxSpawnRadius);
             pos = playerPos + new Vector3(dir.x * radius, heightCheckPoint, dir.y * radius);
-            if(Physics.Raycast(pos, Vector3.down, out hit, checkHeight, spawnableLocations))
+            if (Physics.Raycast(pos, Vector3.down, out hit, checkHeight, spawnableLocations))
             {
                 possiblePos = true;
             }
         }
-        return hit.point + Vector3.up * spawnerHeight; 
+        return hit.point + Vector3.up * spawnerHeight;
     }
 
     public void CheckEnemyCount()
     {
-        if(!isServer)
+        if (!isServer)
         {
             return;
         }
-        if(enemies.Count == 0)
+        if (enemies.Count == 0)
         {
             inHorde = false;
             StartPause();
@@ -233,23 +260,23 @@ public class HordeController : NetworkBehaviour
 
     public void CheckReadyPlayers()
     {
-        if(!isServer)
+        if (!isServer)
         {
             return;
         }
 
         bool everyoneReady = true;
-        foreach(Player p in GameManager.Instance.Players)
+        foreach (Player p in GameManager.Instance.Players)
         {
-            if(!p.readyForHorde)
+            if (!p.readyForHorde)
             {
                 everyoneReady = false;
             }
         }
-        if(everyoneReady)
+        if (everyoneReady)
         {
             StopAllCoroutines();
-            foreach(Player p in GameManager.Instance.Players)
+            foreach (Player p in GameManager.Instance.Players)
             {
                 p.readyForHorde = false;
             }

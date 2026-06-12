@@ -16,8 +16,8 @@ public class SpellCollider : NetworkBehaviour
     bool HitOnCooldown;
     int hitCounter =0;
     bool CollisionOnCooldown;
-    Timer HitTimer = new Timer();
-    Timer CollisionTimer = new Timer();
+    Timer HitTimer = new Timer(false);
+    Timer CollisionTimer = new Timer(false);
     [NonSerialized] public float LifeTime = 0;
     List<TriggerInfo> triggerInfos = new List<TriggerInfo>();
     [NonSerialized] public Vector3 previousVelocity;

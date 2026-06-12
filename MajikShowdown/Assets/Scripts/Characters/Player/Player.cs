@@ -27,7 +27,7 @@ public class Player : Character
     [SerializeField] protected float DashForce;
     [SerializeField] protected float DashCooldown;
     [SerializeField] protected float GravityNegationTime;
-    Timer dashTimer = new Timer(), gravityTimer = new Timer();
+    Timer dashTimer = new Timer(false), gravityTimer = new Timer(false);
     bool dashOnCooldown;
 
     [Header("Push Events")]

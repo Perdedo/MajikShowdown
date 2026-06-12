@@ -55,7 +55,7 @@ public class TriggerInfo
 {
     public SpellTrigger Trigger;
     public bool SpellOnCooldown;
-    Timer TriggerTimer = new Timer();
+    Timer TriggerTimer = new Timer(false);
     public TriggerInfo(SpellTrigger trigger)
     {
         Trigger = trigger;
