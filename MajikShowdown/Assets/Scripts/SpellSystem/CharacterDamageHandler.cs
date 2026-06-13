@@ -118,5 +118,6 @@ public class Resistance
 public interface IGameCharacter
 {
     public CharacterDamageHandler DamageHandler { get; }
+    public void Knockback(Vector3 direction, float strenght);
 }
 

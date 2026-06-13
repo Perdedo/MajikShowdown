@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class SpellCaster : NetworkBehaviour, IGameCharacter
+public class SpellCaster : NetworkBehaviour
 {
-    public CharacterDamageHandler DamageHandler { get; private set; }
+    //public CharacterDamageHandler DamageHandler { get; private set; }
     public AimController AimController;
     [Header("Generic Node")]
     public SpellNodeInterface genericNodePrefab;
@@ -39,7 +39,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         if (!network)
         {
             player.caster = this;
-            DamageHandler = GetComponent<CharacterDamageHandler>();
+            //DamageHandler = GetComponent<CharacterDamageHandler>();
             equippedSpells = new Spell[4];
             foreach (var nodeData in ownedNodes)
             {
@@ -57,7 +57,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     public override void OnStartAuthority()
     {
         player.caster = this;
-        DamageHandler = GetComponent<CharacterDamageHandler>();
+        //DamageHandler = GetComponent<CharacterDamageHandler>();
         equippedSpells = new Spell[4];
         foreach (var nodeData in ownedNodes)
         {
@@ -73,7 +73,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     public void CMDInitialize()
     {
         player.caster = this;
-        DamageHandler = GetComponent<CharacterDamageHandler>();
+        //DamageHandler = GetComponent<CharacterDamageHandler>();
         equippedSpells = new Spell[4];
         foreach (var nodeData in ownedNodes)
         {

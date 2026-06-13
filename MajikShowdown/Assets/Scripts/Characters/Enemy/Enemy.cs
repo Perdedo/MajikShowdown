@@ -58,7 +58,7 @@ public class Enemy : CrowdCharacter
 
     public void Initialize()
     {
-        damageHandler.Initialize();
+        DamageHandler.Initialize();
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
         for (int i = 0; i < Directions.Length; i++)
         {
@@ -322,7 +322,7 @@ public class Enemy : CrowdCharacter
     {
         if (targetVector.magnitude <= TargetStoppingDistance)
         {
-            target.damageHandler.TakeDamage(dmgCtrl);
+            target.DamageHandler.TakeDamage(dmgCtrl);
         }
     }
     public void CalculateDanger()

@@ -3,7 +3,7 @@ using UnityEngine.Events;
 using System.Collections;
 using System;
 
-public class CrowdCharacter : CrowdRB
+public class CrowdCharacter : CrowdRB, IGameCharacter
 {
     [Header("Movement Options")]
     [SerializeField] protected float speed;
@@ -25,7 +25,7 @@ public class CrowdCharacter : CrowdRB
     [SerializeField] protected UnityEvent FellOnJump;
     public enum CharVerticalState { falling, grounded, jumping };
     CharVerticalState cvState; // N�O USE ESTA VARIAVEL use PvState ao inv�s
-    [NonSerialized] public CharacterDamageHandler damageHandler;
+    public CharacterDamageHandler DamageHandler { get; private set; }
     public CharVerticalState CvState
     {
         get
@@ -54,9 +54,9 @@ public class CrowdCharacter : CrowdRB
         base.Awake();
         jumpTimer.timedEvent.AddListener(JumpForce);
         accelerationSpeed = speed / accelerationTime;
-        if(damageHandler == null)
+        if(DamageHandler == null)
         {
-            damageHandler = GetComponent<CharacterDamageHandler>();
+            DamageHandler = GetComponent<CharacterDamageHandler>();
         }
     }
 
@@ -201,7 +201,7 @@ public class CrowdCharacter : CrowdRB
         }
 
     }
-    public void KnockBack(Vector3 direction, float strenght)
+    public void Knockback(Vector3 direction, float strenght)
     {
         AddExternalVelocity(direction*strenght);
     }

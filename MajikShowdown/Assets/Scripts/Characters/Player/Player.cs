@@ -66,7 +66,7 @@ public class Player : Character
         HitGround.AddListener(StopCoyoteTime);
         HitGround.AddListener(PeformJumpBuffering);
         input = GetComponent<PlayerInput>();
-        damageHandler = GetComponent<PlayerDamageHandler>();
+        DamageHandler = GetComponent<PlayerDamageHandler>();
         //cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }

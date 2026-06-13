@@ -443,14 +443,14 @@ public class SpellCollider : NetworkBehaviour
     {
         //if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
         hitCounter++;
-        Character character = col.GetComponent<Character>();
+        IGameCharacter character = col.GetComponent<IGameCharacter>();
         if (character != null)
         {
             foreach (SpellEffect e in OwnerSpell.spellEffects)
             {
-                e.ApplyEffect(character.damageHandler);
+                e.ApplyEffect(character.DamageHandler);
             }
-            character.KnockBack(((col.transform.position - transform.position) + rb.Velocity).normalized, stats.Knockback);
+            character.Knockback(((col.transform.position - transform.position) + rb.Velocity).normalized, stats.Knockback);
 
         }
         if (pierceCount >= 1)
