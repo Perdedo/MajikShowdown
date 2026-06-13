@@ -103,7 +103,7 @@ public class PlayerUI : NetworkBehaviour
         data = SaveManager.LoadConfig(ref loaded);
         if (!loaded)
         {
-            SaveManager.SaveConfig();
+            SaveManager.SaveConfig(data);
         }
         ConfigUpdate();
         if (vsyncToggle != null)
@@ -140,7 +140,7 @@ public class PlayerUI : NetworkBehaviour
         panel.SetActive(false);
         if (panel == optionsPanel)
         {
-            SaveManager.SaveConfig();
+            SaveManager.SaveConfig(data);
         }
     }
     public void UpdateVsyncToggleImages(bool isOn)

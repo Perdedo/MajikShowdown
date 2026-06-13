@@ -4,9 +4,9 @@ using System.IO;
 
 public class SaveManager : MonoBehaviour
 {
-    public static void SaveConfig()
+    public static void SaveConfig(ConfigData data)
     {
-        string s = JsonUtility.ToJson(GameManager.Instance.uiController.data);
+        string s = JsonUtility.ToJson(data);
         File.WriteAllText(Application.persistentDataPath + "/configSave.json", s);
     }
 

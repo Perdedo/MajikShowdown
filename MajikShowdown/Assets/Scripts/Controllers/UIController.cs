@@ -138,7 +138,7 @@ public class UIController : MonoBehaviour
         data = SaveManager.LoadConfig(ref loaded);
         if(!loaded)
         {
-            SaveManager.SaveConfig();
+            SaveManager.SaveConfig(data);
         }
         ConfigUpdate();
         if (vsyncToggle != null)
@@ -305,7 +305,7 @@ public class UIController : MonoBehaviour
             IsMenuObjectsVisible(true);
             if(panel == menuOptionsPanel)
             {
-                SaveManager.SaveConfig();
+                SaveManager.SaveConfig(data);
             }
         }
         else if (SceneManager.GetActiveScene().name == "Room")
@@ -313,7 +313,7 @@ public class UIController : MonoBehaviour
             IsRoomObjectsVisible(true);
             if(panel == optionsPanel)
             {
-                SaveManager.SaveConfig();
+                SaveManager.SaveConfig(data);
             }
         }
         /*if(panel == gridPanel)
