@@ -104,17 +104,13 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         }
         for (int i = 0; i < equippedSpells.Length; i++)
         {
-            Debug.LogWarning("For");
             if (equippedSpells[i] != null && equippedSpells[i].onCooldown)
             {
-                Debug.LogWarning("Cooldown");
                 if (equippedSpells[i].cooldownTimer.timer(equippedSpells[i].SpellCooldown, Time.deltaTime, false, true))
                 {
-                    Debug.LogWarning("Timer");
                     equippedSpells[i].onCooldown = false;
                     if(!isServer)
                     {
-                        Debug.LogWarning("Client");
                         RemoveCooldown(i);
                     }
                 }
