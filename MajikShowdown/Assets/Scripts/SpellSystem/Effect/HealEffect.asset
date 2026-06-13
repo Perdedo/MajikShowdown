@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc7ccb5a4c652946a8f5504996e5c8c, type: 3}
   m_Name: HealEffect
   m_EditorClassIdentifier: Assembly-CSharp::HealEffect
+  rarity: 0
   statRandomizer:
     Cooldown:
       type: 1
@@ -141,6 +142,8 @@ MonoBehaviour:
   - {fileID: 0}
   OwnerSpell:
     spellName: 
+    colorIndex: 0
+    symbolIndex: 0
     spellNodes: []
     SpellCooldown: 0
     auxCooldown: 0
@@ -150,6 +153,7 @@ MonoBehaviour:
     validSpell: 0
     grid: {fileID: 0}
     instanceIndex: 0
+    onCooldown: 0
   ConectionPorts: 020000000200000002000000020000000200000002000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 21300000, guid: cac9763e97879c04fabca725f68e8b6c, type: 3}
@@ -169,4 +173,4 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-    Icon: {fileID: 21300000, guid: beaab3df9c2a79145adda9a061e23041, type: 3}
+    Icon: {fileID: 21300000, guid: cac9763e97879c04fabca725f68e8b6c, type: 3}

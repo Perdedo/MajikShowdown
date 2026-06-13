@@ -24,7 +24,7 @@ public class SpellCardUI : MonoBehaviour
     {
         cardColor = cardButton.GetComponent<Image>();
         boundSpell = spell;
-
+        isSelected = false;
         //Card Button Events
         cardButton.onClick.RemoveAllListeners();
         cardButton.onClick.AddListener(OnCardClicked);
@@ -85,6 +85,10 @@ public class SpellCardUI : MonoBehaviour
         unequipButton.gameObject.SetActive(false);
         deleteButton.gameObject.SetActive(false);
         cardColor.color = Color.white;
+        if (GameManager.Instance.uiController.playerUI.spellToEquip == boundSpell)
+        {
+            GameManager.Instance.uiController.playerUI.spellToEquip = null;
+        }
         boundSpell.Caster.commander.DeselectSCUI(this);
     }
 
@@ -134,6 +138,7 @@ public class SpellCardUI : MonoBehaviour
                 GameManager.Instance.uiController.playerUI.equipSlotTexts[i].text = "Spell Slot " + (i + 1);
             }
         }
+        GameManager.Instance.uiController.playerUI.UpdateEquipSlotIcons();
         if (boundSpell.grid != null)
         {
             boundSpell.grid.ReturnAllNodesToInventory();

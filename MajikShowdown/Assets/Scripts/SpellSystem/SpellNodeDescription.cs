@@ -330,7 +330,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
             rect.anchoredPosition = positions[i];
             slot.nameText.text = extras[i].attr.DisplayName;
             slot.valueText.text = FormatStat(extras[i].extra.Value);
-            slot.icon.sprite = extras[i].extra.Icon;
+            slot.icon.transform.GetChild(0).GetComponent<Image>().sprite = extras[i].extra.Icon;
             PopupUI popup = slot.icon.GetComponent<PopupUI>();
             if (popup != null)
             {
@@ -370,6 +370,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         text.text = FormatStat(value);
         text.color = isActive ? activeColor : inactiveColor;
         image.color = isActive ? activeColor : inactiveColor;
+        image.transform.GetChild(0).GetComponent<Image>().color = isActive ? activeColor : inactiveColor;
     }
 
     void UpdateMultiplierVisual(TextMeshProUGUI text, Image image, float value)

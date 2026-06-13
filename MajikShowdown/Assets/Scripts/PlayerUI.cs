@@ -51,6 +51,9 @@ public class PlayerUI : NetworkBehaviour
     [SerializeField] private SpellVisualDatabase visualDatabase;
     [SerializeField] private GameObject customizationPanel;
     [SerializeField] private Image previewImage;
+    [SerializeField] private Image previewButtonImage;
+    [SerializeField] private GameObject[] slotVisuals;
+    [SerializeField] private Image[] slotIcons;
     [SerializeField] private Button[] colorButtons;
     [SerializeField] private Image[] iconSlots;
     [SerializeField] private Button[] iconButtons;
@@ -65,6 +68,7 @@ public class PlayerUI : NetworkBehaviour
     public SpellInventoryUI inventory;
     public Player myPlayer;
     PlayerDamageHandler damageHandler;
+    public GameObject crosshair;
 
     [Header("Network")]
     public bool network = true;
@@ -121,6 +125,8 @@ public class PlayerUI : NetworkBehaviour
         healthSlider.value = damageHandler.Health;
         SetupColors();
         SetupIcons();
+        UpdateEquipSlotIcons();
+        EnableGameplayCursor();
     }
     private void Update()
     {
@@ -427,6 +433,7 @@ public class PlayerUI : NetworkBehaviour
         spellNameInput.onValueChanged.AddListener(OnSpellNameChanged);
         RefreshSpellInfo();
         activeSpell.OnSpellUpdated += RefreshSpellInfo;
+        RefreshCustomizationPreview();
     }
 
     void OnSpellNameChanged(string newName)
@@ -463,6 +470,22 @@ public class PlayerUI : NetworkBehaviour
             equipSlotTexts[i].text = caster.IsSlotValid(i)
                 ? caster.equippedSpells[i].spellName
                 : "Spell Slot " + (i + 1);
+        }
+    }
+
+    public void UpdateEquipSlotIcons()
+    {
+        for (int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            Spell spell = caster.equippedSpells[i];
+            if (spell == null)
+            {
+                slotVisuals[i].SetActive(false);
+                continue;
+            }
+            slotVisuals[i].SetActive(true);
+            slotIcons[i].sprite = visualDatabase.icons[spell.symbolIndex];
+            slotIcons[i].color = visualDatabase.colors[spell.colorIndex];
         }
     }
 
@@ -543,6 +566,7 @@ public class PlayerUI : NetworkBehaviour
             {
                 caster.equippedSpells[i] = null;
                 equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                UpdateEquipSlotIcons();
             }
         }
     }
@@ -577,7 +601,8 @@ public class PlayerUI : NetworkBehaviour
 
         caster.equippedSpells[index] = spellToEquip;
         equipSlotTexts[index].text = spellToEquip.spellName;
-        if(!isServer && network)
+        UpdateEquipSlotIcons();
+        if (!isServer && network)
         {
             CMDEquipSpell(index);
         }
@@ -719,6 +744,7 @@ public class PlayerUI : NetworkBehaviour
                 SetGameplayInput(true);
                 myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
                 caster.canCast = true;
+                EnableGameplayCursor();
             }
         }
         else if (!pausePanel.activeSelf && !spellPanel.activeSelf)
@@ -727,6 +753,7 @@ public class PlayerUI : NetworkBehaviour
             SetGameplayInput(false);
             myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
             caster.canCast = false;
+            EnableUICursor();
         }
     }
 
@@ -751,6 +778,7 @@ public class PlayerUI : NetworkBehaviour
                 }
                 myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
                 caster.canCast = true;
+                EnableGameplayCursor();
             }
         }
         else if (!spellPanel.activeSelf && !pausePanel.activeSelf)
@@ -768,6 +796,7 @@ public class PlayerUI : NetworkBehaviour
             SetGameplayInput(false);
             myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
             caster.canCast = false;
+            EnableUICursor();
         }
     }
 
@@ -787,10 +816,7 @@ public class PlayerUI : NetworkBehaviour
 
     void SetupIcons()
     {
-        int count = Mathf.Min(
-            iconSlots.Length,
-            visualDatabase.icons.Count
-        );
+        int count = Mathf.Min(iconSlots.Length, visualDatabase.icons.Count);
         for (int i = 0; i < count; i++)
         {
             int index = i;
@@ -827,6 +853,9 @@ public class PlayerUI : NetworkBehaviour
 
         previewImage.sprite = visualDatabase.icons[activeSpell.symbolIndex];
         previewImage.color = visualDatabase.colors[activeSpell.colorIndex];
+        previewButtonImage.sprite = visualDatabase.icons[activeSpell.symbolIndex];
+        previewButtonImage.color = visualDatabase.colors[activeSpell.colorIndex];
+        UpdateEquipSlotIcons();
     }
 
     public void OpenCloseCustomizationPanel()
@@ -862,6 +891,7 @@ public class PlayerUI : NetworkBehaviour
         {
             HandleClientLeave();
         }
+        EnableUICursor();
     }
 
     [Command]
@@ -884,5 +914,19 @@ public class PlayerUI : NetworkBehaviour
     public void ClientLeaveGame(NetworkConnection target)
     {
         SteamLobby.instance.LeaveLobby();
+    }
+
+    void EnableGameplayCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        crosshair.SetActive(true);
+    }
+
+    void EnableUICursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        crosshair.SetActive(false);
     }
 }
