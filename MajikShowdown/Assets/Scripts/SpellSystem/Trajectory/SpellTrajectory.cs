@@ -86,7 +86,7 @@ public class SpellTrajectory : SpellNode
                     Vector3 distance = OwnerSpell.Caster.CastingPoint.position - collider.transform.position;
                     float multiplier = Mathf.Max(distance.magnitude / (OwnerSpell.coreNode.FinalStats.Speed * OwnerSpell.coreNode.FinalStats.Duration / 2), 1);
                     dir = distance.normalized * multiplier;
-                    if (distance.magnitude < 0.1f)
+                    if (distance.sqrMagnitude < 0.1f)
                     {
                         collider.MarkedToDie = true;
                     }

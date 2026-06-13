@@ -109,7 +109,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
                 if (equippedSpells[i].cooldownTimer.timer(equippedSpells[i].SpellCooldown, Time.deltaTime, false, true))
                 {
                     equippedSpells[i].onCooldown = false;
-                    if(!isServer)
+                    if(!isServer && network)
                     {
                         RemoveCooldown(i);
                     }

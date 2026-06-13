@@ -367,6 +367,14 @@ public class PlayerUI : NetworkBehaviour
         {
             return;
         }
+        if (network)
+        {
+            CMDdisableSpellColliders(spell.instanceIndex);
+        }
+        else
+        {
+            DisableSpellColliders(spell.instanceIndex);
+        }
         createSpellPanel.gameObject.SetActive(false);
         editSpellPanel.gameObject.SetActive(true);
 
@@ -377,6 +385,29 @@ public class PlayerUI : NetworkBehaviour
         activeGrid = spell.grid;
         activeGrid.gameObject.SetActive(true);
         SetActiveSpell(spell);
+    }
+    public void DisableSpellColliders(int index)
+    {
+        foreach(SpellCollider col in SpellColliderManager.Instance.activeSpellColliders)
+        {
+            if(col.OwnerSpell == caster.spells[index])
+            {
+                col.OnDeath.RemoveAllListeners();
+                col.MarkedToDie = true;
+            }
+        }
+    }
+    [Command]
+    public void CMDdisableSpellColliders(int index)
+    {
+        foreach(SpellCollider col in SpellColliderManager.Instance.activeSpellColliders)
+        {
+            if(col.OwnerSpell == caster.spells[index])
+            {
+                col.OnDeath.RemoveAllListeners();
+                col.MarkedToDie = true;
+            }
+        }
     }
 
     void SetActiveSpell(Spell spell)
