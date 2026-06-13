@@ -109,7 +109,7 @@ public class UIController : MonoBehaviour
     public SpellNodeDescription spellNodeDescription;
     Spell activeSpell;
     public SpellNodeInterface selectedNode;*/
-
+    bool loaded;
     void Awake()
     {
         UiMenuSetup();
@@ -125,13 +125,19 @@ public class UIController : MonoBehaviour
         // File.Delete(Application.persistentDataPath + "/configSave.json");
 
 
-        if (File.Exists(Application.persistentDataPath + "/configSave.json"))
+        /*if (File.Exists(Application.persistentDataPath + "/configSave.json"))
         {
             SaveManager.LoadConfig();
         }
         else
         {
             data = new ConfigData(0, 0, 0f, -15f, -15f, false);
+            SaveManager.SaveConfig();
+        }*/
+        loaded = true;
+        data = SaveManager.LoadConfig(ref loaded);
+        if(!loaded)
+        {
             SaveManager.SaveConfig();
         }
         ConfigUpdate();
@@ -284,18 +290,10 @@ public class UIController : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "Menu")
         {
             IsMenuObjectsVisible(false);
-            if (panel == menuOptionsPanel)
-            {
-                AttVolumeSliders();
-            }
         }
         else if (SceneManager.GetActiveScene().name == "Room")
         {
             IsRoomObjectsVisible(false);
-            if(panel == optionsPanel)
-            {
-                AttVolumeSliders();
-            }
         }
     }
 
@@ -396,28 +394,6 @@ public class UIController : MonoBehaviour
         float dB = (value == 0f) ? -80f : Mathf.Lerp(-30f, 0f, value / 30f);
         data.sfx = dB;
         AudioController.instance.ChangeSFXVol(dB);
-    }
-
-    public void AttVolumeSliders()
-    {
-        if (AudioController.instance.mixer != null)
-        {
-            AudioController.instance.mixer.GetFloat("MasterVol", out float aux1);
-            if (_masterVolumeSlider != null)
-            {
-                _masterVolumeSlider.value = Mathf.RoundToInt(Mathf.InverseLerp(-30f, 0f, aux1) * 30f);
-            }
-            AudioController.instance.mixer.GetFloat("MusicVol", out float aux2);
-            if (_musicSlider != null)
-            {
-                _musicSlider.value = Mathf.RoundToInt(Mathf.InverseLerp(-30f, 0f, aux2) * 30f);
-            }
-            AudioController.instance.mixer.GetFloat("SFXVol", out float aux3);
-            if (_sfxSlider != null)
-            {
-                _sfxSlider.value = Mathf.RoundToInt(Mathf.InverseLerp(-30f, 0f, aux3) * 30f); ;
-            }
-        }
     }
 
     public void ResolutionDropdown()

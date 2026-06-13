@@ -2,10 +2,12 @@ using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerUI : NetworkBehaviour
@@ -14,7 +16,6 @@ public class PlayerUI : NetworkBehaviour
     public GameObject spellPanel;
     public GameObject createSpellPanel;
     public GameObject editSpellPanel;
-    public GameObject pausePanel;
     public Spell spellToEquip;
     public Button[] equipSlotButtons;
     public TMP_Text[] equipSlotTexts;
@@ -29,6 +30,22 @@ public class PlayerUI : NetworkBehaviour
     public TextMeshProUGUI[] spellStats;
     public Slider healthSlider;
     public Image[] cooldownFills;
+
+    [Header("Pause Panels and Objects")]
+    public GameObject pausePanel;
+    public GameObject optionsPanel;
+    public GameObject confirmLeavePanel;
+    public Slider _masterVolumeSlider;
+    public Slider _musicSlider;
+    public Slider _sfxSlider;
+    public Toggle vsyncToggle;
+    public Image vsyncToggleImage;
+    public Sprite toggleConfirm;
+    public Sprite toggleDeny;
+    Resolution[] allRes;
+    List<Resolution> selectedResList = new List<Resolution>();
+    public TMP_Dropdown resDropdown;
+    public TMP_Dropdown screenModeDropdown;
 
     [Header("Spell Customization")]
     [SerializeField] private SpellVisualDatabase visualDatabase;
@@ -51,6 +68,9 @@ public class PlayerUI : NetworkBehaviour
 
     [Header("Network")]
     public bool network = true;
+
+    bool loaded;
+
     private void Start()
     {
         if(isLocalPlayer || !network)
@@ -65,6 +85,36 @@ public class PlayerUI : NetworkBehaviour
         {
             spellPanel.SetActive(false);
         }
+        if(pausePanel != null)
+        {
+            pausePanel.SetActive(false);
+        }
+        if(optionsPanel != null)
+        {
+            optionsPanel.SetActive(false);
+        }
+        if(confirmLeavePanel != null)
+        {
+            confirmLeavePanel.SetActive(false);
+        }
+        ResolutionDropdown();
+        ScreenModeDropdown();
+        loaded = true;
+        data = SaveManager.LoadConfig(ref loaded);
+        if (!loaded)
+        {
+            SaveManager.SaveConfig();
+        }
+        ConfigUpdate();
+        if (vsyncToggle != null)
+        {
+            vsyncToggle.onValueChanged.RemoveAllListeners();
+            vsyncToggle.onValueChanged.AddListener(ChangeVsyncToggle);
+        }
+        if (!AudioController.instance.musicSource.isPlaying)
+        {
+            AudioController.instance.StartMusic();
+        }
         InitializeStatsUI();
         damageHandler = myPlayer.GetComponent<PlayerDamageHandler>();
         healthSlider.maxValue = damageHandler.MaxHealth;
@@ -72,13 +122,167 @@ public class PlayerUI : NetworkBehaviour
         SetupColors();
         SetupIcons();
     }
-
     private void Update()
     {
         if (!isLocalPlayer && network) return;
         UpdateHealthUI();
         UpdateCooldownFills();
         UpdateCooldownIcon();
+    }
+
+    public void OpenPanel(GameObject panel)
+    {
+        panel.SetActive(true);
+    }
+
+    public void ClosePanel(GameObject panel)
+    {
+        panel.SetActive(false);
+        if (panel == optionsPanel)
+        {
+            SaveManager.SaveConfig();
+        }
+    }
+    public void UpdateVsyncToggleImages(bool isOn)
+    {
+        if (isOn)
+        {
+            vsyncToggleImage.sprite = toggleConfirm;
+        }
+        else
+        {
+            vsyncToggleImage.sprite = toggleDeny;
+        }
+    }
+    public void ChangeVsyncToggle(bool isOn)
+    {
+        QualitySettings.vSyncCount = isOn ? 1 : 0;
+        data.vsyncEnabled = isOn;
+        UpdateVsyncToggleImages(isOn);
+    }
+    public void ConfigUpdate()
+    {
+        if (resDropdown != null)
+        {
+            resDropdown.value = data.selectedRes;
+        }
+        if (screenModeDropdown != null)
+        {
+            screenModeDropdown.value = data.screenMode;
+        }
+        AudioController.instance.ChangeMasterVol(data.master);
+        if (_masterVolumeSlider != null)
+        {
+            _masterVolumeSlider.value = Mathf.InverseLerp(-30f, 0f, data.master) * 30f;
+        }
+        AudioController.instance.ChangeMusicVol(data.music);
+        if (_musicSlider != null)
+        {
+            _musicSlider.value = Mathf.InverseLerp(-30f, 0f, data.music) * 30f;
+        }
+        AudioController.instance.ChangeSFXVol(data.sfx);
+        if (_sfxSlider != null)
+        {
+            _sfxSlider.value = Mathf.InverseLerp(-30f, 0f, data.sfx) * 30f;
+        }
+        if (vsyncToggle != null)
+        {
+            vsyncToggle.isOn = data.vsyncEnabled;
+            QualitySettings.vSyncCount = data.vsyncEnabled ? 1 : 0;
+            UpdateVsyncToggleImages(data.vsyncEnabled);
+        }
+    }
+
+
+    public void ChangeMasterVolume()
+    {
+        float value = _masterVolumeSlider.value;
+        float dB = (value == 0f) ? -80f : Mathf.Lerp(-30f, 0f, value / 30f);
+        data.master = dB;
+        AudioController.instance.ChangeMasterVol(dB);
+    }
+
+    public void ChangeMusicVolume()
+    {
+        float value = _musicSlider.value;
+        float dB = (value == 0f) ? -80f : Mathf.Lerp(-30f, 0f, value / 30f);
+        data.music = dB;
+        AudioController.instance.ChangeMusicVol(dB);
+    }
+
+    public void ChangeSFXVolume()
+    {
+        float value = _sfxSlider.value;
+        float dB = (value == 0f) ? -80f : Mathf.Lerp(-30f, 0f, value / 30f);
+        data.sfx = dB;
+        AudioController.instance.ChangeSFXVol(dB);
+    }
+
+    public void ResolutionDropdown()
+    {
+        allRes = Screen.resolutions;
+        Array.Sort(allRes, (a, b) =>
+        {
+            int widthComparison = b.width.CompareTo(a.width);
+            return widthComparison == 0 ? b.height.CompareTo(a.height) : widthComparison;
+        });
+        string newRes;
+        List<string> resStringList = new List<string>();
+        foreach (Resolution res in allRes)
+        {
+            float aspectRatio = (float)res.width / res.height;
+            if (Math.Abs(aspectRatio - 16f / 9f) < 0.01f)
+            {
+                if (res.width >= 800)
+                {
+                    newRes = res.width.ToString() + "x" + res.height.ToString();
+                    if (!resStringList.Contains(newRes))
+                    {
+                        resStringList.Add(newRes);
+                        selectedResList.Add(res);
+                    }
+                }
+            }
+        }
+        if (resDropdown != null)
+        {
+            resDropdown.ClearOptions();
+            resDropdown.AddOptions(resStringList);
+        }
+    }
+
+    public void ChangeRes()
+    {
+        data.selectedRes = resDropdown.value;
+        Screen.SetResolution(selectedResList[data.selectedRes].width, selectedResList[data.selectedRes].height, Screen.fullScreenMode);
+    }
+
+    public void ScreenModeDropdown()
+    {
+        List<string> screenModes = new List<string> { "Fullscreen Mode", "Borderless Mode", "Window Mode" };
+        if (screenModeDropdown != null)
+        {
+            screenModeDropdown.ClearOptions();
+            screenModeDropdown.AddOptions(screenModes);
+            screenModeDropdown.onValueChanged.AddListener((int index) =>
+            {
+                if (index == 0)
+                {
+                    data.screenMode = 0;
+                    Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+                }
+                else if (index == 1)
+                {
+                    data.screenMode = 1;
+                    Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                }
+                else if (index == 2)
+                {
+                    data.screenMode = 2;
+                    Screen.fullScreenMode = FullScreenMode.Windowed;
+                }
+            });
+        }
     }
 
     void UpdateCooldownIcon()
@@ -470,10 +674,21 @@ public class PlayerUI : NetworkBehaviour
 
         if (pausePanel.activeSelf && !spellPanel.activeSelf)
         {
-            pausePanel.SetActive(false);
-            SetGameplayInput(true);
-            myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
-            caster.canCast = true;
+            if(optionsPanel.activeSelf)
+            {
+                ClosePanel(optionsPanel);
+            }
+            else if(confirmLeavePanel.activeSelf)
+            {
+                ClosePanel(confirmLeavePanel);
+            }
+            else
+            {
+                pausePanel.SetActive(false);
+                SetGameplayInput(true);
+                myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+                caster.canCast = true;
+            }
         }
         else if (!pausePanel.activeSelf && !spellPanel.activeSelf)
         {

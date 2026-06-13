@@ -10,11 +10,15 @@ public class SaveManager : MonoBehaviour
         File.WriteAllText(Application.persistentDataPath + "/configSave.json", s);
     }
 
-    public static void LoadConfig()
+    public static ConfigData LoadConfig(ref bool success)
     {
         string path = Application.persistentDataPath + "/configSave.json";
-        if (!File.Exists(path)) return;
+        if (!File.Exists(path))
+        {
+            success = false;
+            return new ConfigData(0, 0, 0f, -15f, -15f, false);
+        }
         string s = File.ReadAllText(path);
-        GameManager.Instance.uiController.data = JsonUtility.FromJson<ConfigData>(s);
+        return JsonUtility.FromJson<ConfigData>(s);
     }
 }
