@@ -62,6 +62,7 @@ public class SpellInventoryUI : NetworkBehaviour
     public void CMDCreateNewSpell()
     {
         DeselectAllCards();
+        GameManager.Instance.uiController.playerUI.spellToEquip = null;
         Spell newSpell = new Spell(caster);
         newSpell.spellName = GenerateSpellName();
         newSpell.instanceIndex = caster.spells.Count;

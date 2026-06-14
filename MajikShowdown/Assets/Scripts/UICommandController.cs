@@ -469,6 +469,10 @@ public class UICommandController : NetworkBehaviour
         scui.editButton.gameObject.SetActive(false);
         scui.deleteButton.gameObject.SetActive(false);
         scui.cardColor.color = Color.white;
+        if (GameManager.Instance.uiController.playerUI.spellToEquip == scui.boundSpell)
+        {
+            GameManager.Instance.uiController.playerUI.spellToEquip = null;
+        }
     }
 
     public void InitializeHex(HexGridNode hex)
