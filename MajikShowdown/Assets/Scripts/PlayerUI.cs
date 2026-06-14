@@ -67,7 +67,7 @@ public class PlayerUI : NetworkBehaviour
     public SpellNodeInterface selectedNode;
     public SpellInventoryUI inventory;
     public Player myPlayer;
-    PlayerDamageHandler damageHandler;
+    public PlayerDamageHandler damageHandler;
     public GameObject crosshair;
     [HideInInspector] public bool inGame = false;
 
@@ -121,7 +121,6 @@ public class PlayerUI : NetworkBehaviour
             AudioController.instance.StartMusic();
         }
         InitializeStatsUI();
-        damageHandler = myPlayer.GetComponent<PlayerDamageHandler>();
         healthSlider.maxValue = damageHandler.MaxHealth;
         healthSlider.value = damageHandler.Health;
         SetupColors();
@@ -336,7 +335,7 @@ public class PlayerUI : NetworkBehaviour
     public void UpdateHealthUI(NetworkConnection target)
     {
         if (damageHandler == null) return;
-
+        Debug.LogWarning(damageHandler.Health);
         healthSlider.maxValue = damageHandler.MaxHealth;
         healthSlider.value = damageHandler.Health;
     }
