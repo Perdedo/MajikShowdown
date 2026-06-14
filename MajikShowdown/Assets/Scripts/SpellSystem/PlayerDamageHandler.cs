@@ -1,3 +1,4 @@
+using Mirror;
 using System;
 using UnityEngine;
 
@@ -23,7 +24,13 @@ public class PlayerDamageHandler : CharacterDamageHandler
         {
             Die();
         }
-        GameManager.Instance.uiController.playerUI.UpdateHealthUI(this.connectionToClient);
+        UpdateUI();
+    }
+
+    [TargetRpc]
+    public void UpdateUI()
+    {
+        GameManager.Instance.uiController.playerUI.UpdateHealthUI();
     }
 
     public override void Heal(float amount)
@@ -33,7 +40,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
             return;
         }
         Health = Mathf.Min(Health + amount, MaxHealth);
-        GameManager.Instance.uiController.playerUI.UpdateHealthUI(this.connectionToClient);
+        UpdateUI();
     }
     public override void Die()
     {

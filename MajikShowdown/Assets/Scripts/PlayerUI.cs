@@ -331,8 +331,7 @@ public class PlayerUI : NetworkBehaviour
         }
     }
 
-    [TargetRpc]
-    public void UpdateHealthUI(NetworkConnectionToClient target)
+    public void UpdateHealthUI()
     {
         if (damageHandler == null) return;
         Debug.LogWarning(damageHandler.Health);
