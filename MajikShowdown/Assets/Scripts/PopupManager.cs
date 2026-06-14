@@ -33,6 +33,7 @@ public class PopupManager : MonoBehaviour
 
     public void Show(string text)
     {
+        if (popupText == null) return;
         popupText.text = text;
         popup.SetActive(true);
     }
