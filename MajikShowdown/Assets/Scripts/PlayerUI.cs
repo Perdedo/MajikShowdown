@@ -333,7 +333,7 @@ public class PlayerUI : NetworkBehaviour
     }
 
     [TargetRpc]
-    public void UpdateHealthUI()
+    public void UpdateHealthUI(NetworkConnection target)
     {
         if (damageHandler == null) return;
 

@@ -23,7 +23,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         {
             Die();
         }
-        GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+        GameManager.Instance.uiController.playerUI.UpdateHealthUI(this.connectionToClient);
     }
 
     public override void Heal(float amount)
@@ -33,7 +33,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
             return;
         }
         Health = Mathf.Min(Health + amount, MaxHealth);
-        GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+        GameManager.Instance.uiController.playerUI.UpdateHealthUI(this.connectionToClient);
     }
     public override void Die()
     {
