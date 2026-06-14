@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class CharacterDamageHandler : NetworkBehaviour
 {
-    public float MaxHealth;
-    public float Health;
+    [SyncVar]public float MaxHealth;
+    [SyncVar]public float Health;
     public List<Resistance> Resistances;
     public int enemyIndex;
     [Header("Network")]
@@ -21,7 +21,7 @@ public class CharacterDamageHandler : NetworkBehaviour
         Health = MaxHealth;
     }
 
-    public void TakeDamage(Damage damage)
+    public virtual void TakeDamage(Damage damage)
     {
         if(!isServer && network)
         {
@@ -43,8 +43,12 @@ public class CharacterDamageHandler : NetworkBehaviour
         }
     }
 
-    public void Heal(float amount)
+    public virtual void Heal(float amount)
     {
+        if (!isServer && network)
+        {
+            return;
+        }
         Health = Mathf.Min(Health + amount, MaxHealth);
     }
 

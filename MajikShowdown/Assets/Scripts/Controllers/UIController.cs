@@ -105,6 +105,7 @@ public class UIController : MonoBehaviour
     [HideInInspector]
     public ConfigData data;
     public PlayerUI playerUI;
+    public GameObject sharedUI;
     /*public HexGrid activeGrid;
     public SpellNodeDescription spellNodeDescription;
     Spell activeSpell;
@@ -276,6 +277,10 @@ public class UIController : MonoBehaviour
             {
                 pc.gameObject.SetActive(false);
             }
+        }
+        if(sharedUI != null)
+        {
+            sharedUI.gameObject.SetActive(true);
         }
     }
 

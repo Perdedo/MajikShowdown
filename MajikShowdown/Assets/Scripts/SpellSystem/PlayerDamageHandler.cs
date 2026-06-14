@@ -1,7 +1,40 @@
+using System;
 using UnityEngine;
 
 public class PlayerDamageHandler : CharacterDamageHandler
 {
+    public override void TakeDamage(Damage damage)
+    {
+        if (!isServer && network)
+        {
+            return;
+        }
+        float finalDamage = damage.Value;
+        for (int i = 0; i < Resistances.Count; i++)
+        {
+            if (Resistances[i].Element == damage.Element)
+            {
+                finalDamage *= 1 - Resistances[i].PercentValue / 100;
+                i = Resistances.Count;
+            }
+        }
+        Health = MathF.Max(Health - finalDamage, 0);
+        if (Health <= 0)
+        {
+            Die();
+        }
+        GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+    }
+
+    public override void Heal(float amount)
+    {
+        if (!isServer && network)
+        {
+            return;
+        }
+        Health = Mathf.Min(Health + amount, MaxHealth);
+        GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+    }
     public override void Die()
     {
         //Atualizar depois com sistema de reviver

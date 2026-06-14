@@ -132,7 +132,7 @@ public class PlayerUI : NetworkBehaviour
     private void Update()
     {
         if (!isLocalPlayer && network) return;
-        UpdateHealthUI();
+        //UpdateHealthUI();
         UpdateCooldownFills();
         UpdateCooldownIcon();
     }
@@ -332,7 +332,8 @@ public class PlayerUI : NetworkBehaviour
         }
     }
 
-    void UpdateHealthUI()
+    [TargetRpc]
+    public void UpdateHealthUI()
     {
         if (damageHandler == null) return;
 
@@ -773,9 +774,9 @@ public class PlayerUI : NetworkBehaviour
             {
                 spellPanel.SetActive(false);
                 SetGameplayInput(true);
-                if(GameManager.Instance.hordeController != null)
+                if(GameManager.Instance.uiController.sharedUI != null)
                 {
-                    GameManager.Instance.hordeController.timerTxt.gameObject.SetActive(true);
+                    GameManager.Instance.uiController.sharedUI.SetActive(true);
                 }
                 myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
                 caster.canCast = true;
@@ -784,13 +785,13 @@ public class PlayerUI : NetworkBehaviour
         }
         else if (!spellPanel.activeSelf && !pausePanel.activeSelf)
         {
-            if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.inPause)
+            /*if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.inPause)
             {
                 return;
-            }
-            if(GameManager.Instance.hordeController != null)
+            }*/
+            if(GameManager.Instance.uiController.sharedUI != null)
             {
-                GameManager.Instance.hordeController.timerTxt.gameObject.SetActive(false);
+                GameManager.Instance.uiController.sharedUI.SetActive(false);
             }
             spellPanel.SetActive(true);
             ActivateSpellsInventoryPage();
