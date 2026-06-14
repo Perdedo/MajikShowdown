@@ -134,6 +134,7 @@ public class Player : Character
         if (!isLocalPlayer && network) return;
         if (!context.started) return;
         if (!GameManager.Instance.hordeController.inPause) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         //readyForHorde = true;
         CMDReadyInput();
     }

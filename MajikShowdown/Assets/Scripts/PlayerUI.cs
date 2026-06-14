@@ -69,6 +69,7 @@ public class PlayerUI : NetworkBehaviour
     public Player myPlayer;
     PlayerDamageHandler damageHandler;
     public GameObject crosshair;
+    [HideInInspector] public bool inGame = false;
 
     [Header("Network")]
     public bool network = true;
@@ -921,6 +922,7 @@ public class PlayerUI : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         crosshair.SetActive(true);
+        inGame = true;
     }
 
     void EnableUICursor()
@@ -928,5 +930,6 @@ public class PlayerUI : NetworkBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         crosshair.SetActive(false);
+        inGame = false;
     }
 }

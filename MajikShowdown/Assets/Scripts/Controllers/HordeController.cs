@@ -71,7 +71,7 @@ public class HordeController : NetworkBehaviour
             }
             else
             {
-                UpdateTimerText("FINISH THEM!");
+                UpdateTimerText("0:00");
             }
         }
         else
@@ -160,7 +160,7 @@ public class HordeController : NetworkBehaviour
     [ClientRpc]
     public void UpdateEnemyText(int ammount)
     {
-        enemyCounterTxt.text = "Enemies left: " + ammount;
+        enemyCounterTxt.text = ammount.ToString();
     }
 
     [Server]
