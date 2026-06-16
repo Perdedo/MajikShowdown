@@ -103,7 +103,7 @@ public class Spell
         {
             spellCollisionLayers |= Caster.ObjectLayer;
         }
-        if (coreNode.Collisions.Players)
+        if (coreNode.Collisions.Allies || coreNode.Collisions.Self)
         {
             spellCollisionLayers |= Caster.PlayerLayer;
         }

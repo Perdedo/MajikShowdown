@@ -413,10 +413,10 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         enemiesToggle.gameObject.SetActive(isType);
         objectsToggle.gameObject.SetActive(isType);
         if (!isType) return;
-        playersToggle.SetIsOnWithoutNotify(currentType.Collisions.Players);
+        playersToggle.SetIsOnWithoutNotify(currentType.Collisions.Allies);
         enemiesToggle.SetIsOnWithoutNotify(currentType.Collisions.Enemies);
         objectsToggle.SetIsOnWithoutNotify(currentType.Collisions.Objects);
-        playersToggleIcon.sprite = currentType.Collisions.Players ? checkSprite : xSprite;
+        playersToggleIcon.sprite = currentType.Collisions.Allies ? checkSprite : xSprite;
         enemiesToggleIcon.sprite = currentType.Collisions.Enemies ? checkSprite : xSprite;
         objectsToggleIcon.sprite = currentType.Collisions.Objects ? checkSprite : xSprite;
     }
@@ -425,7 +425,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
     {
         if (currentType == null) return;
         var col = currentType.Collisions;
-        col.Players = value;
+        col.Allies = value;
         currentType.Collisions = col;
         playersToggleIcon.sprite = value ? checkSprite : xSprite;
         currentType.OwnerSpell?.UpdateSpell();

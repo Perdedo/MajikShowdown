@@ -14,7 +14,7 @@ public class SpellCollider : NetworkBehaviour
     [NonSerialized] float pierceCount, bounceCount;
     [NonSerialized] public bool primarySpell;
     bool HitOnCooldown;
-    int hitCounter =0;
+    int hitCounter = 0;
     bool CollisionOnCooldown;
     Timer HitTimer = new Timer(false);
     Timer CollisionTimer = new Timer(false);
@@ -102,7 +102,7 @@ public class SpellCollider : NetworkBehaviour
             {
                 CheckStationaryCollisions();
             }
-            if(hitCounter > 0)
+            if (hitCounter > 0)
             {
                 HitOnCooldown = true;
                 HitTimer.SetTimer(0);
@@ -141,7 +141,7 @@ public class SpellCollider : NetworkBehaviour
         }
         mesh.transform.localScale = Vector3.one * currentSize;
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
-        if(MarkedToDie)
+        if (MarkedToDie)
         {
             Die();
         }
@@ -233,7 +233,7 @@ public class SpellCollider : NetworkBehaviour
         }
         void SetPreviousCollisions(RaycastHit[] buffer)
         {
-            
+
             if (!OwnerSpell.coreNode.HitOnStay)
             {
                 previousColisions.Clear();
@@ -268,11 +268,17 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void HandleCollision(Collider col)
     {
-        if (LayerMaskUtility.BelongsInMask(col.gameObject.layer, OwnerSpell.Caster.EnemyLayer | OwnerSpell.Caster.PlayerLayer))
+        if (LayerMaskUtility.BelongsInMask(col.gameObject.layer, OwnerSpell.Caster.EnemyLayer))
         {
             if (HitOnCooldown) return;
             OnHit.Invoke();
             CollideCreature(col);
+        }
+        else if (LayerMaskUtility.BelongsInMask(col.gameObject.layer, OwnerSpell.Caster.PlayerLayer))
+        {
+            if (HitOnCooldown) return;
+            OnHit.Invoke();
+            CollideCreature(col,true);
         }
         else
         {
@@ -358,7 +364,7 @@ public class SpellCollider : NetworkBehaviour
                 {
                     SpellColliderManager.Instance.InitializeSpellCollider(spell, transform.position, transform.forward);
                 }
-                    trigger.SpellOnCooldown = true;
+                trigger.SpellOnCooldown = true;
             }
         };
         e.AddListener(action);
@@ -439,9 +445,17 @@ public class SpellCollider : NetworkBehaviour
     }
 
     //[Server]
-    public void CollideCreature(Collider col)
+    public void CollideCreature(Collider col, bool isPlayer = false)
     {
         //if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
+        if (isPlayer)
+        {
+            if (!((OwnerSpell.coreNode.Collisions.Self && col.gameObject == OwnerSpell.Caster.gameObject) || (OwnerSpell.coreNode.Collisions.Allies && col.gameObject != OwnerSpell.Caster.gameObject)))
+            {
+                return;
+            }
+        }
+
         hitCounter++;
         IGameCharacter character = col.GetComponent<IGameCharacter>();
         if (character != null)
