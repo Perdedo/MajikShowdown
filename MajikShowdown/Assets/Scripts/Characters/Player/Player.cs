@@ -36,6 +36,7 @@ public class Player : Character
     public PushableObject pushing;
     [HideInInspector] public PlayerInput input;
     bool Casting;
+    [HideInInspector][SyncVar] public bool dead = false;
     [SyncVar(hook = "GetReady")]public bool readyForHorde = false;
     [Header("Network")]
     public bool network = true;

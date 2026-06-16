@@ -93,8 +93,11 @@ public class FlowFieldManager : MonoBehaviour
         lastTargetsPos.Clear();
         foreach (Player p in GameManager.Instance.Players)
         {
-            Targets.Add(p.transform);
-            lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+            if(!p.dead)
+            {
+                Targets.Add(p.transform);
+                lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+            }
         }
         flowField.GenerateFlowField(lastTargetsPos);
     }

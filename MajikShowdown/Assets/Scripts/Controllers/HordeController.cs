@@ -32,9 +32,12 @@ public class HordeController : NetworkBehaviour
     bool possiblePos;
     public TextMeshProUGUI enemyCounterTxt;
     public int maxEnemyCount = 500;
+    public int hordesToWin = 3;
+    int hordeCount;
     private void Awake()
     {
         GameManager.Instance.hordeController = this;
+        hordeCount = 0;
         spawners.Clear();
         enemiesByType.Clear();
         usedEnemiesByType.Clear();
@@ -136,6 +139,7 @@ public class HordeController : NetworkBehaviour
     [Server]
     public void StartHorde()
     {
+        hordeCount++;
         hordeStartTime = Time.time;
         hordeEndTime = hordeStartTime + hordeDuration;
         spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, spawnerFrequencyCurve.Evaluate(0));
@@ -255,8 +259,50 @@ public class HordeController : NetworkBehaviour
         if (enemies.Count == 0)
         {
             inHorde = false;
-            StartPause();
+            if(hordeCount < hordesToWin)
+            {
+                StartPause();
+            }
+            else
+            {
+                Victory();
+            }
         }
+    }
+
+    [ClientRpc]
+    public void Victory()
+    {
+        Debug.Log("ganhamo");
+        //inserir lógica de tela de vitória
+    }
+
+    public void CheckDeadPlayers()
+    {
+        if(!isServer)
+        {
+            return;
+        }
+        bool allDead = true;
+        foreach (Player p in GameManager.Instance.Players)
+        {
+            if (!p.dead)
+            {
+                allDead = false;
+                break;
+            }
+        }
+        if (allDead)
+        {
+            Defeat();
+        }
+    }
+
+    [ClientRpc]
+    public void Defeat()
+    {
+        Debug.Log("perdemo");
+        //lógica de tela de derrota
     }
 
     public void CheckReadyPlayers()

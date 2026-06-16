@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerDamageHandler : CharacterDamageHandler
 {
+    public Player myPlayer;
     public override void TakeDamage(Damage damage)
     {
         if (!isServer && network)
@@ -45,6 +46,35 @@ public class PlayerDamageHandler : CharacterDamageHandler
     public override void Die()
     {
         //Atualizar depois com sistema de reviver
+        myPlayer.dead = true;
+        FlowFieldManager.instance.UpdateFlowField();
+        GameManager.Instance.hordeController.CheckDeadPlayers();
+        Disappear();
         //Debug.Log("morri");
+    }
+
+    [ClientRpc]
+    public void Disappear()
+    {
+        this.gameObject.SetActive(false);
+    }
+
+
+    public void Respawn()
+    {
+        if(!isServer && network)
+        {
+            return;
+        }
+        Health = MaxHealth / 2;
+        myPlayer.dead = false;
+        Reappear();
+    }
+
+
+    [ClientRpc]
+    public void Reappear()
+    {
+        this.gameObject.SetActive(true);
     }
 }

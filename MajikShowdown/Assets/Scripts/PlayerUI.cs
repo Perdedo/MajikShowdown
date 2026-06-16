@@ -334,7 +334,6 @@ public class PlayerUI : NetworkBehaviour
     public void UpdateHealthUI()
     {
         if (damageHandler == null) return;
-        Debug.LogWarning(damageHandler.Health);
         healthSlider.maxValue = damageHandler.MaxHealth;
         healthSlider.value = damageHandler.Health;
     }
