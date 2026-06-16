@@ -423,11 +423,14 @@ public class Enemy : CrowdCharacter
         float closestDistance = Mathf.Infinity;
         foreach (Player p in GameManager.Instance.Players)
         {
-            float distance = Vector3.Distance(transform.position, p.transform.position);
-            if (distance < closestDistance)
+            if(!p.dead)
             {
-                closestDistance = distance;
-                closest = p;
+                float distance = Vector3.Distance(transform.position, p.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closest = p;
+                }
             }
         }
         return closest;
