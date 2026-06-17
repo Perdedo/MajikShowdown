@@ -16,8 +16,9 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     public UICommandController commander;
     public SpellNodeDescription nodeDescription;
     public TMP_Dropdown typeDropdown;
-    public Toggle onlyUnusedToggle;
-    public Toggle recentOrderToggle;
+    public TMP_Dropdown sortDropdown;
+    public Toggle hideUsedToggle;
+    public Toggle reverseSortToggle;
     private NodeFilter currentFilter = new NodeFilter();
     private Dictionary<DraggableNode, int> usageCount = new();
     public SpellCaster caster;
@@ -38,21 +39,29 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
             "Show All Runes",
-            "Show Effect Runes",
-            "Show Stat Runes",
+            "Show Core Runes",
             "Show Trajectory Runes",
+            "Show Effect Runes",
+            "Show Casting Point Runes",
             "Show Trigger Runes",
-            "Show Cast Point Runes",
-            "Show Core Runes"
+            "Show Stat Runes"
         });
-        onlyUnusedToggle.SetIsOnWithoutNotify(false);
-        recentOrderToggle.SetIsOnWithoutNotify(false);
+        sortDropdown.ClearOptions();
+        sortDropdown.AddOptions(new List<string> {
+            "Rune Acquisition Order",
+            "Rune Category"
+            //"Rune Rarity"
+        });
+        hideUsedToggle.SetIsOnWithoutNotify(false);
+        reverseSortToggle.SetIsOnWithoutNotify(false);
         typeDropdown.onValueChanged.RemoveAllListeners();
-        onlyUnusedToggle.onValueChanged.RemoveAllListeners();
-        recentOrderToggle.onValueChanged.RemoveAllListeners();
+        sortDropdown.onValueChanged.RemoveAllListeners();
+        hideUsedToggle.onValueChanged.RemoveAllListeners();
+        reverseSortToggle.onValueChanged.RemoveAllListeners();
         typeDropdown.onValueChanged.AddListener(OnFilterChanged);
-        onlyUnusedToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
-        recentOrderToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
+        sortDropdown.onValueChanged.AddListener(OnFilterChanged);
+        hideUsedToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
+        reverseSortToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         ApplyFilter();
         if(!isServer && network)
         {
@@ -78,20 +87,29 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
             "Show All Runes",
-            "Show Effect Runes",
-            "Show Stat Runes",
+            "Show Core Runes",
             "Show Trajectory Runes",
+            "Show Effect Runes",
+            "Show Casting Point Runes",
             "Show Trigger Runes",
-            "Show Core Runes"
+            "Show Stat Runes"
         });
-        onlyUnusedToggle.SetIsOnWithoutNotify(false);
-        recentOrderToggle.SetIsOnWithoutNotify(false);
+        sortDropdown.ClearOptions();
+        sortDropdown.AddOptions(new List<string> {
+            "Rune Acquisition Order",
+            "Rune Category"
+            //"Rune Rarity"
+        });
+        hideUsedToggle.SetIsOnWithoutNotify(false);
+        reverseSortToggle.SetIsOnWithoutNotify(false);
         typeDropdown.onValueChanged.RemoveAllListeners();
-        onlyUnusedToggle.onValueChanged.RemoveAllListeners();
-        recentOrderToggle.onValueChanged.RemoveAllListeners();
+        sortDropdown.onValueChanged.RemoveAllListeners();
+        hideUsedToggle.onValueChanged.RemoveAllListeners();
+        reverseSortToggle.onValueChanged.RemoveAllListeners();
         typeDropdown.onValueChanged.AddListener(OnFilterChanged);
-        onlyUnusedToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
-        recentOrderToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
+        sortDropdown.onValueChanged.AddListener(OnFilterChanged);
+        hideUsedToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
+        reverseSortToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         ApplyFilter();
     }
 
@@ -103,8 +121,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     {
         node.SetOriginZone(this as IDropZone);
         var spellNode = node.GetComponent<SpellNodeInterface>();
-        if (spellNode != null)
-            AddNodeToInventory(spellNode);
+        if (spellNode != null) AddNodeToInventory(spellNode);
         ApplyFilter();
         if(!isServer && network)
         {
@@ -136,8 +153,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         DraggableNode node = commander.drags.Find(d => d.acquisitionOrder == index);
         node.SetOriginZone(this as IDropZone);
         var spellNode = node.GetComponent<SpellNodeInterface>();
-        if (spellNode != null)
-            AddNodeToInventory(spellNode);
+        if (spellNode != null) AddNodeToInventory(spellNode);
         ApplyFilter();
     }
 
@@ -302,8 +318,9 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     void OnFilterChanged(int _)
     {
         currentFilter.category = (NodeCategory)typeDropdown.value;
-        currentFilter.onlyUnused = onlyUnusedToggle.isOn;
-        currentFilter.orderByRecent = recentOrderToggle.isOn;
+        currentFilter.hideUsed = hideUsedToggle.isOn;
+        currentFilter.sortMode = (NodeSortMode)sortDropdown.value;
+        currentFilter.reverseSort = reverseSortToggle.isOn;
         ApplyFilter();
         if(!isServer && network)
         {
@@ -327,8 +344,9 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     void CMDOnFilterChanged(int _)
     {
         currentFilter.category = (NodeCategory)typeDropdown.value;
-        currentFilter.onlyUnused = onlyUnusedToggle.isOn;
-        currentFilter.orderByRecent = recentOrderToggle.isOn;
+        currentFilter.hideUsed = hideUsedToggle.isOn;
+        currentFilter.sortMode = (NodeSortMode)sortDropdown.value;
+        currentFilter.reverseSort = reverseSortToggle.isOn;
         ApplyFilter();
     }
     void ApplyFilter()
@@ -340,14 +358,18 @@ public class NodeInventory : NetworkBehaviour, IDropZone
             query = query.Where(n => n.GetCategory() == currentFilter.category);
         }
 
-        if (currentFilter.onlyUnused)
+        if (currentFilter.hideUsed)
         {
             query = query.Where(n => !n.IsUsed());
         }
 
-        if (currentFilter.orderByRecent)
+        switch (currentFilter.sortMode)
         {
-            query = query.OrderByDescending(n => n.acquisitionOrder);
+            case NodeSortMode.AcquisitionOrder: query = currentFilter.reverseSort ? query.OrderByDescending(n => n.acquisitionOrder) : query.OrderBy(n => n.acquisitionOrder);
+                break;
+
+            case NodeSortMode.Category: query = currentFilter.reverseSort ? query.OrderByDescending(n => n.GetCategory()) : query.OrderBy(n => n.GetCategory());
+                break;
         }
 
         foreach (var node in activeNodes)
