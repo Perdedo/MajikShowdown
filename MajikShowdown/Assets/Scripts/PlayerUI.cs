@@ -480,10 +480,10 @@ public class PlayerUI : NetworkBehaviour
             Spell spell = caster.equippedSpells[i];
             if (spell == null)
             {
-                slotVisuals[i].SetActive(false);
+                slotVisuals[i].transform.GetChild(2).gameObject.SetActive(false);
                 continue;
             }
-            slotVisuals[i].SetActive(true);
+            slotVisuals[i].transform.GetChild(2).gameObject.SetActive(true);
             slotIcons[i].sprite = visualDatabase.icons[spell.symbolIndex];
             slotIcons[i].color = visualDatabase.colors[spell.colorIndex];
         }
