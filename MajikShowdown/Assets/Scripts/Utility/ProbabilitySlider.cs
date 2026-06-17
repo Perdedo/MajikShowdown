@@ -12,6 +12,14 @@ public class ProbabilitySlider<T>
     {
         Entries.Add(new ProbabilityEntry<T> { label = label, Weight = weight, Value = value });
     }
+    public void RemoveEntry(int index)
+    {
+        if(index <0 || index >= Entries.Count)
+        {
+            return;
+        }
+        Entries.Remove(Entries[index]);
+    }
     public ProbabilitySlider()
     {
 

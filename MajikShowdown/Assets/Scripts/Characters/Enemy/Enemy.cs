@@ -17,6 +17,11 @@ public class Enemy : CrowdCharacter
     public float SeparationForce = 1;
     public float FlowfieldActivationDistance = 20;
     public int priority = 1;
+    [Header("DropConfig")]
+    [Range(0, 100)] public float DropChance;
+    public List<RuneLootPool> AvailablePools;
+    public ProbabilitySlider<int> PoolProbability = new ProbabilitySlider<int>();
+
     float size;
     Player target;
     List<Enemy> neighbors = new List<Enemy>();
@@ -39,23 +44,7 @@ public class Enemy : CrowdCharacter
     public float damage = 1;
     public Elements element = Elements.None;
     Damage dmgCtrl;
-    void Start()
-    {
-        /*size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
-        for (int i = 0; i < Directions.Length; i++)
-        {
-            float angle = i * Mathf.PI * 2f / Directions.Length;
-            Directions[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
-        }
-        updateRate = 1f / 30f;
-        dmgCtrl = new Damage(damage, element);
-        attackTimer.timedEvent.AddListener(AttackPlayer);
-        attackTimer.Paused = true;
-        attackCooldownTimer.Paused = true;
-        StartCoroutine(StartAICalc());*/
-        //targetLastSeen = targetVector;
-    }
-
+#if UNITY_EDITOR
     public void Initialize()
     {
         DamageHandler.Initialize();
@@ -73,6 +62,36 @@ public class Enemy : CrowdCharacter
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
     }
+#endif
+    /*void Start()
+    {
+        size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
+        for (int i = 0; i < Directions.Length; i++)
+        {
+            float angle = i * Mathf.PI * 2f / Directions.Length;
+            Directions[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+        }
+        updateRate = 1f / 30f;
+        dmgCtrl = new Damage(damage, element);
+        attackTimer.timedEvent.AddListener(AttackPlayer);
+        attackTimer.Paused = true;
+        attackCooldownTimer.Paused = true;
+        StartCoroutine(StartAICalc());
+        targetLastSeen = targetVector;
+    }*/
+    protected override void OnValidate()
+    {
+        int c = PoolProbability.Entries.Count;
+        if (AvailablePools.Count > c)
+        {
+            PoolProbability.AddEntry(c.ToString(), 1 / (c + 1), c);
+        }
+        else if (AvailablePools.Count < c)
+        {
+            PoolProbability.RemoveEntry(c - 1);
+        }
+    }
+
     /*public void Update()
     {
         EnemyUpdate();
@@ -84,16 +103,16 @@ public class Enemy : CrowdCharacter
     public void EnemyUpdate()
     {
         //target = GetClosestPlayer();
-        if(FlowFieldManager.instance == null)
+        if (FlowFieldManager.instance == null)
         {
             return;
         }
         aiCalcTimer.timer(updateRate, Time.deltaTime, false, true);
-        if(target == null)
+        if (target == null)
         {
             return;
         }
-        if(currentCell == null)
+        if (currentCell == null)
         {
             return;
         }
@@ -142,23 +161,23 @@ public class Enemy : CrowdCharacter
         CalculateDanger();
         CalculateInterest();
         MoveDirection = GetBestDirection();*/
-        if(forwardCell != null)
+        if (forwardCell != null)
         {
             CheckForJump(currentCell);
         }
         //Debug.DrawRay(transform.position, targetVector, Color.red);
         //Debug.DrawRay(transform.position, targetLastSeen, Color.blue);
-        if(!attacked)
+        if (!attacked)
         {
             attacked = attackTimer.timer(attackDuration, Time.deltaTime, false, false);
-            if(attacked)
+            if (attacked)
             {
                 attackCooldownTimer.SetTimer(0);
                 attackCooldownTimer.Paused = false;
                 onAttackCooldown = true;
             }
         }
-        if(onAttackCooldown)
+        if (onAttackCooldown)
         {
             onAttackCooldown = attackCooldownTimer.timer(attackCooldown, Time.deltaTime, true, false);
         }
@@ -246,15 +265,15 @@ public class Enemy : CrowdCharacter
     public void CheckForJump(FieldCell currentCell)
     {
         bool needsJump = false;
-        foreach(FieldCell.NeighborContext n in forwardCell.Neighbors)
+        foreach (FieldCell.NeighborContext n in forwardCell.Neighbors)
         {
-            if(n.context == FieldCell.NeighborContext.Context.Jumpable && Vector3.Dot(forwardCell.direction, FlowField.CellDistance(forwardCell, n.neighborCell)) > 0.75f)
+            if (n.context == FieldCell.NeighborContext.Context.Jumpable && Vector3.Dot(forwardCell.direction, FlowField.CellDistance(forwardCell, n.neighborCell)) > 0.75f)
             {
-                needsJump = true; 
+                needsJump = true;
                 break;
             }
         }
-        if(needsJump)
+        if (needsJump)
         {
             Jump(true);
         }
@@ -263,7 +282,7 @@ public class Enemy : CrowdCharacter
     {
         if (targetVector.magnitude <= TargetStoppingDistance || (MoveDirection == Vector3.zero && canSeeTarget))
         {
-            if(detectedHigherPriority)
+            if (detectedHigherPriority)
             {
                 Move(priorityAvoidDirection.normalized, speed);
             }
@@ -273,9 +292,9 @@ public class Enemy : CrowdCharacter
                 SetAcceleration(Vector3.zero);
             }
 
-            if(targetVector.magnitude <= TargetStoppingDistance && !onAttackCooldown)
+            if (targetVector.magnitude <= TargetStoppingDistance && !onAttackCooldown)
             {
-                if(attacked)
+                if (attacked)
                 {
                     attacked = false;
                     attackTimer.SetTimer(0);
@@ -291,10 +310,10 @@ public class Enemy : CrowdCharacter
         {
             attackTimer.Paused = true;
             //Move(MoveDirection, speed);
-            if(detectedObstacle)
+            if (detectedObstacle)
             {
                 Vector3 navDir = GetNavMeshDir(currentCell);
-                if(Vector3.Dot(targetVector, navDir) < -0.75f)
+                if (Vector3.Dot(targetVector, navDir) < -0.75f)
                 {
                     Move(navDir, speed);
                 }
@@ -305,7 +324,7 @@ public class Enemy : CrowdCharacter
             }
             else
             {
-                if(detectedHigherPriority)
+                if (detectedHigherPriority)
                 {
                     Move((MoveDirection + priorityAvoidDirection).normalized, speed);
                 }
@@ -344,10 +363,10 @@ public class Enemy : CrowdCharacter
                     float dot = Vector3.Dot(toEnemy.normalized, Directions[i]);
                     if (dot > 0)
                     {
-                        Danger[i] += strength * dot * SeparationForce * (e.priority/priority);
+                        Danger[i] += strength * dot * SeparationForce * (e.priority / priority);
                     }
                 }
-                if(e.priority > priority)
+                if (e.priority > priority)
                 {
                     priorityAvoidDirection -= toEnemy * (e.priority / priority);
                 }
@@ -404,7 +423,7 @@ public class Enemy : CrowdCharacter
             {
                 if (e != this && e.priority >= priority)
                 {
-                    if(e.priority > priority)
+                    if (e.priority > priority)
                     {
                         detectedHigherPriority = true;
                     }
