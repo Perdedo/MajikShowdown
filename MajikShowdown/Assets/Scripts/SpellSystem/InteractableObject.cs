@@ -1,6 +1,7 @@
+using Mirror;
 using UnityEngine;
 
-public abstract class InteractableObject : MonoBehaviour
+public abstract class InteractableObject : NetworkBehaviour
 {
     public abstract void Interact(Player player);
     public virtual void OnEnable()
