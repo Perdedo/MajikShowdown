@@ -256,7 +256,10 @@ public class Player : Character
         {
             return;
         }
-
+        if (context.phase == InputActionPhase.Started)
+        {
+            Interact();
+        }
     }
     public void Interact()
     {
