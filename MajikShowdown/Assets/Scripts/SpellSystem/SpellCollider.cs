@@ -450,7 +450,7 @@ public class SpellCollider : NetworkBehaviour
         //if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
         if (isPlayer)
         {
-            if (!((OwnerSpell.coreNode.Collisions.Self && col.gameObject == OwnerSpell.Caster.gameObject) || (OwnerSpell.coreNode.Collisions.Allies && col.gameObject != OwnerSpell.Caster.gameObject)))
+            if (!((OwnerSpell.coreNode.Collisions.Self && col.gameObject == OwnerSpell.Caster.player.gameObject) || (OwnerSpell.coreNode.Collisions.Allies && col.gameObject != OwnerSpell.Caster.player.gameObject)))
             {
                 return;
             }
