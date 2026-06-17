@@ -35,13 +35,15 @@ public class Player : Character
     public UnityEvent StoppedPushing;
     public PushableObject pushing;
     [HideInInspector] public PlayerInput input;
-    bool Casting;
+    
     [SyncVar(hook = "GetReady")]public bool readyForHorde = false;
     [Header("Network")]
     public bool network = true;
 
     [Header("Spellcasting")]
     public SpellCaster caster;
+    [HideInInspector]public bool Casting;
+    public float CastPoseTime = 3f;
 
     public InteractableObject currentInteraction;
     //public PlayerData data;
