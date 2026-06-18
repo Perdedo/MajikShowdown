@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc8b72238e768d247910b68c7423d0cb, type: 3}
-  m_Name: RuneLootPool
+  m_Name: TestLootPool
   m_EditorClassIdentifier: Assembly-CSharp::RuneLootPool
   RarityChance:
     Entries:
-    - Weight: 0.5
+    - Weight: 1
       label: Common
       Value: 0
-    - Weight: 0.3
+    - Weight: 0
       label: Uncommon
       Value: 1
-    - Weight: 0.15
+    - Weight: 0
       label: Rare
       Value: 2
-    - Weight: 0.04
+    - Weight: 0
       label: Epic
       Value: 3
-    - Weight: 0.01
+    - Weight: 0
       label: Legendary
       Value: 4
   Common:
@@ -38,24 +38,50 @@ MonoBehaviour:
       - Weight: 0.2
         label: Trajectory
         Value: 1
-      - Weight: 0.2
+      - Weight: 0.2094556
         label: Effect
         Value: 2
-      - Weight: 0.3
+      - Weight: 0.31733495
         label: Stat
         Value: 3
-      - Weight: 0.1
+      - Weight: 0.07320941
         label: Trigger
         Value: 4
       - Weight: 0.1
         label: CastPoint
         Value: 5
-    Core: []
-    Trajectory: []
-    Effect: []
-    Stat: []
-    Trigger: []
-    CastPoint: []
+    Core:
+    - {fileID: 11400000, guid: fbc1f1f918bdb3744b82ca58741bc8dc, type: 2}
+    - {fileID: 11400000, guid: 2d62b0e1990d4fe418bf67d579510dc6, type: 2}
+    - {fileID: 11400000, guid: 64bed0574180f81439ae9b6158533312, type: 2}
+    Trajectory:
+    - {fileID: 11400000, guid: e5a7eaef2ea1df8459f01cde7c0a7433, type: 2}
+    - {fileID: 11400000, guid: cb4b72dd4349f734fb53377f3a6e3848, type: 2}
+    - {fileID: 11400000, guid: a0f76ebc750397b469d4f2fb62e528ed, type: 2}
+    - {fileID: 11400000, guid: 0e70df82dedecdc4d87fdcd83b852fdc, type: 2}
+    - {fileID: 11400000, guid: 2adb7ae0f482dfa468fb50d43f48129a, type: 2}
+    - {fileID: 11400000, guid: 86d7b479c33dd234e8bbaf417c65e25c, type: 2}
+    - {fileID: 11400000, guid: 552b98e6749cb1c40b982734824a6bed, type: 2}
+    - {fileID: 11400000, guid: e28da45c00442584cbb52c9ff30912c0, type: 2}
+    - {fileID: 11400000, guid: ba5d8738e35456445b28685f110df77a, type: 2}
+    Effect:
+    - {fileID: 11400000, guid: 305a7e9c70923194ea28c2e6ac0d8fa7, type: 2}
+    - {fileID: 11400000, guid: cfd120551b36856499037f3b7905ff46, type: 2}
+    Stat:
+    - {fileID: 11400000, guid: 6aed3ed64c34e9b42b5bd2c13db52f8d, type: 2}
+    - {fileID: 11400000, guid: d5629279227f93342a01588e1a27cc11, type: 2}
+    - {fileID: 11400000, guid: 00d940a69857b54469ce48eda478de0e, type: 2}
+    - {fileID: 11400000, guid: 571bacd2f0883f047bb86a6f8eddbd7c, type: 2}
+    - {fileID: 11400000, guid: ba641916d12d14549af400a4f8b0a2b3, type: 2}
+    - {fileID: 11400000, guid: 39318fdeb09a3d841bdc8ad4c1e62718, type: 2}
+    - {fileID: 11400000, guid: 76a8d7ce1837fc34393900190e7534b5, type: 2}
+    - {fileID: 11400000, guid: c5a1d60250471834a9935dfc953451a2, type: 2}
+    Trigger:
+    - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
+    CastPoint:
+    - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
+    - {fileID: 11400000, guid: 1c81d13cfb783c543897a613a1ad49f1, type: 2}
+    - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}
   Uncommon:
     TypeChance:
       Entries:

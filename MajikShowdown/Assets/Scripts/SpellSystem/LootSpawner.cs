@@ -8,6 +8,14 @@ public class LootSpawner : MonoBehaviour
     public List<RuneLootBox> runeLootBoxes;
     public List<RuneLootBox> ActiveLootBoxes;
     public List<RuneLootBox> InactiveLootBoxes;
+    public RuneLootPool test;
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            SpawnLootBox(Vector3.up, test);
+        }
+    }
     void Awake()
     {
         Instance = this;

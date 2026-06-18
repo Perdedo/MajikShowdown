@@ -30,6 +30,7 @@ public class SpellCaster : NetworkBehaviour
     public LayerMask ObjectLayer;
 
     [HideInInspector] public bool canCast = true;
+    Timer castPoseTimer = new Timer(false);
 
     [Header("Network")]
     public bool network = true;
@@ -116,23 +117,13 @@ public class SpellCaster : NetworkBehaviour
                 }
             }
         }
-        /*if (Input.GetKeyDown(KeyCode.E))
+        if(player != null && player.Casting)
         {
-            if (equippedSpells[0] != null)
+            if(castPoseTimer.timer(player.CastPoseTime,Time.deltaTime, false, false))
             {
-                Debug.Log("Cast");
-                if (network)
-                {
-                    CMDCastSpell(0, AimController.AimPoint);
-                }
-                else
-                {
-                    CastSpell(0);
-                }
-                //CMDCastSpell(0, AimController.AimPoint);
-                //Debug.Log(equippedSpells[0].spellName);
+                player.Casting = false;
             }
-        }*/
+        }
     }
 
     [Command]
@@ -177,6 +168,11 @@ public class SpellCaster : NetworkBehaviour
                     //dir = AimController.AimPoint - transform.position;
                 }
                 SpellColliderManager.Instance.ServerInitializeSpellCollider(spell, castPos, dir, true);
+            }
+            if(player != null)
+            {
+                player.Casting = true;
+                castPoseTimer.SetTimer(0);
             }
         }
     }
@@ -224,7 +220,11 @@ public class SpellCaster : NetworkBehaviour
                 }
                 SpellColliderManager.Instance.InitializeSpellCollider(spell, castPos, dir, true);
             }
-
+            if(player != null)
+            {
+                player.Casting = true;
+                castPoseTimer.SetTimer(0);
+            }
         }
 
     }
