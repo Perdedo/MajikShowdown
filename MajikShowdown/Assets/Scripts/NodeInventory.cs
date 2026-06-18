@@ -177,8 +177,13 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     }
     public void ShowNode(SpellNode nodeData)
     {
+        if (nodeMap.ContainsKey(nodeData))
+        {
+            return;
+        }
         SpellNodeInterface instance = Instantiate(caster.genericNodePrefab, transform);
         instance.Setup(nodeData);
+        instance.inventory = this;
         instance.acquisitionOrder = activeNodes.Count;
         instance.linkedDescription = nodeDescription;
         RectTransform rect = instance.GetComponent<RectTransform>();
@@ -196,11 +201,23 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         }
     }
 
+    public void SyncFromCaster()
+    {
+        foreach (var nodeData in caster.runtimeNodes)
+        {
+            if (!nodeMap.ContainsKey(nodeData))
+            {
+                ShowNode(nodeData);
+            }
+        }
+        ApplyFilter();
+    }
+
     public void RefreshNodeState(SpellNode nodeData)
     {
         if (nodeMap.TryGetValue(nodeData, out var visual))
         {
-            visual.SetUsed(nodeData.IsInUse);
+            visual.ApplyUsedVisual(nodeData.IsInUse);
         }
     }
 

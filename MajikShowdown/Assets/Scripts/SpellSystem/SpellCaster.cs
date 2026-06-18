@@ -87,10 +87,15 @@ public class SpellCaster : NetworkBehaviour
         runtimeNode.Initialize();
         runtimeNodes.Add(runtimeNode);
     }
+
     public void AddRune(SpellNode nodePrefab)
     {
         ownedNodes.Add(nodePrefab);
         InstantiateNode(nodePrefab);
+        foreach (var inv in inventories)
+        {
+            inv.SyncFromCaster();
+        }
     }
 
     private void Update()

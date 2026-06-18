@@ -249,14 +249,17 @@ public class SpellNodeInterface : MonoBehaviour
     public void SetUsed(bool used)
     {
         Node.IsInUse = used;
+        ApplyUsedVisual(used);
+        GameManager.Instance.uiController.playerUI.caster.commander.SetUsedSNI(this, used);
+        GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(Node, used);
+    }
 
+    public void ApplyUsedVisual(bool used)
+    {
         if (usedNodeImg != null)
         {
             usedNodeImg.SetActive(used);
         }
-
-        GameManager.Instance.uiController.playerUI.caster.commander.SetUsedSNI(this, used);
-
         if (inventory != null)
         {
             inventory.ApplyFilter();
