@@ -86,13 +86,11 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             clone.canvasGroup = cloneGO.GetComponent<CanvasGroup>();
             clone.canvasGroup.alpha = 1f;
             clone.canvasGroup.blocksRaycasts = true;
-
             var cloneInterface = cloneGO.GetComponent<SpellNodeInterface>();
             if (cloneInterface != null)
             {
-                cloneInterface.usedNodeImg.SetActive(true);
+                cloneInterface.SetUsed(true);
             }
-
             inventoryClone = clone;
             inventory.Receive(clone);
             inventory.InsertNodeAt(cloneInterface, savedListIndex);
@@ -106,8 +104,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 var spellNode = source?.GetComponent<SpellNodeInterface>();
                 if (spellNode != null)
                 {
-                    spellNode.Node.IsInUse = false;
-                    spellNode.usedNodeImg.SetActive(false);
+                    spellNode.SetUsed(false);
                 }
                 Destroy(gameObject);
                 return;
@@ -137,8 +134,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 var spellNode = source?.GetComponent<SpellNodeInterface>();
                 if (spellNode != null)
                 {
-                    spellNode.Node.IsInUse = false;
-                    spellNode.usedNodeImg.SetActive(false);
+                    spellNode.SetUsed(false);
                 }
                 Destroy(gameObject);
                 return;

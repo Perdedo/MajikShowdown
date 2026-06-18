@@ -349,7 +349,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         currentFilter.reverseSort = reverseSortToggle.isOn;
         ApplyFilter();
     }
-    void ApplyFilter()
+    public void ApplyFilter()
     {
         IEnumerable<SpellNodeInterface> query = activeNodes;
 
@@ -360,6 +360,11 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         if (currentFilter.hideUsed)
         {
+            foreach (var node in activeNodes)
+            {
+                Debug.Log($"{node.name} Used={node.IsUsed()}");
+            }
+
             query = query.Where(n => !n.IsUsed());
         }
 
@@ -387,6 +392,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
     public void SetNodeInUse(DraggableNode node, bool inUse)
     {
+        Debug.Log($"SetNodeInUse {node.name} {inUse}");
         if (!usageCount.ContainsKey(node))
         {
             usageCount[node] = 0;
@@ -397,7 +403,8 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         var spellNode = node.GetComponent<SpellNodeInterface>();
         spellNode?.SetUsed(usageCount[node] > 0);
-        if(!isServer && network)
+        ApplyFilter();
+        if (!isServer && network)
         {
             /*if(NetworkClient.ready)
             {
@@ -434,6 +441,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         var spellNode = node.GetComponent<SpellNodeInterface>();
         spellNode?.SetUsed(usageCount[node] > 0);
+        ApplyFilter();
     }
 
     public int GetNodeIndex(SpellNodeInterface node)
