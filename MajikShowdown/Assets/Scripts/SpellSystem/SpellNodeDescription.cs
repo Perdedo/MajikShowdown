@@ -65,7 +65,8 @@ public class SpellNodeDescription : NetworkBehaviour
     };
 
     [Header("Trigger")]
-    public TMP_Dropdown spellDropdown;
+    public TMP_Text triggeredSpellText;
+    public Image triggeredSpellIcon;
     public TMP_Dropdown triggerDropdown;
 
     [Header("Collision")]
@@ -134,7 +135,6 @@ public class SpellNodeDescription : NetworkBehaviour
         alliesToggle.onValueChanged.AddListener(SetAlliesCollision);
         enemiesToggle.onValueChanged.AddListener(SetEnemiesCollision);
         objectsToggle.onValueChanged.AddListener(SetObjectsCollision);
-        spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.AddListener(SetTriggerType);
     }
 
@@ -467,21 +467,29 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.OwnerSpell?.UpdateSpell();
     }
 
+    void SetupAvailableSpells()
+    {
+        availableSpells.Clear();
+        availableSpells.Add(null);
+        foreach (Spell spell in caster.spells)
+        {
+            availableSpells.Add(spell);
+        }
+    }
+
     void TriggerDescription(SpellNode node)
     {
         currentTrigger = node as SpellTrigger;
         bool isTrigger = currentTrigger != null;
-        spellDropdown.gameObject.SetActive(isTrigger);
         triggerDropdown.gameObject.SetActive(isTrigger);
         if (!isTrigger) return;
-        spellDropdown.onValueChanged.RemoveListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.RemoveListener(SetTriggerType);
-        SetupSpellDropdown();
+        SetupAvailableSpells();
         SetupTriggerDropdown();
         RefreshTriggerUI();
-        spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.AddListener(SetTriggerType);
-        if(!isServer && network)
+        UpdateTriggeredSpellUI();
+        if (!isServer && network)
         {
             CMDTriggerDescription(node.Interface.acquisitionOrder);
         }
@@ -493,53 +501,14 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         SpellNode node = caster.commander.interfaces.Find(i => i.acquisitionOrder == index).Node;
         currentTrigger = node as SpellTrigger;
         bool isTrigger = currentTrigger != null;
-        spellDropdown.gameObject.SetActive(isTrigger);
         triggerDropdown.gameObject.SetActive(isTrigger);
         if (!isTrigger) return;
-        spellDropdown.onValueChanged.RemoveListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.RemoveListener(SetTriggerType);
-        SetupSpellDropdown();
+        SetupAvailableSpells();
         SetupTriggerDropdown();
         RefreshTriggerUI();
-        spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.AddListener(SetTriggerType);
-    }
-
-    void SetupSpellDropdown()
-    {
-        var spells = caster.spells;
-        spellDropdown.ClearOptions();
-        availableSpells.Clear();
-        List<string> names = new List<string>();
-        names.Add("None");
-        availableSpells.Add(null);
-        foreach (var s in spells)
-        {
-            names.Add(s.spellName);
-            availableSpells.Add(s);
-        }
-        spellDropdown.AddOptions(names);
-        if(!isServer && network)
-        {
-            CMDSetupSpellDropdown();
-        }
-    }
-
-    [Command]
-    void CMDSetupSpellDropdown()
-    {
-        var spells = caster.spells;
-        spellDropdown.ClearOptions();
-        availableSpells.Clear();
-        List<string> names = new List<string>();
-        names.Add("None");
-        availableSpells.Add(null);
-        foreach (var s in spells)
-        {
-            names.Add(s.spellName);
-            availableSpells.Add(s);
-        }
-        spellDropdown.AddOptions(names);
+        UpdateTriggeredSpellUI();
     }
 
     string GetTriggerLabel(SpellTrigger.Triggers trigger)
@@ -652,12 +621,6 @@ public void HideAll() => ApplyConfig(new SectionConfig());
     public void RefreshTriggerUI()
     {
         if (currentTrigger == null) return;
-        int spellIndex = availableSpells.IndexOf(currentTrigger.TriggeredSpell);
-        if (spellIndex < 0)
-        {
-            spellIndex = 0;
-        }
-        spellDropdown.SetValueWithoutNotify(spellIndex);
         int triggerIndex = (int)currentTrigger.trigger;
         if (triggerIndex < 0 || triggerIndex >= triggerDropdown.options.Count)
         {
@@ -674,12 +637,6 @@ public void HideAll() => ApplyConfig(new SectionConfig());
     public void CMDRefreshTriggerUI()
     {
         if (currentTrigger == null) return;
-        int spellIndex = availableSpells.IndexOf(currentTrigger.TriggeredSpell);
-        if (spellIndex < 0)
-        {
-            spellIndex = 0;
-        }
-        spellDropdown.SetValueWithoutNotify(spellIndex);
         int triggerIndex = (int)currentTrigger.trigger;
         if (triggerIndex < 0 || triggerIndex >= triggerDropdown.options.Count)
         {
@@ -721,5 +678,38 @@ public void HideAll() => ApplyConfig(new SectionConfig());
             case Elements.None:
             default: return null;
         }
+    }
+
+    void UpdateTriggeredSpellUI()
+    {
+        if (currentTrigger == null) return;
+
+        Spell spell = currentTrigger.TriggeredSpell;
+        if (spell == null)
+        {
+            triggeredSpellText.text = "None";
+            triggeredSpellIcon.gameObject.SetActive(false);
+            return;
+        }
+        triggeredSpellIcon.gameObject.SetActive(true);
+        triggeredSpellText.text = spell.spellName;
+        triggeredSpellIcon.sprite = GameManager.Instance.uiController.playerUI.visualDatabase.icons[spell.symbolIndex];
+        triggeredSpellIcon.color = GameManager.Instance.uiController.playerUI.visualDatabase.colors[spell.colorIndex];
+    }
+
+    public void SelectTriggerSpell(Spell spell)
+    {
+        if (currentTrigger == null) return;
+
+        currentTrigger.TriggeredSpell = spell;
+        currentTrigger.UpdateTrigger();
+        NodeCoolDownDescription(currentTrigger);
+        UpdateTriggeredSpellUI();
+        GameManager.Instance.uiController.playerUI.CloseTriggerSpellSelection();
+    }
+
+    public void OpenTriggerSpellSelection()
+    {
+        GameManager.Instance.uiController.playerUI.TriggerSpellSelection(availableSpells, SelectTriggerSpell);
     }
 }

@@ -48,7 +48,7 @@ public class PlayerUI : NetworkBehaviour
     public TMP_Dropdown screenModeDropdown;
 
     [Header("Spell Customization")]
-    [SerializeField] private SpellVisualDatabase visualDatabase;
+    public SpellVisualDatabase visualDatabase;
     [SerializeField] private GameObject customizationPanel;
     [SerializeField] private Image previewImage;
     [SerializeField] private Image previewButtonImage;
@@ -58,6 +58,11 @@ public class PlayerUI : NetworkBehaviour
     [SerializeField] private Image[] iconSlots;
     [SerializeField] private Button[] iconButtons;
     [SerializeField] private Image[] cooldownIcons;
+
+    [Header("Trigger Spell Selection")]
+    public GameObject triggerSpellSelectionPanel;
+    public Transform triggerSpellContent;
+    public SpellSelectionEntry spellEntryPrefab;
 
     [HideInInspector]
     public ConfigData data;
@@ -930,5 +935,27 @@ public class PlayerUI : NetworkBehaviour
         Cursor.visible = true;
         crosshair.SetActive(false);
         inGame = false;
+    }
+
+    public void TriggerSpellSelection(List<Spell> spells, Action<Spell> callback)
+    {
+        foreach (Transform child in triggerSpellContent)
+        {
+            if (child.name == "None") continue;
+            Destroy(child.gameObject);
+        }
+        foreach (Spell spell in spells)
+        {
+            if (spell == null) continue;
+
+            SpellSelectionEntry entry = Instantiate(spellEntryPrefab, triggerSpellContent);
+            entry.Setup(spell, visualDatabase.icons[spell.symbolIndex], visualDatabase.colors[spell.colorIndex], callback);
+        }
+        triggerSpellSelectionPanel.SetActive(true);
+    }
+
+    public void CloseTriggerSpellSelection()
+    {
+        triggerSpellSelectionPanel.SetActive(false);
     }
 }
