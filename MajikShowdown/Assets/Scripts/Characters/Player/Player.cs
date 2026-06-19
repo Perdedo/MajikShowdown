@@ -35,14 +35,15 @@ public class Player : Character
     public UnityEvent StoppedPushing;
     public PushableObject pushing;
     [HideInInspector] public PlayerInput input;
-    bool Casting;
-    [HideInInspector][SyncVar] public bool dead = false;
+    
     [SyncVar(hook = "GetReady")]public bool readyForHorde = false;
     [Header("Network")]
     public bool network = true;
 
     [Header("Spellcasting")]
     public SpellCaster caster;
+    [HideInInspector]public bool Casting;
+    public float CastPoseTime = 3f;
 
     public InteractableObject currentInteraction;
     //public PlayerData data;
@@ -257,7 +258,10 @@ public class Player : Character
         {
             return;
         }
-
+        if (context.phase == InputActionPhase.Started)
+        {
+            Interact();
+        }
     }
     public void Interact()
     {

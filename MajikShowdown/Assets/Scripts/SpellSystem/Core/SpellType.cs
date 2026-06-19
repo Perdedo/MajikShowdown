@@ -35,7 +35,8 @@ public class SpellType : SpellNode
     [Serializable]
     public struct CollisionOptions
     {
-        public bool Players;
+        public bool Allies;
+        public bool Self;
         public bool Enemies;
         public bool Objects;
     }

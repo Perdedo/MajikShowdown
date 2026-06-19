@@ -69,10 +69,12 @@ public class SpellNodeDescription : NetworkBehaviour
     public TMP_Dropdown triggerDropdown;
 
     [Header("Collision")]
-    public Toggle playersToggle;
+    public Toggle selfToggle;
+    public Toggle alliesToggle;
     public Toggle enemiesToggle;
     public Toggle objectsToggle;
-    public Image playersToggleIcon;
+    public Image selfToggleIcon;
+    public Image alliesToggleIcon;
     public Image enemiesToggleIcon;
     public Image objectsToggleIcon;
     public Sprite checkSprite;
@@ -128,7 +130,8 @@ public class SpellNodeDescription : NetworkBehaviour
 
     void Start()
     {
-        playersToggle.onValueChanged.AddListener(SetPlayersCollision);
+        selfToggle.onValueChanged.AddListener(SetSelfCollision);
+        alliesToggle.onValueChanged.AddListener(SetAlliesCollision);
         enemiesToggle.onValueChanged.AddListener(SetEnemiesCollision);
         objectsToggle.onValueChanged.AddListener(SetObjectsCollision);
         spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
@@ -409,25 +412,38 @@ public void HideAll() => ApplyConfig(new SectionConfig());
     {
         currentType = node as SpellType;
         bool isType = currentType != null;
-        playersToggle.gameObject.SetActive(isType);
+        selfToggle.gameObject.SetActive(isType);
+        alliesToggle.gameObject.SetActive(isType);
         enemiesToggle.gameObject.SetActive(isType);
         objectsToggle.gameObject.SetActive(isType);
         if (!isType) return;
-        playersToggle.SetIsOnWithoutNotify(currentType.Collisions.Players);
+        selfToggle.SetIsOnWithoutNotify(currentType.Collisions.Self);
+        alliesToggle.SetIsOnWithoutNotify(currentType.Collisions.Allies);
         enemiesToggle.SetIsOnWithoutNotify(currentType.Collisions.Enemies);
         objectsToggle.SetIsOnWithoutNotify(currentType.Collisions.Objects);
-        playersToggleIcon.sprite = currentType.Collisions.Players ? checkSprite : xSprite;
+        selfToggleIcon.sprite = currentType.Collisions.Self ? checkSprite : xSprite;
+        alliesToggleIcon.sprite = currentType.Collisions.Allies ? checkSprite : xSprite;
         enemiesToggleIcon.sprite = currentType.Collisions.Enemies ? checkSprite : xSprite;
         objectsToggleIcon.sprite = currentType.Collisions.Objects ? checkSprite : xSprite;
     }
 
-    void SetPlayersCollision(bool value)
+    void SetSelfCollision(bool value)
     {
         if (currentType == null) return;
         var col = currentType.Collisions;
-        col.Players = value;
+        col.Self = value;
         currentType.Collisions = col;
-        playersToggleIcon.sprite = value ? checkSprite : xSprite;
+        selfToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+    }
+
+    void SetAlliesCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Allies = value;
+        currentType.Collisions = col;
+        alliesToggleIcon.sprite = value ? checkSprite : xSprite;
         currentType.OwnerSpell?.UpdateSpell();
     }
 

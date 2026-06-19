@@ -1,17 +1,18 @@
+using Mirror;
 using UnityEngine;
 
-public abstract class InteractableObject : MonoBehaviour
+public abstract class InteractableObject : NetworkBehaviour
 {
     public abstract void Interact(Player player);
     public virtual void OnEnable()
     {
-        GameManager.Instance.interactables.Add(this);
+        GameManager.Instance.AddInteractable(this);
     }
     public virtual void OnDisable()
     {
-        GameManager.Instance.interactables.Remove(this);
+        GameManager.Instance.RemoveInteractable(this);
     }
-    public virtual void Update()
+    public virtual void CheckForPlayer()
     {
         foreach (Player p in GameManager.Instance.Players)
         {

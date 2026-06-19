@@ -1,10 +1,10 @@
 public enum NodeCategory
 {
     All,
-    Effect,
-    Stat,
+    Type,
     Trajectory,
-    Trigger,
+    Effect,
     CastingPoint,
-    Type
+    Trigger,
+    Stat
 }

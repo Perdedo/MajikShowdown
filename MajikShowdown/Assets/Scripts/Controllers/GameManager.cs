@@ -11,8 +11,30 @@ public class GameManager : MonoBehaviour
     public HordeController hordeController;
     [Header("Interactable Objects")]
     public float interactionRadius = 2;
-    public List<InteractableObject> interactables;
+    protected List<InteractableObject> interactables = new List<InteractableObject>();
 
+    void Update()
+    {
+        foreach (InteractableObject i in interactables)
+        {
+            i.CheckForPlayer();
+        }
+    }
+    public void AddInteractable(InteractableObject interactable)
+    {
+        interactables.Add(interactable);
+    }
+    public void RemoveInteractable(InteractableObject interactable)
+    {
+        interactables.Remove(interactable);
+        foreach(Player p in Players)
+        {
+            if(p.currentInteraction == interactable)
+            {
+                p.currentInteraction = null;
+            }
+        }
+    }
     void Awake()
     {
         if(Instance == null)
