@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 public class Player : Character
 {
     public GameObject mesh;
+    public Collider col;
     [Header("Camera Options")]
     public CinemachineCamera playerCamera;
     //CinemachineThirdPersonAim cameraAim;
@@ -143,6 +144,10 @@ public class Player : Character
         if(mesh != null)
         {
             mesh.SetActive(!newVal);
+        }
+        if(col != null)
+        {
+            col.enabled = !newVal;
         }
     }
 
