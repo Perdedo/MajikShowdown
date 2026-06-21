@@ -136,10 +136,10 @@ public class Player : Character
 
     public void OnDeathValueChange(bool oldVal, bool newVal)
     {
-        if(input != null && isLocalPlayer)
+        /*if(input != null && isLocalPlayer)
         {
             input.enabled = !newVal;
-        }
+        }*/
         if(mesh != null)
         {
             mesh.SetActive(!newVal);
@@ -198,6 +198,10 @@ public class Player : Character
         {
             return;
         }
+        if(dead)
+        {
+            return;
+        }
         if (!movePaused)
         {
             directionInput = Vector2.ClampMagnitude(context.ReadValue<Vector2>(), 1);
@@ -211,6 +215,10 @@ public class Player : Character
     public void JumpInput(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network)
+        {
+            return;
+        }
+        if (dead)
         {
             return;
         }
@@ -238,6 +246,10 @@ public class Player : Character
     public void DashInput(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network)
+        {
+            return;
+        }
+        if (dead)
         {
             return;
         }
@@ -270,6 +282,10 @@ public class Player : Character
     public void InteractInput(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network)
+        {
+            return;
+        }
+        if (dead)
         {
             return;
         }
