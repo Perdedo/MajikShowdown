@@ -43,6 +43,7 @@ public class Player : Character
     [Header("Spellcasting")]
     public SpellCaster caster;
     [HideInInspector]public bool Casting;
+    [HideInInspector][SyncVar] public bool dead = false;
     public float CastPoseTime = 3f;
 
     public InteractableObject currentInteraction;
