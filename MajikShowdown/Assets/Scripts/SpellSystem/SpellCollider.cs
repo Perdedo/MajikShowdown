@@ -50,7 +50,7 @@ public class SpellCollider : NetworkBehaviour
     float velocityMagnitude;
     Vector3 velocityDir;
     public bool MarkedToDie = false;
-    [SyncVar(hook = nameof(ChangeVisibility))] public bool isVisible;
+    [SyncVar(hook = nameof(ChangeVisibility))] public bool isVisible = false;
 
     //[Server]
     public void Initialize(Spell owner, bool isPrimary)
@@ -75,9 +75,13 @@ public class SpellCollider : NetworkBehaviour
             transform.localScale = Vector3.zero;
         }*/
         mesh.transform.localScale = Vector3.zero;
-        if(isServer)
+        if(OwnerSpell.Caster.network)
         {
             isVisible = true;
+        }
+        else
+        {
+            mesh.gameObject.SetActive(true);
         }
         //spellCol = GetComponent<Collider>();
 
