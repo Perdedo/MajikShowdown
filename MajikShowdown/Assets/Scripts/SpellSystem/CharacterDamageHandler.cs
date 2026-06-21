@@ -63,6 +63,7 @@ public class CharacterDamageHandler : NetworkBehaviour
                 GameManager.Instance.hordeController.CheckEnemyCount();
             }
         }
+        this.gameObject.GetComponent<Enemy>().localVelocity = Vector3.zero;
         if(network)
         {
             //NetworkServer.Destroy(gameObject);
