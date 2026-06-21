@@ -31,6 +31,10 @@ public class PlayerUI : NetworkBehaviour
     public Slider healthSlider;
     public Image[] cooldownFills;
 
+    [Header("Game State Panels")]
+    public GameObject victoryPanel;
+    public GameObject defeatPanel;
+
     [Header("Pause Panels and Objects")]
     public GameObject pausePanel;
     public GameObject optionsPanel;
@@ -101,6 +105,14 @@ public class PlayerUI : NetworkBehaviour
         if(confirmLeavePanel != null)
         {
             confirmLeavePanel.SetActive(false);
+        }
+        if(victoryPanel != null)
+        {
+            victoryPanel.SetActive(false);
+        }
+        if(defeatPanel != null)
+        {
+            defeatPanel.SetActive(false);
         }
         ResolutionDropdown();
         ScreenModeDropdown();

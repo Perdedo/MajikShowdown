@@ -281,6 +281,7 @@ public class HordeController : NetworkBehaviour
     public void Victory()
     {
         Debug.Log("ganhamo");
+        GameManager.Instance.uiController.playerUI.victoryPanel.SetActive(true);
         //inserir lógica de tela de vitória
     }
 
@@ -309,6 +310,7 @@ public class HordeController : NetworkBehaviour
     public void Defeat()
     {
         Debug.Log("perdemo");
+        GameManager.Instance.uiController.playerUI.defeatPanel.SetActive(true);
         //lógica de tela de derrota
     }
 
