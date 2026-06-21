@@ -107,6 +107,7 @@ public class EnemySpawner : NetworkBehaviour
                         }
                     }
                     Enemy auxEnemy = aux.GetComponent<Enemy>();
+                    auxEnemy.ResetAllVelocities();
                     GameManager.Instance.hordeController.enemies.Add(aux);
                     GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
                     GameManager.Instance.hordeController.usedEnemiesByType[i].Add(aux.GetComponent<Enemy>());
