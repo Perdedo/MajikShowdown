@@ -78,6 +78,10 @@ public class SpellCollider : NetworkBehaviour
         if(OwnerSpell.Caster.network)
         {
             isVisible = true;
+            if(isServer)
+            {
+                SetInitialScale();
+            }
         }
         else
         {
@@ -85,6 +89,12 @@ public class SpellCollider : NetworkBehaviour
         }
         //spellCol = GetComponent<Collider>();
 
+    }
+
+    [ClientRpc]
+    public void SetInitialScale()
+    {
+        mesh.transform.localScale = Vector3.zero;
     }
 
     public void ChangeVisibility(bool oldVal, bool newVal)
