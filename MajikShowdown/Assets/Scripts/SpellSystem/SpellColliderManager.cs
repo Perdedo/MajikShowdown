@@ -51,6 +51,7 @@ public class SpellColliderManager : NetworkBehaviour
     void RPCInstantiateNewCollider(GameObject collider)
     {
         collider.SetActive(false);
+        collider.GetComponent<SpellCollider>().mesh.gameObject.SetActive(true);
     }
     public void InitializeSpellCollider(Spell Spell, Vector3 pos, Vector3 lookDir, bool primary = false)
     {
