@@ -101,6 +101,7 @@ public class EnemySpawner : NetworkBehaviour
                                 aux = e.gameObject;
                                 aux.transform.position = spawnPos.position;
                                 aux.SetActive(true);
+                                ActivateEnemy(aux);
                                 break;
                             }
                         }
@@ -141,6 +142,12 @@ public class EnemySpawner : NetworkBehaviour
             spawnTime = Mathf.Lerp(baseSpawnTime, minSpawnTime, spawnRateCurve.Evaluate(Mathf.Clamp((Time.time - spawnerStartTime)/spawnerLifeTime, 0, 1)));
             StartCoroutine(SpawnEnemy());
         }
+    }
+
+    [ClientRpc]
+    public void ActivateEnemy(GameObject obj)
+    {
+        obj.SetActive(true);
     }
 
     /*[Server]
