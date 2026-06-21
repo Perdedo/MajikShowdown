@@ -3193,6 +3193,7 @@ MonoBehaviour:
     sfx: 0
     vsyncEnabled: 0
   playerUI: {fileID: 0}
+  sharedUI: {fileID: 0}
   roomObjectsVisible: 0
 --- !u!1 &516782013
 GameObject:
@@ -8340,7 +8341,6 @@ MonoBehaviour:
   netCtrl: {fileID: 0}
   hordeController: {fileID: 0}
   interactionRadius: 2
-  interactables: []
 --- !u!114 &1602448494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9217,6 +9217,7 @@ GameObject:
   - component: {fileID: 1790325006}
   - component: {fileID: 1790325005}
   - component: {fileID: 1790325004}
+  - component: {fileID: 1790325008}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -9310,6 +9311,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1790325008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1790325003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 668fafd1c60a04744811659d3a4f7f34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MenuAuxiliar
 --- !u!1 &1805982199
 GameObject:
   m_ObjectHideFlags: 0
