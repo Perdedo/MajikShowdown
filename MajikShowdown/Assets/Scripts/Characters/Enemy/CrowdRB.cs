@@ -110,6 +110,16 @@ public class CrowdRB : NetworkBehaviour
 
     }
 
+    public void ResetAllVelocities()
+    {
+        localVelocity = Vector3.zero;
+        acceleration = Vector3.zero;
+        externalVelocity = Vector3.zero;
+        verticalVelocity = Vector3.zero;
+        worldVelocity = Vector3.zero;
+        parentVelocity = Vector3.zero;
+    }
+
     protected void SetVelocity(Vector3 vel)
     {
         if (movePaused) vel = Vector3.zero;
