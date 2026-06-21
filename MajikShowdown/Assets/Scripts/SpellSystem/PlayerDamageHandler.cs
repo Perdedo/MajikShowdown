@@ -49,15 +49,15 @@ public class PlayerDamageHandler : CharacterDamageHandler
         myPlayer.dead = true;
         FlowFieldManager.instance.UpdateFlowField();
         GameManager.Instance.hordeController.CheckDeadPlayers();
-        Disappear();
+        //Disappear();
         //Debug.Log("morri");
     }
 
-    [ClientRpc]
+    /*[ClientRpc]
     public void Disappear()
     {
         this.gameObject.SetActive(false);
-    }
+    }*/
 
 
     public void Respawn()
@@ -68,13 +68,14 @@ public class PlayerDamageHandler : CharacterDamageHandler
         }
         Health = MaxHealth / 2;
         myPlayer.dead = false;
-        Reappear();
+        FlowFieldManager.instance.UpdateFlowField();
+        //Reappear();
     }
 
 
-    [ClientRpc]
+    /*[ClientRpc]
     public void Reappear()
     {
         this.gameObject.SetActive(true);
-    }
+    }*/
 }

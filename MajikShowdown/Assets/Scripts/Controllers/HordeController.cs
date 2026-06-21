@@ -133,6 +133,13 @@ public class HordeController : NetworkBehaviour
         pauseStartTime = Time.time;
         pauseEndTime = pauseStartTime + pauseDuration;
         inPause = true;
+        foreach(Player p in GameManager.Instance.Players)
+        {
+            if(p.dead)
+            {
+                p.GetComponent<PlayerDamageHandler>().Respawn();
+            }
+        }
         StartCoroutine(EndPause());
     }
 

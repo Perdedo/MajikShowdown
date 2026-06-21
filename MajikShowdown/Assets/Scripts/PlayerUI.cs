@@ -760,6 +760,7 @@ public class PlayerUI : NetworkBehaviour
     {
         if (!isLocalPlayer && network) return;
         if (!context.started) return;
+        if (myPlayer.dead) return;
 
         if (spellPanel.activeSelf && !pausePanel.activeSelf)
         {

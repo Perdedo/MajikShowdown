@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 public class Player : Character
 {
+    public GameObject mesh;
     [Header("Camera Options")]
     public CinemachineCamera playerCamera;
     //CinemachineThirdPersonAim cameraAim;
@@ -43,10 +44,11 @@ public class Player : Character
     [Header("Spellcasting")]
     public SpellCaster caster;
     [HideInInspector]public bool Casting;
-    [HideInInspector][SyncVar] public bool dead = false;
+    [HideInInspector][SyncVar (hook = nameof(OnDeathValueChange))] public bool dead = false;
     public float CastPoseTime = 3f;
 
     public InteractableObject currentInteraction;
+
     //public PlayerData data;
 
     /*[Serializable]
@@ -130,6 +132,18 @@ public class Player : Character
             Dash(directionInput);
         }*/
         //RotateCamera();
+    }
+
+    public void OnDeathValueChange(bool oldVal, bool newVal)
+    {
+        if(input != null && isLocalPlayer)
+        {
+            input.enabled = !newVal;
+        }
+        if(mesh != null)
+        {
+            mesh.SetActive(!newVal);
+        }
     }
 
     public void ReadyInput(InputAction.CallbackContext context)
