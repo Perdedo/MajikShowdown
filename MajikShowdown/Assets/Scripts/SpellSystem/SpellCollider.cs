@@ -75,9 +75,20 @@ public class SpellCollider : NetworkBehaviour
             transform.localScale = Vector3.zero;
         }*/
         mesh.transform.localScale = Vector3.zero;
+        if(isServer)
+        {
+            ViewMesh();
+        }
         //spellCol = GetComponent<Collider>();
 
     }
+
+    [ClientRpc]
+    public void ViewMesh()
+    {
+        mesh.gameObject.SetActive(true);
+    }
+
     //[Server]
     public void UpdateCollider()
     {
