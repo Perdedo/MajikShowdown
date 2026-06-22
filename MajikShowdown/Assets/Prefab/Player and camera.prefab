@@ -17444,7 +17444,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3151982479820337355}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99995905
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17615,7 +17615,6 @@ MonoBehaviour:
   - {fileID: 5663108226785025804}
   triggeredSpellText: {fileID: 0}
   triggeredSpellIcon: {fileID: 0}
-  spellDropdown: {fileID: 1096792481656833282}
   triggerDropdown: {fileID: 6956685910498383048}
   selfToggle: {fileID: 9016850895968412904}
   alliesToggle: {fileID: 2269167891099681905}
@@ -18977,8 +18976,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c9e96b70062e05429209f9b11c4708b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PopupManager
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   popup: {fileID: 3569609166045660186}
   popupOffset: {x: 0, y: 20}
+  network: 1
 --- !u!1 &2926906347220585654
 GameObject:
   m_ObjectHideFlags: 0
@@ -21101,7 +21104,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00048828125}
+  m_AnchoredPosition: {x: 0, y: 0.00012207031}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &6150298183587537734
@@ -23493,7 +23496,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8206802816720496898}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9999632
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -40514,6 +40517,8 @@ MonoBehaviour:
   - {fileID: 3457357289900710651}
   - {fileID: 7202856486756536417}
   - {fileID: 3919801011998449018}
+  victoryPanel: {fileID: 2023040758883783447}
+  defeatPanel: {fileID: 1901436064779977231}
   pausePanel: {fileID: 2991601173806270651}
   optionsPanel: {fileID: 3017726120046456305}
   confirmLeavePanel: {fileID: 5048084093369508318}
@@ -40604,6 +40609,7 @@ MonoBehaviour:
   damageHandler: {fileID: 4307277274885393003}
   crosshair: {fileID: 8676178650859047072}
   inGame: 0
+  popupManager: {fileID: 2341417383682408203}
   network: 1
 --- !u!114 &338260379660625902
 MonoBehaviour:
@@ -44312,7 +44318,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00069684273}
+  m_AnchoredPosition: {x: 0, y: 0.00020581349}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1175963292923008703
@@ -46843,7 +46849,6 @@ MonoBehaviour:
   - {fileID: 5840308739312183273}
   triggeredSpellText: {fileID: 7009506282842824937}
   triggeredSpellIcon: {fileID: 9119635754781001586}
-  spellDropdown: {fileID: 4385833102400277135}
   triggerDropdown: {fileID: 4798261895450020421}
   selfToggle: {fileID: 8262614372075991494}
   alliesToggle: {fileID: 6386636674848041343}
@@ -58708,6 +58713,14 @@ PrefabInstance:
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 7401529235878125871, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
+      propertyPath: col
+      value: 
+      objectReference: {fileID: 2049176495982248811}
+    - target: {fileID: 7401529235878125871, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
+      propertyPath: mesh
+      value: 
+      objectReference: {fileID: 371094141157806918}
+    - target: {fileID: 7401529235878125871, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       propertyPath: lookAnchor
       value: 
       objectReference: {fileID: 0}
@@ -58775,6 +58788,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 4307277274885393003}
   m_SourcePrefab: {fileID: 100100000, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
+--- !u!1 &371094141157806918 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3521692199057068839, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
+  m_PrefabInstance: {fileID: 3889408320888307809}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1066103122001722327 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4265607478582442934, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
@@ -58863,11 +58881,17 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  MaxHealth: 100
+  MaxHealth: 1000
   Health: 0
   Resistances: []
   enemyIndex: 0
   network: 1
+  myPlayer: {fileID: 6002867169297178958}
+--- !u!136 &2049176495982248811 stripped
+CapsuleCollider:
+  m_CorrespondingSourceObject: {fileID: 2993160270347830026, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
+  m_PrefabInstance: {fileID: 3889408320888307809}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5642760642209226531 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8914568331542961986, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
