@@ -280,9 +280,8 @@ public class HordeController : NetworkBehaviour
     [ClientRpc]
     public void Victory()
     {
-        Debug.Log("ganhamo");
         GameManager.Instance.uiController.playerUI.victoryPanel.SetActive(true);
-        //inserir lógica de tela de vitória
+        GameManager.Instance.uiController.playerUI.EnableUICursor();
     }
 
     public void CheckDeadPlayers()
@@ -309,9 +308,8 @@ public class HordeController : NetworkBehaviour
     [ClientRpc]
     public void Defeat()
     {
-        Debug.Log("perdemo");
         GameManager.Instance.uiController.playerUI.defeatPanel.SetActive(true);
-        //lógica de tela de derrota
+        GameManager.Instance.uiController.playerUI.EnableUICursor();
     }
 
     public void CheckReadyPlayers()

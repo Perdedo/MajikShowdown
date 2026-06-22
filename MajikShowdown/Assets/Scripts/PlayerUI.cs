@@ -928,7 +928,7 @@ public class PlayerUI : NetworkBehaviour
         SteamLobby.instance.LeaveLobby();
     }
 
-    void EnableGameplayCursor()
+    public void EnableGameplayCursor()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -936,7 +936,7 @@ public class PlayerUI : NetworkBehaviour
         inGame = true;
     }
 
-    void EnableUICursor()
+    public void EnableUICursor()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

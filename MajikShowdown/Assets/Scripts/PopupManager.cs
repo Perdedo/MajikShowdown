@@ -1,7 +1,8 @@
+using Mirror;
 using TMPro;
 using UnityEngine;
 
-public class PopupManager : MonoBehaviour
+public class PopupManager : NetworkBehaviour
 {
     public static PopupManager Instance;
 
@@ -9,6 +10,8 @@ public class PopupManager : MonoBehaviour
     [SerializeField] private Vector2 popupOffset;
 
     private TextMeshProUGUI popupText;
+
+    public bool network = true;
 
     private void Awake()
     {
@@ -35,10 +38,36 @@ public class PopupManager : MonoBehaviour
     {
         if (popupText == null) return;
         popupText.text = text;
+        if(network)
+        {
+            RPCShow();
+        }
+        else
+        {
+            popup.SetActive(true);
+        }
+    }
+
+    [TargetRpc]
+    public void RPCShow()
+    {
         popup.SetActive(true);
     }
 
     public void Hide()
+    {
+        if(network)
+        {
+            RPCHide();
+        }
+        else
+        {
+            popup.SetActive(false);
+        }
+    }
+
+    [TargetRpc]
+    public void RPCHide()
     {
         popup.SetActive(false);
     }
