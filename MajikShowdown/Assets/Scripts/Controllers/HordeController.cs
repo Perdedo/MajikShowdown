@@ -26,7 +26,7 @@ public class HordeController : NetworkBehaviour
     [HideInInspector] public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
     [HideInInspector] public List<GameObject> spawners = new List<GameObject>();
     [HideInInspector] public HashSet<GameObject> usedSpawners = new HashSet<GameObject>();
-    bool running = false;
+    [HideInInspector][SyncVar] public bool running = false;
     public LayerMask spawnableLocations;
     Vector2 dir;
     bool possiblePos;
@@ -272,6 +272,7 @@ public class HordeController : NetworkBehaviour
             }
             else
             {
+                running = false;
                 Victory();
             }
         }
@@ -280,6 +281,7 @@ public class HordeController : NetworkBehaviour
     [ClientRpc]
     public void Victory()
     {
+        GameManager.Instance.uiController.sharedUI.SetActive(false);
         GameManager.Instance.uiController.playerUI.victoryPanel.SetActive(true);
         GameManager.Instance.uiController.playerUI.EnableUICursor();
     }
@@ -301,6 +303,7 @@ public class HordeController : NetworkBehaviour
         }
         if (allDead)
         {
+            running = false;
             Defeat();
         }
     }
@@ -308,6 +311,7 @@ public class HordeController : NetworkBehaviour
     [ClientRpc]
     public void Defeat()
     {
+        GameManager.Instance.uiController.sharedUI.SetActive(false);
         GameManager.Instance.uiController.playerUI.defeatPanel.SetActive(true);
         GameManager.Instance.uiController.playerUI.EnableUICursor();
     }

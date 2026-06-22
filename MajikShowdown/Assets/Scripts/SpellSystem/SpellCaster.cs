@@ -280,6 +280,7 @@ public class SpellCaster : NetworkBehaviour
         if (!canCast) return;
         if (equippedSpells[0] == null) return;
         if (player.dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         if (network)
         {
             CMDCastSpell(0, AimController.AimPoint);
@@ -297,6 +298,7 @@ public class SpellCaster : NetworkBehaviour
         if (!canCast) return;
         if (equippedSpells[1] == null) return;
         if (player.dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         if (network)
         {
             CMDCastSpell(1, AimController.AimPoint);
@@ -314,6 +316,7 @@ public class SpellCaster : NetworkBehaviour
         if (!canCast) return;
         if (equippedSpells[2] == null) return;
         if (player.dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         if (network)
         {
             CMDCastSpell(2, AimController.AimPoint);
@@ -331,6 +334,7 @@ public class SpellCaster : NetworkBehaviour
         if (!canCast) return;
         if (equippedSpells[3] == null) return;
         if (player.dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         if (network)
         {
             CMDCastSpell(3, AimController.AimPoint);

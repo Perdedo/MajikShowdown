@@ -738,7 +738,7 @@ public class PlayerUI : NetworkBehaviour
     {
         if (!isLocalPlayer && network) return;
         if (!context.started) return;
-
+        if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
         if (pausePanel.activeSelf && !spellPanel.activeSelf)
         {
             if(optionsPanel.activeSelf)
@@ -773,7 +773,7 @@ public class PlayerUI : NetworkBehaviour
         if (!isLocalPlayer && network) return;
         if (!context.started) return;
         if (myPlayer.dead) return;
-
+        if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
         if (spellPanel.activeSelf && !pausePanel.activeSelf)
         {
             if (editSpellPanel.activeSelf)

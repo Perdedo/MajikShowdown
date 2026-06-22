@@ -139,8 +139,8 @@ public class EnemySpawner : NetworkBehaviour
                     e.chance = e.baseChance * (Mathf.Lerp(baseDifficultyMult, maxDifficultyMult, difficultyCurve.Evaluate(Mathf.Clamp((Time.time - spawnerStartTime) / spawnerLifeTime, 0, 1))));
                 }*/
             }
-            elementalChance = Mathf.Lerp(baseElemental, maxElemental, elementalCurve.Evaluate(Mathf.Clamp((Time.time - spawnerStartTime) / spawnerLifeTime, 0, 1)));
-            spawnTime = Mathf.Lerp(baseSpawnTime, minSpawnTime, spawnRateCurve.Evaluate(Mathf.Clamp((Time.time - spawnerStartTime)/spawnerLifeTime, 0, 1)));
+            elementalChance = Mathf.Lerp(baseElemental, maxElemental, elementalCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDurationTime, 0, 1)));
+            spawnTime = Mathf.Lerp(baseSpawnTime, minSpawnTime, spawnRateCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime)/hordeDurationTime, 0, 1)));
             StartCoroutine(SpawnEnemy());
         }
     }
