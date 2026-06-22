@@ -37,9 +37,9 @@ public class PopupManager : NetworkBehaviour
     public void Show(string text)
     {
         if (popupText == null) return;
-        if(network)
+        if(network && !isServer)
         {
-            RPCShow(text);
+            CMDShow(text);
         }
         else
         {
@@ -48,8 +48,13 @@ public class PopupManager : NetworkBehaviour
         }
     }
 
+    [Command]
+    public void CMDShow(string text)
+    {
+        RPCShow(this.connectionToClient, text);
+    }
     [TargetRpc]
-    public void RPCShow(string text)
+    public void RPCShow(NetworkConnection target, string text)
     {
         popupText.text = text;
         popup.SetActive(true);
@@ -57,9 +62,9 @@ public class PopupManager : NetworkBehaviour
 
     public void Hide()
     {
-        if(network)
+        if(network && !isServer)
         {
-            RPCHide();
+            CMDHide();
         }
         else
         {
@@ -67,8 +72,15 @@ public class PopupManager : NetworkBehaviour
         }
     }
 
+    [Command]
+    public void CMDHide()
+    {
+        RPCHide(this.connectionToClient);
+    }
+
+
     [TargetRpc]
-    public void RPCHide()
+    public void RPCHide(NetworkConnection target)
     {
         popup.SetActive(false);
     }
