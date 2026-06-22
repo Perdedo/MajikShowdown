@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PopupManager : NetworkBehaviour
 {
-    public static PopupManager Instance;
+    //public static PopupManager Instance;
 
     [SerializeField] private GameObject popup;
     [SerializeField] private Vector2 popupOffset;
@@ -13,10 +13,10 @@ public class PopupManager : NetworkBehaviour
 
     public bool network = true;
 
-    private void Awake()
+    /*private void Awake()
     {
         Instance = this;
-    }
+    }*/
 
     private void Start()
     {
@@ -36,19 +36,20 @@ public class PopupManager : NetworkBehaviour
 
     public void Show(string text)
     {
+        if (!isLocalPlayer) return;
         if (popupText == null) return;
-        if(network && !isServer)
+        /*if(network && !isServer)
         {
             CMDShow(text);
         }
         else
-        {
+        {*/
             popupText.text = text;
             popup.SetActive(true);
-        }
+        //}
     }
 
-    [Command]
+    /*[Command]
     public void CMDShow(string text)
     {
         RPCShow(this.connectionToClient, text);
@@ -58,21 +59,22 @@ public class PopupManager : NetworkBehaviour
     {
         popupText.text = text;
         popup.SetActive(true);
-    }
+    }*/
 
     public void Hide()
     {
-        if(network && !isServer)
+        if (!isLocalPlayer) return;
+        /*if(network && !isServer)
         {
             CMDHide();
         }
         else
-        {
+        {*/
             popup.SetActive(false);
-        }
+        //}
     }
 
-    [Command]
+    /*[Command]
     public void CMDHide()
     {
         RPCHide(this.connectionToClient);
@@ -83,5 +85,5 @@ public class PopupManager : NetworkBehaviour
     public void RPCHide(NetworkConnection target)
     {
         popup.SetActive(false);
-    }
+    }*/
 }

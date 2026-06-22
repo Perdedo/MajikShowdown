@@ -20,20 +20,20 @@ public class PopupUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private void OnDisable()
     {
-        if (PopupManager.Instance != null)
+        if (GameManager.Instance.uiController.playerUI.popupManager != null)
         {
-            PopupManager.Instance.Hide();
+            GameManager.Instance.uiController.playerUI.popupManager.Hide();
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        PopupManager.Instance.Show(text);
+        GameManager.Instance.uiController.playerUI.popupManager.Show(text);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        PopupManager.Instance.Hide();
+        GameManager.Instance.uiController.playerUI.popupManager.Hide();
     }
 
     public void SetElementText(string newText)

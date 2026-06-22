@@ -74,7 +74,7 @@ public class PlayerUI : NetworkBehaviour
     public PlayerDamageHandler damageHandler;
     public GameObject crosshair;
     [HideInInspector] public bool inGame = false;
-
+    public PopupManager popupManager;
     [Header("Network")]
     public bool network = true;
 
