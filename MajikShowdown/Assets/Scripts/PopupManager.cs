@@ -37,20 +37,21 @@ public class PopupManager : NetworkBehaviour
     public void Show(string text)
     {
         if (popupText == null) return;
-        popupText.text = text;
         if(network)
         {
-            RPCShow();
+            RPCShow(text);
         }
         else
         {
+            popupText.text = text;
             popup.SetActive(true);
         }
     }
 
     [TargetRpc]
-    public void RPCShow()
+    public void RPCShow(string text)
     {
+        popupText.text = text;
         popup.SetActive(true);
     }
 
