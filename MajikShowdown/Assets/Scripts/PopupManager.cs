@@ -36,54 +36,15 @@ public class PopupManager : NetworkBehaviour
 
     public void Show(string text)
     {
-        if (!isLocalPlayer) return;
+        if (!isLocalPlayer && network) return;
         if (popupText == null) return;
-        /*if(network && !isServer)
-        {
-            CMDShow(text);
-        }
-        else
-        {*/
-            popupText.text = text;
-            popup.SetActive(true);
-        //}
-    }
-
-    /*[Command]
-    public void CMDShow(string text)
-    {
-        RPCShow(this.connectionToClient, text);
-    }
-    [TargetRpc]
-    public void RPCShow(NetworkConnection target, string text)
-    {
         popupText.text = text;
         popup.SetActive(true);
-    }*/
+    }
 
     public void Hide()
     {
-        if (!isLocalPlayer) return;
-        /*if(network && !isServer)
-        {
-            CMDHide();
-        }
-        else
-        {*/
-            popup.SetActive(false);
-        //}
-    }
-
-    /*[Command]
-    public void CMDHide()
-    {
-        RPCHide(this.connectionToClient);
-    }
-
-
-    [TargetRpc]
-    public void RPCHide(NetworkConnection target)
-    {
+        if (!isLocalPlayer && network) return;
         popup.SetActive(false);
-    }*/
+    }
 }
