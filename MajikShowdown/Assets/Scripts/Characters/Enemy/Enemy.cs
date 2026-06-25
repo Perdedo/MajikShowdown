@@ -30,7 +30,7 @@ public class Enemy : CrowdCharacter
     Vector3[] Directions = new Vector3[8];
     float[] Danger = new float[8];
     float[] Interest = new float[8];
-    Vector3 targetVector/*, targetLastSeen*/;
+    Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
     bool detectedObstacle = false, detectedHigherPriority = false;
     Vector3 MoveDirection;
     Vector3 interestDirection;
@@ -47,6 +47,7 @@ public class Enemy : CrowdCharacter
     Damage dmgCtrl;
     [HideInInspector] public int instanceIndex;
     public EnemyTransformInfo transformInfo;
+    Player attackedPlayer;
 
     public void Initialize()
     {
@@ -178,6 +179,10 @@ public class Enemy : CrowdCharacter
         }
         //Debug.DrawRay(transform.position, targetVector, Color.red);
         //Debug.DrawRay(transform.position, targetLastSeen, Color.blue);
+        if(attackedPlayer != null)
+        {
+            attackedTargetVector = attackedPlayer.gameObject.transform.position - transform.position;
+        }
         if (!attacked)
         {
             attacked = attackTimer.timer(attackDuration, Time.deltaTime, false, false);
@@ -318,6 +323,7 @@ public class Enemy : CrowdCharacter
                 {
                     attacked = false;
                     attackTimer.SetTimer(0);
+                    attackedPlayer = target;
                     attackTimer.Paused = false;
                 }
             }
@@ -359,9 +365,10 @@ public class Enemy : CrowdCharacter
 
     void AttackPlayer()
     {
-        if (targetVector.magnitude <= TargetStoppingDistance)
+        //if (targetVector.magnitude <= TargetStoppingDistance)
+        if(attackedTargetVector.magnitude <= TargetStoppingDistance)
         {
-            target.DamageHandler.TakeDamage(dmgCtrl);
+            attackedPlayer.DamageHandler.TakeDamage(dmgCtrl);
         }
     }
     public void CalculateDanger()

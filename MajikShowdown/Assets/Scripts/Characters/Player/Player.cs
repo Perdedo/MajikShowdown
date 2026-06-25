@@ -149,6 +149,7 @@ public class Player : Character
         {
             col.enabled = !newVal;
         }
+        directionInput = Vector2.zero;
     }
 
     public void ReadyInput(InputAction.CallbackContext context)
