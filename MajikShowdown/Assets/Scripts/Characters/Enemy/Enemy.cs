@@ -48,7 +48,8 @@ public class Enemy : CrowdCharacter
     [HideInInspector] public int instanceIndex;
     public EnemyTransformInfo transformInfo;
     Player attackedPlayer;
-
+    float timePred;
+    Vector3 predTarget;
     public void Initialize()
     {
         DamageHandler.Initialize();
@@ -104,11 +105,22 @@ public class Enemy : CrowdCharacter
     }
 #endif
 
-    /*public void Update()
+    public void Update()
     {
-        EnemyUpdate();
+        if(isServer)
+        {
+            return;
+        }
+        if(GameManager.Instance.hordeController == null)
+        {
+            return;
+        }
+
+        timePred = Time.time - GameManager.Instance.hordeController.enemiesInfo[instanceIndex].lastTime;
+        predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
+        transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
     }
-    public void FixedUpdate()
+    /*public void FixedUpdate()
     {
         FixedRBUpdate();
     }*/
@@ -210,6 +222,7 @@ public class Enemy : CrowdCharacter
         transformInfo.pos = transform.position;
         transformInfo.rot = transform.rotation;
         //transformInfo.scale = transform.localScale;
+        transformInfo.vel = rb.linearVelocity;
         GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
     }
 

@@ -1,9 +1,10 @@
 using Mirror;
-using System.Collections.Generic;
-using System.Collections;
-using UnityEngine;
-using TMPro;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class HordeController : NetworkBehaviour
 {
@@ -179,13 +180,14 @@ public class HordeController : NetworkBehaviour
     [ClientRpc]
     public void UpdateEnemiesPos(List<EnemyTransformInfo> aux)
     {
-        foreach(EnemyTransformInfo i in aux)
+        for(int i = 0; i < aux.Count; i++)
         {
-            if(i.enemy != null && i.enemy.activeSelf)
+            if (aux[i].enemy != null && aux[i].enemy.activeSelf)
             {
-                i.enemy.transform.position = i.pos;
-                i.enemy.transform.rotation = i.rot;
-                //i.enemy.transform.localScale = i.scale;
+                enemiesInfo[i].SetValues(aux[i].enemy, aux[i].pos, aux[i].scale, aux[i].rot, Time.time, aux[i].vel);
+                aux[i].enemy.transform.position = aux[i].pos;
+                aux[i].enemy.transform.rotation = aux[i].rot;
+                //aux[i].enemy.transform.localScale = aux[i].scale;
             }
         }
     }
@@ -386,6 +388,8 @@ public struct EnemyTransformInfo
     public Vector3 pos;
     public Vector3 scale;
     public Quaternion rot;
+    public float lastTime;
+    public Vector3 vel;
 
     public EnemyTransformInfo(GameObject enemy, Vector3 pos, Vector3 scale, Quaternion rot)
     {
@@ -393,5 +397,17 @@ public struct EnemyTransformInfo
         this.pos = pos;
         this.scale = scale;
         this.rot = rot;
+        lastTime = Time.time;
+        vel = Vector3.zero;
+    }
+
+    public void SetValues(GameObject enemy, Vector3 pos, Vector3 scale, Quaternion rot, float lastTime, Vector3 vel)
+    {
+        this.enemy = enemy;
+        this.pos = pos;
+        this.scale = scale;
+        this.rot = rot;
+        this.lastTime = lastTime;
+        this.vel = vel;
     }
 }
