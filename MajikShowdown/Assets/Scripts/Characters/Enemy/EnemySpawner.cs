@@ -14,6 +14,7 @@ public class EnemySpawner : NetworkBehaviour
     float spawnTime, spawnerStartTime, randDifficulty, randElemental, totalSelection, sum, elementalChance, hordeStartTime, hordeDurationTime;
     bool isSpawning;
     GameObject aux;
+    Enemy auxEnemy;
     public AnimationCurve spawnRateCurve;
     public AnimationCurve difficultyCurve;
     public AnimationCurve elementalCurve;
@@ -91,6 +92,11 @@ public class EnemySpawner : NetworkBehaviour
                         aux = Instantiate(enemies[i].enemy, spawnPos.position, Quaternion.identity);
                         NetworkServer.Spawn(aux);
                         GameManager.Instance.hordeController.enemiesByType[i].Add(aux.GetComponent<Enemy>());
+                        auxEnemy = aux.GetComponent<Enemy>();
+                        auxEnemy.instanceIndex = GameManager.Instance.hordeController.enemiesInfo.Count;
+                        EnemyTransformInfo auxTrInfo = new EnemyTransformInfo(aux, spawnPos.position, aux.transform.localScale, Quaternion.identity);
+                        GameManager.Instance.hordeController.enemiesInfo.Add(auxTrInfo);
+                        auxEnemy.transformInfo = auxTrInfo;
                     }
                     else
                     {
@@ -102,11 +108,11 @@ public class EnemySpawner : NetworkBehaviour
                                 aux.transform.position = spawnPos.position;
                                 aux.SetActive(true);
                                 ActivateEnemy(aux);
+                                auxEnemy = aux.GetComponent<Enemy>();
                                 break;
                             }
                         }
                     }
-                    Enemy auxEnemy = aux.GetComponent<Enemy>();
                     auxEnemy.ResetAllVelocities();
                     GameManager.Instance.hordeController.enemies.Add(aux);
                     GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);

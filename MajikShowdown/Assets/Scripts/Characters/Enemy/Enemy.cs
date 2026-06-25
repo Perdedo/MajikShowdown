@@ -44,6 +44,8 @@ public class Enemy : CrowdCharacter
     public float damage = 1;
     public Elements element = Elements.None;
     Damage dmgCtrl;
+    [HideInInspector] public int instanceIndex;
+    public EnemyTransformInfo transformInfo;
 
     public void Initialize()
     {
@@ -187,6 +189,15 @@ public class Enemy : CrowdCharacter
             attackCooldownTimer.Paused = true;
         }
         PathToTarget(currentCell);
+        UpdateTransform();
+    }
+
+    public void UpdateTransform()
+    {
+        transformInfo.pos = transform.position;
+        transformInfo.rot = transform.rotation;
+        //transformInfo.scale = transform.localScale;
+        GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
     }
 
     public void AICalculation()

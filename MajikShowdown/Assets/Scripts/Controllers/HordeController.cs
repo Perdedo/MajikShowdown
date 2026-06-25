@@ -22,6 +22,7 @@ public class HordeController : NetworkBehaviour
     [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
     [HideInInspector] public List<GameObject> enemies = new List<GameObject>();
+    [HideInInspector] public List<EnemyTransformInfo> enemiesInfo = new List<EnemyTransformInfo>();
     [HideInInspector] public List<List<Enemy>> enemiesByType = new List<List<Enemy>>();
     [HideInInspector] public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
     [HideInInspector] public List<GameObject> spawners = new List<GameObject>();
@@ -51,6 +52,8 @@ public class HordeController : NetworkBehaviour
             UpdateEnemyText(0);
         }
     }
+
+
 
     private void Update()
     {
@@ -161,6 +164,29 @@ public class HordeController : NetworkBehaviour
         StartCoroutine(StopSpawning());
         StartCoroutine(SpawnSpawner());
     }
+    IEnumerator DelayUpdateEnemiesPos()
+    {
+        yield return new WaitForSeconds(0.1f);
+        UpdateEnemiesPos(enemiesInfo);
+        if(inHorde)
+        {
+            StartCoroutine(DelayUpdateEnemiesPos());
+        }
+    }
+
+    [ClientRpc]
+    public void UpdateEnemiesPos(List<EnemyTransformInfo> aux)
+    {
+        foreach(EnemyTransformInfo i in aux)
+        {
+            if(i.enemy != null && i.enemy.activeSelf)
+            {
+                i.enemy.transform.position = i.pos;
+                i.enemy.transform.rotation = i.rot;
+                //i.enemy.transform.localScale = i.scale;
+            }
+        }
+    }
 
     [ClientRpc]
     public void UpdateTimerText(string txt)
@@ -207,7 +233,7 @@ public class HordeController : NetworkBehaviour
             aux.GetComponent<EnemySpawner>().Initialize(enemyChances, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental, hordeStartTime, hordeDuration);
             usedSpawners.Add(aux);
         }
-        if (inHorde)
+        if (inHordeTime)
         {
             yield return new WaitForSeconds(spawnTime);
             spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, spawnerFrequencyCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDuration, 0, 1)));
@@ -221,7 +247,7 @@ public class HordeController : NetworkBehaviour
     {
         yield return new WaitForSeconds(hordeDuration);
         inHordeTime = false;
-        StopAllCoroutines();
+        //StopAllCoroutines();
         CheckEnemyCount();
     }
 
@@ -350,4 +376,20 @@ public class DifficultySetting
     public string difficulty;
     public List<int> indexes;
     public float baseSpawnTime, minSpawnTime, maxLifeTime, baseDifficultyMult, maxDifficultyMult, baseElemental, maxElemental;
+}
+
+public struct EnemyTransformInfo
+{
+    public GameObject enemy;
+    public Vector3 pos;
+    public Vector3 scale;
+    public Quaternion rot;
+
+    public EnemyTransformInfo(GameObject enemy, Vector3 pos, Vector3 scale, Quaternion rot)
+    {
+        this.enemy = enemy;
+        this.pos = pos;
+        this.scale = scale;
+        this.rot = rot;
+    }
 }
