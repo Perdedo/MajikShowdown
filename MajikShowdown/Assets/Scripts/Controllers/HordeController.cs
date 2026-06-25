@@ -89,7 +89,7 @@ public class HordeController : NetworkBehaviour
                     }
                 }
             }
-            UpdateEnemiesPos(enemiesInfo);
+            //UpdateEnemiesPos(enemiesInfo);
         }
         else
         {
@@ -164,7 +164,7 @@ public class HordeController : NetworkBehaviour
         }
         StartCoroutine(StopSpawning());
         StartCoroutine(SpawnSpawner());
-        //StartCoroutine(DelayUpdateEnemiesPos());
+        StartCoroutine(DelayUpdateEnemiesPos());
     }
     IEnumerator DelayUpdateEnemiesPos()
     {
