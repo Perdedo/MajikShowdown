@@ -79,6 +79,17 @@ public class HordeController : NetworkBehaviour
             {
                 UpdateTimerText("0:00");
             }
+            for (int i = 0; i < usedEnemiesByType.Count; i++)
+            {
+                foreach (Enemy e in usedEnemiesByType[i])
+                {
+                    if (e != null)
+                    {
+                        e.EnemyUpdate();
+                    }
+                }
+            }
+            UpdateEnemiesPos(enemiesInfo);
         }
         else
         {
@@ -90,16 +101,6 @@ public class HordeController : NetworkBehaviour
             else
             {
                 UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
-            }
-        }
-        for (int i = 0; i < usedEnemiesByType.Count; i++)
-        {
-            foreach (Enemy e in usedEnemiesByType[i])
-            {
-                if (e != null)
-                {
-                    e.EnemyUpdate();
-                }
             }
         }
     }
@@ -163,7 +164,7 @@ public class HordeController : NetworkBehaviour
         }
         StartCoroutine(StopSpawning());
         StartCoroutine(SpawnSpawner());
-        StartCoroutine(DelayUpdateEnemiesPos());
+        //StartCoroutine(DelayUpdateEnemiesPos());
     }
     IEnumerator DelayUpdateEnemiesPos()
     {
