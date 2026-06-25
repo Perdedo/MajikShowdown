@@ -163,6 +163,7 @@ public class HordeController : NetworkBehaviour
         }
         StartCoroutine(StopSpawning());
         StartCoroutine(SpawnSpawner());
+        StartCoroutine(DelayUpdateEnemiesPos());
     }
     IEnumerator DelayUpdateEnemiesPos()
     {
