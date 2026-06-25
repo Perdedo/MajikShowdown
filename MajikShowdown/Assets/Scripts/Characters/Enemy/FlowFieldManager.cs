@@ -182,13 +182,19 @@ public class FlowFieldManager : MonoBehaviour
         }
         if (flowField != null && ShowTargetPos)
         {
-            FieldCell c = WorldToGridPosition(Target.position);
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawCube(c.position, Vector3.one * CellSize * 0.9f);
-            foreach (FieldCell.NeighborContext n in c.Neighbors)
+            foreach(Transform p in Targets)
             {
-                Gizmos.color = Color.red;
-                Gizmos.DrawCube(n.neighborCell.position, Vector3.one * CellSize * 0.9f);
+                FieldCell c = WorldToGridPosition(p.position);
+                if(c != null)
+                {
+                    Gizmos.color = Color.magenta;
+                    Gizmos.DrawCube(c.position, Vector3.one * CellSize * 0.9f);
+                    foreach (FieldCell.NeighborContext n in c.Neighbors)
+                    {
+                        Gizmos.color = Color.red;
+                        Gizmos.DrawCube(n.neighborCell.position, Vector3.one * CellSize * 0.9f);
+                    }
+                }
             }
         }
         /*if (flowField != null)
