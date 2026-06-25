@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
+using Mirror;
 
 public class Enemy : CrowdCharacter
 {
@@ -63,6 +64,13 @@ public class Enemy : CrowdCharacter
         attackTimer.timedEvent.AddListener(AttackPlayer);
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
+        RigidbodySetting();
+    }
+
+    [ClientRpc]
+    public void RigidbodySetting()
+    {
+        rb.isKinematic = !isServer;
     }
     /*void Start()
     {
