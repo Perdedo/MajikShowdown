@@ -225,8 +225,8 @@ public class Enemy : CrowdCharacter
         transformInfo.pos = transform.position;
         transformInfo.rot = (byte)transform.rotation.eulerAngles.y;
         //transformInfo.scale = transform.localScale;
-        //transformInfo.vel = rb.linearVelocity;
-        transformInfo.vel = worldVelocity - rb.linearVelocity + externalVelocity;
+        transformInfo.vel = rb.linearVelocity;
+        //transformInfo.vel = worldVelocity - rb.linearVelocity + externalVelocity;
         GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
     }
 
