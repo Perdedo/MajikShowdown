@@ -193,7 +193,7 @@ public class HordeController : NetworkBehaviour
                     enemiesInfo[i] = new EnemyTransformInfo(aux[i].enemy, aux[i].pos, aux[i].scale, aux[i].rot, Time.time, aux[i].vel);
                 }
                 //aux[i].enemy.transform.position = aux[i].pos;
-                //aux[i].enemy.transform.rotation = aux[i].rot;
+                aux[i].enemy.transform.rotation = aux[i].rot;
                 //aux[i].enemy.transform.localScale = aux[i].scale;
             }
         }
