@@ -191,7 +191,18 @@ public class FlowFieldManager : MonoBehaviour
                     Gizmos.DrawCube(c.position, Vector3.one * CellSize * 0.9f);
                     foreach (FieldCell.NeighborContext n in c.Neighbors)
                     {
-                        Gizmos.color = Color.red;
+                        switch (n.context)
+                        {
+                            case FieldCell.NeighborContext.Context.Jumpable:
+                                Gizmos.color = Color.orange;
+                                break;
+                            case FieldCell.NeighborContext.Context.Upper:
+                                Gizmos.color = Color.red;
+                                break;
+                            default:
+                            Gizmos.color = Color.blue;
+                                break;
+                        }
                         Gizmos.DrawCube(n.neighborCell.position, Vector3.one * CellSize * 0.9f);
                     }
                 }

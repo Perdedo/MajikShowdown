@@ -146,9 +146,25 @@ public class FlowField
             CellColumn neighborColumn = GetColumn(neighborPos);
             if (neighborColumn != null)
             {
+                float neighborDist;
+                Vector2 dirFloat = dir;
+                if (dirFloat.sqrMagnitude == 1)
+                {
+                    neighborDist = cellSize + 0.1f;
+                }
+                else
+                {
+                    neighborDist = (dirFloat * cellSize).magnitude + 0.1f;
+                }
                 float closestY = Mathf.Infinity;
                 foreach (FieldCell c in neighborColumn.Layers)
                 {
+                    Vector3 xzCpos = new Vector3(c.position.x, 0, c.position.z);
+                    Vector3 xzCellpos = new Vector3(cell.position.x, 0, cell.position.z);
+                    if(Vector3.Distance(xzCellpos,xzCpos) > neighborDist)
+                    {
+                        continue;
+                    }
                     if (c.position.y < cell.position.y + maxStepOffset) //checa se o vizinho é menor que o step Offset
                     {
                         if(Mathf.Abs(c.position.y - cell.position.y) < Mathf.Abs(closestY - cell.position.y)) //checa se o vizinho é o mais perto no y na sua coluna
