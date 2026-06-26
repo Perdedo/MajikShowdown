@@ -44,7 +44,7 @@ public class Enemy : CrowdCharacter
     public float damage = 1;
     public Elements element = Elements.None;
     Damage dmgCtrl;
-#if UNITY_EDITOR
+
     public void Initialize()
     {
         DamageHandler.Initialize();
@@ -62,7 +62,6 @@ public class Enemy : CrowdCharacter
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
     }
-#endif
     /*void Start()
     {
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
@@ -79,6 +78,7 @@ public class Enemy : CrowdCharacter
         StartCoroutine(StartAICalc());
         targetLastSeen = targetVector;
     }*/
+#if UNITY_EDITOR
     protected override void OnValidate()
     {
         int c = PoolProbability.Entries.Count;
@@ -91,6 +91,7 @@ public class Enemy : CrowdCharacter
             PoolProbability.RemoveEntry(c - 1);
         }
     }
+#endif
 
     /*public void Update()
     {
