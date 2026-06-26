@@ -184,7 +184,7 @@ public class HordeController : NetworkBehaviour
         {
             if (aux[i].enemy != null && aux[i].enemy.activeSelf)
             {
-                enemiesInfo[i].SetValues(aux[i].enemy, aux[i].pos, aux[i].scale, aux[i].rot, Time.time, aux[i].vel);
+                //enemiesInfo[i].SetValues(aux[i].enemy, aux[i].pos, aux[i].scale, aux[i].rot, Time.time, aux[i].vel);
                 aux[i].enemy.transform.position = aux[i].pos;
                 aux[i].enemy.transform.rotation = aux[i].rot;
                 //aux[i].enemy.transform.localScale = aux[i].scale;
