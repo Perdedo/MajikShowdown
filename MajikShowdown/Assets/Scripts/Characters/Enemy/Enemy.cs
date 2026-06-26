@@ -45,7 +45,7 @@ public class Enemy : CrowdCharacter
     public float damage = 1;
     public Elements element = Elements.None;
     Damage dmgCtrl;
-    [HideInInspector] public int instanceIndex;
+    [HideInInspector][SyncVar] public int instanceIndex;
     public EnemyTransformInfo transformInfo;
     Player attackedPlayer;
     float timePred;
