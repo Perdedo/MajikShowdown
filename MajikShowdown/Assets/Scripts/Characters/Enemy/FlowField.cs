@@ -42,13 +42,18 @@ public class FlowField
                 {
                     Vector3 samplePos = new Vector3(x * cellSize, y, z * cellSize) + manager.transform.position + manager.Offset;
 
-                    if (NavMesh.SamplePosition(samplePos, out NavMeshHit hit, 0.5f, NavMesh.AllAreas))
+                    if (NavMesh.SamplePosition(samplePos, out NavMeshHit hit, cellSize/2, NavMesh.AllAreas))
                     {
                         bool alreadyExists = column.Layers.Exists(l => Mathf.Abs(l.position.y - hit.position.y) < 0.5f);
 
                         if (!alreadyExists)
                         {
-                            column.Layers.Add(new FieldCell(hit.position, gridPos, column.Layers.Count));
+
+                            if (!Physics.CheckCapsule(hit.position + Vector3.up *((manager.ObstructionHeight/2) +0.1f), hit.position + Vector3.up * manager.ObstructionHeight, cellSize/3, manager.ObstructionLayer))
+                            {
+                                column.Layers.Add(new FieldCell(hit.position, gridPos, column.Layers.Count));
+                            }
+                            //column.Layers.Add(new FieldCell(hit.position, gridPos, column.Layers.Count));
                         }
                     }
                 }
