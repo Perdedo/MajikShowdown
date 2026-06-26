@@ -169,7 +169,7 @@ public class HordeController : NetworkBehaviour
     }
     IEnumerator DelayUpdateEnemiesPos()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.25f);
         UpdateEnemiesPos(enemiesInfo);
         if(inHorde)
         {
@@ -193,7 +193,7 @@ public class HordeController : NetworkBehaviour
                     enemiesInfo[i] = new EnemyTransformInfo(aux[i].enemy, aux[i].pos, aux[i].rot, Time.time, aux[i].vel);
                 }
                 //aux[i].enemy.transform.position = aux[i].pos;
-                aux[i].enemy.transform.rotation = aux[i].rot;
+                aux[i].enemy.transform.rotation = Quaternion.Euler(0, aux[i].rot, 0);
             }
         }
     }
@@ -392,11 +392,11 @@ public struct EnemyTransformInfo
 {
     public GameObject enemy;
     public Vector3 pos;
-    public Quaternion rot;
+    public byte rot;
     public float lastTime;
     public Vector3 vel;
 
-    public EnemyTransformInfo(GameObject enemy, Vector3 pos, Quaternion rot, float lastTime, Vector3 vel)
+    public EnemyTransformInfo(GameObject enemy, Vector3 pos, byte rot, float lastTime, Vector3 vel)
     {
         this.enemy = enemy;
         this.pos = pos;

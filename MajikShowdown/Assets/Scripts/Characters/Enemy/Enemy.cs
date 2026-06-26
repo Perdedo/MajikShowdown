@@ -223,7 +223,7 @@ public class Enemy : CrowdCharacter
     public void UpdateTransform()
     {
         transformInfo.pos = transform.position;
-        transformInfo.rot = transform.rotation;
+        transformInfo.rot = (byte)transform.rotation.eulerAngles.y;
         //transformInfo.scale = transform.localScale;
         transformInfo.vel = rb.linearVelocity;
         GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
