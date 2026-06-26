@@ -225,7 +225,7 @@ public class FlowFieldManager : MonoBehaviour
     //public Vector2Int cellpos;
     public FieldCell WorldToGridPosition(Vector3 worldPosition, bool ToLowestLayer = true)
     {
-        Vector3 localPos = worldPosition - transform.position;
+        Vector3 localPos = worldPosition - transform.position +Offset;
         Vector2Int v = new Vector2Int(Mathf.FloorToInt(localPos.x / CellSize), Mathf.FloorToInt(localPos.z / CellSize));
         FieldCell closest = null;
         CellColumn col = flowField.GetColumn(v);
