@@ -55,7 +55,7 @@ public class FlowField
 
                 if (column.Layers.Count > 0)
                 {
-                    //field.Add(gridPos, column);
+                    field.Add(gridPos, column);
                     manager.flowFieldAsset.fieldAsset.Add(new FlowFieldDivision(column, gridPos));
                 }
             }
