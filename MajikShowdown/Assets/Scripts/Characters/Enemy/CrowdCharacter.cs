@@ -203,6 +203,10 @@ public class CrowdCharacter : CrowdRB, IGameCharacter
     }
     public void Knockback(Vector3 direction, float strenght)
     {
-        AddExternalVelocity(direction*strenght);
+        AddExternalVelocity(direction * strenght);
+    }
+    public virtual void Die()
+    {
+        
     }
 }

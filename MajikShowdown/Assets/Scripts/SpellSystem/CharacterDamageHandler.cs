@@ -11,14 +11,16 @@ public class CharacterDamageHandler : NetworkBehaviour
     public int enemyIndex;
     [Header("Network")]
     public bool network = true;
+    public IGameCharacter gameCharacter;
     void Awake()
     {
         Health = MaxHealth;
     }
 
-    public void Initialize()
+    public void Initialize(IGameCharacter GC)
     {
         Health = MaxHealth;
+        gameCharacter = GC;
     }
 
     public virtual void TakeDamage(Damage damage)
@@ -54,6 +56,7 @@ public class CharacterDamageHandler : NetworkBehaviour
 
     public virtual void Die()
     {
+        gameCharacter.Die();
         if(GameManager.Instance.hordeController.enemies.Contains(this.gameObject))
         {
             GameManager.Instance.hordeController.enemies.Remove(this.gameObject);
@@ -63,7 +66,7 @@ public class CharacterDamageHandler : NetworkBehaviour
                 GameManager.Instance.hordeController.CheckEnemyCount();
             }
         }
-        if(network)
+        if (network)
         {
             //NetworkServer.Destroy(gameObject);
             GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove(this.gameObject.GetComponent<Enemy>());
@@ -75,6 +78,7 @@ public class CharacterDamageHandler : NetworkBehaviour
             this.gameObject.SetActive(false);
             //Destroy(gameObject);
         }
+        
     }
 
     [ClientRpc]
@@ -123,5 +127,6 @@ public interface IGameCharacter
 {
     public CharacterDamageHandler DamageHandler { get; }
     public void Knockback(Vector3 direction, float strenght);
+    public void Die();
 }
 

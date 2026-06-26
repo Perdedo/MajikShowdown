@@ -52,7 +52,7 @@ public class Enemy : CrowdCharacter
     Vector3 predTarget;
     public void Initialize()
     {
-        DamageHandler.Initialize();
+        DamageHandler.Initialize(this);
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
         for (int i = 0; i < Directions.Length; i++)
         {
@@ -515,6 +515,10 @@ public class Enemy : CrowdCharacter
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime);
         }
 
+    }
+    public override void Die()
+    {
+        base.Die();
     }
 }
 

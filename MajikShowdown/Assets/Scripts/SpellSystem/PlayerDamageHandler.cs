@@ -45,6 +45,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
     }
     public override void Die()
     {
+        gameCharacter.Die();
         //Atualizar depois com sistema de reviver
         myPlayer.dead = true;
         FlowFieldManager.instance.UpdateFlowField();

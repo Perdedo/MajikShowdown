@@ -54,10 +54,11 @@ public class Character : FloatingRigidbody, IGameCharacter
         base.Awake();
         jumpTimer.timedEvent.AddListener(JumpForce);
         accelerationSpeed = speed / accelerationTime;
-        if(DamageHandler == null)
+        if (DamageHandler == null)
         {
             DamageHandler = GetComponent<CharacterDamageHandler>();
         }
+        DamageHandler.Initialize(this);
     }
 
     protected override void FixedUpdate()
@@ -187,7 +188,11 @@ public class Character : FloatingRigidbody, IGameCharacter
     }
     public void Knockback(Vector3 direction, float strenght)
     {
-        AddExternalVelocity(direction*strenght);
+        AddExternalVelocity(direction * strenght);
+    }
+    public virtual void Die()
+    {
+        
     }
 
 }
