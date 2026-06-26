@@ -94,7 +94,7 @@ public class EnemySpawner : NetworkBehaviour
                         GameManager.Instance.hordeController.enemiesByType[i].Add(aux.GetComponent<Enemy>());
                         auxEnemy = aux.GetComponent<Enemy>();
                         auxEnemy.instanceIndex = GameManager.Instance.hordeController.enemiesInfo.Count;
-                        EnemyTransformInfo auxTrInfo = new EnemyTransformInfo(aux, spawnPos.position, aux.transform.localScale, Quaternion.identity);
+                        EnemyTransformInfo auxTrInfo = new EnemyTransformInfo(aux, spawnPos.position, aux.transform.localScale, Quaternion.identity, Time.time, Vector3.zero);
                         GameManager.Instance.hordeController.enemiesInfo.Add(auxTrInfo);
                         auxEnemy.transformInfo = auxTrInfo;
                     }

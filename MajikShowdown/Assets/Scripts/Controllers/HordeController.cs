@@ -186,11 +186,14 @@ public class HordeController : NetworkBehaviour
             {
                 if (enemiesInfo.Count == i)
                 {
-                    enemiesInfo.Add(new EnemyTransformInfo(aux[i].enemy, aux[i].pos, aux[i].scale, aux[i].rot));
+                    enemiesInfo.Add(new EnemyTransformInfo(aux[i].enemy, aux[i].pos, aux[i].scale, aux[i].rot, Time.time, aux[i].vel));
                 }
-                enemiesInfo[i].SetValues(aux[i].enemy, aux[i].pos, aux[i].scale, aux[i].rot, Time.time, aux[i].vel);
-                //aux[i].enemy.transform.position = aux[i].pos;
-                //aux[i].enemy.transform.rotation = aux[i].rot;
+                else
+                {
+                    enemiesInfo[i] = new EnemyTransformInfo(aux[i].enemy, aux[i].pos, aux[i].scale, aux[i].rot, Time.time, aux[i].vel);
+                }
+                aux[i].enemy.transform.position = aux[i].pos;
+                aux[i].enemy.transform.rotation = aux[i].rot;
                 //aux[i].enemy.transform.localScale = aux[i].scale;
             }
         }
@@ -395,17 +398,7 @@ public struct EnemyTransformInfo
     public float lastTime;
     public Vector3 vel;
 
-    public EnemyTransformInfo(GameObject enemy, Vector3 pos, Vector3 scale, Quaternion rot)
-    {
-        this.enemy = enemy;
-        this.pos = pos;
-        this.scale = scale;
-        this.rot = rot;
-        lastTime = Time.time;
-        vel = Vector3.zero;
-    }
-
-    public void SetValues(GameObject enemy, Vector3 pos, Vector3 scale, Quaternion rot, float lastTime, Vector3 vel)
+    public EnemyTransformInfo(GameObject enemy, Vector3 pos, Vector3 scale, Quaternion rot, float lastTime, Vector3 vel)
     {
         this.enemy = enemy;
         this.pos = pos;
