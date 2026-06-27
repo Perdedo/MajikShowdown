@@ -197,7 +197,7 @@ public class HordeController : NetworkBehaviour
                     enemiesInfo[i] = new EnemyTransformInfo(aux[i].enemy, aux[i].pos, aux[i].rot, Time.time, aux[i].vel);
                 }
                 //aux[i].enemy.transform.position = aux[i].pos;
-                aux[i].enemy.transform.rotation = Quaternion.Euler(0, aux[i].rot, 0);
+                //aux[i].enemy.transform.rotation = Quaternion.Euler(0, aux[i].rot, 0);
             }
         }
     }
