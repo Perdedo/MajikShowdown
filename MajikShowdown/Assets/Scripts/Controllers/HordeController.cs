@@ -313,6 +313,7 @@ public class HordeController : NetworkBehaviour
             inHorde = false;
             if(hordeCount < hordesToWin)
             {
+                difficulty++;
                 StartPause();
             }
             else
