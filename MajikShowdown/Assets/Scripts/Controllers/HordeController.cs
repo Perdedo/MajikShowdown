@@ -235,6 +235,7 @@ public class HordeController : NetworkBehaviour
                         aux = s;
                         aux.transform.position = spawnPos;
                         aux.SetActive(true);
+                        ActivateSpawner(aux);
                         break;
                     }
                 }
@@ -254,7 +255,11 @@ public class HordeController : NetworkBehaviour
             StartCoroutine(SpawnSpawner());
         }
     }
-
+    [ClientRpc]
+    public void ActivateSpawner(GameObject obj)
+    {
+        obj.SetActive(true);
+    }
 
     [Server]
     IEnumerator StopSpawning()

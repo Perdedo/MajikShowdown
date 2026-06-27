@@ -122,6 +122,8 @@ public class Enemy : CrowdCharacter
         timePred = Time.time - GameManager.Instance.hordeController.enemiesInfo[instanceIndex].lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
         transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
+        Quaternion targetRot = Quaternion.LookRotation(predTarget - transform.position);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime);
     }
     /*public void FixedUpdate()
     {
