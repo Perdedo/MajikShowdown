@@ -5,18 +5,25 @@ using UnityEngine;
 
 public class CharacterDamageHandler : NetworkBehaviour
 {
-    public float MaxHealth;
-    public float Health;
+    [SyncVar]public float MaxHealth;
+    [SyncVar]public float Health;
     public List<Resistance> Resistances;
-
+    public int enemyIndex;
     [Header("Network")]
     public bool network = true;
+    public IGameCharacter gameCharacter;
     void Awake()
     {
         Health = MaxHealth;
     }
 
-    public void TakeDamage(Damage damage)
+    public void Initialize(IGameCharacter GC)
+    {
+        Health = MaxHealth;
+        gameCharacter = GC;
+    }
+
+    public virtual void TakeDamage(Damage damage)
     {
         if(!isServer && network)
         {
@@ -38,29 +45,46 @@ public class CharacterDamageHandler : NetworkBehaviour
         }
     }
 
-    public void Heal(float amount)
+    public virtual void Heal(float amount)
     {
+        if (!isServer && network)
+        {
+            return;
+        }
         Health = Mathf.Min(Health + amount, MaxHealth);
     }
 
     public virtual void Die()
     {
+        gameCharacter.Die();
         if(GameManager.Instance.hordeController.enemies.Contains(this.gameObject))
         {
             GameManager.Instance.hordeController.enemies.Remove(this.gameObject);
-            if(!GameManager.Instance.hordeController.inHordeTime)
+            GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
+            if (!GameManager.Instance.hordeController.inHordeTime)
             {
                 GameManager.Instance.hordeController.CheckEnemyCount();
             }
         }
-        if(network)
+        if (network)
         {
-            NetworkServer.Destroy(gameObject);
+            //NetworkServer.Destroy(gameObject);
+            GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove(this.gameObject.GetComponent<Enemy>());
+            RPCDisable();
+            this.gameObject.SetActive(false);
         }
         else
         {
-            Destroy(gameObject);
+            this.gameObject.SetActive(false);
+            //Destroy(gameObject);
         }
+        
+    }
+
+    [ClientRpc]
+    public void RPCDisable()
+    {
+        this.gameObject.SetActive(false);
     }
 }
 
@@ -102,5 +126,7 @@ public class Resistance
 public interface IGameCharacter
 {
     public CharacterDamageHandler DamageHandler { get; }
+    public void Knockback(Vector3 direction, float strenght);
+    public void Die();
 }
 

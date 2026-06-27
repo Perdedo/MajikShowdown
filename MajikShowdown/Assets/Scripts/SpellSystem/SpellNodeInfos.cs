@@ -45,8 +45,8 @@ public class SpellNodeInfos : ScriptableObject
             case NodeCategory.Trigger:
                 return trigger;
 
-            /*case NodeCategory.CastingPoint:
-                return castingPoint;*/
+            case NodeCategory.CastingPoint:
+                return castingPoint;
 
             default:
                 return core;

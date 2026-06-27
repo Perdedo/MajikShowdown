@@ -48,7 +48,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1235545198884938909}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -128,6 +128,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1331101070252214030}
+  - {fileID: 4293127580845853085}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3409556546307525002
@@ -145,7 +146,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4265607478582442934}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -207,7 +208,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1.5
+  m_Height: 1.4
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &2276832858802890339
@@ -253,6 +254,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   maxVelocity: 100
+  affectedByMovingGround: 0
   floatingHeight: 0.4
   gravityMultiplier: 5
   terrainBuffer: 0.3
@@ -304,7 +306,12 @@ MonoBehaviour:
       m_Calls: []
   pushing: {fileID: 0}
   input: {fileID: 0}
+  readyForHorde: 0
   network: 1
+  caster: {fileID: 0}
+  Casting: 0
+  CastPoseTime: 3
+  currentInteraction: {fileID: 0}
 --- !u!114 &6598984743513336198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,6 +497,26 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: a083376a-7fbe-48f2-9315-ee66522d084b
     m_ActionName: 'Player/OpenSpellPanel[/Keyboard/tab]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3b603476-e88e-4955-9e41-a121a254ae45
+    m_ActionName: 'Player/CastFirstSpell[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fab74c60-64f5-4d17-bce4-3784466b6b06
+    m_ActionName: 'Player/CastSecondSpell[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 531ab47c-9075-46b8-b81a-329dba99f7ea
+    m_ActionName: 'Player/CastThirdSpell[/Keyboard/q]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6ab0bc1e-3db9-4145-923e-348264b3bb48
+    m_ActionName: 'Player/CastFourthSpell[/Keyboard/e]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 9bb00643-6255-4041-a169-70d7bb4fdee6
+    m_ActionName: 'Player/Ready[/Keyboard/r]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -546,3 +573,65 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!1001 &4332174445499297398
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8914568331542961986}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+      propertyPath: m_Name
+      value: PlayerBat
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+--- !u!4 &4293127580845853085 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 256023c74ae569f4a8cc7893a53da5cc, type: 3}
+  m_PrefabInstance: {fileID: 4332174445499297398}
+  m_PrefabAsset: {fileID: 0}

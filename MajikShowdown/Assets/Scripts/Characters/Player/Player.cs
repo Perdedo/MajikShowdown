@@ -9,6 +9,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 public class Player : Character
 {
+    public GameObject mesh;
+    public Collider col;
     [Header("Camera Options")]
     public CinemachineCamera playerCamera;
     //CinemachineThirdPersonAim cameraAim;
@@ -27,7 +29,7 @@ public class Player : Character
     [SerializeField] protected float DashForce;
     [SerializeField] protected float DashCooldown;
     [SerializeField] protected float GravityNegationTime;
-    Timer dashTimer = new Timer(), gravityTimer = new Timer();
+    Timer dashTimer = new Timer(false), gravityTimer = new Timer(false);
     bool dashOnCooldown;
 
     [Header("Push Events")]
@@ -35,11 +37,18 @@ public class Player : Character
     public UnityEvent StoppedPushing;
     public PushableObject pushing;
     [HideInInspector] public PlayerInput input;
-    bool Casting;
+    
     [SyncVar(hook = "GetReady")]public bool readyForHorde = false;
     [Header("Network")]
     public bool network = true;
 
+    [Header("Spellcasting")]
+    public SpellCaster caster;
+    [HideInInspector]public bool Casting;
+    [HideInInspector][SyncVar (hook = nameof(OnDeathValueChange))] public bool dead = false;
+    public float CastPoseTime = 3f;
+
+    public InteractableObject currentInteraction;
 
     //public PlayerData data;
 
@@ -63,7 +72,7 @@ public class Player : Character
         HitGround.AddListener(StopCoyoteTime);
         HitGround.AddListener(PeformJumpBuffering);
         input = GetComponent<PlayerInput>();
-        damageHandler = GetComponent<PlayerDamageHandler>();
+        DamageHandler = GetComponent<PlayerDamageHandler>();
         //cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }
@@ -126,11 +135,29 @@ public class Player : Character
         //RotateCamera();
     }
 
+    public void OnDeathValueChange(bool oldVal, bool newVal)
+    {
+        /*if(input != null && isLocalPlayer)
+        {
+            input.enabled = !newVal;
+        }*/
+        if(mesh != null)
+        {
+            mesh.SetActive(!newVal);
+        }
+        if(col != null)
+        {
+            col.enabled = !newVal;
+        }
+        directionInput = Vector2.zero;
+    }
+
     public void ReadyInput(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network) return;
         if (!context.started) return;
         if (!GameManager.Instance.hordeController.inPause) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         //readyForHorde = true;
         CMDReadyInput();
     }
@@ -173,10 +200,10 @@ public class Player : Character
     }
     public void MoveInput(InputAction.CallbackContext context)
     {
-        if (!isLocalPlayer && network)
-        {
-            return;
-        }
+        if (!isLocalPlayer && network) return;
+        if (dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
+
         if (!movePaused)
         {
             directionInput = Vector2.ClampMagnitude(context.ReadValue<Vector2>(), 1);
@@ -189,10 +216,10 @@ public class Player : Character
 
     public void JumpInput(InputAction.CallbackContext context)
     {
-        if (!isLocalPlayer && network)
-        {
-            return;
-        }
+        if (!isLocalPlayer && network) return;
+        if (dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
+
         if (context.phase == InputActionPhase.Started)
         {
             if (!movePaused)
@@ -216,10 +243,10 @@ public class Player : Character
     }
     public void DashInput(InputAction.CallbackContext context)
     {
-        if (!isLocalPlayer && network)
-        {
-            return;
-        }
+        if (!isLocalPlayer && network) return;
+        if (dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
+
         if (context.phase == InputActionPhase.Started)
         {
             if (!movePaused)
@@ -244,6 +271,24 @@ public class Player : Character
             AddExternalVelocity(v.normalized * DashForce);
             dashOnCooldown = true;
             gravityPaused = true;
+        }
+    }
+    public void InteractInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
+
+        if (context.phase == InputActionPhase.Started)
+        {
+            Interact();
+        }
+    }
+    public void Interact()
+    {
+        if (currentInteraction != null)
+        {
+            currentInteraction.Interact(this);
         }
     }
     /*Vector2 lookInput;

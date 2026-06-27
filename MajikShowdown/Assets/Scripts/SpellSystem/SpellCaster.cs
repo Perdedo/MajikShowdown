@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class SpellCaster : NetworkBehaviour, IGameCharacter
+public class SpellCaster : NetworkBehaviour
 {
-    public CharacterDamageHandler DamageHandler { get; private set; }
+    //public CharacterDamageHandler DamageHandler { get; private set; }
     public AimController AimController;
     [Header("Generic Node")]
     public SpellNodeInterface genericNodePrefab;
@@ -30,6 +30,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     public LayerMask ObjectLayer;
 
     [HideInInspector] public bool canCast = true;
+    Timer castPoseTimer = new Timer(false);
 
     [Header("Network")]
     public bool network = true;
@@ -38,13 +39,12 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     {
         if (!network)
         {
-            DamageHandler = GetComponent<CharacterDamageHandler>();
+            player.caster = this;
+            //DamageHandler = GetComponent<CharacterDamageHandler>();
             equippedSpells = new Spell[4];
             foreach (var nodeData in ownedNodes)
             {
-                SpellNode runtimeNode = Instantiate(nodeData);
-                runtimeNode.Initialize();
-                runtimeNodes.Add(runtimeNode);
+                InstantiateNode(nodeData);
             }
         }
 
@@ -57,13 +57,12 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
 
     public override void OnStartAuthority()
     {
-        DamageHandler = GetComponent<CharacterDamageHandler>();
+        player.caster = this;
+        //DamageHandler = GetComponent<CharacterDamageHandler>();
         equippedSpells = new Spell[4];
         foreach (var nodeData in ownedNodes)
         {
-            SpellNode runtimeNode = Instantiate(nodeData);
-            runtimeNode.Initialize();
-            runtimeNodes.Add(runtimeNode);
+            InstantiateNode(nodeData);
         }
         if (!isServer)
         {
@@ -74,13 +73,28 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
     [Command]
     public void CMDInitialize()
     {
-        DamageHandler = GetComponent<CharacterDamageHandler>();
+        player.caster = this;
+        //DamageHandler = GetComponent<CharacterDamageHandler>();
         equippedSpells = new Spell[4];
         foreach (var nodeData in ownedNodes)
         {
-            SpellNode runtimeNode = Instantiate(nodeData);
-            runtimeNode.Initialize();
-            runtimeNodes.Add(runtimeNode);
+            InstantiateNode(nodeData);
+        }
+    }
+    void InstantiateNode(SpellNode nodePrefab)
+    {
+        SpellNode runtimeNode = Instantiate(nodePrefab);
+        runtimeNode.Initialize();
+        runtimeNodes.Add(runtimeNode);
+    }
+
+    public void AddRune(SpellNode nodePrefab)
+    {
+        ownedNodes.Add(nodePrefab);
+        InstantiateNode(nodePrefab);
+        foreach (var inv in inventories)
+        {
+            inv.SyncFromCaster();
         }
     }
 
@@ -94,34 +108,42 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         {
             return;
         }
-        foreach (Spell spell in equippedSpells)
+        for (int i = 0; i < equippedSpells.Length; i++)
         {
-            if (spell != null && spell.onCooldown)
+            if (equippedSpells[i] != null && equippedSpells[i].onCooldown)
             {
-                if (spell.cooldownTimer.timer(spell.SpellCooldown, Time.deltaTime, false, true))
+                if (equippedSpells[i].cooldownTimer.timer(equippedSpells[i].SpellCooldown, Time.deltaTime, false, true))
                 {
-                    spell.onCooldown = false;
+                    equippedSpells[i].onCooldown = false;
+                    if(!isServer && network)
+                    {
+                        RemoveCooldown(i);
+                    }
                 }
             }
         }
-        /*if (Input.GetKeyDown(KeyCode.E))
+        if(player != null && player.Casting)
         {
-            if (equippedSpells[0] != null)
+            if(castPoseTimer.timer(player.CastPoseTime,Time.deltaTime, false, false))
             {
-                Debug.Log("Cast");
-                if (network)
-                {
-                    CMDCastSpell(0, AimController.AimPoint);
-                }
-                else
-                {
-                    CastSpell(0);
-                }
-                //CMDCastSpell(0, AimController.AimPoint);
-                //Debug.Log(equippedSpells[0].spellName);
+                player.Casting = false;
             }
-        }*/
+        }
     }
+
+    [Command]
+    public void RemoveCooldown(int index)
+    {
+        equippedSpells[index].onCooldown = false;
+    }
+    
+
+    [TargetRpc]
+    public void AddCooldown(NetworkConnection target, int index)
+    {
+        equippedSpells[index].onCooldown = true;
+    }
+
 
     [Command]
     public void CMDCastSpell(int spellInd, Vector3 aimPoint)
@@ -129,6 +151,7 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         Spell spell = equippedSpells[spellInd];
         if (spell.onCooldown) return;
         spell.onCooldown = true;
+        AddCooldown(this.connectionToClient, spellInd);
 
         if (spell.validSpell)
         {
@@ -150,6 +173,11 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
                     //dir = AimController.AimPoint - transform.position;
                 }
                 SpellColliderManager.Instance.ServerInitializeSpellCollider(spell, castPos, dir, true);
+            }
+            if(player != null)
+            {
+                player.Casting = true;
+                castPoseTimer.SetTimer(0);
             }
         }
     }
@@ -197,7 +225,11 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
                 }
                 SpellColliderManager.Instance.InitializeSpellCollider(spell, castPos, dir, true);
             }
-
+            if(player != null)
+            {
+                player.Casting = true;
+                castPoseTimer.SetTimer(0);
+            }
         }
 
     }
@@ -247,7 +279,8 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         if (!context.started) return;
         if (!canCast) return;
         if (equippedSpells[0] == null) return;
-
+        if (player.dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         if (network)
         {
             CMDCastSpell(0, AimController.AimPoint);
@@ -264,6 +297,8 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         if (!context.started) return;
         if (!canCast) return;
         if (equippedSpells[1] == null) return;
+        if (player.dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         if (network)
         {
             CMDCastSpell(1, AimController.AimPoint);
@@ -280,6 +315,8 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         if (!context.started) return;
         if (!canCast) return;
         if (equippedSpells[2] == null) return;
+        if (player.dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         if (network)
         {
             CMDCastSpell(2, AimController.AimPoint);
@@ -296,6 +333,8 @@ public class SpellCaster : NetworkBehaviour, IGameCharacter
         if (!context.started) return;
         if (!canCast) return;
         if (equippedSpells[3] == null) return;
+        if (player.dead) return;
+        if (!GameManager.Instance.uiController.playerUI.inGame) return;
         if (network)
         {
             CMDCastSpell(3, AimController.AimPoint);

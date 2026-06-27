@@ -11,6 +11,8 @@ using static SpellTrigger;
 public class Spell
 {
     public string spellName;
+    public int colorIndex;
+    public int symbolIndex;
     public readonly SpellCaster Caster;
     //public List<SubSpell> SubSpells = new List<SubSpell>();
     public List<SpellNode> spellNodes = new List<SpellNode>();
@@ -24,8 +26,8 @@ public class Spell
     public int instanceIndex;
     [HideInInspector] public System.Action OnSpellUpdated;
     [NonSerialized] public LayerMask spellCollisionLayers;
-    public Timer cooldownTimer = new Timer();
-    [NonSerialized] public bool onCooldown = false;
+    public Timer cooldownTimer = new Timer(false);
+    public bool onCooldown = false;
     public Spell(SpellCaster owner)
     {
         Caster = owner;
@@ -101,7 +103,7 @@ public class Spell
         {
             spellCollisionLayers |= Caster.ObjectLayer;
         }
-        if (coreNode.Collisions.Players)
+        if (coreNode.Collisions.Allies || coreNode.Collisions.Self)
         {
             spellCollisionLayers |= Caster.PlayerLayer;
         }

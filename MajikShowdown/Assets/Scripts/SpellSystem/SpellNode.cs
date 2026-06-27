@@ -5,6 +5,8 @@ using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
 {
+    public enum Rarity { Common, Uncommon, Rare, Epic, Legendary }
+    public Rarity rarity;
     [Header("Define Stat Randomization")]
     public StatRandomizer statRandomizer;
     [Header("Display")]
@@ -99,7 +101,7 @@ public abstract class SpellNode : ScriptableObject
 
         if (this is SpellType) return NodeCategory.Type;
 
-        //if (this as SpellCastingPoint) return NodeCategory.CastingPoint;
+        if (this is SpellCastPoint) return NodeCategory.CastingPoint;
 
         return NodeCategory.All;
     }

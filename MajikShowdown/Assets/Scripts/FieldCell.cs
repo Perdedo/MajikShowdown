@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class FieldCell
 {
     public Vector3 position;
@@ -34,6 +36,7 @@ public class FieldCell
     {
         BestCost = float.MaxValue;
     }
+    [Serializable]
     public struct FieldPos
     {
         public Vector2Int gridPosition;
@@ -59,6 +62,8 @@ public class FieldCell
     }
 
 }
+
+[Serializable]
 public class CellColumn
 {
     public CellColumn(Vector2Int GridPos)
@@ -67,4 +72,16 @@ public class CellColumn
     }
     public List<FieldCell> Layers = new List<FieldCell>();
     public Vector2Int gridPosition;
+}
+
+[Serializable]
+public class FlowFieldDivision
+{
+    public CellColumn column;
+    public Vector2Int key;
+    public FlowFieldDivision(CellColumn column, Vector2Int key)
+    {
+        this.column = column;
+        this.key = key;
+    }
 }

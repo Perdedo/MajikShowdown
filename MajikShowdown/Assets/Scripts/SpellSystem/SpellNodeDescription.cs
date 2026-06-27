@@ -65,14 +65,17 @@ public class SpellNodeDescription : NetworkBehaviour
     };
 
     [Header("Trigger")]
-    public TMP_Dropdown spellDropdown;
+    public TMP_Text triggeredSpellText;
+    public Image triggeredSpellIcon;
     public TMP_Dropdown triggerDropdown;
 
     [Header("Collision")]
-    public Toggle playersToggle;
+    public Toggle selfToggle;
+    public Toggle alliesToggle;
     public Toggle enemiesToggle;
     public Toggle objectsToggle;
-    public Image playersToggleIcon;
+    public Image selfToggleIcon;
+    public Image alliesToggleIcon;
     public Image enemiesToggleIcon;
     public Image objectsToggleIcon;
     public Sprite checkSprite;
@@ -128,10 +131,10 @@ public class SpellNodeDescription : NetworkBehaviour
 
     void Start()
     {
-        playersToggle.onValueChanged.AddListener(SetPlayersCollision);
+        selfToggle.onValueChanged.AddListener(SetSelfCollision);
+        alliesToggle.onValueChanged.AddListener(SetAlliesCollision);
         enemiesToggle.onValueChanged.AddListener(SetEnemiesCollision);
         objectsToggle.onValueChanged.AddListener(SetObjectsCollision);
-        spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.AddListener(SetTriggerType);
     }
 
@@ -156,6 +159,7 @@ public class SpellNodeDescription : NetworkBehaviour
         else if (node is SpellEffect) EffectDesc();
         else if (node is SpellTrajectory) TrajectoryDesc();
         else if (node is SpellStat) StatDesc();
+        else if (node is SpellCastPoint) CastPointDesc();
         else HideAll();
     }
 
@@ -244,7 +248,13 @@ public class SpellNodeDescription : NetworkBehaviour
         Sep2 = true
     });
 
-    public void HideAll() => ApplyConfig(new SectionConfig());
+    void CastPointDesc() => ApplyConfig(new SectionConfig
+    {
+        Description = true,
+        Sep2 = true
+    });
+
+public void HideAll() => ApplyConfig(new SectionConfig());
 
     bool NodeHasExtras(SpellNode node)
     {
@@ -292,6 +302,10 @@ public class SpellNodeDescription : NetworkBehaviour
         {
             color = Color.blue;
         }
+        else if (node is SpellCastPoint)
+        {
+            color = Color.green;
+        }
         text.color = color;
     }
 
@@ -319,7 +333,7 @@ public class SpellNodeDescription : NetworkBehaviour
             rect.anchoredPosition = positions[i];
             slot.nameText.text = extras[i].attr.DisplayName;
             slot.valueText.text = FormatStat(extras[i].extra.Value);
-            slot.icon.sprite = extras[i].extra.Icon;
+            slot.icon.transform.GetChild(0).GetComponent<Image>().sprite = extras[i].extra.Icon;
             PopupUI popup = slot.icon.GetComponent<PopupUI>();
             if (popup != null)
             {
@@ -359,6 +373,7 @@ public class SpellNodeDescription : NetworkBehaviour
         text.text = FormatStat(value);
         text.color = isActive ? activeColor : inactiveColor;
         image.color = isActive ? activeColor : inactiveColor;
+        image.transform.GetChild(0).GetComponent<Image>().color = isActive ? activeColor : inactiveColor;
     }
 
     void UpdateMultiplierVisual(TextMeshProUGUI text, Image image, float value)
@@ -397,25 +412,38 @@ public class SpellNodeDescription : NetworkBehaviour
     {
         currentType = node as SpellType;
         bool isType = currentType != null;
-        playersToggle.gameObject.SetActive(isType);
+        selfToggle.gameObject.SetActive(isType);
+        alliesToggle.gameObject.SetActive(isType);
         enemiesToggle.gameObject.SetActive(isType);
         objectsToggle.gameObject.SetActive(isType);
         if (!isType) return;
-        playersToggle.SetIsOnWithoutNotify(currentType.Collisions.Players);
+        selfToggle.SetIsOnWithoutNotify(currentType.Collisions.Self);
+        alliesToggle.SetIsOnWithoutNotify(currentType.Collisions.Allies);
         enemiesToggle.SetIsOnWithoutNotify(currentType.Collisions.Enemies);
         objectsToggle.SetIsOnWithoutNotify(currentType.Collisions.Objects);
-        playersToggleIcon.sprite = currentType.Collisions.Players ? checkSprite : xSprite;
+        selfToggleIcon.sprite = currentType.Collisions.Self ? checkSprite : xSprite;
+        alliesToggleIcon.sprite = currentType.Collisions.Allies ? checkSprite : xSprite;
         enemiesToggleIcon.sprite = currentType.Collisions.Enemies ? checkSprite : xSprite;
         objectsToggleIcon.sprite = currentType.Collisions.Objects ? checkSprite : xSprite;
     }
 
-    void SetPlayersCollision(bool value)
+    void SetSelfCollision(bool value)
     {
         if (currentType == null) return;
         var col = currentType.Collisions;
-        col.Players = value;
+        col.Self = value;
         currentType.Collisions = col;
-        playersToggleIcon.sprite = value ? checkSprite : xSprite;
+        selfToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+    }
+
+    void SetAlliesCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Allies = value;
+        currentType.Collisions = col;
+        alliesToggleIcon.sprite = value ? checkSprite : xSprite;
         currentType.OwnerSpell?.UpdateSpell();
     }
 
@@ -439,21 +467,29 @@ public class SpellNodeDescription : NetworkBehaviour
         currentType.OwnerSpell?.UpdateSpell();
     }
 
+    void SetupAvailableSpells()
+    {
+        availableSpells.Clear();
+        availableSpells.Add(null);
+        foreach (Spell spell in caster.spells)
+        {
+            availableSpells.Add(spell);
+        }
+    }
+
     void TriggerDescription(SpellNode node)
     {
         currentTrigger = node as SpellTrigger;
         bool isTrigger = currentTrigger != null;
-        spellDropdown.gameObject.SetActive(isTrigger);
         triggerDropdown.gameObject.SetActive(isTrigger);
         if (!isTrigger) return;
-        spellDropdown.onValueChanged.RemoveListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.RemoveListener(SetTriggerType);
-        SetupSpellDropdown();
+        SetupAvailableSpells();
         SetupTriggerDropdown();
         RefreshTriggerUI();
-        spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.AddListener(SetTriggerType);
-        if(!isServer && network)
+        UpdateTriggeredSpellUI();
+        if (!isServer && network)
         {
             CMDTriggerDescription(node.Interface.acquisitionOrder);
         }
@@ -465,53 +501,14 @@ public class SpellNodeDescription : NetworkBehaviour
         SpellNode node = caster.commander.interfaces.Find(i => i.acquisitionOrder == index).Node;
         currentTrigger = node as SpellTrigger;
         bool isTrigger = currentTrigger != null;
-        spellDropdown.gameObject.SetActive(isTrigger);
         triggerDropdown.gameObject.SetActive(isTrigger);
         if (!isTrigger) return;
-        spellDropdown.onValueChanged.RemoveListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.RemoveListener(SetTriggerType);
-        SetupSpellDropdown();
+        SetupAvailableSpells();
         SetupTriggerDropdown();
         RefreshTriggerUI();
-        spellDropdown.onValueChanged.AddListener(SetTriggerSpell);
         triggerDropdown.onValueChanged.AddListener(SetTriggerType);
-    }
-
-    void SetupSpellDropdown()
-    {
-        var spells = caster.spells;
-        spellDropdown.ClearOptions();
-        availableSpells.Clear();
-        List<string> names = new List<string>();
-        names.Add("None");
-        availableSpells.Add(null);
-        foreach (var s in spells)
-        {
-            names.Add(s.spellName);
-            availableSpells.Add(s);
-        }
-        spellDropdown.AddOptions(names);
-        if(!isServer && network)
-        {
-            CMDSetupSpellDropdown();
-        }
-    }
-
-    [Command]
-    void CMDSetupSpellDropdown()
-    {
-        var spells = caster.spells;
-        spellDropdown.ClearOptions();
-        availableSpells.Clear();
-        List<string> names = new List<string>();
-        names.Add("None");
-        availableSpells.Add(null);
-        foreach (var s in spells)
-        {
-            names.Add(s.spellName);
-            availableSpells.Add(s);
-        }
-        spellDropdown.AddOptions(names);
+        UpdateTriggeredSpellUI();
     }
 
     string GetTriggerLabel(SpellTrigger.Triggers trigger)
@@ -624,12 +621,6 @@ public class SpellNodeDescription : NetworkBehaviour
     public void RefreshTriggerUI()
     {
         if (currentTrigger == null) return;
-        int spellIndex = availableSpells.IndexOf(currentTrigger.TriggeredSpell);
-        if (spellIndex < 0)
-        {
-            spellIndex = 0;
-        }
-        spellDropdown.SetValueWithoutNotify(spellIndex);
         int triggerIndex = (int)currentTrigger.trigger;
         if (triggerIndex < 0 || triggerIndex >= triggerDropdown.options.Count)
         {
@@ -646,12 +637,6 @@ public class SpellNodeDescription : NetworkBehaviour
     public void CMDRefreshTriggerUI()
     {
         if (currentTrigger == null) return;
-        int spellIndex = availableSpells.IndexOf(currentTrigger.TriggeredSpell);
-        if (spellIndex < 0)
-        {
-            spellIndex = 0;
-        }
-        spellDropdown.SetValueWithoutNotify(spellIndex);
         int triggerIndex = (int)currentTrigger.trigger;
         if (triggerIndex < 0 || triggerIndex >= triggerDropdown.options.Count)
         {
@@ -693,5 +678,38 @@ public class SpellNodeDescription : NetworkBehaviour
             case Elements.None:
             default: return null;
         }
+    }
+
+    void UpdateTriggeredSpellUI()
+    {
+        if (currentTrigger == null) return;
+
+        Spell spell = currentTrigger.TriggeredSpell;
+        if (spell == null)
+        {
+            triggeredSpellText.text = "None";
+            triggeredSpellIcon.gameObject.SetActive(false);
+            return;
+        }
+        triggeredSpellIcon.gameObject.SetActive(true);
+        triggeredSpellText.text = spell.spellName;
+        triggeredSpellIcon.sprite = GameManager.Instance.uiController.playerUI.visualDatabase.icons[spell.symbolIndex];
+        triggeredSpellIcon.color = GameManager.Instance.uiController.playerUI.visualDatabase.colors[spell.colorIndex];
+    }
+
+    public void SelectTriggerSpell(Spell spell)
+    {
+        if (currentTrigger == null) return;
+
+        currentTrigger.TriggeredSpell = spell;
+        currentTrigger.UpdateTrigger();
+        NodeCoolDownDescription(currentTrigger);
+        UpdateTriggeredSpellUI();
+        GameManager.Instance.uiController.playerUI.CloseTriggerSpellSelection();
+    }
+
+    public void OpenTriggerSpellSelection()
+    {
+        GameManager.Instance.uiController.playerUI.TriggerSpellSelection(availableSpells, SelectTriggerSpell);
     }
 }

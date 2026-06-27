@@ -2,8 +2,12 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 public class FlowFieldManager : MonoBehaviour
 {
+    public FlowFieldAsset flowFieldAsset;
     public static FlowFieldManager instance;
     public Vector2 MapSize;
     public float MinHeight;
@@ -40,7 +44,8 @@ public class FlowFieldManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        GenerateGrid();
+        //GenerateGrid();
+        InitializeGrid();
         Target = GameManager.Instance.Players[0].transform;
         //lastTargetPos = WorldToGridPosition(Target.position);
         Targets.Clear();
@@ -82,6 +87,21 @@ public class FlowFieldManager : MonoBehaviour
         StartCoroutine(FlowFieldGenerator());
     }
 
+    public void UpdateFlowField()
+    {
+        Targets.Clear();
+        lastTargetsPos.Clear();
+        foreach (Player p in GameManager.Instance.Players)
+        {
+            if(!p.dead)
+            {
+                Targets.Add(p.transform);
+                lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+            }
+        }
+        flowField.GenerateFlowField(lastTargetsPos);
+    }
+
     bool integrated = false;
     public void GenerateFlowFieldIntegrations()
     {
@@ -117,6 +137,7 @@ public class FlowFieldManager : MonoBehaviour
         }
     }
 
+    public float maxSqrRenderDistance = 10000;
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
@@ -127,7 +148,7 @@ public class FlowFieldManager : MonoBehaviour
             {
                 foreach (FieldCell cell in v.Value.Layers)
                 {
-                    if (cell != null)
+                    if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                     {
                         Gizmos.color = Color.green;
                         Gizmos.DrawCube(cell.position, Vector3.one * CellSize * 0.9f);
@@ -150,7 +171,7 @@ public class FlowFieldManager : MonoBehaviour
                 {
                     foreach (FieldCell cell in v.Value.Layers)
                     {
-                        if (cell != null)
+                        if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                         {
                             Gizmos.color = Color.blue;
                             Gizmos.DrawRay(cell.position, cell.direction * CellSize * 0.5f);
@@ -161,13 +182,30 @@ public class FlowFieldManager : MonoBehaviour
         }
         if (flowField != null && ShowTargetPos)
         {
-            FieldCell c = WorldToGridPosition(Target.position);
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawCube(c.position, Vector3.one * CellSize * 0.9f);
-            foreach (FieldCell.NeighborContext n in c.Neighbors)
+            foreach(Transform p in Targets)
             {
-                Gizmos.color = Color.red;
-                Gizmos.DrawCube(n.neighborCell.position, Vector3.one * CellSize * 0.9f);
+                FieldCell c = WorldToGridPosition(p.position);
+                if(c != null)
+                {
+                    Gizmos.color = Color.magenta;
+                    Gizmos.DrawCube(c.position, Vector3.one * CellSize * 0.9f);
+                    foreach (FieldCell.NeighborContext n in c.Neighbors)
+                    {
+                        switch (n.context)
+                        {
+                            case FieldCell.NeighborContext.Context.Jumpable:
+                                Gizmos.color = Color.orange;
+                                break;
+                            case FieldCell.NeighborContext.Context.Upper:
+                                Gizmos.color = Color.red;
+                                break;
+                            default:
+                            Gizmos.color = Color.blue;
+                                break;
+                        }
+                        Gizmos.DrawCube(n.neighborCell.position, Vector3.one * CellSize * 0.9f);
+                    }
+                }
             }
         }
         /*if (flowField != null)
@@ -187,7 +225,7 @@ public class FlowFieldManager : MonoBehaviour
     //public Vector2Int cellpos;
     public FieldCell WorldToGridPosition(Vector3 worldPosition, bool ToLowestLayer = true)
     {
-        Vector3 localPos = worldPosition - transform.position;
+        Vector3 localPos = worldPosition - transform.position +Offset;
         Vector2Int v = new Vector2Int(Mathf.FloorToInt(localPos.x / CellSize), Mathf.FloorToInt(localPos.z / CellSize));
         FieldCell closest = null;
         CellColumn col = flowField.GetColumn(v);
@@ -204,12 +242,20 @@ public class FlowFieldManager : MonoBehaviour
         }
         return closest;
     }
+
+    public void InitializeGrid()
+    {
+        flowField = new FlowField(CellSize, this);
+        flowField.GetFieldFromAsset();
+    }
+
     [ContextMenu("GenerateGrid")]
     public void GenerateGrid()
     {
         flowField = new FlowField(CellSize, this);
         flowField.GenerateGrid(MapSize, MinHeight, MaxHeight);
     }
+
     [ContextMenu("Player Test")]
     public void PlayerTest()
     {

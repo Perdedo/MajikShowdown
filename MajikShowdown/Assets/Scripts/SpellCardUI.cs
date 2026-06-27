@@ -18,11 +18,13 @@ public class SpellCardUI : MonoBehaviour
     public Image cardColor;
     public int instanceIndex;
     public SpellInventoryUI spellInventory;
+    public Image spellIcon;
+    public SpellVisualDatabase visualDatabase;
     public void Setup(Spell spell)
     {
         cardColor = cardButton.GetComponent<Image>();
         boundSpell = spell;
-
+        isSelected = false;
         //Card Button Events
         cardButton.onClick.RemoveAllListeners();
         cardButton.onClick.AddListener(OnCardClicked);
@@ -83,6 +85,10 @@ public class SpellCardUI : MonoBehaviour
         unequipButton.gameObject.SetActive(false);
         deleteButton.gameObject.SetActive(false);
         cardColor.color = Color.white;
+        if (GameManager.Instance.uiController.playerUI.spellToEquip == boundSpell)
+        {
+            GameManager.Instance.uiController.playerUI.spellToEquip = null;
+        }
         boundSpell.Caster.commander.DeselectSCUI(this);
     }
 
@@ -116,6 +122,8 @@ public class SpellCardUI : MonoBehaviour
         if (boundSpell == null) return; 
         spellNameLabel.text = boundSpell.spellName;
         cooldownLabel.text = boundSpell.SpellCooldown.ToString("0.0") + "s";
+        spellIcon.sprite = visualDatabase.icons[boundSpell.symbolIndex];
+        spellIcon.color = visualDatabase.colors[boundSpell.colorIndex];
     }
 
     void Delete()
@@ -130,6 +138,7 @@ public class SpellCardUI : MonoBehaviour
                 GameManager.Instance.uiController.playerUI.equipSlotTexts[i].text = "Spell Slot " + (i + 1);
             }
         }
+        GameManager.Instance.uiController.playerUI.UpdateEquipSlotIcons();
         if (boundSpell.grid != null)
         {
             boundSpell.grid.ReturnAllNodesToInventory();

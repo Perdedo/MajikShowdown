@@ -2,12 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation;
 using UnityEngine.AI;
+using UnityEditor;
 public class FlowField
 {
     public Dictionary<Vector2Int, CellColumn> field = new Dictionary<Vector2Int, CellColumn>();
     public Vector2Int fieldSize;
     public float cellSize = 1f;
-    public float maxStepOffset = 0.5f;
+    public float maxStepOffset = 1f;
     public float maxJumpHeight = 5f;
     public FieldCell DestinationCell;
     public List<FieldCell> DestinationCells;
@@ -24,7 +25,8 @@ public class FlowField
     }
     public void GenerateGrid(Vector2 mapSize, float minY, float maxY)
     {
-        field.Clear();
+        //field.Clear();
+        manager.flowFieldAsset.fieldAsset.Clear();
         int width = Mathf.CeilToInt(mapSize.x / cellSize);
         int depth = Mathf.CeilToInt(mapSize.y / cellSize);
         fieldSize = new Vector2Int(width, depth);
@@ -40,20 +42,49 @@ public class FlowField
                 {
                     Vector3 samplePos = new Vector3(x * cellSize, y, z * cellSize) + manager.transform.position + manager.Offset;
 
-                    if (NavMesh.SamplePosition(samplePos, out NavMeshHit hit, 0.5f, NavMesh.AllAreas))
+                    if (NavMesh.SamplePosition(samplePos, out NavMeshHit hit, cellSize/2, NavMesh.AllAreas))
                     {
                         bool alreadyExists = column.Layers.Exists(l => Mathf.Abs(l.position.y - hit.position.y) < 0.5f);
 
                         if (!alreadyExists)
                         {
-                            column.Layers.Add(new FieldCell(hit.position, gridPos, column.Layers.Count));
+
+                            if (!Physics.CheckCapsule(hit.position + Vector3.up *((manager.ObstructionHeight/2) +0.1f), hit.position + Vector3.up * manager.ObstructionHeight, cellSize/3, manager.ObstructionLayer))
+                            {
+                                column.Layers.Add(new FieldCell(hit.position, gridPos, column.Layers.Count));
+                            }
+                            //column.Layers.Add(new FieldCell(hit.position, gridPos, column.Layers.Count));
                         }
                     }
                 }
 
                 if (column.Layers.Count > 0)
+                {
                     field.Add(gridPos, column);
+                    manager.flowFieldAsset.fieldAsset.Add(new FlowFieldDivision(column, gridPos));
+                }
             }
+        }
+        //foreach (var v in field)
+        #if UNITY_EDITOR
+        foreach(FlowFieldDivision ffd in manager.flowFieldAsset.fieldAsset)
+        {
+            foreach (FieldCell cell in ffd.column.Layers)
+            {
+                cell.Neighbors = GetNeighbors(cell);
+                cell.closeToObstacle = CheckForObstacles(cell);
+            }
+        }
+        EditorUtility.SetDirty(manager.flowFieldAsset);
+        AssetDatabase.SaveAssetIfDirty(manager.flowFieldAsset);
+        #endif
+    }
+
+    public void GetFieldFromAsset()
+    {
+        foreach (FlowFieldDivision ffd in manager.flowFieldAsset.fieldAsset)
+        {
+            field.Add(ffd.key, ffd.column);
         }
         foreach (var v in field)
         {
@@ -115,9 +146,25 @@ public class FlowField
             CellColumn neighborColumn = GetColumn(neighborPos);
             if (neighborColumn != null)
             {
+                float neighborDist;
+                Vector2 dirFloat = dir;
+                if (dirFloat.sqrMagnitude == 1)
+                {
+                    neighborDist = cellSize + 0.1f;
+                }
+                else
+                {
+                    neighborDist = (dirFloat * cellSize).magnitude + 0.1f;
+                }
                 float closestY = Mathf.Infinity;
                 foreach (FieldCell c in neighborColumn.Layers)
                 {
+                    Vector3 xzCpos = new Vector3(c.position.x, 0, c.position.z);
+                    Vector3 xzCellpos = new Vector3(cell.position.x, 0, cell.position.z);
+                    if(Vector3.Distance(xzCellpos,xzCpos) > neighborDist)
+                    {
+                        continue;
+                    }
                     if (c.position.y < cell.position.y + maxStepOffset) //checa se o vizinho é menor que o step Offset
                     {
                         if(Mathf.Abs(c.position.y - cell.position.y) < Mathf.Abs(closestY - cell.position.y)) //checa se o vizinho é o mais perto no y na sua coluna
@@ -181,7 +228,7 @@ public class FlowField
     int cellsPerDelayInt = 10000;
     int cellsPerDelayDir = 10000;
     int cellCount = 0;
-    float maxSqrDistance = 10000;
+    //float maxSqrDistance = 10000;
 
     public void GenerateFlowField(List<FieldCell> targets)
     {
@@ -302,16 +349,17 @@ public class FlowField
             destinationSet.Add(cell);
         }*/
         cellCount = 0;
+
         while (cellsToProcess.Count > 0 && cellCount < cellsPerDelayInt)
         {
             FieldCell currentCell = cellsToProcess.Dequeue();
             foreach (FieldCell.NeighborContext n in currentCell.Neighbors)
             {
-                n.neighborCell.directionToDestiny = GetDistanceToClosestDestinationCell(n.neighborCell);
+                /*n.neighborCell.directionToDestiny = GetDistanceToClosestDestinationCell(n.neighborCell);
                 if(n.neighborCell.directionToDestiny.sqrMagnitude > maxSqrDistance)
                 {
                     continue;
-                }
+                }*/
                 if(currentCell.Neighbors.Count < 8)
                 {
                     n.neighborCell.BaseCost = manager.BorderCellWeight;
@@ -392,8 +440,8 @@ public class FlowField
             FieldCell lowest = null;
             //Vector3 dirToDestiny = CellDistance(c, DestinationCell).normalized;
             //Vector3 dirToDestiny = CellDistance(c, DestinationCell);
-            //Vector3 dirToDestiny = GetDistanceToClosestDestinationCell(processedCells[cellCountAux]);
-            Vector3 dirToDestiny = processedCells[cellCountAux].directionToDestiny;
+            Vector3 dirToDestiny = GetDistanceToClosestDestinationCell(processedCells[cellCountAux]);
+            //Vector3 dirToDestiny = processedCells[cellCountAux].directionToDestiny;
             dirToDestiny *= 1f / (Mathf.Abs(dirToDestiny.x) + Mathf.Abs(dirToDestiny.z) + 0.0001f);
             float bestDot = float.MinValue;
             Vector3 dirSum = Vector3.zero;

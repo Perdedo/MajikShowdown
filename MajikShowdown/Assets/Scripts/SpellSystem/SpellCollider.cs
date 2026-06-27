@@ -14,10 +14,10 @@ public class SpellCollider : NetworkBehaviour
     [NonSerialized] float pierceCount, bounceCount;
     [NonSerialized] public bool primarySpell;
     bool HitOnCooldown;
-    int hitCounter =0;
+    int hitCounter = 0;
     bool CollisionOnCooldown;
-    Timer HitTimer = new Timer();
-    Timer CollisionTimer = new Timer();
+    Timer HitTimer = new Timer(false);
+    Timer CollisionTimer = new Timer(false);
     [NonSerialized] public float LifeTime = 0;
     List<TriggerInfo> triggerInfos = new List<TriggerInfo>();
     [NonSerialized] public Vector3 previousVelocity;
@@ -49,8 +49,8 @@ public class SpellCollider : NetworkBehaviour
     public TrajectoryInfo TrajectoryTransform;
     float velocityMagnitude;
     Vector3 velocityDir;
-    bool MarkedToDie = false;
-
+    public bool MarkedToDie = false;
+    [SyncVar(hook = nameof(ChangeVisibility))] public bool isVisible = false;
 
     //[Server]
     public void Initialize(Spell owner, bool isPrimary)
@@ -75,9 +75,33 @@ public class SpellCollider : NetworkBehaviour
             transform.localScale = Vector3.zero;
         }*/
         mesh.transform.localScale = Vector3.zero;
+        if(OwnerSpell.Caster.network)
+        {
+            isVisible = true;
+            if(isServer)
+            {
+                SetInitialScale();
+            }
+        }
+        else
+        {
+            mesh.gameObject.SetActive(true);
+        }
         //spellCol = GetComponent<Collider>();
 
     }
+
+    [ClientRpc]
+    public void SetInitialScale()
+    {
+        mesh.transform.localScale = Vector3.zero;
+    }
+
+    public void ChangeVisibility(bool oldVal, bool newVal)
+    {
+        mesh.gameObject.SetActive(newVal);
+    }
+
     //[Server]
     public void UpdateCollider()
     {
@@ -102,7 +126,7 @@ public class SpellCollider : NetworkBehaviour
             {
                 CheckStationaryCollisions();
             }
-            if(hitCounter > 0)
+            if (hitCounter > 0)
             {
                 HitOnCooldown = true;
                 HitTimer.SetTimer(0);
@@ -141,7 +165,7 @@ public class SpellCollider : NetworkBehaviour
         }
         mesh.transform.localScale = Vector3.one * currentSize;
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
-        if(MarkedToDie)
+        if (MarkedToDie)
         {
             Die();
         }
@@ -233,7 +257,7 @@ public class SpellCollider : NetworkBehaviour
         }
         void SetPreviousCollisions(RaycastHit[] buffer)
         {
-            
+
             if (!OwnerSpell.coreNode.HitOnStay)
             {
                 previousColisions.Clear();
@@ -268,11 +292,17 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     void HandleCollision(Collider col)
     {
-        if (LayerMaskUtility.BelongsInMask(col.gameObject.layer, OwnerSpell.Caster.EnemyLayer | OwnerSpell.Caster.PlayerLayer))
+        if (LayerMaskUtility.BelongsInMask(col.gameObject.layer, OwnerSpell.Caster.EnemyLayer))
         {
             if (HitOnCooldown) return;
             OnHit.Invoke();
             CollideCreature(col);
+        }
+        else if (LayerMaskUtility.BelongsInMask(col.gameObject.layer, OwnerSpell.Caster.PlayerLayer))
+        {
+            if (HitOnCooldown) return;
+            OnHit.Invoke();
+            CollideCreature(col,true);
         }
         else
         {
@@ -358,7 +388,7 @@ public class SpellCollider : NetworkBehaviour
                 {
                     SpellColliderManager.Instance.InitializeSpellCollider(spell, transform.position, transform.forward);
                 }
-                    trigger.SpellOnCooldown = true;
+                trigger.SpellOnCooldown = true;
             }
         };
         e.AddListener(action);
@@ -439,18 +469,26 @@ public class SpellCollider : NetworkBehaviour
     }
 
     //[Server]
-    public void CollideCreature(Collider col)
+    public void CollideCreature(Collider col, bool isPlayer = false)
     {
         //if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
+        if (isPlayer)
+        {
+            if (!((OwnerSpell.coreNode.Collisions.Self && col.gameObject == OwnerSpell.Caster.player.gameObject) || (OwnerSpell.coreNode.Collisions.Allies && col.gameObject != OwnerSpell.Caster.player.gameObject)))
+            {
+                return;
+            }
+        }
+
         hitCounter++;
-        Character character = col.GetComponent<Character>();
+        IGameCharacter character = col.GetComponent<IGameCharacter>();
         if (character != null)
         {
             foreach (SpellEffect e in OwnerSpell.spellEffects)
             {
-                e.ApplyEffect(character.damageHandler);
+                e.ApplyEffect(character.DamageHandler);
             }
-            character.KnockBack(((col.transform.position - transform.position) + rb.Velocity).normalized, stats.Knockback);
+            character.Knockback(((col.transform.position - transform.position) + rb.Velocity).normalized, stats.Knockback);
 
         }
         if (pierceCount >= 1)
@@ -547,7 +585,7 @@ public class SpellCollider : NetworkBehaviour
     }
 
     //[Server]
-    public void Die()
+    void Die()
     {
         OnDeath.Invoke();
         if (isServer && OwnerSpell.Caster.network)

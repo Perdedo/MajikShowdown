@@ -105,11 +105,12 @@ public class UIController : MonoBehaviour
     [HideInInspector]
     public ConfigData data;
     public PlayerUI playerUI;
+    public GameObject sharedUI;
     /*public HexGrid activeGrid;
     public SpellNodeDescription spellNodeDescription;
     Spell activeSpell;
     public SpellNodeInterface selectedNode;*/
-
+    bool loaded;
     void Awake()
     {
         UiMenuSetup();
@@ -125,7 +126,7 @@ public class UIController : MonoBehaviour
         // File.Delete(Application.persistentDataPath + "/configSave.json");
 
 
-        if (File.Exists(Application.persistentDataPath + "/configSave.json"))
+        /*if (File.Exists(Application.persistentDataPath + "/configSave.json"))
         {
             SaveManager.LoadConfig();
         }
@@ -133,6 +134,12 @@ public class UIController : MonoBehaviour
         {
             data = new ConfigData(0, 0, 0f, -15f, -15f, false);
             SaveManager.SaveConfig();
+        }*/
+        loaded = true;
+        data = SaveManager.LoadConfig(ref loaded);
+        if(!loaded)
+        {
+            SaveManager.SaveConfig(data);
         }
         ConfigUpdate();
         if (vsyncToggle != null)
@@ -271,6 +278,10 @@ public class UIController : MonoBehaviour
                 pc.gameObject.SetActive(false);
             }
         }
+        if(sharedUI != null)
+        {
+            sharedUI.gameObject.SetActive(true);
+        }
     }
 
     public void ChangeScene(string sceneName)
@@ -284,18 +295,10 @@ public class UIController : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "Menu")
         {
             IsMenuObjectsVisible(false);
-            if (panel == menuOptionsPanel)
-            {
-                AttVolumeSliders();
-            }
         }
         else if (SceneManager.GetActiveScene().name == "Room")
         {
             IsRoomObjectsVisible(false);
-            if(panel == optionsPanel)
-            {
-                AttVolumeSliders();
-            }
         }
     }
 
@@ -307,7 +310,7 @@ public class UIController : MonoBehaviour
             IsMenuObjectsVisible(true);
             if(panel == menuOptionsPanel)
             {
-                SaveManager.SaveConfig();
+                SaveManager.SaveConfig(data);
             }
         }
         else if (SceneManager.GetActiveScene().name == "Room")
@@ -315,7 +318,7 @@ public class UIController : MonoBehaviour
             IsRoomObjectsVisible(true);
             if(panel == optionsPanel)
             {
-                SaveManager.SaveConfig();
+                SaveManager.SaveConfig(data);
             }
         }
         /*if(panel == gridPanel)
@@ -396,28 +399,6 @@ public class UIController : MonoBehaviour
         float dB = (value == 0f) ? -80f : Mathf.Lerp(-30f, 0f, value / 30f);
         data.sfx = dB;
         AudioController.instance.ChangeSFXVol(dB);
-    }
-
-    public void AttVolumeSliders()
-    {
-        if (AudioController.instance.mixer != null)
-        {
-            AudioController.instance.mixer.GetFloat("MasterVol", out float aux1);
-            if (_masterVolumeSlider != null)
-            {
-                _masterVolumeSlider.value = Mathf.RoundToInt(Mathf.InverseLerp(-30f, 0f, aux1) * 30f);
-            }
-            AudioController.instance.mixer.GetFloat("MusicVol", out float aux2);
-            if (_musicSlider != null)
-            {
-                _musicSlider.value = Mathf.RoundToInt(Mathf.InverseLerp(-30f, 0f, aux2) * 30f);
-            }
-            AudioController.instance.mixer.GetFloat("SFXVol", out float aux3);
-            if (_sfxSlider != null)
-            {
-                _sfxSlider.value = Mathf.RoundToInt(Mathf.InverseLerp(-30f, 0f, aux3) * 30f); ;
-            }
-        }
     }
 
     public void ResolutionDropdown()

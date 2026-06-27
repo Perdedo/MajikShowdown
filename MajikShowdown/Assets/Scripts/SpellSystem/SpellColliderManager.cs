@@ -40,8 +40,9 @@ public class SpellColliderManager : NetworkBehaviour
     void ServerInstantiateNewCollider()
     {
         GameObject colliderGO = Instantiate(SpellColliderPrefab.gameObject, transform.position, transform.rotation);
-        NetworkServer.Spawn(colliderGO);
         SpellCollider collider = colliderGO.GetComponent<SpellCollider>();
+        collider.isVisible = false;
+        NetworkServer.Spawn(colliderGO);
         colliderGO.SetActive(false);
         spellColliders.Add(collider);
         inactiveSpellColliders.Add(collider);

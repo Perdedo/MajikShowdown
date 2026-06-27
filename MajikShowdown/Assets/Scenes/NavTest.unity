@@ -3905,8 +3905,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'FPS:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1ab574a226bf0ca4da5cded3bb84e061, type: 2}
+  m_sharedMaterial: {fileID: 5610288311328872463, guid: 1ab574a226bf0ca4da5cded3bb84e061, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -15769,6 +15769,8 @@ MonoBehaviour:
   uiController: {fileID: 0}
   Players: []
   netCtrl: {fileID: 0}
+  hordeController: {fileID: 0}
+  interactionRadius: 2
 --- !u!4 &860429678
 Transform:
   m_ObjectHideFlags: 0
@@ -23776,6 +23778,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd009c4a9499af3409cf13940f82b5f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flowFieldAsset: {fileID: 0}
   MapSize: {x: 200, y: 200}
   MinHeight: -5
   MaxHeight: 20
@@ -23797,10 +23800,14 @@ MonoBehaviour:
   DiagonalNeighbors: 1
   TargetRecalculationOffset: 2
   Target: {fileID: 0}
+  Targets: []
+  flowFieldDelay: 0.5
   ShowCells: 0
   ShowFieldArea: 0
   ShowDirections: 0
   ShowTargetPos: 0
+  cellCountAux: 0
+  maxSqrRenderDistance: 10000
 --- !u!4 &1318178715
 Transform:
   m_ObjectHideFlags: 0
@@ -28502,8 +28509,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1ab574a226bf0ca4da5cded3bb84e061, type: 2}
+  m_sharedMaterial: {fileID: 5610288311328872463, guid: 1ab574a226bf0ca4da5cded3bb84e061, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

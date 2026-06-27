@@ -1,6 +1,7 @@
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SpellInventoryUI : NetworkBehaviour
@@ -24,6 +25,7 @@ public class SpellInventoryUI : NetworkBehaviour
         if(isLocalPlayer || !network)
         {
             DeselectAllCards();
+            GameManager.Instance.uiController.playerUI.spellToEquip = null;
             Spell newSpell = new Spell(caster);
             newSpell.spellName = GenerateSpellName();
             newSpell.instanceIndex = caster.spells.Count;
@@ -38,7 +40,7 @@ public class SpellInventoryUI : NetworkBehaviour
             caster.spells.Add(newSpell);
             CreateSpellCard(newSpell);
             GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
-            if(!isServer && network)
+            if (!isServer && network)
             {
                 if(NetworkClient.ready)
                 {
@@ -60,6 +62,7 @@ public class SpellInventoryUI : NetworkBehaviour
     public void CMDCreateNewSpell()
     {
         DeselectAllCards();
+        GameManager.Instance.uiController.playerUI.spellToEquip = null;
         Spell newSpell = new Spell(caster);
         newSpell.spellName = GenerateSpellName();
         newSpell.instanceIndex = caster.spells.Count;
@@ -95,13 +98,17 @@ public class SpellInventoryUI : NetworkBehaviour
 
     public void DeselectAllCards()
     {
-        if(isLocalPlayer || !network)
+        if (isLocalPlayer || !network)
         {
             SpellCardUI[] cards = GetComponentsInChildren<SpellCardUI>();
             foreach (var card in cards)
             {
-                card.Deselect();
+                if (card.isSelected)
+                {
+                    card.Deselect();
+                }
             }
+            GameManager.Instance.uiController.playerUI.spellToEquip = null;
         }
     }
 }

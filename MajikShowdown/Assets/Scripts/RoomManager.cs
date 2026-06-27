@@ -48,6 +48,17 @@ public class RoomManager : NetworkRoomManager
         }
     }
 
+    public override void OnClientDisconnect()
+    {
+        base.OnClientDisconnect();
+
+        if (SteamLobby.instance.lobbyID != 0)
+        {
+            SteamMatchmaking.LeaveLobby(new CSteamID(SteamLobby.instance.lobbyID));
+            SteamLobby.instance.lobbyID = 0;
+        }
+    }
+
     public override void ReadyStatusChanged()
     {
         int CurrentPlayers = 0;
@@ -112,6 +123,10 @@ public class RoomManager : NetworkRoomManager
                 if (item.readyToBegin)
                     ReadyPlayers++;
             }
+        }
+        if(CurrentPlayers == 0)
+        {
+            return;
         }
         if (Utils.IsSceneActive(RoomScene))
         {
@@ -179,6 +194,9 @@ public class RoomManager : NetworkRoomManager
     IEnumerator SyncTextWhenReady(SyncedUIElement ui, string txt)
     {
         yield return new WaitUntil(() => NetworkClient.ready && ui.netId != 0);
-        ui.CMDSyncText(txt);
+        if(NetworkClient.active)
+        {
+            ui.CMDSyncText(txt);
+        }
     }
 }
