@@ -367,8 +367,9 @@ public class PlayerUI : NetworkBehaviour
             return;
         }
         pausePanel.SetActive(false);
-        myPlayer.input.ActivateInput();
-        myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+        //myPlayer.input.ActivateInput();
+        SetGameplayInput(true);
+        EnableGameplayCursor();
         caster.canCast = true;
     }
 
@@ -772,6 +773,32 @@ public class PlayerUI : NetworkBehaviour
             pausePanel.SetActive(true);
             SetGameplayInput(false);
             caster.canCast = false;
+            EnableUICursor();
+        }
+    }
+
+    public void PauseInputFeaturesScene(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.started) return;
+        if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
+        if (pausePanel.activeSelf)
+        {
+            if (confirmLeavePanel.activeSelf)
+            {
+                ClosePanel(confirmLeavePanel);
+            }
+            else
+            {
+                pausePanel.SetActive(false);
+                SetGameplayInput(true);
+                EnableGameplayCursor();
+            }
+        }
+        else if (!pausePanel.activeSelf)
+        {
+            pausePanel.SetActive(true);
+            SetGameplayInput(false);
             EnableUICursor();
         }
     }
