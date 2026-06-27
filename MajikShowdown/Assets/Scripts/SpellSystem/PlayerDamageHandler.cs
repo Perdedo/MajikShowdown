@@ -49,6 +49,8 @@ public class PlayerDamageHandler : CharacterDamageHandler
         //Atualizar depois com sistema de reviver
         myPlayer.dead = true;
         FlowFieldManager.instance.UpdateFlowField();
+        GameManager.Instance.uiController.playerUI.deathPanel.SetActive(true);
+        GameManager.Instance.uiController.playerUI.spellPanel.SetActive(false);
         GameManager.Instance.hordeController.CheckDeadPlayers();
         //Disappear();
         //Debug.Log("morri");
@@ -70,6 +72,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         Health = MaxHealth / 2;
         myPlayer.dead = false;
         FlowFieldManager.instance.UpdateFlowField();
+        GameManager.Instance.uiController.playerUI.deathPanel.SetActive(false);
         //Reappear();
     }
 

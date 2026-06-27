@@ -34,6 +34,7 @@ public class PlayerUI : NetworkBehaviour
     [Header("Game State Panels")]
     public GameObject victoryPanel;
     public GameObject defeatPanel;
+    public GameObject deathPanel;
 
     [Header("Pause Panels and Objects")]
     public GameObject pausePanel;
@@ -118,6 +119,10 @@ public class PlayerUI : NetworkBehaviour
         if(defeatPanel != null)
         {
             defeatPanel.SetActive(false);
+        }
+        if(deathPanel != null)
+        {
+            deathPanel.SetActive(false);
         }
         ResolutionDropdown();
         ScreenModeDropdown();

@@ -23,12 +23,15 @@ public class UIController : MonoBehaviour
     public GameObject menuJoinGameButton;
     public GameObject menuOptionsButton;
     public GameObject menuCreditsButton;
+    public GameObject menuTutorialButton;
+    public GameObject menuFeaturesButton;
     public GameObject menuQuitGameButton;
 
     [Header("Menu Panels")]
     public GameObject menuJoinGamePanel;
     public GameObject menuOptionsPanel;
     public GameObject menuCreditsPanel;
+    public GameObject menuTutorialPanel;
     public GameObject menuQuitGamePanel;
 
     [Header("Room Texts")]
@@ -197,6 +200,14 @@ public class UIController : MonoBehaviour
         {
             menuCreditsButton.SetActive(true);
         }
+        if (menuTutorialButton != null)
+        {
+            menuTutorialButton.SetActive(true);
+        }
+        if (menuFeaturesButton != null)
+        {
+            menuFeaturesButton.SetActive(true);
+        }
         if (menuQuitGameButton != null)
         {
             menuQuitGameButton.SetActive(true);
@@ -212,6 +223,10 @@ public class UIController : MonoBehaviour
         if (menuCreditsPanel != null)
         {
             menuCreditsPanel.SetActive(false);
+        }
+        if (menuTutorialPanel != null)
+        {
+            menuTutorialPanel.SetActive(false);
         }
         if (menuQuitGamePanel != null)
         {
@@ -339,6 +354,8 @@ public class UIController : MonoBehaviour
         menuJoinGameButton.SetActive(state);
         menuOptionsButton.SetActive(state);
         menuCreditsButton.SetActive(state);
+        menuTutorialButton.SetActive(state);
+        menuFeaturesButton.SetActive(state);
         menuQuitGameButton.SetActive(state);
     }
 

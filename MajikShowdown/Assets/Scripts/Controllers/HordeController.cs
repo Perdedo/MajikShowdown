@@ -322,6 +322,9 @@ public class HordeController : NetworkBehaviour
     public void Victory()
     {
         GameManager.Instance.uiController.sharedUI.SetActive(false);
+        GameManager.Instance.uiController.playerUI.pausePanel.SetActive(false);
+        GameManager.Instance.uiController.playerUI.spellPanel.SetActive(false);
+        GameManager.Instance.uiController.playerUI.deathPanel.SetActive(false);
         GameManager.Instance.uiController.playerUI.victoryPanel.SetActive(true);
         GameManager.Instance.uiController.playerUI.EnableUICursor();
     }
@@ -352,6 +355,9 @@ public class HordeController : NetworkBehaviour
     public void Defeat()
     {
         GameManager.Instance.uiController.sharedUI.SetActive(false);
+        GameManager.Instance.uiController.playerUI.pausePanel.SetActive(false);
+        GameManager.Instance.uiController.playerUI.spellPanel.SetActive(false);
+        GameManager.Instance.uiController.playerUI.deathPanel.SetActive(false);
         GameManager.Instance.uiController.playerUI.defeatPanel.SetActive(true);
         GameManager.Instance.uiController.playerUI.EnableUICursor();
     }
