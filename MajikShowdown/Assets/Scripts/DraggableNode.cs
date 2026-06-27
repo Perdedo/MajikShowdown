@@ -87,14 +87,15 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             clone.canvasGroup.alpha = 1f;
             clone.canvasGroup.blocksRaycasts = true;
             var cloneInterface = cloneGO.GetComponent<SpellNodeInterface>();
-            if (cloneInterface != null)
-            {
-                cloneInterface.SetUsed(true);
-            }
             inventoryClone = clone;
             inventory.Receive(clone);
             inventory.InsertNodeAt(cloneInterface, savedListIndex);
             pendingDropZone.Receive(this);
+            if (cloneInterface != null)
+            {
+                cloneInterface.SetUsed(true);
+                this.GetComponent<SpellNodeInterface>().ApplyUsedVisual(false);
+            }
         }
         else if (pendingDropZone != null)
         {
@@ -160,7 +161,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                     }
                 }
             }
-            else // Se já está na grid e não foi dropado em nenhum lugar permitido, volta para a posição original
+            else
             {
                 transform.SetParent(savedParent, true);
                 rectTransform.anchoredPosition = savedPosition;
