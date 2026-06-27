@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class PlayerDamageHandler : CharacterDamageHandler
@@ -49,8 +50,8 @@ public class PlayerDamageHandler : CharacterDamageHandler
         //Atualizar depois com sistema de reviver
         myPlayer.dead = true;
         FlowFieldManager.instance.UpdateFlowField();
-        GameManager.Instance.uiController.playerUI.deathPanel.SetActive(true);
         GameManager.Instance.uiController.playerUI.spellPanel.SetActive(false);
+        GameManager.Instance.uiController.playerUI.deathPanel.SetActive(true);
         GameManager.Instance.hordeController.CheckDeadPlayers();
         //Disappear();
         //Debug.Log("morri");

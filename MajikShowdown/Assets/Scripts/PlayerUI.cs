@@ -763,7 +763,6 @@ public class PlayerUI : NetworkBehaviour
             {
                 pausePanel.SetActive(false);
                 SetGameplayInput(true);
-                myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
                 caster.canCast = true;
                 EnableGameplayCursor();
             }
@@ -772,7 +771,6 @@ public class PlayerUI : NetworkBehaviour
         {
             pausePanel.SetActive(true);
             SetGameplayInput(false);
-            myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
             caster.canCast = false;
             EnableUICursor();
         }
@@ -798,17 +796,12 @@ public class PlayerUI : NetworkBehaviour
                 {
                     GameManager.Instance.uiController.sharedUI.SetActive(true);
                 }
-                myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
                 caster.canCast = true;
                 EnableGameplayCursor();
             }
         }
         else if (!spellPanel.activeSelf && !pausePanel.activeSelf)
         {
-            /*if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.inPause)
-            {
-                return;
-            }*/
             if(GameManager.Instance.uiController.sharedUI != null)
             {
                 GameManager.Instance.uiController.sharedUI.SetActive(false);
@@ -816,7 +809,6 @@ public class PlayerUI : NetworkBehaviour
             spellPanel.SetActive(true);
             ActivateSpellsInventoryPage();
             SetGameplayInput(false);
-            myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
             caster.canCast = false;
             EnableUICursor();
         }
@@ -943,6 +935,7 @@ public class PlayerUI : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         crosshair.SetActive(true);
+        myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
         inGame = true;
     }
 
@@ -951,6 +944,7 @@ public class PlayerUI : NetworkBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         crosshair.SetActive(false);
+        myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
         inGame = false;
     }
 
