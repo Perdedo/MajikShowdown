@@ -180,6 +180,10 @@ public class HordeController : NetworkBehaviour
     [ClientRpc]
     public void UpdateEnemiesPos(List<EnemyTransformInfo> aux)
     {
+        if(isServer)
+        {
+            return;
+        }
         for(int i = 0; i < aux.Count; i++)
         {
             if (aux[i].enemy != null && aux[i].enemy.activeSelf)
