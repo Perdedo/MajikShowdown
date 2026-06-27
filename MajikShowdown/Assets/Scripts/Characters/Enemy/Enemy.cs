@@ -124,8 +124,11 @@ public class Enemy : CrowdCharacter
         transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
         Vector3 dir = predTarget - transform.position;
         dir.y = 0;
-        Quaternion targetRot = Quaternion.LookRotation(dir);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime);
+        if (dir.sqrMagnitude >= 0.001f)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime);
+        }
     }
     /*public void FixedUpdate()
     {
