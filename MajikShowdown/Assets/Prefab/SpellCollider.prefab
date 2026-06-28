@@ -101,6 +101,7 @@ MonoBehaviour:
       m_Calls: []
   UseAcceleration: 0
   MarkedToDie: 0
+  isVisible: 0
 --- !u!114 &8335530072032166603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,7 +171,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5224624253966239063
 Transform:
   m_ObjectHideFlags: 0
@@ -201,7 +202,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7897126424037005962}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -285,13 +286,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4634746640681378290}
     m_Modifications:
+    - target: {fileID: 3371744124771192432, guid: aaac6978be4f5aa4ab32eac2167322bb, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3371744124771192432, guid: aaac6978be4f5aa4ab32eac2167322bb, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7123060377451831057, guid: aaac6978be4f5aa4ab32eac2167322bb, type: 3}
       propertyPath: m_Name
       value: Fire_Projectile
       objectReference: {fileID: 0}
+    - target: {fileID: 7123060377451831057, guid: aaac6978be4f5aa4ab32eac2167322bb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7173020041928360083, guid: aaac6978be4f5aa4ab32eac2167322bb, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.50739
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7173020041928360083, guid: aaac6978be4f5aa4ab32eac2167322bb, type: 3}
       propertyPath: m_LocalPosition.y
@@ -299,7 +312,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7173020041928360083, guid: aaac6978be4f5aa4ab32eac2167322bb, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.30344
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7173020041928360083, guid: aaac6978be4f5aa4ab32eac2167322bb, type: 3}
       propertyPath: m_LocalRotation.w

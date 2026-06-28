@@ -11,10 +11,10 @@ public class LootSpawner : MonoBehaviour
     public RuneLootPool test;
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.L))
+        /*if (Input.GetKeyDown(KeyCode.L))
         {
             SpawnLootBox(Vector3.up, test);
-        }
+        }*/
     }
     void Awake()
     {
