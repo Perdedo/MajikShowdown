@@ -73,7 +73,7 @@ public class Enemy : CrowdCharacter
         attackTimer.SetTimer(0);
         attackCooldownTimer.SetTimer(0);
         occupiedCellNum = (int)math.ceil(size / FlowFieldManager.instance.CellSize);
-        detectRadius = math.max((int)math.ceil(DetectionRadius/FlowFieldManager.instance.CellSize), 1);
+        detectRadius = math.max((int)math.ceil(DetectionRadius / FlowFieldManager.instance.CellSize), 1);
         RigidbodySetting();
         //CheckFieldLocation();
     }
@@ -114,7 +114,8 @@ public class Enemy : CrowdCharacter
     }
 #endif
 
-    public void Update()
+    [ClientRpc]
+    public void EnemyClientUpdate()
     {
         if (isServer)
         {
@@ -146,7 +147,7 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-
+        EnemyClientUpdate();
         /*if(aiCalcTimer.timer(updateRate, Time.deltaTime, false, true))
         {
             AICalculation();
@@ -253,19 +254,36 @@ public class Enemy : CrowdCharacter
             }
         }
     }
+    Queue<FieldCell> ocupiedQueue = new Queue<FieldCell>();
     public void CheckFieldLocation()
     {
         currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
-        
+        int aux = 1;
+
         foreach (FieldCell c in OccupiedCells)
         {
             c.ContainedEnemies.Remove(GameID);
         }
         OccupiedCells.Clear();
         if (currentCell == null) return;
-        OccupiedCells.Add(currentCell);
-        currentCell.ContainedEnemies.Add(GameID);
-        for (int i = 1; i < occupiedCellNum; i++)
+        ocupiedQueue.Enqueue(currentCell);
+        //OccupiedCells.Add(currentCell);
+        //currentCell.ContainedEnemies.Add(GameID);
+        while (ocupiedQueue.Count > 0)
+        {
+            FieldCell c = ocupiedQueue.Dequeue();
+            OccupiedCells.Add(c);
+            c.ContainedEnemies.Add(GameID);
+            if(aux < occupiedCellNum)
+            {
+                foreach (FieldCell.NeighborContext n in c.Neighbors)
+                {
+                    ocupiedQueue.Enqueue(n.neighborCell);
+                }
+                aux++;
+            }
+        }
+        /*for (int i = 1; i < occupiedCellNum; i++)
         {
             HashSet<FieldCell> tempCells = new HashSet<FieldCell>(OccupiedCells);
             foreach (FieldCell c in tempCells)
@@ -276,7 +294,7 @@ public class Enemy : CrowdCharacter
                     n.neighborCell.ContainedEnemies.Add(GameID);
                 }
             }
-        }
+        }*/
     }
 
     public Vector3 GetNavMeshDir(FieldCell c)
@@ -451,16 +469,42 @@ public class Enemy : CrowdCharacter
         add.y = 0;
         return add.normalized;
     }
+    Queue<FieldCell> cellsToCheck = new Queue<FieldCell>();
     public void FindObstacles()
     {
         neighbors.Clear();
         detectedHigherPriority = false;
         detectedObstacle = false;
-        
+        int aux = 0;
 
-        HashSet<FieldCell> cellsToCheck = new HashSet<FieldCell>();
-        cellsToCheck.Add(currentCell);
-        for (int i = 0; i < detectRadius; i++)
+
+        //HashSet<FieldCell> cellsToCheck = new HashSet<FieldCell>();
+        cellsToCheck.Enqueue(currentCell);
+        while (cellsToCheck.Count > 0)
+        {
+            FieldCell c = cellsToCheck.Dequeue();
+            foreach(int eID in c.ContainedEnemies)
+            {
+                Enemy e = GameManager.Instance.hordeController.GameEnemies[eID];
+                if (e != this && e.priority >= priority)
+                {
+                    if (e.priority > priority)
+                    {
+                        detectedHigherPriority = true;
+                    }
+                    neighbors.Add(e);
+                }
+            }
+            if (aux < detectRadius)
+            {
+                foreach (FieldCell.NeighborContext n in c.Neighbors)
+                {
+                    cellsToCheck.Enqueue(n.neighborCell);
+                }
+                aux++;
+            }
+        }
+        /*for (int i = 0; i < detectRadius; i++)
         {
             HashSet<FieldCell> tempCells = new HashSet<FieldCell>(cellsToCheck);
             foreach (FieldCell c in tempCells)
@@ -486,7 +530,7 @@ public class Enemy : CrowdCharacter
                     neighbors.Add(e);
                 }
             }
-        }
+        }*/
         /*int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRadius, neighborBuffer, ObstacleMask | EnemyMask);
         for (int i = 0; i < count; i++)
         {
