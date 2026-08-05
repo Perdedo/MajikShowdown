@@ -18,6 +18,7 @@ public class Enemy : CrowdCharacter
     public float SeparationForce = 1;
     public float FlowfieldActivationDistance = 20;
     public int priority = 1;
+    public float SizeDiameter = 1;
     [Header("DropConfig")]
     [Range(0, 100)] public float DropChance;
     public List<RuneLootPool> AvailablePools;
@@ -37,6 +38,8 @@ public class Enemy : CrowdCharacter
     Vector3 priorityAvoidDirection;
     bool canSeeTarget;
     FieldCell currentCell, forwardCell;
+    HashSet<FieldCell> OccupiedCells = new HashSet<FieldCell>();
+    int occupiedCellNum;
 
     bool attacked = true, onAttackCooldown = false;
     Timer attackTimer = new Timer(false), attackCooldownTimer = new Timer(false);
@@ -65,6 +68,7 @@ public class Enemy : CrowdCharacter
         //attackTimer.timedEvent.AddListener(AttackPlayer);
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
+        occupiedCellNum = (int)math.ceil(SizeDiameter/FlowFieldManager.instance.CellSize);
         RigidbodySetting();
     }
 
@@ -225,6 +229,19 @@ public class Enemy : CrowdCharacter
                 //Debug.Log("can see");
             }
             currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
+            OccupiedCells.Clear();
+            OccupiedCells.Add(currentCell);
+            for (int i = 1; i < occupiedCellNum; i++)
+            {
+                HashSet<FieldCell> tempCells = new HashSet<FieldCell>(OccupiedCells);
+                foreach (FieldCell c in tempCells)
+                {
+                    foreach (FieldCell.NeighborContext n in c.Neighbors)
+                    {
+                        OccupiedCells.Add(n.neighborCell);
+                    }
+                }
+            }
             if (currentCell != null)
             {
                 forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);

@@ -22,7 +22,7 @@ public class HordeController : NetworkBehaviour
     [HideInInspector][SyncVar] public bool inHordeTime = false;
     [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
-    [HideInInspector] public List<GameObject> enemies = new List<GameObject>();
+    [HideInInspector] public List<Enemy> enemies = new List<Enemy>();
     [HideInInspector] public List<EnemyTransformInfo> enemiesInfo = new List<EnemyTransformInfo>();
     [HideInInspector] public List<List<Enemy>> enemiesByType = new List<List<Enemy>>();
     [HideInInspector] public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
