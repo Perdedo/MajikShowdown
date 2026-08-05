@@ -36,6 +36,9 @@ public class HordeController : NetworkBehaviour
     public int maxEnemyCount = 500;
     public int hordesToWin = 3;
     int hordeCount;
+
+    Timer aiCalcTimer = new Timer(false);
+    float enemyAIupdateRate = 1f / 30f; // 30 Hz
     private void Awake()
     {
         GameManager.Instance.hordeController = this;
@@ -80,12 +83,17 @@ public class HordeController : NetworkBehaviour
             {
                 UpdateTimerText("0:00");
             }
+            bool aux = aiCalcTimer.timer(enemyAIupdateRate, Time.deltaTime, false, true);
             for (int i = 0; i < usedEnemiesByType.Count; i++)
             {
                 foreach (Enemy e in usedEnemiesByType[i])
                 {
                     if (e != null)
                     {
+                        if(aux)
+                        {
+                            e.AICalculation();
+                        }
                         e.EnemyUpdate();
                     }
                 }

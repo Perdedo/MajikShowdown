@@ -36,11 +36,10 @@ public class Enemy : CrowdCharacter
     Vector3 interestDirection;
     Vector3 priorityAvoidDirection;
     bool canSeeTarget;
-    float updateRate;
     FieldCell currentCell, forwardCell;
 
     bool attacked = true, onAttackCooldown = false;
-    Timer attackTimer = new Timer(true), attackCooldownTimer = new Timer(false), aiCalcTimer = new Timer(true);
+    Timer attackTimer = new Timer(false), attackCooldownTimer = new Timer(false);
     public float attackDuration = 0.3f, attackCooldown = 0.5f;
     public float damage = 1;
     public Elements element = Elements.None;
@@ -59,11 +58,11 @@ public class Enemy : CrowdCharacter
             float angle = i * Mathf.PI * 2f / Directions.Length;
             Directions[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
         }
-        updateRate = 1f / 30f;
+        //updateRate = 1f / 30f;
         dmgCtrl = new Damage(damage, element);
-        aiCalcTimer.timedEvent.AddListener(AICalculation);
-        aiCalcTimer.SetTimer(0);
-        attackTimer.timedEvent.AddListener(AttackPlayer);
+        //aiCalcTimer.timedEvent.AddListener(AICalculation);
+        //aiCalcTimer.SetTimer(0);
+        //attackTimer.timedEvent.AddListener(AttackPlayer);
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
         RigidbodySetting();
@@ -127,21 +126,21 @@ public class Enemy : CrowdCharacter
         if (dir.sqrMagnitude >= 0.001f)
         {
             Quaternion targetRot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
         }
     }
-    /*public void FixedUpdate()
-    {
-        FixedRBUpdate();
-    }*/
+
     public void EnemyUpdate()
     {
-        //target = GetClosestPlayer();
         if (FlowFieldManager.instance == null)
         {
             return;
         }
-        aiCalcTimer.timer(updateRate, Time.deltaTime, false, true);
+        
+        /*if(aiCalcTimer.timer(updateRate, Time.deltaTime, false, true))
+        {
+            AICalculation();
+        }*/
         if (target == null)
         {
             return;
@@ -150,57 +149,11 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        /*targetVector = target.transform.position - transform.position;
-        if(targetVector.sqrMagnitude > 2500)
-        {
-            updateRate = 1f / 15f;
-        }
-        else if(targetVector.sqrMagnitude > 625)
-        {
-            updateRate = 1f / 20f;
-        }
-        else if(targetVector.sqrMagnitude > 225)
-        {
-            updateRate = 1f / 25f;
-        }
-        else
-        {
-            updateRate = 1f / 30f;
-        }*/
-        /*if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
-        {
-            //targetLastSeen = targetVector;
-            canSeeTarget = true;
-            //Debug.Log("cant see");
-        }
-        else
-        {
-            canSeeTarget = false;
-            //Debug.Log("can see");
-        }
-        FieldCell currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
-        if (currentCell == null)
-        {
-            return;
-        }
-        if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance && Vector3.Dot(targetVector.normalized, currentCell.direction.normalized) > 0.5)
-        {
-            interestDirection = targetVector.normalized;
-        }
-        else
-        {
-            interestDirection = currentCell.direction;
-        }
-        FindObstacles();
-        CalculateDanger();
-        CalculateInterest();
-        MoveDirection = GetBestDirection();*/
+       
         if (forwardCell != null)
         {
             CheckForJump(currentCell);
         }
-        //Debug.DrawRay(transform.position, targetVector, Color.red);
-        //Debug.DrawRay(transform.position, targetLastSeen, Color.blue);
         if(attackedPlayer != null)
         {
             attackedTargetVector = attackedPlayer.gameObject.transform.position - transform.position;
@@ -210,6 +163,7 @@ public class Enemy : CrowdCharacter
             attacked = attackTimer.timer(attackDuration, Time.deltaTime, false, false);
             if (attacked)
             {
+                AttackPlayer();
                 attackCooldownTimer.SetTimer(0);
                 attackCooldownTimer.Paused = false;
                 onAttackCooldown = true;
@@ -243,7 +197,7 @@ public class Enemy : CrowdCharacter
         if (target != null)
         {
             targetVector = target.transform.position - transform.position;
-            if (targetVector.sqrMagnitude > 2500)
+            /*if (targetVector.sqrMagnitude > 2500)
             {
                 updateRate = 1f / 15f;
             }
@@ -258,7 +212,7 @@ public class Enemy : CrowdCharacter
             else
             {
                 updateRate = 1f / 30f;
-            }
+            }*/
             if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
             {
                 //targetLastSeen = targetVector;
