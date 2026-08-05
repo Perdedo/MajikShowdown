@@ -26,7 +26,7 @@ public class Enemy : CrowdCharacter
 
     float size;
     Player target;
-    List<Enemy> neighbors = new List<Enemy>();
+    HashSet<Enemy> neighbors = new HashSet<Enemy>();
     Collider[] neighborBuffer = new Collider[32];
     Vector3[] Directions = new Vector3[8];
     float[] Danger = new float[8];
@@ -278,7 +278,10 @@ public class Enemy : CrowdCharacter
             {
                 foreach (FieldCell.NeighborContext n in c.Neighbors)
                 {
-                    ocupiedQueue.Enqueue(n.neighborCell);
+                    if(!OccupiedCells.Contains(n.neighborCell))
+                    {
+                        ocupiedQueue.Enqueue(n.neighborCell);
+                    }
                 }
                 aux++;
             }
@@ -470,9 +473,11 @@ public class Enemy : CrowdCharacter
         return add.normalized;
     }
     Queue<FieldCell> cellsToCheck = new Queue<FieldCell>();
+    HashSet<FieldCell> checkedCells = new HashSet<FieldCell>();
     public void FindObstacles()
     {
         neighbors.Clear();
+        checkedCells.Clear();
         detectedHigherPriority = false;
         detectedObstacle = false;
         int aux = 0;
@@ -483,6 +488,7 @@ public class Enemy : CrowdCharacter
         while (cellsToCheck.Count > 0)
         {
             FieldCell c = cellsToCheck.Dequeue();
+            checkedCells.Add(c);
             foreach(int eID in c.ContainedEnemies)
             {
                 Enemy e = GameManager.Instance.hordeController.GameEnemies[eID];
@@ -499,7 +505,10 @@ public class Enemy : CrowdCharacter
             {
                 foreach (FieldCell.NeighborContext n in c.Neighbors)
                 {
-                    cellsToCheck.Enqueue(n.neighborCell);
+                    if (!checkedCells.Contains(n.neighborCell) && !cellsToCheck.Contains(n.neighborCell))
+                    {
+                        cellsToCheck.Enqueue(n.neighborCell);
+                    }
                 }
                 aux++;
             }
