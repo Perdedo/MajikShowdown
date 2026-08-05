@@ -98,6 +98,9 @@ public class EnemySpawner : NetworkBehaviour
                         EnemyTransformInfo auxTrInfo = new EnemyTransformInfo(aux, spawnPos.position, 0, Time.time, Vector3.zero);
                         GameManager.Instance.hordeController.enemiesInfo.Add(auxTrInfo);
                         auxEnemy.transformInfo = auxTrInfo;
+                        auxEnemy.GameID = GameManager.Instance.hordeController.GameEnemies.Count;
+                        //Debug.Log(auxEnemy.GameID);
+                        GameManager.Instance.hordeController.GameEnemies.Add(auxEnemy);
                     }
                     else
                     {

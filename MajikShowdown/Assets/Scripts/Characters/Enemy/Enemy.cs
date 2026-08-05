@@ -18,7 +18,7 @@ public class Enemy : CrowdCharacter
     public float SeparationForce = 1;
     public float FlowfieldActivationDistance = 20;
     public int priority = 1;
-    public float SizeDiameter = 1;
+
     [Header("DropConfig")]
     [Range(0, 100)] public float DropChance;
     public List<RuneLootPool> AvailablePools;
@@ -48,10 +48,12 @@ public class Enemy : CrowdCharacter
     public Elements element = Elements.None;
     Damage dmgCtrl;
     [HideInInspector][SyncVar] public int instanceIndex;
+    [HideInInspector] public int GameID;
     public EnemyTransformInfo transformInfo;
     Player attackedPlayer;
     float timePred;
     Vector3 predTarget;
+    int detectRadius;
     public void Initialize()
     {
         DamageHandler.Initialize(this);
@@ -68,8 +70,12 @@ public class Enemy : CrowdCharacter
         //attackTimer.timedEvent.AddListener(AttackPlayer);
         attackTimer.Paused = true;
         attackCooldownTimer.Paused = true;
-        occupiedCellNum = (int)math.ceil(SizeDiameter/FlowFieldManager.instance.CellSize);
+        attackTimer.SetTimer(0);
+        attackCooldownTimer.SetTimer(0);
+        occupiedCellNum = (int)math.ceil(size / FlowFieldManager.instance.CellSize);
+        detectRadius = math.max((int)math.ceil(DetectionRadius/FlowFieldManager.instance.CellSize), 1);
         RigidbodySetting();
+        //CheckFieldLocation();
     }
 
     [ClientRpc]
@@ -110,15 +116,15 @@ public class Enemy : CrowdCharacter
 
     public void Update()
     {
-        if(isServer)
+        if (isServer)
         {
             return;
         }
-        if(GameManager.Instance.hordeController == null)
+        if (GameManager.Instance.hordeController == null)
         {
             return;
         }
-        if(GameManager.Instance.hordeController.enemiesInfo.Count <= instanceIndex)
+        if (GameManager.Instance.hordeController.enemiesInfo.Count <= instanceIndex)
         {
             return;
         }
@@ -140,7 +146,7 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        
+
         /*if(aiCalcTimer.timer(updateRate, Time.deltaTime, false, true))
         {
             AICalculation();
@@ -153,12 +159,12 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-       
+
         if (forwardCell != null)
         {
             CheckForJump(currentCell);
         }
-        if(attackedPlayer != null)
+        if (attackedPlayer != null)
         {
             attackedTargetVector = attackedPlayer.gameObject.transform.position - transform.position;
         }
@@ -228,20 +234,7 @@ public class Enemy : CrowdCharacter
                 canSeeTarget = false;
                 //Debug.Log("can see");
             }
-            currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
-            OccupiedCells.Clear();
-            OccupiedCells.Add(currentCell);
-            for (int i = 1; i < occupiedCellNum; i++)
-            {
-                HashSet<FieldCell> tempCells = new HashSet<FieldCell>(OccupiedCells);
-                foreach (FieldCell c in tempCells)
-                {
-                    foreach (FieldCell.NeighborContext n in c.Neighbors)
-                    {
-                        OccupiedCells.Add(n.neighborCell);
-                    }
-                }
-            }
+            CheckFieldLocation();
             if (currentCell != null)
             {
                 forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);
@@ -257,6 +250,31 @@ public class Enemy : CrowdCharacter
                 CalculateDanger();
                 CalculateInterest();
                 MoveDirection = GetBestDirection();
+            }
+        }
+    }
+    public void CheckFieldLocation()
+    {
+        currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
+        
+        foreach (FieldCell c in OccupiedCells)
+        {
+            c.ContainedEnemies.Remove(GameID);
+        }
+        OccupiedCells.Clear();
+        if (currentCell == null) return;
+        OccupiedCells.Add(currentCell);
+        currentCell.ContainedEnemies.Add(GameID);
+        for (int i = 1; i < occupiedCellNum; i++)
+        {
+            HashSet<FieldCell> tempCells = new HashSet<FieldCell>(OccupiedCells);
+            foreach (FieldCell c in tempCells)
+            {
+                foreach (FieldCell.NeighborContext n in c.Neighbors)
+                {
+                    OccupiedCells.Add(n.neighborCell);
+                    n.neighborCell.ContainedEnemies.Add(GameID);
+                }
             }
         }
     }
@@ -361,7 +379,7 @@ public class Enemy : CrowdCharacter
     void AttackPlayer()
     {
         //if (targetVector.magnitude <= TargetStoppingDistance)
-        if(attackedTargetVector.magnitude <= TargetStoppingDistance)
+        if (attackedTargetVector.magnitude <= TargetStoppingDistance)
         {
             attackedPlayer.DamageHandler.TakeDamage(dmgCtrl);
         }
@@ -438,7 +456,38 @@ public class Enemy : CrowdCharacter
         neighbors.Clear();
         detectedHigherPriority = false;
         detectedObstacle = false;
-        int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRadius, neighborBuffer, ObstacleMask | EnemyMask);
+        
+
+        HashSet<FieldCell> cellsToCheck = new HashSet<FieldCell>();
+        cellsToCheck.Add(currentCell);
+        for (int i = 0; i < detectRadius; i++)
+        {
+            HashSet<FieldCell> tempCells = new HashSet<FieldCell>(cellsToCheck);
+            foreach (FieldCell c in tempCells)
+            {
+                foreach (FieldCell.NeighborContext n in c.Neighbors)
+                {
+                    cellsToCheck.Add(n.neighborCell);
+                }
+            }
+        }
+
+        foreach (FieldCell c in cellsToCheck)
+        {
+            foreach (int eID in c.ContainedEnemies)
+            {
+                Enemy e = GameManager.Instance.hordeController.GameEnemies[eID];
+                if (e != this && e.priority >= priority)
+                {
+                    if (e.priority > priority)
+                    {
+                        detectedHigherPriority = true;
+                    }
+                    neighbors.Add(e);
+                }
+            }
+        }
+        /*int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRadius, neighborBuffer, ObstacleMask | EnemyMask);
         for (int i = 0; i < count; i++)
         {
             if (neighborBuffer[i].TryGetComponent(out Enemy e))
@@ -456,7 +505,7 @@ public class Enemy : CrowdCharacter
             {
                 detectedObstacle = true;
             }
-        }
+        }*/
     }
     public Player GetClosestPlayer()
     {
@@ -464,7 +513,7 @@ public class Enemy : CrowdCharacter
         float closestDistance = Mathf.Infinity;
         foreach (Player p in GameManager.Instance.Players)
         {
-            if(!p.dead)
+            if (!p.dead)
             {
                 float distance = Vector3.Distance(transform.position, p.transform.position);
                 if (distance < closestDistance)
@@ -496,6 +545,11 @@ public class Enemy : CrowdCharacter
     }
     public override void Die()
     {
+        foreach (FieldCell c in OccupiedCells)
+        {
+            c.ContainedEnemies.Remove(GameID);
+        }
+        OccupiedCells.Clear();
         base.Die();
     }
 }

@@ -14,6 +14,9 @@ public class FieldCell
     public Vector3 directionToDestiny;
     public int generation = 0;
     public List<NeighborContext> Neighbors;
+    [NonSerialized]
+    private HashSet<int> containedEnemies;
+    public HashSet<int> ContainedEnemies => containedEnemies ??= new HashSet<int>();
     //public float angle;
     public FieldCell(Vector3 position, Vector2Int gridPosition, int layerIndex/*, float angle*/)
     {
