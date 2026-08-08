@@ -617,6 +617,7 @@ public struct AvoidanceCalculation : IJobParallelFor
     public NativeArray<float3> Directions;
     public float CellSize;
     public NativeArray<CellJobData> Cells;
+    public NativeArray<int> CellNeighbors;
 
 
     NativeArray<float> Interest;
@@ -626,6 +627,22 @@ public struct AvoidanceCalculation : IJobParallelFor
     bool detectedHigherPriority;
 
     public NativeArray<EnemyJobData> EnemyData;
+    /*public NativeList<int> FindCellNeighbors(int cellIndex)
+    {
+        CellJobData cell = Cells[cellIndex];
+        NativeList<int> neighbors = new NativeList<int>();
+        for(int i = cell.firstNeighbor; i <= cell.lastNeighbor; i++)
+        {
+            //int neighborID = CellNeighbors[i];
+            neighbors.Add(CellNeighbors[i]);
+            //if (neighborID >= 0)
+            //{
+            //    neighbors.Add(neighborID);
+            //}
+        }
+        return neighbors;
+    }*/
+
     public void Execute(int index)
     {
         DefineTarget(index);
@@ -652,7 +669,7 @@ public struct AvoidanceCalculation : IJobParallelFor
     }
     public void CheckFieldLocation(int index)
     {
-        
+
     }
     public void FindObstacles(int index)
     {
@@ -674,6 +691,11 @@ public struct AvoidanceCalculation : IJobParallelFor
                 continue;
             }
             checkedCells.Add(cInd);
+            /*NativeList<int> neighbors = new NativeList<int>();
+            for (int i = Cells[cInd].firstNeighbor; i <= Cells[cInd].lastNeighbor; i++)
+            {
+                neighbors.Add(CellNeighbors[i]);
+            }*/
             foreach (int eID in Cells[cInd].ContainedEnemies)
             {
                 EnemyJobData e = EnemyData[eID];
@@ -688,11 +710,18 @@ public struct AvoidanceCalculation : IJobParallelFor
             }
             if (aux < detectRadius)
             {
-                foreach (int n in Cells[cInd].neighbors)
+                /*foreach (int n in Cells[cInd].neighbors)
                 {
                     if (!checkedCells.Contains(n))
                     {
                         cellsToCheck.Enqueue(n);
+                    }
+                }*/
+                for (int i = Cells[cInd].firstNeighbor; i <= Cells[cInd].lastNeighbor; i++)
+                {
+                    if (!checkedCells.Contains(CellNeighbors[i]))
+                    {
+                        cellsToCheck.Enqueue(CellNeighbors[i]);
                     }
                 }
                 aux++;
@@ -788,8 +817,10 @@ public struct CellJobData
 {
     public float3 Position;
     public float3 Direction;
-    public NativeArray<int> neighbors;
+    //public NativeArray<int> neighbors;
     public int ContainedEnemiesCount;
     public NativeArray<int> ContainedEnemies;
+    public int firstNeighbor, lastNeighbor;
+    public int ID;
 }
 
