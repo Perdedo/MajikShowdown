@@ -58,15 +58,6 @@ public class FlowFieldManager : MonoBehaviour
         flowField.GenerateFlowField(lastTargetsPos);
         StartCoroutine(FlowFieldGenerator());
     }
-    /*void Update()
-    {
-        FieldCell current = WorldToGridPosition(Target.position);
-        if (current != null && ((current.fieldPos.gridPosition - lastTargetPos.fieldPos.gridPosition).magnitude > TargetRecalculationOffset || current.position.y - lastTargetPos.position.y > SlopeThreshold))
-        {
-            lastTargetPos = current;
-            flowField.GenerateFlowField(current);
-        }
-    }*/
     IEnumerator FlowFieldGenerator()
     {
         moved = false;
