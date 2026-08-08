@@ -619,38 +619,21 @@ public struct AvoidanceCalculation : IJobParallelFor
     public NativeArray<CellJobData> Cells;
     public NativeArray<int> CellNeighbors;
 
+    public int MaxCellsChecked;
+    
 
-    NativeArray<float> Interest;
-    NativeArray<float> Danger;
-    NativeHashSet<int> checkedCells;
-    NativeQueue<int> cellsToCheck;
-    bool detectedHigherPriority;
+
 
     public NativeArray<EnemyJobData> EnemyData;
-    /*public NativeList<int> FindCellNeighbors(int cellIndex)
-    {
-        CellJobData cell = Cells[cellIndex];
-        NativeList<int> neighbors = new NativeList<int>();
-        for(int i = cell.firstNeighbor; i <= cell.lastNeighbor; i++)
-        {
-            //int neighborID = CellNeighbors[i];
-            neighbors.Add(CellNeighbors[i]);
-            //if (neighborID >= 0)
-            //{
-            //    neighbors.Add(neighborID);
-            //}
-        }
-        return neighbors;
-    }*/
 
     public void Execute(int index)
     {
         DefineTarget(index);
         CheckFieldLocation(index);
         FindObstacles(index);
-        CalculateDanger(index);
+        //CalculateDanger(index);
         CalculateInterest(index);
-        GetBestDirection();
+        //GetBestDirection();
     }
     public void DefineTarget(int index)
     {
@@ -671,64 +654,65 @@ public struct AvoidanceCalculation : IJobParallelFor
     {
 
     }
-    public void FindObstacles(int index)
+    public bool FindObstacles(int index)
     {
         //EnemyData[index].Neighbors.Dispose();
-        checkedCells.Clear();
-        detectedHigherPriority = false;
+        NativeHashSet<int> checkedCells = new NativeHashSet<int>();
+        NativeQueue<int> cellsToCheck = new NativeQueue<int>(Allocator.Temp);
+        bool detectedHigherPriority = false;
         //detectedObstacle = false;
         int detectRadius = math.max((int)math.ceil(EnemyData[index].DetectionRadius / CellSize), 1);
-        int aux = 0;
+        int Depth = 0;
 
 
-        //HashSet<FieldCell> cellsToCheck = new HashSet<FieldCell>();
-        cellsToCheck.Enqueue(EnemyData[index].CurrentCell);
-        while (cellsToCheck.Count > 0)
+        //HashSet<FieldCell> cellsToCheck = new HashSet<FieldCell>()
+        int startCell = EnemyData[index].CurrentCell;
+
+        checkedCells.Add(startCell);
+        cellsToCheck.Enqueue(startCell);
+        while (cellsToCheck.Count > 0 && Depth <= detectRadius)
         {
-            int cInd = cellsToCheck.Dequeue();
-            if (checkedCells.Contains(cInd))
+            int nodesThisDepth = cellsToCheck.Count;
+            for (int i = 0; i < nodesThisDepth; i++)
             {
-                continue;
-            }
-            checkedCells.Add(cInd);
-            /*NativeList<int> neighbors = new NativeList<int>();
-            for (int i = Cells[cInd].firstNeighbor; i <= Cells[cInd].lastNeighbor; i++)
-            {
-                neighbors.Add(CellNeighbors[i]);
-            }*/
-            foreach (int eID in Cells[cInd].ContainedEnemies)
-            {
-                EnemyJobData e = EnemyData[eID];
-                if (eID != index && e.Priority >= EnemyData[index].Priority)
+                int cInd = cellsToCheck.Dequeue();
+                /*if (checkedCells.Contains(cInd))
                 {
-                    if (e.Priority > EnemyData[index].Priority)
-                    {
-                        detectedHigherPriority = true;
-                    }
-                    EnemyData[index].Neighbors.Add(eID);
+                    continue;
                 }
-            }
-            if (aux < detectRadius)
-            {
-                /*foreach (int n in Cells[cInd].neighbors)
+                checkedCells.Add(cInd);*/
+                //Check enemies in cell
+                foreach (int eID in Cells[cInd].ContainedEnemies)
                 {
-                    if (!checkedCells.Contains(n))
+                    EnemyJobData e = EnemyData[eID];
+                    if (eID != index && e.Priority >= EnemyData[index].Priority)
                     {
-                        cellsToCheck.Enqueue(n);
-                    }
-                }*/
-                for (int i = Cells[cInd].firstNeighbor; i <= Cells[cInd].lastNeighbor; i++)
-                {
-                    if (!checkedCells.Contains(CellNeighbors[i]))
-                    {
-                        cellsToCheck.Enqueue(CellNeighbors[i]);
+                        if (e.Priority > EnemyData[index].Priority)
+                        {
+                            detectedHigherPriority = true;
+                        }
+                        EnemyData[index].Neighbors.Add(eID);
                     }
                 }
-                aux++;
+                if (Depth == detectRadius)
+                {
+                    continue;
+                }
+                for (int j = Cells[cInd].firstNeighbor; j <= Cells[cInd].lastNeighbor; j++)
+                {
+                    if (checkedCells.Add(CellNeighbors[j]))
+                    {
+                        cellsToCheck.Enqueue(CellNeighbors[j]);
+                    }
+                }
             }
+            Depth++;
         }
+        checkedCells.Dispose();
+        cellsToCheck.Dispose();
+        return detectedHigherPriority;
     }
-    public void CalculateDanger(int index)
+    /*public void CalculateDanger(int index)
     {
         float3 priorityAvoidDirection = float3.zero;
         for (int i = 0; i < Danger.Length; i++)
@@ -757,7 +741,7 @@ public struct AvoidanceCalculation : IJobParallelFor
                 }
             }
         }
-        /*if (detectedObstacle)
+        if (detectedObstacle)
         {
             for (int i = 0; i < Directions.Length; i++)
             {
@@ -769,10 +753,42 @@ public struct AvoidanceCalculation : IJobParallelFor
                     Danger[i] += strength;
                 }
             }
-        }*/
-    }
-    public void CalculateInterest(int index)
+        }
+    }*/
+    public float3 CalculateInterest(int index)
     {
+        NativeArray<float> Interest = new NativeArray<float>(Directions.Length, Allocator.Temp);
+        NativeArray<float> Danger = new NativeArray<float>(Directions.Length, Allocator.Temp);
+        //Danger Calculation
+        float3 priorityAvoidDirection = float3.zero;
+        for (int i = 0; i < Danger.Length; i++)
+        {
+            Danger[i] = 0;
+        }
+        foreach (int eID in EnemyData[index].Neighbors)
+        {
+            EnemyJobData e = EnemyData[eID];
+            float3 toEnemy = e.Position - EnemyData[index].Position;
+            float distance = math.distance(toEnemy, float3.zero) - e.Size;
+            if (distance < EnemyData[index].EnemyAvoidanceRadius)
+            {
+                float strength = Mathf.Pow(2 - (distance / EnemyData[index].EnemyAvoidanceRadius), 2) - 1;
+                for (int i = 0; i < Directions.Length; i++)
+                {
+                    float dot = math.dot(math.normalize(toEnemy), Directions[i]);
+                    if (dot > 0)
+                    {
+                        Danger[i] += strength * dot * EnemyData[index].SeparationForce * (e.Priority / EnemyData[index].Priority);
+                    }
+                }
+                if (e.Priority > EnemyData[index].Priority)
+                {
+                    priorityAvoidDirection -= toEnemy * (e.Priority / EnemyData[index].Priority);
+                }
+            }
+        }
+
+        //Interest Calculation
         for (int i = 0; i < Directions.Length; i++)
         {
             Interest[i] = 0.01f;
@@ -782,8 +798,19 @@ public struct AvoidanceCalculation : IJobParallelFor
                 Interest[i] += dot;
             }
         }
+
+        //Get Best Direction
+        float3 add = float3.zero;
+        for (int i = 0; i < Directions.Length; i++)
+        {
+            add += Directions[i] * math.clamp(Interest[i] - Danger[i], 0, 1);
+        }
+        add.y = 0;
+        Interest.Dispose();
+        Danger.Dispose();
+        return math.normalize(add);
     }
-    public float3 GetBestDirection()
+    /*public float3 GetBestDirection()
     {
         float3 add = float3.zero;
         for (int i = 0; i < Directions.Length; i++)
@@ -792,7 +819,7 @@ public struct AvoidanceCalculation : IJobParallelFor
         }
         add.y = 0;
         return math.normalize(add);
-    }
+    }*/
 }
 public struct EnemyJobData
 {
