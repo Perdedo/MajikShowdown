@@ -620,8 +620,8 @@ public struct AvoidanceCalculation : IJobParallelFor
     public NativeArray<int> CellNeighbors;
 
     public int MaxCellsChecked;
-    
-
+    //NativeArray<int> checkedCells;
+    NativeArray<int> cellsToCheck;
 
 
     public NativeArray<EnemyJobData> EnemyData;
@@ -656,31 +656,37 @@ public struct AvoidanceCalculation : IJobParallelFor
     }
     public bool FindObstacles(int index)
     {
-        //EnemyData[index].Neighbors.Dispose();
-        NativeHashSet<int> checkedCells = new NativeHashSet<int>();
-        NativeQueue<int> cellsToCheck = new NativeQueue<int>(Allocator.Temp);
+        int offset = index * MaxCellsChecked;
+        int queueCount = 0;
+        int processedCount = 0;
+        //NativeHashSet<int> checkedCells = new NativeHashSet<int>();
+        //NativeQueue<int> cellsToCheck = new NativeQueue<int>(Allocator.Temp);
         bool detectedHigherPriority = false;
         //detectedObstacle = false;
         int detectRadius = math.max((int)math.ceil(EnemyData[index].DetectionRadius / CellSize), 1);
         int Depth = 0;
+        bool ReachedLimit = false;
 
 
         //HashSet<FieldCell> cellsToCheck = new HashSet<FieldCell>()
         int startCell = EnemyData[index].CurrentCell;
 
-        checkedCells.Add(startCell);
-        cellsToCheck.Enqueue(startCell);
-        while (cellsToCheck.Count > 0 && Depth <= detectRadius)
+        //checkedCells[queueCount + offset] = startCell;
+        cellsToCheck[queueCount + offset] = startCell;
+        queueCount++;
+
+        while (queueCount > processedCount && Depth <= detectRadius /*&& queueCount <= MaxCellsChecked*/)
         {
-            int nodesThisDepth = cellsToCheck.Count;
+            int nodesThisDepth = queueCount - processedCount;
             for (int i = 0; i < nodesThisDepth; i++)
             {
-                int cInd = cellsToCheck.Dequeue();
-                /*if (checkedCells.Contains(cInd))
+                if(ReachedLimit)
                 {
-                    continue;
+                    break;
                 }
-                checkedCells.Add(cInd);*/
+                int cInd = cellsToCheck[processedCount + offset];
+                processedCount++;
+
                 //Check enemies in cell
                 foreach (int eID in Cells[cInd].ContainedEnemies)
                 {
@@ -700,16 +706,34 @@ public struct AvoidanceCalculation : IJobParallelFor
                 }
                 for (int j = Cells[cInd].firstNeighbor; j <= Cells[cInd].lastNeighbor; j++)
                 {
-                    if (checkedCells.Add(CellNeighbors[j]))
+                    int neighborID = CellNeighbors[j];
+
+                    bool alreadyChecked = false;
+                    for (int k = 0; k < queueCount; k++)
                     {
-                        cellsToCheck.Enqueue(CellNeighbors[j]);
+                        if (cellsToCheck[offset + k] == neighborID)
+                        {
+                            alreadyChecked = true;
+                            break;
+                        }
+                    }
+                    if (!alreadyChecked)
+                    {
+                        if (queueCount >= MaxCellsChecked)
+                        {
+                            ReachedLimit = true;
+                            break;
+                        }
+                        //checkedCells[queueCount + offset] = neighborID;
+                        cellsToCheck[queueCount + offset] = neighborID;
+                        queueCount++;
                     }
                 }
             }
             Depth++;
         }
-        checkedCells.Dispose();
-        cellsToCheck.Dispose();
+        //checkedCells.Dispose();
+        //cellsToCheck.Dispose();
         return detectedHigherPriority;
     }
     /*public void CalculateDanger(int index)
