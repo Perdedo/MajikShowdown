@@ -98,7 +98,7 @@ public class EnemySpawner : NetworkBehaviour
                         EnemyTransformInfo auxTrInfo = new EnemyTransformInfo(aux, spawnPos.position, 0, Time.time, Vector3.zero);
                         GameManager.Instance.hordeController.enemiesInfo.Add(auxTrInfo);
                         auxEnemy.transformInfo = auxTrInfo;
-                        auxEnemy.GameID = GameManager.Instance.hordeController.GameEnemies.Count;
+                        //auxEnemy.GameID = GameManager.Instance.hordeController.GameEnemies.Count;
                         //Debug.Log(auxEnemy.GameID);
                         GameManager.Instance.hordeController.GameEnemies.Add(auxEnemy);
                     }
@@ -127,8 +127,10 @@ public class EnemySpawner : NetworkBehaviour
                         auxEnemy.element = (Elements)UnityEngine.Random.Range(0, Enum.GetNames(typeof(Elements)).Length);
                     }
                     aux.GetComponent<CharacterDamageHandler>().enemyIndex = i;
+                    GameManager.Instance.hordeController.UsedEnemies.Add(auxEnemy);
                     auxEnemy.Initialize();
                     i = enemies.Count;
+                    GameManager.Instance.hordeController.UpdateEnemyActiveID();
                 }
             }
         }

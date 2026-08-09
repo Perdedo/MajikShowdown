@@ -5,5 +5,5 @@ using UnityEngine;
 public class FlowFieldAsset : ScriptableObject
 {
     public List<FlowFieldDivision> fieldAsset = new List<FlowFieldDivision>();
-    public List<FieldCell> cells = new List<FieldCell>();
+    //public List<FieldCell> cells = new List<FieldCell>();
 }

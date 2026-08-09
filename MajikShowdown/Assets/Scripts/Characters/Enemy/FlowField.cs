@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.AI.Navigation;
 using UnityEngine.AI;
 using UnityEditor;
-using Unity.Collections;
 public class FlowField
 {
     public Dictionary<Vector2Int, CellColumn> field = new Dictionary<Vector2Int, CellColumn>();
@@ -30,7 +28,7 @@ public class FlowField
     {
         //field.Clear();
         manager.flowFieldAsset.fieldAsset.Clear();
-        manager.flowFieldAsset.cells.Clear();
+        //manager.flowFieldAsset.cells.Clear();
         int width = Mathf.CeilToInt(mapSize.x / cellSize);
         int depth = Mathf.CeilToInt(mapSize.y / cellSize);
         fieldSize = new Vector2Int(width, depth);
@@ -72,7 +70,7 @@ public class FlowField
                 }
             }
         }
-        manager.flowFieldAsset.cells = allCells;
+        //manager.flowFieldAsset.cells = allCells;
 
         //foreach (var v in field)
 #if UNITY_EDITOR
@@ -91,7 +89,7 @@ public class FlowField
 
     public void GetFieldFromAsset()
     {
-        allCells = manager.flowFieldAsset.cells;
+        //allCells = manager.flowFieldAsset.cells;
         foreach (FlowFieldDivision ffd in manager.flowFieldAsset.fieldAsset)
         {
             field.Add(ffd.key, ffd.column);
@@ -102,6 +100,7 @@ public class FlowField
             {
                 cell.Neighbors = GetNeighbors(cell);
                 cell.closeToObstacle = CheckForObstacles(cell);
+                allCells.Add(cell);
             }
         }
     }
