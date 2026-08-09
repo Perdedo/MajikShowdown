@@ -11,7 +11,7 @@ public class EnemySpawner : NetworkBehaviour
     public List<EnemySelection> enemies = new List<EnemySelection>();
     public Transform spawnPos;
     public float baseSpawnTime = 1.25f, minSpawnTime = 0.25f, spawnerLifeTime = 300f, baseDifficultyMult = 1, maxDifficultyMult = 1.5f, baseElemental = 5, maxElemental = 30;
-    float spawnTime, spawnerStartTime, randDifficulty, randElemental, totalSelection, sum, elementalChance, hordeStartTime, hordeDurationTime;
+    float spawnTime, spawnerStartTime, randDifficulty, randElemental, totalSelection, sum, elementalChance, hordeStartTime, hordeDurationTime, maxSpawnRadius;
     bool isSpawning;
     GameObject aux;
 
@@ -35,7 +35,7 @@ public class EnemySpawner : NetworkBehaviour
         }
     }*/
 
-    public void Initialize(List<EnemySelection> enemyList, float baseSpawn, float minSpawn, float lifetime, float baseDiff, float maxDiff, float baseEl, float maxEl, float hordeStart, float hordeDuration)
+    public void Initialize(List<EnemySelection> enemyList, float baseSpawn, float minSpawn, float lifetime, float baseDiff, float maxDiff, float baseEl, float maxEl, float hordeStart, float hordeDuration, float spawnRadius)
     {
         if (isServer)
         {
@@ -53,6 +53,7 @@ public class EnemySpawner : NetworkBehaviour
             elementalChance = baseElemental;
             hordeStartTime = hordeStart;
             hordeDurationTime = hordeDuration;
+            maxSpawnRadius = spawnRadius;
             foreach (EnemySelection e in enemies)
             {
                 if (e.difficult)
@@ -90,7 +91,7 @@ public class EnemySpawner : NetworkBehaviour
                 {
                     if (GameManager.Instance.hordeController.enemiesByType[i].Count <= GameManager.Instance.hordeController.usedEnemiesByType[i].Count)
                     {
-                        aux = Instantiate(enemies[i].enemy, spawnPos.position, Quaternion.identity);
+                        aux = Instantiate(enemies[i].enemy, spawnPos.position + GetSpawnDirection(), Quaternion.identity);
                         NetworkServer.Spawn(aux);
                         auxEnemy = aux.GetComponent<Enemy>();
                         GameManager.Instance.hordeController.enemiesByType[i].Add(auxEnemy);
@@ -109,7 +110,7 @@ public class EnemySpawner : NetworkBehaviour
                             if (!GameManager.Instance.hordeController.usedEnemiesByType[i].Contains(e))
                             {
                                 aux = e.gameObject;
-                                aux.transform.position = spawnPos.position;
+                                aux.transform.position = spawnPos.position + GetSpawnDirection();
                                 aux.SetActive(true);
                                 ActivateEnemy(aux);
                                 auxEnemy = aux.GetComponent<Enemy>();
@@ -159,6 +160,12 @@ public class EnemySpawner : NetworkBehaviour
     public void ActivateEnemy(GameObject obj)
     {
         obj.SetActive(true);
+    }
+
+    Vector3 GetSpawnDirection()
+    {
+        Vector3 randDir = new Vector3(UnityEngine.Random.Range(-maxSpawnRadius, maxSpawnRadius), 0, UnityEngine.Random.Range(-maxSpawnRadius, maxSpawnRadius));
+        return randDir;
     }
 
     /*[Server]
