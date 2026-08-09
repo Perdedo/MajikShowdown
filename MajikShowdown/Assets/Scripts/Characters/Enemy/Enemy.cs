@@ -610,30 +610,17 @@ public class Enemy : CrowdCharacter
     }
 }
 [BurstCompile]
-public struct AvoidanceCalculation : IJobParallelFor
+public struct EnemyFieldLocation : IJobParallelFor
 {
+    //prompted
     public NativeArray<float3> PlayerPositions;
+    public NativeArray<float3> EnemyPositions;
+
+    //Output
     public NativeArray<int> TargetIndices;
-    public NativeArray<float3> Directions;
-    public float CellSize;
-    public NativeArray<CellJobData> Cells;
-    public NativeArray<int> CellNeighbors;
-
-    public int MaxCellsChecked;
-    //NativeArray<int> checkedCells;
-    NativeArray<int> cellsToCheck;
-
-
-    public NativeArray<EnemyJobData> EnemyData;
-
     public void Execute(int index)
     {
-        DefineTarget(index);
-        CheckFieldLocation(index);
-        FindObstacles(index);
-        //CalculateDanger(index);
-        CalculateInterest(index);
-        //GetBestDirection();
+        //EnemyData[index].CurrentCell = FlowFieldManager.instance.WorldToGridPosition(EnemyData[index].Position).ID;
     }
     public void DefineTarget(int index)
     {
@@ -641,7 +628,7 @@ public struct AvoidanceCalculation : IJobParallelFor
         float closestDistance = float.MaxValue;
         for (int i = 0; i < PlayerPositions.Length; i++)
         {
-            float distance = math.distance(EnemyData[index].Position, PlayerPositions[i]);
+            float distance = math.distance(EnemyPositions[index], PlayerPositions[i]);
             if (distance < closestDistance)
             {
                 closestDistance = distance;
@@ -654,9 +641,51 @@ public struct AvoidanceCalculation : IJobParallelFor
     {
 
     }
+}
+[BurstCompile]
+public struct AvoidanceCalculation : IJobParallelFor
+{
+    //prompted
+    
+    public NativeArray<float3> Directions;
+    public float CellSize;
+    public NativeArray<CellJobData> Cells;
+
+    public int MaxCellsChecked;
+    public int MaxEnemyNeighbors;
+    //NativeArray<int> checkedCells;
+    public NativeArray<int> CellNeighbors;
+    public NativeArray<int> enemiesInField;
+
+    //calculated
+    NativeArray<int> EnemyNeighbors;
+    NativeArray<int> EnemyNeighborCounts;
+    NativeArray<int> cellsToCheck;
+    NativeArray<float> enemiesInterest;
+    NativeArray<float> enemiesDanger;
+
+    //Output
+    public NativeArray<float3> DirectionsOutput;
+
+
+    public NativeArray<EnemyJobData> EnemyData;
+
+    public void Execute(int index)
+    {
+        //DefineTarget(index);
+        //CheckFieldLocation(index);
+
+
+        FindObstacles(index);
+        //CalculateDanger(index);
+        DirectionsOutput[index] = CalculateInterest(index);
+        //GetBestDirection();
+    }
+    
     public bool FindObstacles(int index)
     {
         int offset = index * MaxCellsChecked;
+        int eOffset = index * MaxEnemyNeighbors;
         int queueCount = 0;
         int processedCount = 0;
         //NativeHashSet<int> checkedCells = new NativeHashSet<int>();
@@ -688,7 +717,32 @@ public struct AvoidanceCalculation : IJobParallelFor
                 processedCount++;
 
                 //Check enemies in cell
-                foreach (int eID in Cells[cInd].ContainedEnemies)
+                for(int j = Cells[cInd].firstEnemy; j < Cells[cInd].firstEnemy + Cells[cInd].EnemiesNum; j++)
+                {
+                    int eID = enemiesInField[j];
+                    EnemyJobData e = EnemyData[eID];
+                    //EnemyJobData currentEnemy = EnemyData[index];
+                    if (eID != index && e.Priority >= EnemyData[index].Priority)
+                    {
+                        if (EnemyNeighborCounts[index] >= MaxEnemyNeighbors)
+                        {
+                            ReachedLimit = true;
+                            break;
+                        }
+                        if (e.Priority > EnemyData[index].Priority)
+                        {
+                            detectedHigherPriority = true;
+                        }
+                        EnemyNeighbors[EnemyNeighborCounts[index] + eOffset] = eID;
+                        /*if (currentEnemy.neighborNum == 0)
+                        {
+                            currentEnemy.firstNeighbor = offset;
+                        }*/
+                        EnemyNeighborCounts[index]++;
+                        //EnemyData[index].Neighbors.Add(eID);
+                    }
+                }
+                /*foreach (int eID in Cells[cInd].ContainedEnemies)
                 {
                     EnemyJobData e = EnemyData[eID];
                     if (eID != index && e.Priority >= EnemyData[index].Priority)
@@ -699,7 +753,7 @@ public struct AvoidanceCalculation : IJobParallelFor
                         }
                         EnemyData[index].Neighbors.Add(eID);
                     }
-                }
+                }*/
                 if (Depth == detectRadius)
                 {
                     continue;
@@ -781,15 +835,40 @@ public struct AvoidanceCalculation : IJobParallelFor
     }*/
     public float3 CalculateInterest(int index)
     {
-        NativeArray<float> Interest = new NativeArray<float>(Directions.Length, Allocator.Temp);
-        NativeArray<float> Danger = new NativeArray<float>(Directions.Length, Allocator.Temp);
+        int InterestOffset = Directions.Length * index;
+        //NativeArray<float> Interest = new NativeArray<float>(Directions.Length, Allocator.Temp);
+        //NativeArray<float> Danger = new NativeArray<float>(Directions.Length, Allocator.Temp);
+        int eOffset = index * MaxEnemyNeighbors;
         //Danger Calculation
         float3 priorityAvoidDirection = float3.zero;
-        for (int i = 0; i < Danger.Length; i++)
+        for (int i = 0; i < Directions.Length; i++)
         {
-            Danger[i] = 0;
+            enemiesDanger[i + InterestOffset] = 0;
         }
-        foreach (int eID in EnemyData[index].Neighbors)
+        for(int i = eOffset; i < eOffset + EnemyNeighborCounts[index]; i++)
+        {
+            int eID = EnemyNeighbors[i];
+            EnemyJobData e = EnemyData[eID];
+            float3 toEnemy = e.Position - EnemyData[index].Position;
+            float distance = math.distance(toEnemy, float3.zero) - e.Size;
+            if (distance < EnemyData[index].EnemyAvoidanceRadius)
+            {
+                float strength = Mathf.Pow(2 - (distance / EnemyData[index].EnemyAvoidanceRadius), 2) - 1;
+                for (int j = 0; j < Directions.Length; j++)
+                {
+                    float dot = math.dot(math.normalize(toEnemy), Directions[j]);
+                    if (dot > 0)
+                    {
+                        enemiesDanger[j + InterestOffset] += strength * dot * EnemyData[index].SeparationForce * (e.Priority / EnemyData[index].Priority);
+                    }
+                }
+                if (e.Priority > EnemyData[index].Priority)
+                {
+                    priorityAvoidDirection -= toEnemy * (e.Priority / EnemyData[index].Priority);
+                }
+            }
+        }
+        /*foreach (int eID in EnemyData[index].Neighbors)
         {
             EnemyJobData e = EnemyData[eID];
             float3 toEnemy = e.Position - EnemyData[index].Position;
@@ -810,16 +889,16 @@ public struct AvoidanceCalculation : IJobParallelFor
                     priorityAvoidDirection -= toEnemy * (e.Priority / EnemyData[index].Priority);
                 }
             }
-        }
+        }*/
 
         //Interest Calculation
         for (int i = 0; i < Directions.Length; i++)
         {
-            Interest[i] = 0.01f;
+            enemiesInterest[i + InterestOffset] = 0.01f;
             float dot = math.dot(Cells[EnemyData[index].CurrentCell].Direction, Directions[i]);
             if (dot > 0)
             {
-                Interest[i] += dot;
+                enemiesInterest[i + InterestOffset] += dot;
             }
         }
 
@@ -827,11 +906,11 @@ public struct AvoidanceCalculation : IJobParallelFor
         float3 add = float3.zero;
         for (int i = 0; i < Directions.Length; i++)
         {
-            add += Directions[i] * math.clamp(Interest[i] - Danger[i], 0, 1);
+            add += Directions[i] * math.clamp(enemiesInterest[i + InterestOffset] - enemiesDanger[i + InterestOffset], 0, 1);
         }
         add.y = 0;
-        Interest.Dispose();
-        Danger.Dispose();
+        //Interest.Dispose();
+        //Danger.Dispose();
         return math.normalize(add);
     }
     /*public float3 GetBestDirection()
@@ -858,10 +937,10 @@ public struct EnemyJobData
     //Prompted
     public float3 Position;
     public float3 Velocity;
-
-    //Calculated
     public int CurrentCell;
-    public NativeList<int> Neighbors;
+    
+    //public NativeList<int> Neighbors;
+    //public int neighborNum;
 
 }
 public struct CellJobData
@@ -869,8 +948,10 @@ public struct CellJobData
     public float3 Position;
     public float3 Direction;
     //public NativeArray<int> neighbors;
-    public int ContainedEnemiesCount;
-    public NativeArray<int> ContainedEnemies;
+    //public int ContainedEnemiesCount;
+    //public NativeArray<int> ContainedEnemies;
+    public int EnemiesNum;
+    public int firstEnemy;
     public int firstNeighbor, lastNeighbor;
     public int ID;
 }
