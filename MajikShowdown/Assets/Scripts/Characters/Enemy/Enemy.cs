@@ -1,12 +1,13 @@
+using Mirror;
 using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
-using Mirror;
-using Unity.Jobs;
 using UnityEngine.Jobs;
-using Unity.Burst;
+using static UnityEditor.PlayerSettings;
 
 public class Enemy : CrowdCharacter
 {
@@ -57,6 +58,7 @@ public class Enemy : CrowdCharacter
     float timePred;
     Vector3 predTarget;
     int detectRadius;
+    public float maxDistanceFromPlayer = 100, repositionRange = 20;
     public void Initialize()
     {
         DamageHandler.Initialize(this);
@@ -227,36 +229,106 @@ public class Enemy : CrowdCharacter
             {
                 updateRate = 1f / 30f;
             }*/
-            if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
+            if(targetVector.sqrMagnitude < maxDistanceFromPlayer * maxDistanceFromPlayer)
             {
-                //targetLastSeen = targetVector;
-                canSeeTarget = true;
-                //Debug.Log("cant see");
-            }
-            else
-            {
-                canSeeTarget = false;
-                //Debug.Log("can see");
-            }
-            CheckFieldLocation();
-            if (currentCell != null)
-            {
-                forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);
-                if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance /*&& Vector3.Dot(targetVector.normalized, currentCell.direction.normalized) > 0.5*/)
+                if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
                 {
-                    interestDirection = targetVector.normalized;
+                    //targetLastSeen = targetVector;
+                    canSeeTarget = true;
+                    //Debug.Log("cant see");
                 }
                 else
                 {
-                    interestDirection = currentCell.direction;
+                    canSeeTarget = false;
+                    //Debug.Log("can see");
                 }
-                FindObstacles();
-                CalculateDanger();
-                CalculateInterest();
-                MoveDirection = GetBestDirection();
+                CheckFieldLocation();
+                if (currentCell != null)
+                {
+                    forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);
+                    if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance /*&& Vector3.Dot(targetVector.normalized, currentCell.direction.normalized) > 0.5*/)
+                    {
+                        interestDirection = targetVector.normalized;
+                    }
+                    else
+                    {
+                        interestDirection = currentCell.direction;
+                    }
+                    FindObstacles();
+                    CalculateDanger();
+                    CalculateInterest();
+                    MoveDirection = GetBestDirection();
+                }
+            }
+            else
+            {
+                Vector3 reposition = CheckReposition();
+                if(reposition != Vector3.zero)
+                {
+                    rb.interpolation = RigidbodyInterpolation.None;
+                    rb.position = reposition;
+                    transform.position = reposition;
+                    ResetAllVelocities();
+                    rb.interpolation = RigidbodyInterpolation.Interpolate;
+                }
+                else
+                {
+                    if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
+                    {
+                        //targetLastSeen = targetVector;
+                        canSeeTarget = true;
+                        //Debug.Log("cant see");
+                    }
+                    else
+                    {
+                        canSeeTarget = false;
+                        //Debug.Log("can see");
+                    }
+                    CheckFieldLocation();
+                    if (currentCell != null)
+                    {
+                        forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);
+                        if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance /*&& Vector3.Dot(targetVector.normalized, currentCell.direction.normalized) > 0.5*/)
+                        {
+                            interestDirection = targetVector.normalized;
+                        }
+                        else
+                        {
+                            interestDirection = currentCell.direction;
+                        }
+                        FindObstacles();
+                        CalculateDanger();
+                        CalculateInterest();
+                        MoveDirection = GetBestDirection();
+                    }
+                }
             }
         }
     }
+
+    Vector3 CheckReposition()
+    {
+        RaycastHit hit;
+        bool canReposition = false;
+        Vector3 repos = target.gameObject.transform.position + targetVector.normalized * repositionRange;
+        if (Physics.Raycast(repos + Vector3.up * GameManager.Instance.hordeController.heightCheckPoint, Vector3.down, out hit, GameManager.Instance.hordeController.checkHeight, GameManager.Instance.hordeController.spawnableLocations))
+        {
+            Collider[] obstacles = Physics.OverlapSphere(repos, GameManager.Instance.hordeController.maxEnemySpawnRadius, ~GameManager.Instance.hordeController.spawnableLocations);
+            if (obstacles.Length <= 0)
+            {
+                canReposition = true;
+            }
+        }
+        if(canReposition)
+        {
+            return hit.point + Vector3.up * GameManager.Instance.hordeController.spawnerHeight;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
+    }
+
     Queue<FieldCell> ocupiedQueue = new Queue<FieldCell>();
     public void CheckFieldLocation()
     {
