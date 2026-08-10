@@ -57,10 +57,10 @@ public class GameManager : MonoBehaviour
             return;
         }
         netCtrl?.ffManager.gameObject.SetActive(true);
-        if(hordeController != null)
+        /*if(hordeController != null)
         {
             hordeController.Initialize();
-        }
+        }*/
     }
 
     public void RemovePlayer(Player player)

@@ -134,11 +134,10 @@ public class HordeController : NetworkBehaviour
 
     public void Initialize()
     {
-        if (isServer)
-        {
-            StartPause();
-            running = true;
-        }
+        if (!isServer || running) return;
+
+        StartPause();
+        running = true;
     }
 
     [Server]
@@ -401,6 +400,30 @@ public class HordeController : NetworkBehaviour
             }
             inPause = false;
             StartHorde();
+        }
+    }
+
+    [Server]
+    public void CheckGameplayLoaded()
+    {
+        int expectedPlayers = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count;
+        if (GameManager.Instance.Players.Count < expectedPlayers) return;
+
+        foreach (Player player in GameManager.Instance.Players)
+        {
+            if (!player.gameplayLoaded) return;
+        }
+        Initialize();
+        RPCStartGameplay();
+    }
+
+    [ClientRpc]
+    private void RPCStartGameplay()
+    {
+        PlayerUI playerUI = GameManager.Instance.uiController.playerUI;
+        if (playerUI != null)
+        {
+            playerUI.FinishLoading();
         }
     }
 }

@@ -11,6 +11,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     int savedListIndex = 0;
     private Vector2 savedPosition;
     private Transform savedParent;
+    private NodeTween nodeTween;
     public IDropZone OriginZone { get; private set; }
     private IDropZone pendingDropZone;
 
@@ -23,6 +24,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         canvas = GetComponentInParent<Canvas>();
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
+        nodeTween = GetComponent<NodeTween>();
     }
 
     public void SetOriginZone(IDropZone zone) => OriginZone = zone;
@@ -38,6 +40,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!CanDrag()) return;
+        nodeTween?.Stop();
         pendingDropZone = null;
         canvas = GetComponentInParent<Canvas>();
         savedPosition = rectTransform.anchoredPosition;
@@ -66,11 +69,40 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!CanDrag()) return;
+
+        Vector3 releasedWorldPosition = rectTransform.position;
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
         var inventory = OriginZone as NodeInventory;
+        bool shouldReturnToInventory = pendingDropZone == null && inventory != null && !isClone;
+        if (shouldReturnToInventory)
+        {
+            ReturnToInventory(inventory);
+            return;
+        }
+
         ResolveDrop(inventory);
         inventory?.Unfreeze();
+
+        if (OriginZone is HexGridNode)
+        {
+            nodeTween?.SlideFrom(releasedWorldPosition);
+        }
+    }
+
+    private void ReturnToInventory(NodeInventory inventory)
+    {
+        transform.SetParent(savedParent, true);
+        if (nodeTween != null)
+        {
+            nodeTween.SlideTo(savedPosition, inventory.Unfreeze);
+        }
+        else
+        {
+            rectTransform.anchoredPosition = savedPosition;
+            inventory.Unfreeze();
+        }
+        pendingDropZone = null;
     }
 
     private void ResolveDrop(NodeInventory inventory)
