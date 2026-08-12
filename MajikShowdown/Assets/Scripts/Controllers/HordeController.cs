@@ -17,7 +17,7 @@ public class HordeController : NetworkBehaviour
     public List<DifficultySetting> difficulties;
     public int difficulty;
     public AnimationCurve spawnerFrequencyCurve;
-    public float minSpawnRadius, maxSpawnRadius, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
+    public float minSpawnRadius, maxSpawnRadius, maxEnemySpawnRadius = 3, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
     float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime, randEnemy;
     public GameObject spawner;
     GameObject aux;
@@ -390,7 +390,7 @@ public class HordeController : NetworkBehaviour
             {
                 selections.Add(enemyChances[i]);
             }*/
-            aux.GetComponent<EnemySpawner>().Initialize(enemyChances, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental, hordeStartTime, hordeDuration);
+            aux.GetComponent<EnemySpawner>().Initialize(enemyChances, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental, hordeStartTime, hordeDuration, maxEnemySpawnRadius);
             usedSpawners.Add(aux);
         }
         if (inHordeTime)
@@ -427,24 +427,48 @@ public class HordeController : NetworkBehaviour
     public Vector3 GetSpawnPos(Vector3 playerPos)
     {
         RaycastHit hit = new RaycastHit();
-        Vector3 pos;
+        Vector3 pos, aux;
         possiblePos = false;
+        bool oppositeOccupied = false;
         float radius;
         while (!possiblePos)
         {
-            do
+            if(usedSpawners.Count > 0 && !oppositeOccupied)
             {
-                dir = new Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)).normalized;
+                aux = GetOppositeDirection(playerPos);
+                dir = new Vector2(aux.x, aux.z).normalized;
             }
-            while (dir == Vector2.zero);
+            else
+            {
+                do
+                {
+                    dir = new Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)).normalized;
+                }
+                while (dir == Vector2.zero);
+            }
             radius = UnityEngine.Random.Range(minSpawnRadius, maxSpawnRadius);
             pos = playerPos + new Vector3(dir.x * radius, heightCheckPoint, dir.y * radius);
             if (Physics.Raycast(pos, Vector3.down, out hit, checkHeight, spawnableLocations))
             {
-                possiblePos = true;
+                Collider[] obstacles = Physics.OverlapSphere(pos, maxEnemySpawnRadius, ~spawnableLocations);
+                if(obstacles.Length <= 0)
+                {
+                    possiblePos = true;
+                }
             }
+            oppositeOccupied = true;
         }
         return hit.point + Vector3.up * spawnerHeight;
+    }
+
+    Vector3 GetOppositeDirection(Vector3 playerPos)
+    {
+        Vector3 aux = Vector3.zero;
+        foreach(GameObject go in usedSpawners)
+        {
+            aux += playerPos - go.transform.position;
+        }
+        return aux;
     }
 
     public void CheckEnemyCount()
