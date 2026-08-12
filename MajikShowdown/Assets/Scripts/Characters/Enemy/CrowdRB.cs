@@ -7,7 +7,7 @@ public class CrowdRB : NetworkBehaviour
     [Header("Velocity Options")]
     [SerializeField] protected float maxVelocity;
     //public bool affectedByMovingGround = false;
-    [Header("Floating Options")]
+    [Header("Terrain Options")]
     //[SerializeField] protected float floatingHeight;
     [SerializeField] protected float gravityMultiplier;
     [SerializeField] protected float terrainBuffer;
@@ -189,8 +189,9 @@ public class CrowdRB : NetworkBehaviour
         }
         //rb.Move(rb.position + ((worldVelocity+externalVelocity) * Time.fixedDeltaTime), rb.rotation);
         Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
+        //Debug.DrawRay(transform.position,localVelocity);
 
-        if (velocityChange.sqrMagnitude > 0.01f)
+        if (velocityChange.sqrMagnitude > 0.001f)
         {
             rb.AddForce(velocityChange, ForceMode.VelocityChange);
         }

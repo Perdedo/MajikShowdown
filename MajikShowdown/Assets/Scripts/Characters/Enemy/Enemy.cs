@@ -151,7 +151,7 @@ public class Enemy : CrowdCharacter
         transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
         Vector3 dir = predTarget - transform.position;
         dir.y = 0;
-        if (dir.sqrMagnitude >= 0.001f)
+        if (dir.sqrMagnitude >= 0.01f)
         {
             Quaternion targetRot = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
@@ -923,7 +923,7 @@ public struct AvoidanceCalculation : IJobParallelFor
             EnemyJobData e = EnemyData[eID];
             float3 toEnemy = e.Position - EnemyData[index].Position;
             float distance = math.distance(toEnemy, float3.zero) - e.Size;
-            if (distance < EnemyData[index].EnemyAvoidanceRadius)
+            if (distance < EnemyData[index].EnemyAvoidanceRadius && distance != 0)
             {
                 float strength = Mathf.Pow(2 - (distance / EnemyData[index].EnemyAvoidanceRadius), 2) - 1;
                 for (int j = 0; j < Directions.Length; j++)
@@ -983,6 +983,10 @@ public struct AvoidanceCalculation : IJobParallelFor
         add.y = 0;
         //Interest.Dispose();
         //Danger.Dispose();
+        if(add.x==0 && add.z == 0)
+        {
+            return float3.zero;
+        }
         return math.normalize(add);
     }
     /*public float3 GetBestDirection()

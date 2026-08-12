@@ -193,13 +193,13 @@ public class HordeController : NetworkBehaviour
             };
             for (int j = 0; j < cell.ContainedEnemies.Count; j++)
             {
-                int id = cell.ContainedEnemies[j].ID;
+                /*int id = cell.ContainedEnemies[j].ID;
                 if (id < 0 || id >= UsedEnemies.Count)
                 {
                     Debug.LogError(
                         $"Invalid enemy ID {id}. UsedEnemies count = {UsedEnemies.Count}"
                     );
-                }
+                }*/
                 EnemyFieldData.Add(cell.ContainedEnemies[j].ID);
             }
 
