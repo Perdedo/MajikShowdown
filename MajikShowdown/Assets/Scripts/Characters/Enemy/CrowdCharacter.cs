@@ -144,7 +144,7 @@ public class CrowdCharacter : CrowdRB, IGameCharacter
         if (movePaused) dir = Vector3.zero;
         dir.y = 0;
         dir = Vector3.ClampMagnitude(dir, 1);
-        float normalDot = Vector3.Dot(LastHitInfo.normal, Vector3.up);
+        //float normalDot = Vector3.Dot(LastHitInfo.normal, Vector3.up);
         if (normalDot >= SlopeAngle && vState == VerticalState.grounded)
         {
             dir = Vector3.ProjectOnPlane(dir, LastHitInfo.normal);
