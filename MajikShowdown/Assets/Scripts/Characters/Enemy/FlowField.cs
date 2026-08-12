@@ -78,6 +78,7 @@ public class FlowField
         {
             foreach (FieldCell cell in ffd.column.Layers)
             {
+                cell.ContainedEnemies.Clear();
                 cell.Neighbors = GetNeighbors(cell);
                 cell.closeToObstacle = CheckForObstacles(cell);
             }
@@ -98,6 +99,7 @@ public class FlowField
         {
             foreach (FieldCell cell in v.Value.Layers)
             {
+                cell.ContainedEnemies.Clear();
                 cell.Neighbors = GetNeighbors(cell);
                 cell.closeToObstacle = CheckForObstacles(cell);
                 allCells.Add(cell);

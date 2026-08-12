@@ -72,7 +72,7 @@ public class HordeController : NetworkBehaviour
         if (!isServer) return;
         for (int i = 0; i < UsedEnemies.Count; i++)
         {
-            UsedEnemies[i].ActiveID = i;
+            UsedEnemies[i].UpdateIdWrapper(i);
         }
     }
 
@@ -179,7 +179,7 @@ public class HordeController : NetworkBehaviour
             }
         }
         NativeArray<CellJobData> cellInfo = new NativeArray<CellJobData>(FlowFieldManager.instance.flowField.allCells.Count, Allocator.TempJob);
-        NativeList<int> EnemyFieldData = new NativeList<int>( Allocator.TempJob);
+        NativeList<int> EnemyFieldData = new NativeList<int>(Allocator.TempJob);
         for (int i = 0; i < FlowFieldManager.instance.flowField.allCells.Count; i++)
         {
             FieldCell cell = FlowFieldManager.instance.flowField.allCells[i];
@@ -193,7 +193,14 @@ public class HordeController : NetworkBehaviour
             };
             for (int j = 0; j < cell.ContainedEnemies.Count; j++)
             {
-                EnemyFieldData.Add(cell.ContainedEnemies[j]);
+                int id = cell.ContainedEnemies[j].ID;
+                if (id < 0 || id >= UsedEnemies.Count)
+                {
+                    Debug.LogError(
+                        $"Invalid enemy ID {id}. UsedEnemies count = {UsedEnemies.Count}"
+                    );
+                }
+                EnemyFieldData.Add(cell.ContainedEnemies[j].ID);
             }
 
 

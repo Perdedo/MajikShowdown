@@ -53,7 +53,11 @@ public class Enemy : CrowdCharacter
     public Elements element = Elements.None;
     Damage dmgCtrl;
     [HideInInspector][SyncVar] public int instanceIndex;
-    [HideInInspector][SyncVar] public int ActiveID;
+    [HideInInspector][SyncVar] public IdWrapper ActiveID;
+    [Serializable]public struct IdWrapper
+    {
+        public int ID;
+    }
     public EnemyTransformInfo transformInfo;
     Player attackedPlayer;
     float timePred;
@@ -82,6 +86,12 @@ public class Enemy : CrowdCharacter
         detectRadius = math.max((int)math.ceil(DetectionRadius / FlowFieldManager.instance.CellSize), 1);
         RigidbodySetting();
         //CheckFieldLocation();
+    }
+    public void UpdateIdWrapper(int value)
+    {
+        IdWrapper aux = ActiveID;
+        aux.ID =  value;
+        ActiveID = aux;
     }
 
     [ClientRpc]
@@ -502,9 +512,9 @@ public class Enemy : CrowdCharacter
         {
             FieldCell c = cellsToCheck.Dequeue();
             checkedCells.Add(c);
-            foreach (int eID in c.ContainedEnemies)
+            foreach (IdWrapper eID in c.ContainedEnemies)
             {
-                Enemy e = GameManager.Instance.hordeController.GameEnemies[eID];
+                Enemy e = GameManager.Instance.hordeController.GameEnemies[eID.ID];
                 if (e != this && e.priority >= priority)
                 {
                     if (e.priority > priority)
