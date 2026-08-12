@@ -63,6 +63,7 @@ public class Enemy : CrowdCharacter
     float timePred;
     Vector3 predTarget;
     int detectRadius;
+    public float maxDistanceFromPlayer = 100, repositionRange = 20;
     public void Initialize()
     {
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
@@ -224,6 +225,7 @@ public class Enemy : CrowdCharacter
         if (target != null)
         {
             targetVector = target.transform.position - transform.position;
+            
             /*if (targetVector.sqrMagnitude > 2500)
             {
                 updateRate = 1f / 15f;
@@ -270,6 +272,28 @@ public class Enemy : CrowdCharacter
                 CalculateInterest();
                 MoveDirection = GetBestDirection();*/
             }
+        }
+    }
+    Vector3 CheckReposition()
+    {
+        RaycastHit hit;
+        bool canReposition = false;
+        Vector3 repos = target.gameObject.transform.position + targetVector.normalized * repositionRange;
+        if (Physics.Raycast(repos + Vector3.up * GameManager.Instance.hordeController.heightCheckPoint, Vector3.down, out hit, GameManager.Instance.hordeController.checkHeight, GameManager.Instance.hordeController.spawnableLocations))
+        {
+            Collider[] obstacles = Physics.OverlapSphere(repos, GameManager.Instance.hordeController.maxEnemySpawnRadius, ~GameManager.Instance.hordeController.spawnableLocations);
+            if (obstacles.Length <= 0)
+            {
+                canReposition = true;
+            }
+        }
+        if(canReposition)
+        {
+            return hit.point + Vector3.up * GameManager.Instance.hordeController.spawnerHeight;
+        }
+        else
+        {
+            return Vector3.zero;
         }
     }
     Queue<FieldCell> ocupiedQueue = new Queue<FieldCell>();
