@@ -225,7 +225,7 @@ public class Enemy : CrowdCharacter
         if (target != null)
         {
             targetVector = target.transform.position - transform.position;
-            
+
             /*if (targetVector.sqrMagnitude > 2500)
             {
                 updateRate = 1f / 15f;
@@ -242,6 +242,18 @@ public class Enemy : CrowdCharacter
             {
                 updateRate = 1f / 30f;
             }*/
+            if (targetVector.sqrMagnitude > maxDistanceFromPlayer * maxDistanceFromPlayer)
+            {
+                Vector3 reposition = CheckReposition();
+                if (reposition != Vector3.zero)
+                {
+                    rb.interpolation = RigidbodyInterpolation.None;
+                    rb.position = reposition;
+                    transform.position = reposition;
+                    ResetAllVelocities();
+                    rb.interpolation = RigidbodyInterpolation.Interpolate;
+                }
+            }
             if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
             {
                 //targetLastSeen = targetVector;
