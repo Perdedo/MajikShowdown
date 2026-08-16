@@ -50,6 +50,9 @@ public class Player : Character
 
     public InteractableObject currentInteraction;
 
+    public Animator animator;
+    [SerializeField] float speedChangeRate = 10;
+    float xAux = 0, yAux = 0;
     //public PlayerData data;
 
     /*[Serializable]
@@ -121,6 +124,10 @@ public class Player : Character
             }
         }
 
+        xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
+        yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
+        animator.SetFloat("InputX", xAux);
+        animator.SetFloat("InputY", yAux);
         /*if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
         {
             if(Input.GetKeyDown(KeyCode.R))
@@ -198,6 +205,25 @@ public class Player : Character
             jumpBuffer = false;
         }
     }
+
+    public void JumpAnim()
+    {
+        animator.ResetTrigger("Jump");
+        animator.SetTrigger("Jump");
+    }
+
+    public void LandAnim()
+    {
+        animator.ResetTrigger("Land");
+        animator.SetTrigger("Land");
+    }
+
+    public void CastAnim()
+    {
+        animator.ResetTrigger("Casting");
+        animator.SetTrigger("Casting");
+    }
+
     public void MoveInput(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network) return;
@@ -207,10 +233,13 @@ public class Player : Character
         if (!movePaused)
         {
             directionInput = Vector2.ClampMagnitude(context.ReadValue<Vector2>(), 1);
+            
         }
         else
         {
             directionInput = Vector2.zero;
+            animator.SetFloat("InputX", 0);
+            animator.SetFloat("InputY", 0);
         }
     }
 
@@ -269,6 +298,8 @@ public class Player : Character
                 v = directionAnchor.transform.forward;
             }
             AddExternalVelocity(v.normalized * DashForce);
+            animator.ResetTrigger("Dash");
+            animator.SetTrigger("Dash");
             dashOnCooldown = true;
             gravityPaused = true;
         }
@@ -309,15 +340,16 @@ public class Player : Character
     }*/
     protected override void HandleRotation()
     {
-        if (Casting)
+        /*if (Casting)
         {
             RotateTowards(directionAnchor.forward);
         }
         else
         {
             RotateFoward();
-        }
+        }*/
 
+        RotateTowards(directionAnchor.forward);
         //transform.eulerAngles = new Vector3(0, lookAnchor.eulerAngles.y, 0);
     }
     IEnumerator CoyoteTimer()

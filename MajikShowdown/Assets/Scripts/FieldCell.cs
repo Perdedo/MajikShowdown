@@ -25,6 +25,7 @@ public class FieldCell
         fieldPos.gridPosition = gridPosition;
         fieldPos.layerIndex = layerIndex;
         this.ID = id;
+        ContainedEnemies = new List<Enemy.IdWrapper>();
         //this.angle = angle;
     }
     public FieldCell(Vector3 position, FieldPos pos, int id/*, float angle*/)
@@ -32,6 +33,7 @@ public class FieldCell
         this.position = position;
         fieldPos = pos;
         this.ID = id;
+        ContainedEnemies = new List<Enemy.IdWrapper>();
         //this.angle = angle;
     }
     public void SetDirection(Vector3 direction)
