@@ -141,14 +141,30 @@ public class CrowdCharacter : CrowdRB, IGameCharacter
     }
     protected void Move(Vector3 dir, float speed)
     {
-        if (movePaused) dir = Vector3.zero;
+        if (movePaused)
+        {
+            IgnoreSlope = false;
+            dir = Vector3.zero; 
+        } 
         dir.y = 0;
         dir = Vector3.ClampMagnitude(dir, 1);
         //float normalDot = Vector3.Dot(LastHitInfo.normal, Vector3.up);
         if (normalDot >= SlopeAngle && vState == VerticalState.grounded)
         {
             dir = Vector3.ProjectOnPlane(dir, LastHitInfo.normal);
+            if(dir.y > 0.1f)
+            {
+                IgnoreSlope = true;
+            }
+            else
+            {
+                IgnoreSlope = false;
+            }
             //transform.rotation = Quaternion.FromToRotation(transform.up, LastHitInfo.normal) * transform.rotation;
+        }
+        else
+        {
+            IgnoreSlope = false;
         }
         /*else
         {
@@ -170,7 +186,6 @@ public class CrowdCharacter : CrowdRB, IGameCharacter
             }
             SetVelocity(dir*speed);
         }
-        
     }
     protected void Move(Vector3 vel)
     {
