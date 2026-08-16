@@ -178,29 +178,19 @@ public class HordeController : NetworkBehaviour
                 };
             }
         }
-        NativeArray<CellJobData> cellInfo = new NativeArray<CellJobData>(FlowFieldManager.instance.flowField.allCells.Count, Allocator.TempJob);
+        //NativeArray<CellJobData> cellInfo = new NativeArray<CellJobData>(FlowFieldManager.instance.flowField.allCells.Count, Allocator.TempJob);
         NativeList<int> EnemyFieldData = new NativeList<int>(Allocator.TempJob);
-        for (int i = 0; i < FlowFieldManager.instance.flowField.allCells.Count; i++)
+        for (int i = 0; i < FlowFieldManager.instance.cellJobDatas.Length; i++)
         {
-            FieldCell cell = FlowFieldManager.instance.flowField.allCells[i];
-            cellInfo[i] = new CellJobData()
+            CellJobData cell = FlowFieldManager.instance.cellJobDatas[i];
+            cell.firstEnemy = EnemyFieldData.Length;
+            cell.Direction = FlowFieldManager.instance.flowField.allCells[i].direction;
+            cell.EnemiesNum = FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies.Count;
+            FlowFieldManager.instance.cellJobDatas[i] =  cell;
+
+            for (int j = 0; j < cell.EnemiesNum; j++)
             {
-                Direction = cell.direction,
-                EnemiesNum = cell.ContainedEnemies.Count,
-                firstEnemy = EnemyFieldData.Length,
-                firstNeighbor = cell.firstNeighbor,
-                lastNeighbor = cell.lastNeighbor
-            };
-            for (int j = 0; j < cell.ContainedEnemies.Count; j++)
-            {
-                /*int id = cell.ContainedEnemies[j].ID;
-                if (id < 0 || id >= UsedEnemies.Count)
-                {
-                    Debug.LogError(
-                        $"Invalid enemy ID {id}. UsedEnemies count = {UsedEnemies.Count}"
-                    );
-                }*/
-                EnemyFieldData.Add(cell.ContainedEnemies[j].ID);
+                EnemyFieldData.Add(FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies[j].ID);
             }
 
 
@@ -210,7 +200,7 @@ public class HordeController : NetworkBehaviour
         AvoidanceCalculation calculation = new AvoidanceCalculation()
         {
             Directions = new NativeArray<float3>(Directions.Length, Allocator.TempJob),
-            Cells = cellInfo,
+            Cells = FlowFieldManager.instance.cellJobDatas,
             CellSize = FlowFieldManager.instance.CellSize,
             MaxCellsChecked = 64,
             MaxEnemyNeighbors = 32,
@@ -239,7 +229,7 @@ public class HordeController : NetworkBehaviour
 
         enemiesInfo.Dispose();
         cellNData.Dispose();
-        cellInfo.Dispose();
+        //cellInfo.Dispose();
         EnemyFieldData.Dispose();
         results.Dispose();
         calculation.Directions.Dispose();

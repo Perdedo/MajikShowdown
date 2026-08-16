@@ -38,6 +38,7 @@ public class CrowdRB : NetworkBehaviour
     [System.NonSerialized] public bool movePaused, gravityPaused;
     Timer raycastTimer = new Timer(false);
     [HideInInspector] public float normalDot;
+    [HideInInspector] public bool IgnoreSlope = false;
     protected virtual void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody>();
@@ -63,7 +64,6 @@ public class CrowdRB : NetworkBehaviour
         Physics.Raycast(rb.position, Vector3.down, out LastHitInfo, terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
         normalDot = Vector3.Dot(LastHitInfo.normal, Vector3.up);
     }
-
     protected void Gravity()
     {
         RaycastGround();
@@ -71,7 +71,7 @@ public class CrowdRB : NetworkBehaviour
 
         if (!gravityPaused)
         {
-            if(LastHitInfo.collider == null|| (normalDot > 0.9f && groundDistance > 0.01f))
+            if(LastHitInfo.collider == null|| (normalDot > 0.9f && groundDistance > 0.05f && !IgnoreSlope))
             {
                 verticalVelocity += Vector3.up * Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
             }

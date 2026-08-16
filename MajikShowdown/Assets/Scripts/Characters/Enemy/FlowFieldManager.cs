@@ -2,6 +2,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.VisualScripting;
+
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -41,6 +45,8 @@ public class FlowFieldManager : MonoBehaviour
     public bool ShowFieldArea = true;
     public bool ShowDirections = true;
     public bool ShowTargetPos = true;
+
+    [HideInInspector] public NativeArray<CellJobData> cellJobDatas;
     void Awake()
     {
         instance = this;
@@ -238,6 +244,24 @@ public class FlowFieldManager : MonoBehaviour
     {
         flowField = new FlowField(CellSize, this);
         flowField.GetFieldFromAsset();
+
+        cellJobDatas = new NativeArray<CellJobData>(flowField.allCells.Count,Allocator.Persistent);
+        for(int i = 0; i< cellJobDatas.Length; i++)
+        {
+            cellJobDatas[i] = new CellJobData()
+            {
+                firstNeighbor = flowField.allCells[i].firstNeighbor,
+                lastNeighbor = flowField.allCells[i].lastNeighbor
+            };
+        }
+
+    }
+    public void OnDestroy()
+    {
+        if (cellJobDatas.IsCreated)
+        {
+            cellJobDatas.Dispose();
+        }
     }
 
     [ContextMenu("GenerateGrid")]
