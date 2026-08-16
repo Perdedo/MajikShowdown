@@ -5,12 +5,13 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
         [Sensitivity] _Sensitivity("Angle sensitivity", Range(1,5)) = 2.5
         [Multiplier] _Multiplier("Edge intensity multiplier", Range(0,10)) = 0.6
         [Sharpness] _Sharpness("Sharpness", Range(0,1)) = 0.9
-        [Opacity] _Opacity("Opacity", Range(0,10)) = 1
+        [Opacity] _Opacity("Opacity", Range(0,1)) = 1
     }
     SubShader
     {
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareNormalsTexture.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
         ENDHLSL
@@ -45,6 +46,12 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                 Out = result2 * zeroOrOne + (1 - zeroOrOne) * result1;
                 Out = lerp(Base, Out, Opacity);
             }
+
+            float4 overlay(float3 base, float3 blend)
+            {
+                return float4(lerp(2.0 * base * blend, 1.0 - 2.0 * (1.0 - blend) * (1.0 - blend), clamp(base, 0.0, 1.0)), 1);
+            }
+
 
             //Sample the world normal and coverts to view space normal
             float2 SampleSceneNormalBuffer(float2 uv, float3x3 viewMatrix)
@@ -110,8 +117,12 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                 float4 finalColor;
                 float curvature;
                 GetAverageCurvature(uv, _Radius, _Sensitivity, _Multiplier, _Sharpness, curvature);
-                BlendSoftLight(color, curvature, _Opacity, finalColor);
-                
+
+                float depth = SampleSceneDepth(uv);
+                float linearDepth  = Linear01Depth(depth, _ZBufferParams);
+
+                BlendSoftLight(color, curvature, _Opacity * (1-linearDepth), finalColor);
+                //BlendSoftLight(color, curvature, _Opacity, finalColor);
                 return finalColor;
             }
             
