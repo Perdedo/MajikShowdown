@@ -3,17 +3,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Collections;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
+using Unity.Jobs;
+using Unity.Mathematics;
+using System.Linq;
 
 public class HordeController : NetworkBehaviour
 {
     public List<EnemySelection> enemyChances;
+    public float3[] Directions = new float3[8];
     List<EnemySelection> selections = new List<EnemySelection>();
     public List<DifficultySetting> difficulties;
     public int difficulty;
     public AnimationCurve spawnerFrequencyCurve;
-    public float minSpawnRadius, maxSpawnRadius, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
+    public float minSpawnRadius, maxSpawnRadius, maxEnemySpawnRadius = 3, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
     float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime, randEnemy;
     public GameObject spawner;
     GameObject aux;
@@ -24,6 +28,7 @@ public class HordeController : NetworkBehaviour
     public TextMeshProUGUI timerTxt;
     [HideInInspector] public List<Enemy> enemies = new List<Enemy>();
     [HideInInspector] public List<Enemy> GameEnemies = new List<Enemy>();
+    [HideInInspector] public List<Enemy> UsedEnemies = new List<Enemy>();
     [HideInInspector] public List<EnemyTransformInfo> enemiesInfo = new List<EnemyTransformInfo>();
     [HideInInspector] public List<List<Enemy>> enemiesByType = new List<List<Enemy>>();
     [HideInInspector] public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
@@ -43,6 +48,11 @@ public class HordeController : NetworkBehaviour
     private void Awake()
     {
         GameManager.Instance.hordeController = this;
+        for (int i = 0; i < Directions.Length; i++)
+        {
+            float angle = i * Mathf.PI * 2f / Directions.Length;
+            Directions[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+        }
         hordeCount = 0;
         spawners.Clear();
         enemiesByType.Clear();
@@ -52,12 +62,19 @@ public class HordeController : NetworkBehaviour
             enemiesByType.Add(new List<Enemy>());
             usedEnemiesByType.Add(new HashSet<Enemy>());
         }
-        if(isServer)
+        if (isServer)
         {
             UpdateEnemyText(0);
         }
     }
-
+    public void UpdateEnemyActiveID()
+    {
+        if (!isServer) return;
+        for (int i = 0; i < UsedEnemies.Count; i++)
+        {
+            UsedEnemies[i].UpdateIdWrapper(i);
+        }
+    }
 
 
     private void Update()
@@ -91,14 +108,38 @@ public class HordeController : NetworkBehaviour
                 {
                     if (e != null)
                     {
-                        if(aux)
+                        if (aux)
                         {
                             e.AICalculation();
                         }
-                        e.EnemyUpdate();
+                        //e.EnemyUpdate();
                     }
                 }
             }
+            if (aux)
+            {
+                Vector3[] results = StartAvoidanceJob();
+                for (int i = 0; i < UsedEnemies.Count; i++)
+                {
+                    if (UsedEnemies[i] != null)
+                    {
+                        UsedEnemies[i].MoveDirection = results[i];
+                        UsedEnemies[i].EnemyUpdate();
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < UsedEnemies.Count; i++)
+                {
+                    if (UsedEnemies[i] != null)
+                    {
+                        UsedEnemies[i].EnemyUpdate();
+                    }
+                }
+            }
+
+
             //UpdateEnemiesPos(enemiesInfo);
         }
         else
@@ -113,6 +154,91 @@ public class HordeController : NetworkBehaviour
                 UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
             }
         }
+    }
+    public Vector3[] StartAvoidanceJob()
+    {
+        Vector3[] finalDirections;
+        NativeArray<float3> results = new NativeArray<float3>(GameManager.Instance.hordeController.UsedEnemies.Count, Allocator.TempJob);
+        NativeArray<EnemyJobData> enemiesInfo = new NativeArray<EnemyJobData>(UsedEnemies.Count, Allocator.TempJob);
+        for (int i = 0; i < UsedEnemies.Count; i++)
+        {
+            //Debug.Log(UsedEnemies[i].currentCell.ID);
+            if (UsedEnemies[i] != null)
+            {
+                enemiesInfo[i] = new EnemyJobData()
+                {
+                    Position = UsedEnemies[i].transform.position,
+                    Size = UsedEnemies[i].size,
+                    EnemyAvoidanceRadius = UsedEnemies[i].EnemyAvoidanceRadius,
+                    SeparationForce = UsedEnemies[i].SeparationForce,
+                    Priority = UsedEnemies[i].priority,
+                    DetectionRadius = UsedEnemies[i].DetectionRadius,
+                    CurrentCell = UsedEnemies[i].currentCell.ID
+
+                };
+            }
+        }
+        //NativeArray<CellJobData> cellInfo = new NativeArray<CellJobData>(FlowFieldManager.instance.flowField.allCells.Count, Allocator.TempJob);
+        NativeList<int> EnemyFieldData = new NativeList<int>(Allocator.TempJob);
+        for (int i = 0; i < FlowFieldManager.instance.cellJobDatas.Length; i++)
+        {
+            CellJobData cell = FlowFieldManager.instance.cellJobDatas[i];
+            cell.firstEnemy = EnemyFieldData.Length;
+            cell.Direction = FlowFieldManager.instance.flowField.allCells[i].direction;
+            cell.EnemiesNum = FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies.Count;
+            FlowFieldManager.instance.cellJobDatas[i] =  cell;
+
+            for (int j = 0; j < cell.EnemiesNum; j++)
+            {
+                EnemyFieldData.Add(FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies[j].ID);
+            }
+
+
+        }
+        NativeArray<int> cellNData = new NativeArray<int>(FlowFieldManager.instance.flowField.neighborsID.Count, Allocator.TempJob);
+        cellNData.CopyFrom(FlowFieldManager.instance.flowField.neighborsID.ToArray());
+        AvoidanceCalculation calculation = new AvoidanceCalculation()
+        {
+            Directions = new NativeArray<float3>(Directions.Length, Allocator.TempJob),
+            Cells = FlowFieldManager.instance.cellJobDatas,
+            CellSize = FlowFieldManager.instance.CellSize,
+            MaxCellsChecked = 64,
+            MaxEnemyNeighbors = 32,
+            CellNeighbors = cellNData,
+            enemiesInField = EnemyFieldData.AsArray(),
+            EnemyData = enemiesInfo,
+            DirectionsOutput = results,
+
+            EnemyNeighbors = new NativeArray<int>(UsedEnemies.Count * 32, Allocator.TempJob),
+            EnemyNeighborCounts = new NativeArray<int>(UsedEnemies.Count, Allocator.TempJob),
+            cellsToCheck = new NativeArray<int>(UsedEnemies.Count * 64, Allocator.TempJob),
+            enemiesInterest = new NativeArray<float>(UsedEnemies.Count * Directions.Length, Allocator.TempJob),
+            enemiesDanger = new NativeArray<float>(UsedEnemies.Count * Directions.Length, Allocator.TempJob)
+
+        };
+        calculation.Directions.CopyFrom(Directions);
+
+        JobHandle handle = calculation.Schedule(UsedEnemies.Count, 64);
+        handle.Complete();
+
+        finalDirections = new Vector3[results.Length];
+        for (int i = 0; i < finalDirections.Length; i++)
+        {
+            finalDirections[i] = results[i];
+        }
+
+        enemiesInfo.Dispose();
+        cellNData.Dispose();
+        //cellInfo.Dispose();
+        EnemyFieldData.Dispose();
+        results.Dispose();
+        calculation.Directions.Dispose();
+        calculation.EnemyNeighbors.Dispose();
+        calculation.EnemyNeighborCounts.Dispose();
+        calculation.cellsToCheck.Dispose();
+        calculation.enemiesInterest.Dispose();
+        calculation.enemiesDanger.Dispose();
+        return finalDirections;
     }
     void FixedUpdate()
     {
@@ -146,9 +272,9 @@ public class HordeController : NetworkBehaviour
         pauseStartTime = Time.time;
         pauseEndTime = pauseStartTime + pauseDuration;
         inPause = true;
-        foreach(Player p in GameManager.Instance.Players)
+        foreach (Player p in GameManager.Instance.Players)
         {
-            if(p.dead)
+            if (p.dead)
             {
                 p.GetComponent<PlayerDamageHandler>().Respawn();
             }
@@ -179,7 +305,7 @@ public class HordeController : NetworkBehaviour
     {
         yield return new WaitForSeconds(0.25f);
         UpdateEnemiesPos(enemiesInfo);
-        if(inHorde)
+        if (inHorde)
         {
             StartCoroutine(DelayUpdateEnemiesPos());
         }
@@ -188,11 +314,11 @@ public class HordeController : NetworkBehaviour
     [ClientRpc]
     public void UpdateEnemiesPos(List<EnemyTransformInfo> aux)
     {
-        if(isServer)
+        if (isServer)
         {
             return;
         }
-        for(int i = 0; i < aux.Count; i++)
+        for (int i = 0; i < aux.Count; i++)
         {
             if (aux[i].enemy != null && aux[i].enemy.activeSelf)
             {
@@ -253,7 +379,7 @@ public class HordeController : NetworkBehaviour
             {
                 selections.Add(enemyChances[i]);
             }*/
-            aux.GetComponent<EnemySpawner>().Initialize(enemyChances, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental, hordeStartTime, hordeDuration);
+            aux.GetComponent<EnemySpawner>().Initialize(enemyChances, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental, hordeStartTime, hordeDuration, maxEnemySpawnRadius);
             usedSpawners.Add(aux);
         }
         if (inHordeTime)
@@ -290,24 +416,48 @@ public class HordeController : NetworkBehaviour
     public Vector3 GetSpawnPos(Vector3 playerPos)
     {
         RaycastHit hit = new RaycastHit();
-        Vector3 pos;
+        Vector3 pos, aux;
         possiblePos = false;
+        bool oppositeOccupied = false;
         float radius;
         while (!possiblePos)
         {
-            do
+            if(usedSpawners.Count > 0 && !oppositeOccupied)
             {
-                dir = new Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)).normalized;
+                aux = GetOppositeDirection(playerPos);
+                dir = new Vector2(aux.x, aux.z).normalized;
             }
-            while (dir == Vector2.zero);
+            else
+            {
+                do
+                {
+                    dir = new Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)).normalized;
+                }
+                while (dir == Vector2.zero);
+            }
             radius = UnityEngine.Random.Range(minSpawnRadius, maxSpawnRadius);
             pos = playerPos + new Vector3(dir.x * radius, heightCheckPoint, dir.y * radius);
             if (Physics.Raycast(pos, Vector3.down, out hit, checkHeight, spawnableLocations))
             {
-                possiblePos = true;
+                Collider[] obstacles = Physics.OverlapSphere(pos, maxEnemySpawnRadius, ~spawnableLocations);
+                if(obstacles.Length <= 0)
+                {
+                    possiblePos = true;
+                }
             }
+            oppositeOccupied = true;
         }
         return hit.point + Vector3.up * spawnerHeight;
+    }
+
+    Vector3 GetOppositeDirection(Vector3 playerPos)
+    {
+        Vector3 aux = Vector3.zero;
+        foreach(GameObject go in usedSpawners)
+        {
+            aux += playerPos - go.transform.position;
+        }
+        return aux;
     }
 
     public void CheckEnemyCount()
@@ -319,7 +469,7 @@ public class HordeController : NetworkBehaviour
         if (enemies.Count == 0)
         {
             inHorde = false;
-            if(hordeCount < hordesToWin)
+            if (hordeCount < hordesToWin)
             {
                 difficulty++;
                 StartPause();
@@ -345,7 +495,7 @@ public class HordeController : NetworkBehaviour
 
     public void CheckDeadPlayers()
     {
-        if(!isServer)
+        if (!isServer)
         {
             return;
         }

@@ -16,9 +16,8 @@ public class FieldCell
     public int ID;
     public int firstNeighbor, lastNeighbor;
     public List<NeighborContext> Neighbors;
-    [NonSerialized]
-    private HashSet<int> containedEnemies;
-    public HashSet<int> ContainedEnemies => containedEnemies ??= new HashSet<int>();
+    public List<Enemy.IdWrapper> ContainedEnemies = new List<Enemy.IdWrapper>();
+
     //public float angle;
     public FieldCell(Vector3 position, Vector2Int gridPosition, int layerIndex, int id/*, float angle*/)
     {

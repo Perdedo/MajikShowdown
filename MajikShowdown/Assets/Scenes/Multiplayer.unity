@@ -908,6 +908,31 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  Directions:
+  - x: 0
+    y: 0
+    z: 0
+  - x: 0
+    y: 0
+    z: 0
+  - x: 0
+    y: 0
+    z: 0
+  - x: 0
+    y: 0
+    z: 0
+  - x: 0
+    y: 0
+    z: 0
+  - x: 0
+    y: 0
+    z: 0
+  - x: 0
+    y: 0
+    z: 0
+  - x: 0
+    y: 0
+    z: 0
   difficulties:
   - difficulty: Easy
     indexes: 00000000
@@ -990,6 +1015,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   minSpawnRadius: 10
   maxSpawnRadius: 20
+  maxEnemySpawnRadius: 3
   hordeDuration: 180
   pauseDuration: 300
   maxSpawnTime: 5
@@ -1004,6 +1030,7 @@ MonoBehaviour:
   timerTxt: {fileID: 869467198}
   enemies: []
   GameEnemies: []
+  UsedEnemies: []
   spawners: []
   running: 0
   spawnableLocations:
@@ -12786,8 +12813,8 @@ MonoBehaviour:
   Target: {fileID: 0}
   Targets: []
   flowFieldDelay: 0.5
-  ShowCells: 1
-  ShowFieldArea: 1
+  ShowCells: 0
+  ShowFieldArea: 0
   ShowDirections: 0
   ShowTargetPos: 0
   cellCountAux: 0
