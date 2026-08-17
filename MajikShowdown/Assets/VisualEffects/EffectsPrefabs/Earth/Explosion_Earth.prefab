@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 89577674225888156}
   - component: {fileID: 1769254880014335268}
   - component: {fileID: 8132592890101056873}
+  - component: {fileID: 3563813463781282862}
   m_Layer: 0
   m_Name: Explosion_Earth
   m_TagString: Untagged
@@ -159,3 +160,24 @@ VFXRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
+--- !u!114 &3563813463781282862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1198122854556626280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95940c49eab4f634e919205d59359247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SetGraphicsBuffer
+  myType: 1
+  spawnPoints: []
+  bufferCapacity: 8
+  visualEffect: {fileID: 1769254880014335268}
+  bufferPoints:
+    m_Name: SpawnPoints
+  bufferCount:
+    m_Name: PointsCount
+  instances: []

@@ -27,18 +27,44 @@ public class BuffersControl : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Comma))
+        if (Input.GetKeyDown(KeyCode.Equals))
         {
-            SpawnEffect(VfxElement.Radiance,VfxType.Area, transform, 1);
+            SpawnEffect(VfxElement.Poison,VfxType.Explosion, buffers[0].transform, 1);
+            SpawnEffect(VfxElement.Poison,VfxType.Projectile, buffers[1].transform, 1);
+            SpawnEffect(VfxElement.Poison,VfxType.Area, buffers[2].transform, 1);
+
+        }
+        if (Input.GetKeyDown(KeyCode.Minus))
+        {
+            UnspawnEffect(VfxElement.Ice, VfxType.Projectile, 0);
         }
     }
-    public void SpawnEffect(VfxElement element, VfxType type, Transform place, float size)
+    public int SpawnEffect(VfxElement element, VfxType type, Transform place, float size)
+    {
+        int index = -1;
+        for(int i = 0; i < buffers.Count; i++)
+        {
+            if(buffers[i].myElement == element)
+            {
+                index = buffers[i].CallBuffer(type, place, size);
+                i = buffers.Count;
+
+            }
+            else if(i == buffers.Count - 1)
+            {
+                Debug.LogError("VFX element don't exist");
+            }
+        }
+        return index;
+    }
+    public void UnspawnEffect(VfxElement element, VfxType type, int index)
     {
         for(int i = 0; i < buffers.Count; i++)
         {
             if(buffers[i].myElement == element)
             {
-                buffers[i].CallBuffer(type, place, size);
+                buffers[i].UnspawnVfx(type, index);
+                i = buffers.Count;
             }
         }
     }

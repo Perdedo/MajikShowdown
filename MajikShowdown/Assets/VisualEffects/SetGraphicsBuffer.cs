@@ -21,10 +21,24 @@ public class SetGraphicsBuffer : MonoBehaviour
     {
         EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
     }
-    public void AddEffect(Transform place, float size)
+    public int AddEffect(Transform place, float size)
     {
         instances.Add(place);
         spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+        return instances.Count - 1;
+    }
+    public void RemoveEffect(int index)
+    {
+        if(instances.Count > index)
+        {
+            instances.RemoveAt(index);
+            spawnPoints.RemoveAt(index);
+        }
+        else
+        {
+            Debug.LogError("Vfx is not spawned");
+        }
+
     }
     void LateUpdate()
     {
