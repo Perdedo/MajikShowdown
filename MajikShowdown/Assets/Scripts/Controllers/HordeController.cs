@@ -7,12 +7,12 @@ using Unity.Collections;
 using UnityEngine;
 using Unity.Jobs;
 using Unity.Mathematics;
-using System.Linq;
 
 public class HordeController : NetworkBehaviour
 {
     public List<EnemySelection> enemyChances;
-    public float3[] Directions = new float3[8];
+    [NonSerialized]public float3[] Directions = new float3[8];
+    NativeArray<float3> JobDirectionData;
     List<EnemySelection> selections = new List<EnemySelection>();
     public List<DifficultySetting> difficulties;
     public int difficulty;
@@ -53,6 +53,8 @@ public class HordeController : NetworkBehaviour
             float angle = i * Mathf.PI * 2f / Directions.Length;
             Directions[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
         }
+        JobDirectionData = new NativeArray<float3>(Directions.Length, Allocator.Persistent);
+        JobDirectionData.CopyFrom(Directions);
         hordeCount = 0;
         spawners.Clear();
         enemiesByType.Clear();
@@ -65,6 +67,13 @@ public class HordeController : NetworkBehaviour
         if (isServer)
         {
             UpdateEnemyText(0);
+        }
+    }
+    private void OnDestroy()
+    {
+        if (JobDirectionData.IsCreated)
+        {
+            JobDirectionData.Dispose();
         }
     }
     public void UpdateEnemyActiveID()
@@ -195,16 +204,16 @@ public class HordeController : NetworkBehaviour
 
 
         }
-        NativeArray<int> cellNData = new NativeArray<int>(FlowFieldManager.instance.flowField.neighborsID.Count, Allocator.TempJob);
-        cellNData.CopyFrom(FlowFieldManager.instance.flowField.neighborsID.ToArray());
+        //NativeArray<int> cellNData = new NativeArray<int>(FlowFieldManager.instance.flowField.neighborsID.Count, Allocator.TempJob);
+        //cellNData.CopyFrom(FlowFieldManager.instance.flowField.neighborsID.ToArray());
         AvoidanceCalculation calculation = new AvoidanceCalculation()
         {
-            Directions = new NativeArray<float3>(Directions.Length, Allocator.TempJob),
+            Directions = JobDirectionData,
             Cells = FlowFieldManager.instance.cellJobDatas,
             CellSize = FlowFieldManager.instance.CellSize,
             MaxCellsChecked = 64,
             MaxEnemyNeighbors = 32,
-            CellNeighbors = cellNData,
+            CellNeighbors = FlowFieldManager.instance.CellNeighborID,
             enemiesInField = EnemyFieldData.AsArray(),
             EnemyData = enemiesInfo,
             DirectionsOutput = results,
@@ -216,7 +225,6 @@ public class HordeController : NetworkBehaviour
             enemiesDanger = new NativeArray<float>(UsedEnemies.Count * Directions.Length, Allocator.TempJob)
 
         };
-        calculation.Directions.CopyFrom(Directions);
 
         JobHandle handle = calculation.Schedule(UsedEnemies.Count, 64);
         handle.Complete();
@@ -228,11 +236,11 @@ public class HordeController : NetworkBehaviour
         }
 
         enemiesInfo.Dispose();
-        cellNData.Dispose();
+        //cellNData.Dispose();
         //cellInfo.Dispose();
         EnemyFieldData.Dispose();
         results.Dispose();
-        calculation.Directions.Dispose();
+        //calculation.Directions.Dispose();
         calculation.EnemyNeighbors.Dispose();
         calculation.EnemyNeighborCounts.Dispose();
         calculation.cellsToCheck.Dispose();

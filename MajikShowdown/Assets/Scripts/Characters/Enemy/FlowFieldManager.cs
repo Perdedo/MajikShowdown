@@ -47,6 +47,7 @@ public class FlowFieldManager : MonoBehaviour
     public bool ShowTargetPos = true;
 
     [HideInInspector] public NativeArray<CellJobData> cellJobDatas;
+    [HideInInspector] public NativeArray<int>CellNeighborID;
     void Awake()
     {
         instance = this;
@@ -261,6 +262,10 @@ public class FlowFieldManager : MonoBehaviour
         if (cellJobDatas.IsCreated)
         {
             cellJobDatas.Dispose();
+        }
+        if (CellNeighborID.IsCreated)
+        {
+            CellNeighborID.Dispose();
         }
     }
 
