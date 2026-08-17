@@ -127,8 +127,16 @@ public class Player : Character
 
         xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
         yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
-        animator.SetFloat("InputX", xAux);
-        animator.SetFloat("InputY", yAux);
+        if(network)
+        {
+            CMDAnimFloat("InputX", xAux);
+            CMDAnimFloat("InputY", yAux);
+        }
+        else
+        {
+            animator.SetFloat("InputX", xAux);
+            animator.SetFloat("InputY", yAux);
+        }
         /*if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
         {
             if(Input.GetKeyDown(KeyCode.R))
@@ -141,6 +149,18 @@ public class Player : Character
             Dash(directionInput);
         }*/
         //RotateCamera();
+    }
+
+    [Command]
+    public void CMDAnimFloat(string flt, float val)
+    {
+        RPCAnimFloat(flt, val);
+    }
+
+    [ClientRpc]
+    public void RPCAnimFloat(string flt, float val)
+    {
+        animator.SetFloat(flt, val);
     }
 
     public void OnDeathValueChange(bool oldVal, bool newVal)
@@ -246,6 +266,19 @@ public class Player : Character
         }
     }
 
+    public void DashAnim()
+    {
+        if (network)
+        {
+            CMDAnimTrigger("Dash");
+        }
+        else
+        {
+            animator.ResetTrigger("Dash");
+            animator.SetTrigger("Dash");
+        }
+    }
+
     [Command]
     public void CMDAnimTrigger(string trigger)
     {
@@ -335,8 +368,7 @@ public class Player : Character
                 v = directionAnchor.transform.forward;
             }
             AddExternalVelocity(v.normalized * DashForce);
-            animator.ResetTrigger("Dash");
-            animator.SetTrigger("Dash");
+            DashAnim();
             dashOnCooldown = true;
             gravityPaused = true;
         }

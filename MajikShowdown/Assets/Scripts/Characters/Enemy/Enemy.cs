@@ -209,26 +209,36 @@ public class Enemy : CrowdCharacter
             attackCooldownTimer.Paused = true;
         }
         PathToTarget(currentCell);
-        animator.SetBool("Moving", rb.linearVelocity != Vector3.zero);
+        RPCAnimBool("Moving", rb.linearVelocity != Vector3.zero);
         UpdateTransform();
+    }
+
+    [ClientRpc]
+    public void RPCAnimBool(string bl, bool val)
+    {
+        animator.SetBool(bl, val);
     }
 
     public void JumpAnim()
     {
-        animator.ResetTrigger("Jump");
-        animator.SetTrigger("Jump");
+        RPCAnimTrigger("Jump");
     }
 
     public void LandAnim()
     {
-        animator.ResetTrigger("Land");
-        animator.SetTrigger("Land");
+        RPCAnimTrigger("Land");
     }
 
     public void AttackAnim()
     {
-        animator.ResetTrigger("Attack");
-        animator.SetTrigger("Attack");
+        RPCAnimTrigger("Attack");
+    }
+
+    [ClientRpc]
+    public void RPCAnimTrigger(string trigger)
+    {
+        animator.ResetTrigger(trigger);
+        animator.SetTrigger(trigger);
     }
 
     public void UpdateTransform()
@@ -427,7 +437,10 @@ public class Enemy : CrowdCharacter
                 jumpTimer.SetTimer(0);
                 jumpTimer.Paused = false;
                 CvState = CharVerticalState.jumping;
-                JumpAnim();
+                if(isServer)
+                {
+                    JumpAnim();
+                }
                 InvokeIfAllowed(Jumped);
                 StartCoroutine(JumpCooldown());
             }
@@ -465,7 +478,10 @@ public class Enemy : CrowdCharacter
             {
                 vState = VerticalState.grounded;
                 InvokeIfAllowed(HitGround);
-                LandAnim();
+                if(isServer)
+                {
+                    LandAnim();
+                }
             }
             else
             {
