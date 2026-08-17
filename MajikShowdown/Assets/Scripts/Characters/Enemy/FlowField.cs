@@ -6,7 +6,7 @@ public class FlowField
 {
     public Dictionary<Vector2Int, CellColumn> field = new Dictionary<Vector2Int, CellColumn>();
     public List<FieldCell> allCells = new List<FieldCell>();
-    public List<int> neighborsID = new List<int>();
+    [SerializeField] List<int> neighborsID = new List<int>();
     public Vector2Int fieldSize;
     public float cellSize = 1f;
     public float maxStepOffset = 1f;
@@ -103,6 +103,8 @@ public class FlowField
                 allCells.Add(cell);
             }
         }
+        FlowFieldManager.instance.CellNeighborID = new Unity.Collections.NativeArray<int>(neighborsID.Count, Unity.Collections.Allocator.Persistent);
+        FlowFieldManager.instance.CellNeighborID.CopyFrom(neighborsID.ToArray());
     }
 
     float DetectionRadius = 4;

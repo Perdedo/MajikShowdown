@@ -47,6 +47,7 @@ public class FlowFieldManager : MonoBehaviour
     public bool ShowTargetPos = true;
 
     [HideInInspector] public NativeArray<CellJobData> cellJobDatas;
+    [HideInInspector] public NativeArray<int>CellNeighborID;
     void Awake()
     {
         instance = this;
@@ -251,7 +252,8 @@ public class FlowFieldManager : MonoBehaviour
             cellJobDatas[i] = new CellJobData()
             {
                 firstNeighbor = flowField.allCells[i].firstNeighbor,
-                lastNeighbor = flowField.allCells[i].lastNeighbor
+                lastNeighbor = flowField.allCells[i].lastNeighbor,
+                Position = flowField.allCells[i].position
             };
         }
 
@@ -261,6 +263,10 @@ public class FlowFieldManager : MonoBehaviour
         if (cellJobDatas.IsCreated)
         {
             cellJobDatas.Dispose();
+        }
+        if (CellNeighborID.IsCreated)
+        {
+            CellNeighborID.Dispose();
         }
     }
 
