@@ -66,6 +66,7 @@ public class Enemy : CrowdCharacter
     public float maxDistanceFromPlayer = 100, repositionRange = 20;
 
     public Animator animator;
+    bool prevMoving = false, moving = false;
 
     public void Initialize()
     {
@@ -209,7 +210,12 @@ public class Enemy : CrowdCharacter
             attackCooldownTimer.Paused = true;
         }
         PathToTarget(currentCell);
-        RPCAnimBool("Moving", rb.linearVelocity != Vector3.zero);
+        prevMoving = moving;
+        moving = rb.linearVelocity != Vector3.zero;
+        if(prevMoving != moving)
+        {
+            RPCAnimBool("Moving", moving);
+        }
         UpdateTransform();
     }
 
