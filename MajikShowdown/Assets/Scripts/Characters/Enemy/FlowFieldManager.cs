@@ -252,7 +252,8 @@ public class FlowFieldManager : MonoBehaviour
             cellJobDatas[i] = new CellJobData()
             {
                 firstNeighbor = flowField.allCells[i].firstNeighbor,
-                lastNeighbor = flowField.allCells[i].lastNeighbor
+                lastNeighbor = flowField.allCells[i].lastNeighbor,
+                Position = flowField.allCells[i].position
             };
         }
 

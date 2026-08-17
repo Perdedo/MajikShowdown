@@ -669,15 +669,31 @@ public class Enemy : CrowdCharacter
 public struct EnemyFieldLocation : IJobParallelFor
 {
     //prompted
-    public NativeArray<float3> PlayerPositions;
-    public NativeArray<float3> EnemyPositions;
-    public NativeArray<EnemyJobData> EnemyData;
+    [Unity.Collections.ReadOnly] public NativeArray<float3> PlayerPositions;
+    [Unity.Collections.ReadOnly] public NativeArray<float3> EnemyPositions;
+    [Unity.Collections.ReadOnly] public NativeArray<EnemyJobData> EnemyData;
+    [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
 
     //Output
     public NativeArray<int> TargetIndices;
     public void Execute(int index)
     {
         //EnemyData[index].CurrentCell = FlowFieldManager.instance.WorldToGridPosition(EnemyData[index].Position).ID;
+    }
+    public int WorldToGridPosition(float3 worldPosition)
+    {
+        int closest = -1;
+        float closestDist = float.MaxValue;
+        for(int i = 0; i< Cells.Length; i++)
+        {
+            float newDistance = math.distance(worldPosition, Cells[i].Position);
+            if(newDistance < closestDist)
+            {
+                closestDist = newDistance;
+                closest = i;
+            }
+        }
+        return closest;
     }
     public void DefineTarget(int index)
     {
@@ -1030,7 +1046,7 @@ public struct EnemyJobData
 }
 public struct CellJobData
 {
-    //public float3 Position;
+    public float3 Position;
     public float3 Direction;
 
     public int EnemiesNum;
