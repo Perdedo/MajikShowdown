@@ -64,6 +64,9 @@ public class Enemy : CrowdCharacter
     Vector3 predTarget;
     int detectRadius;
     public float maxDistanceFromPlayer = 100, repositionRange = 20;
+
+    public Animator animator;
+
     public void Initialize()
     {
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
@@ -206,7 +209,26 @@ public class Enemy : CrowdCharacter
             attackCooldownTimer.Paused = true;
         }
         PathToTarget(currentCell);
+        animator.SetBool("Moving", rb.linearVelocity != Vector3.zero);
         UpdateTransform();
+    }
+
+    public void JumpAnim()
+    {
+        animator.ResetTrigger("Jump");
+        animator.SetTrigger("Jump");
+    }
+
+    public void LandAnim()
+    {
+        animator.ResetTrigger("Land");
+        animator.SetTrigger("Land");
+    }
+
+    public void AttackAnim()
+    {
+        animator.ResetTrigger("Attack");
+        animator.SetTrigger("Attack");
     }
 
     public void UpdateTransform()
@@ -395,6 +417,76 @@ public class Enemy : CrowdCharacter
             Jump(true);
         }
     }
+
+    protected override void Jump(bool pressed)
+    {
+        if (pressed && !movePaused)
+        {
+            if ((CvState == CharVerticalState.grounded || canJumpOnAir) && !jumpOnCooldown)
+            {
+                jumpTimer.SetTimer(0);
+                jumpTimer.Paused = false;
+                CvState = CharVerticalState.jumping;
+                JumpAnim();
+                InvokeIfAllowed(Jumped);
+                StartCoroutine(JumpCooldown());
+            }
+        }
+        else if (CvState == CharVerticalState.jumping)
+        {
+            jumpTimer.SetTimer(jumpTime);
+        }
+    }
+
+    protected override void Gravity()
+    {
+        RaycastGround();
+        float groundDistance = LastHitInfo.distance - (height / 2);
+
+        if (!gravityPaused)
+        {
+            if (LastHitInfo.collider == null || (normalDot > 0.9f && groundDistance > 0.05f && !IgnoreSlope))
+            {
+                verticalVelocity += Vector3.up * Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
+            }
+            else if (groundDistance <= terrainBuffer && vState == VerticalState.grounded)
+            {
+                verticalVelocity.y = 0;
+            }
+        }
+        else
+        {
+            verticalVelocity.y = 0;
+        }
+
+        if (LastHitInfo.collider != null)
+        {
+            if (vState == VerticalState.falling)
+            {
+                vState = VerticalState.grounded;
+                InvokeIfAllowed(HitGround);
+                LandAnim();
+            }
+            else
+            {
+                vState = VerticalState.grounded;
+            }
+        }
+        else
+        {
+            if (vState == VerticalState.grounded)
+            {
+                vState = VerticalState.falling;
+                InvokeIfAllowed(Fell);
+            }
+            else
+            {
+                vState = VerticalState.falling;
+            }
+        }
+
+    }
+
     public void PathToTarget(FieldCell currentCell)
     {
         if (targetVector.magnitude <= TargetStoppingDistance || (MoveDirection == Vector3.zero && canSeeTarget))
@@ -417,16 +509,18 @@ public class Enemy : CrowdCharacter
                     attackTimer.SetTimer(0);
                     attackedPlayer = target;
                     attackTimer.Paused = false;
+                    AttackAnim();
                 }
             }
-            else
+            /*else
             {
+                attacked = true;
                 attackTimer.Paused = true;
-            }
+            }*/
         }
         else
         {
-            attackTimer.Paused = true;
+            //attackTimer.Paused = true;
             //Move(MoveDirection, speed);
             if (detectedObstacle)
             {
