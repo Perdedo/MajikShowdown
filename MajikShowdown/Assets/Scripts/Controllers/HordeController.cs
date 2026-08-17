@@ -182,7 +182,8 @@ public class HordeController : NetworkBehaviour
                     SeparationForce = UsedEnemies[i].SeparationForce,
                     Priority = UsedEnemies[i].priority,
                     DetectionRadius = UsedEnemies[i].DetectionRadius,
-                    CurrentCell = UsedEnemies[i].currentCell.ID
+                    CurrentCell = UsedEnemies[i].currentCell.ID,
+                    occupiedCellDepth = UsedEnemies[i].occupiedCellNum
 
                 };
             }

@@ -44,7 +44,7 @@ public class Enemy : CrowdCharacter
     bool canSeeTarget;
     [NonSerialized] public FieldCell currentCell, forwardCell;
     HashSet<FieldCell> OccupiedCells = new HashSet<FieldCell>();
-    int occupiedCellNum;
+    [NonSerialized] public int occupiedCellNum;
 
     bool attacked = true, onAttackCooldown = false;
     Timer attackTimer = new Timer(false), attackCooldownTimer = new Timer(false);
@@ -54,7 +54,8 @@ public class Enemy : CrowdCharacter
     Damage dmgCtrl;
     [HideInInspector][SyncVar] public int instanceIndex;
     [HideInInspector][SyncVar] public IdWrapper ActiveID;
-    [Serializable]public struct IdWrapper
+    [Serializable]
+    public struct IdWrapper
     {
         public int ID;
     }
@@ -97,7 +98,7 @@ public class Enemy : CrowdCharacter
     public void UpdateIdWrapper(int value)
     {
         IdWrapper aux = ActiveID;
-        aux.ID =  value;
+        aux.ID = value;
         ActiveID = aux;
     }
 
@@ -343,7 +344,7 @@ public class Enemy : CrowdCharacter
                 canReposition = true;
             }
         }
-        if(canReposition)
+        if (canReposition)
         {
             return hit.point + Vector3.up * GameManager.Instance.hordeController.spawnerHeight;
         }
@@ -792,30 +793,25 @@ public struct EnemyFieldLocation : IJobParallelFor
 {
     //prompted
     [Unity.Collections.ReadOnly] public NativeArray<float3> PlayerPositions;
-    [Unity.Collections.ReadOnly] public NativeArray<float3> EnemyPositions;
-    [Unity.Collections.ReadOnly] public NativeArray<EnemyJobData> EnemyData;
-    [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
+    //[Unity.Collections.ReadOnly] public NativeArray<float3> EnemyPositions;
+    [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
+    int maxEnemiesPerCell;
+    int maxEnemyOccupiedCells;
+
+    //Prompted && output
+    [NativeDisableParallelForRestriction]public NativeArray<CellJobData> Cells;
+    public NativeArray<EnemyJobData> EnemyData;
 
     //Output
     public NativeArray<int> TargetIndices;
+    [NativeDisableParallelForRestriction]public NativeArray<int> enemiesInField;
+    [NativeDisableParallelForRestriction]public NativeArray<int> enemyOcupiedCells;
+
+    //calculated
+    [NativeDisableParallelForRestriction]public NativeArray<int> OccupiedCellsToCheck;
     public void Execute(int index)
     {
         //EnemyData[index].CurrentCell = FlowFieldManager.instance.WorldToGridPosition(EnemyData[index].Position).ID;
-    }
-    public int WorldToGridPosition(float3 worldPosition)
-    {
-        int closest = -1;
-        float closestDist = float.MaxValue;
-        for(int i = 0; i< Cells.Length; i++)
-        {
-            float newDistance = math.distance(worldPosition, Cells[i].Position);
-            if(newDistance < closestDist)
-            {
-                closestDist = newDistance;
-                closest = i;
-            }
-        }
-        return closest;
     }
     public void DefineTarget(int index)
     {
@@ -823,7 +819,7 @@ public struct EnemyFieldLocation : IJobParallelFor
         float closestDistance = float.MaxValue;
         for (int i = 0; i < PlayerPositions.Length; i++)
         {
-            float distance = math.distance(EnemyPositions[index], PlayerPositions[i]);
+            float distance = math.distance(EnemyData[index].Position, PlayerPositions[i]);
             if (distance < closestDistance)
             {
                 closestDistance = distance;
@@ -832,37 +828,104 @@ public struct EnemyFieldLocation : IJobParallelFor
         }
         TargetIndices[index] = closestPlayerIndex;
     }
+    public int WorldToGridPosition(float3 worldPosition)
+    {
+        int closest = -1;
+        float closestDist = float.MaxValue;
+        for (int i = 0; i < Cells.Length; i++)
+        {
+            float newDistance = math.distance(worldPosition, Cells[i].Position);
+            if (newDistance < closestDist)
+            {
+                closestDist = newDistance;
+                closest = i;
+            }
+        }
+        return closest;
+    }
     public void CheckFieldLocation(int index)
     {
-        /*currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
+        int currentCell = WorldToGridPosition(EnemyData[index].Position);
         int aux = 1;
+        int occupiedCellNum = 0;
+        int checkCount = 0;
+        bool reachedLimit = false;
+        //int checkedAmount = 0;
 
-        foreach (FieldCell c in OccupiedCells)
+        /*foreach (FieldCell c in OccupiedCells)
         {
             c.ContainedEnemies.Remove(GameID);
         }
-        OccupiedCells.Clear();
-        if (currentCell == null) return;
-        ocupiedQueue.Enqueue(currentCell);
+        OccupiedCells.Clear();*/
+
+        if (currentCell == -1) return;
+        EnemyJobData EJD = EnemyData[index];
+        EJD.CurrentCell = currentCell;
+        EnemyData[index] = EJD;
+
+        int OccupiedCellsOffset = maxEnemyOccupiedCells * index;
+        //ocupiedQueue.Enqueue(currentCell);
+        OccupiedCellsToCheck[OccupiedCellsOffset + checkCount] = currentCell;
+        checkCount++;
+
         //OccupiedCells.Add(currentCell);
+        /*enemyOcupiedCells[OccupiedCellsOffset + occupiedCellNum] = currentCell;
         //currentCell.ContainedEnemies.Add(GameID);
-        while (ocupiedQueue.Count > 0)
+        enemiesInField[(currentCell * maxEnemiesPerCell) + Cells[currentCell].EnemiesNum] = index;
+        aux++;
+        occupiedCellNum++;*/
+        while (checkCount - occupiedCellNum > 0)
         {
-            FieldCell c = ocupiedQueue.Dequeue();
-            OccupiedCells.Add(c);
-            c.ContainedEnemies.Add(GameID);
-            if (aux < occupiedCellNum)
+            int CellIndex = OccupiedCellsToCheck[OccupiedCellsOffset + occupiedCellNum];
+            
+            if(Cells[CellIndex].EnemiesNum < maxEnemiesPerCell)
             {
-                foreach (FieldCell.NeighborContext n in c.Neighbors)
+                int enemyInFieldOffset = CellIndex * maxEnemiesPerCell;
+                enemyOcupiedCells[OccupiedCellsOffset + occupiedCellNum] = CellIndex;
+                enemiesInField[ enemyInFieldOffset + Cells[CellIndex].EnemiesNum] = index;
+                CellJobData c = Cells[CellIndex];
+                if(c.EnemiesNum == 0)
                 {
-                    if (!OccupiedCells.Contains(n.neighborCell))
+                    c.firstEnemy = enemyInFieldOffset;
+                }
+                c.EnemiesNum++;
+                Cells[CellIndex] = c;
+                occupiedCellNum++;
+                if(occupiedCellNum == maxEnemyOccupiedCells)
+                {
+                    reachedLimit = true;
+                }
+            }
+            if (reachedLimit)
+            {
+                break;
+            }
+            //checkedAmount++;
+            
+            if (aux < EnemyData[index].occupiedCellDepth)
+            {
+                for (int i = Cells[CellIndex].firstNeighbor; i <= Cells[CellIndex].lastNeighbor; i++)
+                {
+                    int neighborID = CellNeighbors[i];
+                    bool alreadyChecked = false;
+                    for (int j = OccupiedCellsOffset; j < OccupiedCellsOffset + occupiedCellNum; j++)
                     {
-                        ocupiedQueue.Enqueue(n.neighborCell);
+                        if (OccupiedCellsToCheck[j] == neighborID)
+                        {
+                            alreadyChecked = true;
+                        }
                     }
+                    if (!alreadyChecked)
+                    {
+                        OccupiedCellsToCheck[OccupiedCellsOffset + checkCount] = neighborID;
+                        checkCount++;
+                    }
+
                 }
                 aux++;
             }
-        }*/
+
+        }
     }
 }
 [BurstCompile]
@@ -878,7 +941,7 @@ public struct AvoidanceCalculation : IJobParallelFor
     public int MaxCellsChecked;
     public int MaxEnemyNeighbors;
     [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
-    [Unity.Collections.ReadOnly]public NativeArray<int> enemiesInField;
+    [Unity.Collections.ReadOnly] public NativeArray<int> enemiesInField;
 
     //calculated
     [NativeDisableParallelForRestriction] public NativeArray<int> EnemyNeighbors;
@@ -1133,7 +1196,7 @@ public struct AvoidanceCalculation : IJobParallelFor
         add.y = 0;
         //Interest.Dispose();
         //Danger.Dispose();
-        if(add.x==0 && add.z == 0)
+        if (add.x == 0 && add.z == 0)
         {
             return float3.zero;
         }
@@ -1158,6 +1221,7 @@ public struct EnemyJobData
     public float SeparationForce;
     public int Priority;
     public float DetectionRadius;
+    public int occupiedCellDepth;
     //public float TargetStoppingDistance;
 
     //Prompted
