@@ -67,6 +67,8 @@ public class Enemy : CrowdCharacter
 
     public Animator animator;
     bool prevMoving = false, moving = false;
+    public enum EnemyAnimState : byte { None, Attack, Jump, Land };
+    [SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
     public void Initialize()
     {
@@ -160,6 +162,12 @@ public class Enemy : CrowdCharacter
             Quaternion targetRot = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
         }
+        prevMoving = moving;
+        moving = rb.linearVelocity != Vector3.zero;
+        if (prevMoving != moving)
+        {
+            animator.SetBool("Moving", moving);
+        }
     }
 
     public void EnemyUpdate()
@@ -214,38 +222,36 @@ public class Enemy : CrowdCharacter
         moving = rb.linearVelocity != Vector3.zero;
         if(prevMoving != moving)
         {
-            RPCAnimBool("Moving", moving);
+            animator.SetBool("Moving", moving);
         }
         UpdateTransform();
     }
 
-    [ClientRpc]
-    public void RPCAnimBool(string bl, bool val)
+    public void OnAnimStateChange(EnemyAnimState oldVal, EnemyAnimState newVal)
     {
-        animator.SetBool(bl, val);
+        switch(newVal)
+        {
+            case EnemyAnimState.Attack:
+                animator.ResetTrigger("Attack");
+                animator.SetTrigger("Attack");
+                break;
+            case EnemyAnimState.Jump:
+                animator.ResetTrigger("Jump");
+                animator.SetTrigger("Jump");
+                break;
+            case EnemyAnimState.Land:
+                animator.ResetTrigger("Land");
+                animator.SetTrigger("Land");
+                break;
+        }
     }
 
-    public void JumpAnim()
+    public void PlayAnimation(EnemyAnimState state)
     {
-        RPCAnimTrigger("Jump");
+        animState = state;
+        animState = EnemyAnimState.None;
     }
 
-    public void LandAnim()
-    {
-        RPCAnimTrigger("Land");
-    }
-
-    public void AttackAnim()
-    {
-        RPCAnimTrigger("Attack");
-    }
-
-    [ClientRpc]
-    public void RPCAnimTrigger(string trigger)
-    {
-        animator.ResetTrigger(trigger);
-        animator.SetTrigger(trigger);
-    }
 
     public void UpdateTransform()
     {
@@ -445,7 +451,7 @@ public class Enemy : CrowdCharacter
                 CvState = CharVerticalState.jumping;
                 if(isServer)
                 {
-                    JumpAnim();
+                    PlayAnimation(EnemyAnimState.Jump);
                 }
                 InvokeIfAllowed(Jumped);
                 StartCoroutine(JumpCooldown());
@@ -486,7 +492,7 @@ public class Enemy : CrowdCharacter
                 InvokeIfAllowed(HitGround);
                 if(isServer)
                 {
-                    LandAnim();
+                    PlayAnimation(EnemyAnimState.Land);
                 }
             }
             else
@@ -531,7 +537,7 @@ public class Enemy : CrowdCharacter
                     attackTimer.SetTimer(0);
                     attackedPlayer = target;
                     attackTimer.Paused = false;
-                    AttackAnim();
+                    PlayAnimation(EnemyAnimState.Attack);
                 }
             }
             /*else

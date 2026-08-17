@@ -54,6 +54,9 @@ public class Player : Character
     public Animator animator;
     [SerializeField] float speedChangeRate = 10;
     float xAux = 0, yAux = 0;
+
+    [SyncVar(hook = "OnInputChanged")] public Vector2 netInput = Vector2.zero;
+
     //public PlayerData data;
 
     /*[Serializable]
@@ -124,16 +127,10 @@ public class Player : Character
                 gravityTimer.SetTimer(0);
             }
         }
-
-        xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
-        yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
-        if(network)
+        if(isLocalPlayer || !network)
         {
-            CMDAnimFloat("InputX", xAux);
-            CMDAnimFloat("InputY", yAux);
-        }
-        else
-        {
+            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
+            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
             animator.SetFloat("InputX", xAux);
             animator.SetFloat("InputY", yAux);
         }
@@ -149,18 +146,6 @@ public class Player : Character
             Dash(directionInput);
         }*/
         //RotateCamera();
-    }
-
-    [Command]
-    public void CMDAnimFloat(string flt, float val)
-    {
-        RPCAnimFloat(flt, val);
-    }
-
-    [ClientRpc]
-    public void RPCAnimFloat(string flt, float val)
-    {
-        animator.SetFloat(flt, val);
     }
 
     public void OnDeathValueChange(bool oldVal, bool newVal)
@@ -303,13 +288,31 @@ public class Player : Character
         if (!movePaused)
         {
             directionInput = Vector2.ClampMagnitude(context.ReadValue<Vector2>(), 1);
-            
+            if(network)
+            {
+                netInput = directionInput;
+            }
         }
         else
         {
             directionInput = Vector2.zero;
+            if (network)
+            {
+                netInput = directionInput;
+            }
             animator.SetFloat("InputX", 0);
             animator.SetFloat("InputY", 0);
+        }
+    }
+
+    public void OnInputChanged(Vector2 oldVal, Vector2 newVal)
+    {
+        if(!isLocalPlayer)
+        {
+            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
+            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
+            animator.SetFloat("InputX", xAux);
+            animator.SetFloat("InputY", yAux);
         }
     }
 
