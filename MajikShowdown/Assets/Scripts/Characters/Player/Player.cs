@@ -209,21 +209,57 @@ public class Player : Character
 
     public void JumpAnim()
     {
-        animator.ResetTrigger("Jump");
-        animator.SetTrigger("Jump");
+        if(network)
+        {
+            CMDAnimTrigger("Jump");
+        }
+        else
+        {
+            animator.ResetTrigger("Jump");
+            animator.SetTrigger("Jump");
+        }
     }
 
     public void LandAnim()
     {
-        animator.ResetTrigger("Land");
-        animator.SetTrigger("Land");
+        if (network)
+        {
+            CMDAnimTrigger("Land");
+        }
+        else
+        {
+            animator.ResetTrigger("Land");
+            animator.SetTrigger("Land");
+        }
     }
 
     public void CastAnim()
     {
-        animator.ResetTrigger("Casting");
-        animator.SetTrigger("Casting");
+        if (network)
+        {
+            CMDAnimTrigger("Casting");
+        }
+        else
+        {
+            animator.ResetTrigger("Casting");
+            animator.SetTrigger("Casting");
+        }
     }
+
+    [Command]
+    public void CMDAnimTrigger(string trigger)
+    {
+        RPCAnimTrigger(trigger);
+    }
+
+    [ClientRpc]
+    public void RPCAnimTrigger(string trigger)
+    {
+        animator.ResetTrigger(trigger);
+        animator.SetTrigger(trigger);
+    }
+
+
 
     public void MoveInput(InputAction.CallbackContext context)
     {
