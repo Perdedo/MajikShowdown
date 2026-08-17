@@ -20,6 +20,7 @@ public class NodeTween : MonoBehaviour
     public void SlideFrom(Vector3 startWorldPosition)
     {
         movementTween?.Kill();
+
         Vector3 targetWorldPosition = rectTransform.position;
         rectTransform.position = startWorldPosition;
         movementTween = rectTransform.DOMove(targetWorldPosition, slideDuration).SetEase(slideEase).SetUpdate(true);
@@ -31,9 +32,16 @@ public class NodeTween : MonoBehaviour
         movementTween = rectTransform.DOAnchorPos(targetAnchoredPosition, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => onComplete?.Invoke());
     }
 
+    public void SlideToWorld(Vector3 targetWorldPosition, Action onComplete = null)
+    {
+        movementTween?.Kill();
+        movementTween = rectTransform.DOMove(targetWorldPosition, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => onComplete?.Invoke());
+    }
+
     public void Stop()
     {
         movementTween?.Kill();
+        movementTween = null;
     }
 
     private void OnDestroy()

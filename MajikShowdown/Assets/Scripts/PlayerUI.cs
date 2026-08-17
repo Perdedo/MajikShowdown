@@ -12,6 +12,13 @@ using UnityEngine.UI;
 
 public class PlayerUI : NetworkBehaviour
 {
+    [Header("Shop")]
+    [SerializeField] private GameObject shopPanel;
+
+    private ShopInteractionZone currentShopZone; 
+    private InputAction interactAction;
+    public bool IsShopOpen => shopPanel != null && shopPanel.activeSelf;
+
     [Header("Test Panels")]
     public GameObject spellPanel;
     public GameObject createSpellPanel;
@@ -123,6 +130,10 @@ public class PlayerUI : NetworkBehaviour
         {
             deathPanel.SetActive(false);
         }
+        if (shopPanel != null)
+        {
+            shopPanel.SetActive(false);
+        }
         ResolutionDropdown();
         ScreenModeDropdown();
         loaded = true;
@@ -149,6 +160,7 @@ public class PlayerUI : NetworkBehaviour
         UpdateEquipSlotIcons();
         if (isLocalPlayer || !network)
         {
+            SetupInteractInput();
             if (LoadingScreenController.Instance != null && LoadingScreenController.Instance.IsShowing)
             {
                 EnableLoadingState();
@@ -1086,5 +1098,102 @@ public class PlayerUI : NetworkBehaviour
         {
             FinishLoading();
         }
+    }
+
+    public void EnterShopZone(ShopInteractionZone zone)
+    {
+        if (!isLocalPlayer && network) return;
+
+        currentShopZone = zone;
+    }
+
+    public void ExitShopZone(ShopInteractionZone zone)
+    {
+        if (!isLocalPlayer && network) return;
+        if (currentShopZone != zone) return;
+
+        currentShopZone = null;
+
+        if (IsShopOpen)
+        {
+            CloseShopPanel();
+        }
+    }
+
+    public void InteractInput(InputAction.CallbackContext context)
+    {
+        if (!isLocalPlayer && network) return;
+        if (!context.performed) return;
+
+        Debug.Log("Interact pressionado.", this);
+
+        if (currentShopZone == null)
+        {
+            Debug.Log("O jogador não está dentro da área da loja.", this);
+            return;
+        }
+
+        if (IsShopOpen)
+        {
+            CloseShopPanel();
+        }
+        else
+        {
+            OpenShopPanel();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (interactAction != null)
+        {
+            interactAction.performed -= InteractInput;
+        }
+    }
+
+    public void OpenShopPanel()
+    {
+        if (!isLocalPlayer && network) return;
+        if (shopPanel == null) return;
+        if (IsLoading()) return;
+        if (myPlayer != null && myPlayer.dead) return;
+        if (pausePanel != null && pausePanel.activeSelf) return;
+        if (spellPanel != null && spellPanel.activeSelf) return;
+
+        ShowAnimatedPanel(shopPanel);
+        SetGameplayInput(false);
+        caster.canCast = false;
+        EnableUICursor();
+    }
+
+    public void CloseShopPanel()
+    {
+        if (!isLocalPlayer && network) return;
+        if (shopPanel == null || !shopPanel.activeSelf) return;
+
+        HideAnimatedPanel(shopPanel, ResumeGameplay);
+    }
+
+    private void SetupInteractInput()
+    {
+        if (myPlayer == null || myPlayer.input == null)
+        {
+            Debug.LogError("Player ou PlayerInput não foi atribuído no PlayerUI.", this);
+            return;
+        }
+
+        interactAction = myPlayer.input.actions.FindAction("Interact", false);
+
+        if (interactAction == null)
+        {
+            Debug.LogError("A Action 'Interact' não foi encontrada.", this);
+            return;
+        }
+
+        interactAction.performed -= InteractInput;
+        interactAction.performed += InteractInput;
+        interactAction.Enable();
+
+        Debug.Log("Action Interact conectada ao PlayerUI.", this);
     }
 }
