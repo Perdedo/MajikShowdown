@@ -50,15 +50,13 @@ public class FlowField
 
                         if (!alreadyExists)
                         {
-
+                            //if (Physics.OverlapCapsule(hit.position + Vector3.up * ((manager.ObstructionHeight / 2) + 0.1f), hit.position + Vector3.up * manager.ObstructionHeight, cellSize / 3, manager.ObstructionLayer).Length == 0)
                             if (!Physics.CheckCapsule(hit.position + Vector3.up * ((manager.ObstructionHeight / 2) + 0.1f), hit.position + Vector3.up * manager.ObstructionHeight, cellSize / 3, manager.ObstructionLayer))
                             {
                                 FieldCell newCell = new FieldCell(hit.position, gridPos, column.Layers.Count, allCells.Count);
                                 column.Layers.Add(newCell);
                                 allCells.Add(newCell);
-                                //column.Layers.Add(new FieldCell(hit.position, gridPos, column.Layers.Count, allCells.Count));
                             }
-                            //column.Layers.Add(new FieldCell(hit.position, gridPos, column.Layers.Count));
                         }
                     }
                 }

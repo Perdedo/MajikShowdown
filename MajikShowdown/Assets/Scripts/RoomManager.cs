@@ -199,4 +199,13 @@ public class RoomManager : NetworkRoomManager
             ui.CMDSyncText(txt);
         }
     }
+
+    public override void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling)
+    {
+        if (newSceneName == GameplayScene && LoadingScreenController.Instance != null)
+        {
+            LoadingScreenController.Instance.Show();
+        }
+        base.OnClientChangeScene(newSceneName, sceneOperation, customHandling);
+    }
 }

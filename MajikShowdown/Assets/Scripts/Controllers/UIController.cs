@@ -306,7 +306,14 @@ public class UIController : MonoBehaviour
 
     public void OpenPanel(GameObject panel)
     {
-        panel.SetActive(true);
+        if (panel.TryGetComponent(out PanelTween panelTween))
+        {
+            panelTween.Show();
+        }
+        else
+        {
+            panel.SetActive(true);
+        }
         if (SceneManager.GetActiveScene().name == "Menu")
         {
             IsMenuObjectsVisible(false);
@@ -319,11 +326,23 @@ public class UIController : MonoBehaviour
 
     public void ClosePanel(GameObject panel)
     {
-        panel.SetActive(false);
+        if (panel.TryGetComponent(out PanelTween panelTween))
+        {
+            panelTween.Hide(() => OnPanelClosed(panel));
+        }
+        else
+        {
+            panel.SetActive(false);
+            OnPanelClosed(panel);
+        }
+    }
+
+    private void OnPanelClosed(GameObject panel)
+    {
         if (SceneManager.GetActiveScene().name == "Menu")
         {
             IsMenuObjectsVisible(true);
-            if(panel == menuOptionsPanel)
+            if (panel == menuOptionsPanel)
             {
                 SaveManager.SaveConfig(data);
             }
@@ -331,15 +350,11 @@ public class UIController : MonoBehaviour
         else if (SceneManager.GetActiveScene().name == "Room")
         {
             IsRoomObjectsVisible(true);
-            if(panel == optionsPanel)
+            if (panel == optionsPanel)
             {
                 SaveManager.SaveConfig(data);
             }
         }
-        /*if(panel == gridPanel)
-        {
-            HexGrid.instance.selectedNode = null;
-        }*/
     }
 
     public void QuitGame()

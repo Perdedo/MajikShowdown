@@ -39,6 +39,7 @@ public class Player : Character
     [HideInInspector] public PlayerInput input;
     
     [SyncVar(hook = "GetReady")]public bool readyForHorde = false;
+    [SyncVar] public bool gameplayLoaded = false;
     [Header("Network")]
     public bool network = true;
 
@@ -85,7 +86,7 @@ public class Player : Character
         base.OnStartLocalPlayer();
         playerCamera.Priority = 2;
         input.enabled = true;
-        readyForHorde = false;
+        //readyForHorde = false;
     }
     protected override void FixedUpdate()
     {
@@ -402,5 +403,17 @@ public class Player : Character
         worldVelocity = parentVelocity + Vector3.ClampMagnitude(localVelocity, maxVelocity);
         Vector3 velocityChange = worldVelocity - rb.linearVelocity;
         rb.AddForce(velocityChange, ForceMode.VelocityChange);
+    }
+
+    [Command]
+    public void CMDSetGameplayLoaded()
+    {
+        if (gameplayLoaded) return;
+
+        gameplayLoaded = true;
+        if (GameManager.Instance.hordeController != null)
+        {
+            GameManager.Instance.hordeController.CheckGameplayLoaded();
+        }
     }
 }
