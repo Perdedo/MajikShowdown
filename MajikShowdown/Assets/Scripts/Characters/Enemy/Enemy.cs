@@ -724,9 +724,10 @@ public struct EnemyFieldLocation : IJobParallelFor
     public void CheckFieldLocation(int index)
     {
         int currentCell = WorldToGridPosition(EnemyData[index].Position);
-        int aux = 1;
+        int depth = 1;
         int occupiedCellNum = 0;
-        int checkCount = 0;
+        int queueCount = 0;
+        int processedCount = 0;
         bool reachedLimit = false;
         //int checkedAmount = 0;
 
@@ -743,8 +744,8 @@ public struct EnemyFieldLocation : IJobParallelFor
 
         int OccupiedCellsOffset = maxEnemyOccupiedCells * index;
         //ocupiedQueue.Enqueue(currentCell);
-        OccupiedCellsToCheck[OccupiedCellsOffset + checkCount] = currentCell;
-        checkCount++;
+        OccupiedCellsToCheck[OccupiedCellsOffset + queueCount] = currentCell;
+        queueCount++;
 
         //OccupiedCells.Add(currentCell);
         /*enemyOcupiedCells[OccupiedCellsOffset + occupiedCellNum] = currentCell;
@@ -752,10 +753,10 @@ public struct EnemyFieldLocation : IJobParallelFor
         enemiesInField[(currentCell * maxEnemiesPerCell) + Cells[currentCell].EnemiesNum] = index;
         aux++;
         occupiedCellNum++;*/
-        while (checkCount - occupiedCellNum > 0)
+        while (queueCount > processedCount && depth < EnemyData[index].occupiedCellDepth)
         {
             int CellIndex = OccupiedCellsToCheck[OccupiedCellsOffset + occupiedCellNum];
-            
+            int nodesThisDepth = queueCount - processedCount;
             if(Cells[CellIndex].EnemiesNum < maxEnemiesPerCell)
             {
                 int enemyInFieldOffset = CellIndex * maxEnemiesPerCell;
@@ -769,7 +770,7 @@ public struct EnemyFieldLocation : IJobParallelFor
                 c.EnemiesNum++;
                 Cells[CellIndex] = c;
                 occupiedCellNum++;
-                if(occupiedCellNum == maxEnemyOccupiedCells)
+                if(occupiedCellNum >= maxEnemyOccupiedCells)
                 {
                     reachedLimit = true;
                 }
@@ -780,7 +781,7 @@ public struct EnemyFieldLocation : IJobParallelFor
             }
             //checkedAmount++;
             
-            if (aux < EnemyData[index].occupiedCellDepth)
+            if (depth < EnemyData[index].occupiedCellDepth)
             {
                 for (int i = Cells[CellIndex].firstNeighbor; i <= Cells[CellIndex].lastNeighbor; i++)
                 {
@@ -795,12 +796,12 @@ public struct EnemyFieldLocation : IJobParallelFor
                     }
                     if (!alreadyChecked)
                     {
-                        OccupiedCellsToCheck[OccupiedCellsOffset + checkCount] = neighborID;
-                        checkCount++;
+                        OccupiedCellsToCheck[OccupiedCellsOffset + queueCount] = neighborID;
+                        queueCount++;
                     }
 
                 }
-                aux++;
+                depth++;
             }
 
         }
