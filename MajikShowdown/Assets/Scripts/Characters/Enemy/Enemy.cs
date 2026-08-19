@@ -677,16 +677,16 @@ public struct EnemyFieldLocation : IJobParallelFor
     int maxEnemyOccupiedCells;
 
     //Prompted && output
-    [NativeDisableParallelForRestriction]public NativeArray<CellJobData> Cells;
+    [NativeDisableParallelForRestriction] public NativeArray<CellJobData> Cells;
     public NativeArray<EnemyJobData> EnemyData;
 
     //Output
     public NativeArray<int> TargetIndices;
-    [NativeDisableParallelForRestriction]public NativeArray<int> enemiesInField;
-    [NativeDisableParallelForRestriction]public NativeArray<int> enemyOcupiedCells;
+    [NativeDisableParallelForRestriction] public NativeArray<int> enemiesInField;
+    [NativeDisableParallelForRestriction] public NativeArray<int> enemyOcupiedCells;
 
     //calculated
-    [NativeDisableParallelForRestriction]public NativeArray<int> OccupiedCellsToCheck;
+    [NativeDisableParallelForRestriction] public NativeArray<int> OccupiedCellsToCheck;
     public void Execute(int index)
     {
         //EnemyData[index].CurrentCell = FlowFieldManager.instance.WorldToGridPosition(EnemyData[index].Position).ID;
@@ -753,56 +753,61 @@ public struct EnemyFieldLocation : IJobParallelFor
         enemiesInField[(currentCell * maxEnemiesPerCell) + Cells[currentCell].EnemiesNum] = index;
         aux++;
         occupiedCellNum++;*/
-        while (queueCount > processedCount && depth < EnemyData[index].occupiedCellDepth)
+        while (queueCount > processedCount && depth <= EnemyData[index].occupiedCellDepth)
         {
-            int CellIndex = OccupiedCellsToCheck[OccupiedCellsOffset + occupiedCellNum];
-            int nodesThisDepth = queueCount - processedCount;
-            if(Cells[CellIndex].EnemiesNum < maxEnemiesPerCell)
-            {
-                int enemyInFieldOffset = CellIndex * maxEnemiesPerCell;
-                enemyOcupiedCells[OccupiedCellsOffset + occupiedCellNum] = CellIndex;
-                enemiesInField[ enemyInFieldOffset + Cells[CellIndex].EnemiesNum] = index;
-                CellJobData c = Cells[CellIndex];
-                if(c.EnemiesNum == 0)
-                {
-                    c.firstEnemy = enemyInFieldOffset;
-                }
-                c.EnemiesNum++;
-                Cells[CellIndex] = c;
-                occupiedCellNum++;
-                if(occupiedCellNum >= maxEnemyOccupiedCells)
-                {
-                    reachedLimit = true;
-                }
-            }
-            if (reachedLimit)
-            {
-                break;
-            }
-            //checkedAmount++;
             
-            if (depth < EnemyData[index].occupiedCellDepth)
+            int nodesThisDepth = queueCount - processedCount;
+            for (int i = 0; i < nodesThisDepth; i++)
             {
-                for (int i = Cells[CellIndex].firstNeighbor; i <= Cells[CellIndex].lastNeighbor; i++)
+                if (reachedLimit)
                 {
-                    int neighborID = CellNeighbors[i];
-                    bool alreadyChecked = false;
-                    for (int j = OccupiedCellsOffset; j < OccupiedCellsOffset + occupiedCellNum; j++)
+                    break;
+                }
+                int CellIndex = OccupiedCellsToCheck[OccupiedCellsOffset + occupiedCellNum];
+                if (Cells[CellIndex].EnemiesNum < maxEnemiesPerCell)
+                {
+                    int enemyInFieldOffset = CellIndex * maxEnemiesPerCell;
+                    enemyOcupiedCells[OccupiedCellsOffset + occupiedCellNum] = CellIndex;
+                    enemiesInField[enemyInFieldOffset + Cells[CellIndex].EnemiesNum] = index;
+                    CellJobData c = Cells[CellIndex];
+                    if (c.EnemiesNum == 0)
                     {
-                        if (OccupiedCellsToCheck[j] == neighborID)
-                        {
-                            alreadyChecked = true;
-                        }
+                        c.firstEnemy = enemyInFieldOffset;
                     }
-                    if (!alreadyChecked)
+                    c.EnemiesNum++;
+                    Cells[CellIndex] = c;
+                    occupiedCellNum++;
+                    if (occupiedCellNum >= maxEnemyOccupiedCells)
                     {
-                        OccupiedCellsToCheck[OccupiedCellsOffset + queueCount] = neighborID;
-                        queueCount++;
+                        reachedLimit = true;
+                    }
+                }
+                processedCount++;
+
+                if (depth < EnemyData[index].occupiedCellDepth)
+                {
+                    for (int j = Cells[CellIndex].firstNeighbor; j <= Cells[CellIndex].lastNeighbor; j++)
+                    {
+                        int neighborID = CellNeighbors[j];
+                        bool alreadyChecked = false;
+                        for (int k = OccupiedCellsOffset; k < OccupiedCellsOffset + queueCount; k++)
+                        {
+                            if (OccupiedCellsToCheck[k] == neighborID)
+                            {
+                                alreadyChecked = true;
+                            }
+                        }
+                        if (!alreadyChecked)
+                        {
+                            OccupiedCellsToCheck[OccupiedCellsOffset + queueCount] = neighborID;
+                            queueCount++;
+                        }
+
                     }
 
                 }
-                depth++;
             }
+            depth++;
 
         }
     }
