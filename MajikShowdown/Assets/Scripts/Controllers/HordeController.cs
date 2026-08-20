@@ -182,31 +182,56 @@ public class HordeController : NetworkBehaviour
                     SeparationForce = UsedEnemies[i].SeparationForce,
                     Priority = UsedEnemies[i].priority,
                     DetectionRadius = UsedEnemies[i].DetectionRadius,
-                    CurrentCell = UsedEnemies[i].currentCell.ID,
+                    //CurrentCell = UsedEnemies[i].currentCell.ID,
                     occupiedCellDepth = UsedEnemies[i].occupiedCellNum
 
                 };
             }
         }
         //NativeArray<CellJobData> cellInfo = new NativeArray<CellJobData>(FlowFieldManager.instance.flowField.allCells.Count, Allocator.TempJob);
-        NativeList<int> EnemyFieldData = new NativeList<int>(Allocator.TempJob);
+        //NativeList<int> EnemyFieldData = new NativeList<int>(Allocator.TempJob);
         for (int i = 0; i < FlowFieldManager.instance.cellJobDatas.Length; i++)
         {
             CellJobData cell = FlowFieldManager.instance.cellJobDatas[i];
-            cell.firstEnemy = EnemyFieldData.Length;
+            //cell.firstEnemy = EnemyFieldData.Length;
             cell.Direction = FlowFieldManager.instance.flowField.allCells[i].direction;
-            cell.EnemiesNum = FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies.Count;
-            FlowFieldManager.instance.cellJobDatas[i] =  cell;
+            //cell.EnemiesNum = FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies.Count;
+            FlowFieldManager.instance.cellJobDatas[i] = cell;
 
-            for (int j = 0; j < cell.EnemiesNum; j++)
+            /*for (int j = 0; j < cell.EnemiesNum; j++)
             {
                 EnemyFieldData.Add(FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies[j].ID);
-            }
+            }*/
 
 
         }
-        //NativeArray<int> cellNData = new NativeArray<int>(FlowFieldManager.instance.flowField.neighborsID.Count, Allocator.TempJob);
-        //cellNData.CopyFrom(FlowFieldManager.instance.flowField.neighborsID.ToArray());
+        NativeArray<float3> playerPos = new NativeArray<float3>(GameManager.Instance.Players.Count, Allocator.TempJob);
+        for(int i =0; i<GameManager.Instance.Players.Count; i++)
+        {
+            playerPos[i] = GameManager.Instance.Players[i].transform.position;
+        }
+        EnemyFieldLocation enemyLocation = new EnemyFieldLocation()
+        {
+            PlayerPositions = playerPos,
+            CellNeighbors = FlowFieldManager.instance.CellNeighborID,
+            maxEnemiesPerCell = 5,
+            maxEnemyOccupiedCells = 9,
+            Cells = FlowFieldManager.instance.cellJobDatas,
+            EnemyData = enemiesInfo,
+
+            cellEnemiesNum = new NativeArray<int>(FlowFieldManager.instance.cellJobDatas.Length, Allocator.TempJob),
+            TargetIndices = new NativeArray<int>(UsedEnemies.Count, Allocator.TempJob),
+            enemiesInField = new NativeArray<int>(5 * FlowFieldManager.instance.cellJobDatas.Length, Allocator.TempJob),
+            enemyOcupiedCells = new NativeArray<int>(9 * UsedEnemies.Count, Allocator.TempJob),
+            OccupiedCellsToCheck = new NativeArray<int>(9 * UsedEnemies.Count, Allocator.TempJob)
+        };
+        JobHandle handle = enemyLocation.Schedule(UsedEnemies.Count, 64);
+        handle.Complete();
+        for(int i = 0; i< UsedEnemies.Count; i++)
+        {
+            UsedEnemies[i].target = GameManager.Instance.Players[enemyLocation.TargetIndices[i]];
+        }
+
         AvoidanceCalculation calculation = new AvoidanceCalculation()
         {
             Directions = JobDirectionData,
@@ -214,10 +239,13 @@ public class HordeController : NetworkBehaviour
             CellSize = FlowFieldManager.instance.CellSize,
             MaxCellsChecked = 64,
             MaxEnemyNeighbors = 32,
+            maxEnemiesPerCell = enemyLocation.maxEnemiesPerCell,
             CellNeighbors = FlowFieldManager.instance.CellNeighborID,
-            enemiesInField = EnemyFieldData.AsArray(),
-            EnemyData = enemiesInfo,
+            //enemiesInField = EnemyFieldData.AsArray(),
+            enemiesInField = enemyLocation.enemiesInField,
+            EnemyData = enemyLocation.EnemyData,
             DirectionsOutput = results,
+            cellEnemiesNum = enemyLocation.cellEnemiesNum,
 
             EnemyNeighbors = new NativeArray<int>(UsedEnemies.Count * 32, Allocator.TempJob),
             EnemyNeighborCounts = new NativeArray<int>(UsedEnemies.Count, Allocator.TempJob),
@@ -227,7 +255,7 @@ public class HordeController : NetworkBehaviour
 
         };
 
-        JobHandle handle = calculation.Schedule(UsedEnemies.Count, 64);
+        handle = calculation.Schedule(UsedEnemies.Count, 64);
         handle.Complete();
 
         finalDirections = new Vector3[results.Length];
@@ -235,11 +263,17 @@ public class HordeController : NetworkBehaviour
         {
             finalDirections[i] = results[i];
         }
+        enemyLocation.TargetIndices.Dispose();
+        enemyLocation.enemiesInField.Dispose();
+        enemyLocation.enemyOcupiedCells.Dispose();
+        enemyLocation.OccupiedCellsToCheck.Dispose();
+        enemyLocation.cellEnemiesNum.Dispose();
 
         enemiesInfo.Dispose();
+        playerPos.Dispose();
         //cellNData.Dispose();
         //cellInfo.Dispose();
-        EnemyFieldData.Dispose();
+        //EnemyFieldData.Dispose();
         results.Dispose();
         //calculation.Directions.Dispose();
         calculation.EnemyNeighbors.Dispose();
