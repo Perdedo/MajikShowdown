@@ -111,7 +111,7 @@ public class HordeController : NetworkBehaviour
                 UpdateTimerText("0:00");
             }
             bool aux = aiCalcTimer.timer(enemyAIupdateRate, Time.deltaTime, false, true);
-            for (int i = 0; i < usedEnemiesByType.Count; i++)
+            /*for (int i = 0; i < usedEnemiesByType.Count; i++)
             {
                 foreach (Enemy e in usedEnemiesByType[i])
                 {
@@ -124,7 +124,7 @@ public class HordeController : NetworkBehaviour
                         //e.EnemyUpdate();
                     }
                 }
-            }
+            }*/
             if (aux)
             {
                 Vector3[] results = StartAvoidanceJob();
@@ -183,7 +183,9 @@ public class HordeController : NetworkBehaviour
                     Priority = UsedEnemies[i].priority,
                     DetectionRadius = UsedEnemies[i].DetectionRadius,
                     //CurrentCell = UsedEnemies[i].currentCell.ID,
-                    occupiedCellDepth = UsedEnemies[i].occupiedCellNum
+                    occupiedCellDepth = UsedEnemies[i].occupiedCellNum,
+                    activationDistance = UsedEnemies[i].FlowfieldActivationDistance,
+                    canSeePlayer = UsedEnemies[i].canSeeTarget
 
                 };
             }
@@ -227,9 +229,37 @@ public class HordeController : NetworkBehaviour
         };
         JobHandle handle = enemyLocation.Schedule(UsedEnemies.Count, 64);
         handle.Complete();
+
+        //ProcessResults
         for(int i = 0; i< UsedEnemies.Count; i++)
         {
-            UsedEnemies[i].target = GameManager.Instance.Players[enemyLocation.TargetIndices[i]];
+            Enemy e = UsedEnemies[i];
+            EnemyJobData EJD = enemyLocation.EnemyData[i];
+            e.target = GameManager.Instance.Players[enemyLocation.TargetIndices[i]];
+            e.targetVector = EJD.targetVector;
+            e.currentCell = FlowFieldManager.instance.flowField.allCells[EJD.CurrentCell];
+            e.forwardCell = FlowFieldManager.instance.flowField.allCells[EJD.fowardCell];
+
+            if (!Physics.Raycast(transform.position, math.normalize(EJD.targetVector),  math.length(EJD.targetVector), ~e.CanSeeTargetThrough))
+            {
+                EJD.canSeePlayer = true;
+            }
+            else
+            {
+                EJD.canSeePlayer = false;
+            }
+            if(EJD.canSeePlayer && math.length(EJD.targetVector) < EJD.activationDistance)
+            {
+                EJD.interestDirection = math.normalize(EJD.targetVector);
+            }
+            else
+            {
+                EJD.interestDirection = enemyLocation.Cells[EJD.CurrentCell].Direction;
+            }
+            enemyLocation.EnemyData[i] = EJD;
+
+            e.interestDirection = EJD.interestDirection;
+            e.canSeeTarget = EJD.canSeePlayer;
         }
 
         AvoidanceCalculation calculation = new AvoidanceCalculation()

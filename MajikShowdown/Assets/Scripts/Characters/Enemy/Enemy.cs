@@ -22,7 +22,7 @@ public class Enemy : CrowdCharacter
     public float EnemyAvoidanceRadius;
     public float TargetStoppingDistance;
     public float SeparationForce = 1;
-    public float FlowfieldActivationDistance = 20;
+    [NonSerialized]public float FlowfieldActivationDistance = 20;
     public int priority = 1;
 
     [Header("DropConfig")]
@@ -37,12 +37,12 @@ public class Enemy : CrowdCharacter
     //Vector3[] Directions = new Vector3[8];
     float[] Danger = new float[8];
     float[] Interest = new float[8];
-    Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
+    [NonSerialized]public  Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
     bool detectedObstacle = false, detectedHigherPriority = false;
     [NonSerialized] public Vector3 MoveDirection;
-    Vector3 interestDirection;
+    [NonSerialized] public Vector3 interestDirection;
     Vector3 priorityAvoidDirection;
-    bool canSeeTarget;
+    public bool canSeeTarget;
     [NonSerialized] public FieldCell currentCell, forwardCell;
     HashSet<FieldCell> OccupiedCells = new HashSet<FieldCell>();
     [NonSerialized] public int occupiedCellNum;
@@ -668,7 +668,7 @@ public class Enemy : CrowdCharacter
     }
 }
 [BurstCompile]
-public struct EnemyFieldLocation : IJobParallelFor
+public unsafe struct EnemyFieldLocation : IJobParallelFor
 {
     //prompted
     [Unity.Collections.ReadOnly] public NativeArray<float3> PlayerPositions;
@@ -686,6 +686,7 @@ public struct EnemyFieldLocation : IJobParallelFor
     [NativeDisableParallelForRestriction] public NativeArray<int> enemiesInField;
     [NativeDisableParallelForRestriction] public NativeArray<int> enemyOcupiedCells;
     [NativeDisableParallelForRestriction] public NativeArray<int> cellEnemiesNum;
+    //public NativeArray<float3> interestDirections;
 
     //calculated
     [NativeDisableParallelForRestriction] public NativeArray<int> OccupiedCellsToCheck;
@@ -693,7 +694,8 @@ public struct EnemyFieldLocation : IJobParallelFor
     {
         //EnemyData[index].CurrentCell = FlowFieldManager.instance.WorldToGridPosition(EnemyData[index].Position).ID;
         DefineTarget(index);
-
+        CheckFieldLocation(index);
+        CalculateTargetVectors(index);
     }
     public void DefineTarget(int index)
     {
@@ -725,6 +727,12 @@ public struct EnemyFieldLocation : IJobParallelFor
         }
         return closest;
     }
+    public void CalculateTargetVectors(int index)
+    {
+        EnemyJobData e = EnemyData[index];
+        e.targetVector = PlayerPositions[TargetIndices[index]] - e.Position;
+        EnemyData[index] = e;
+    }
     public void CheckFieldLocation(int index)
     {
         int currentCell = WorldToGridPosition(EnemyData[index].Position);
@@ -744,6 +752,11 @@ public struct EnemyFieldLocation : IJobParallelFor
         if (currentCell == -1) return;
         EnemyJobData EJD = EnemyData[index];
         EJD.CurrentCell = currentCell;
+        int fC = WorldToGridPosition(EJD.Position + Cells[currentCell].Direction * EJD.Size);
+        if(fC > -1)
+        {
+            EJD.fowardCell = fC;
+        }
         EnemyData[index] = EJD;
 
         int OccupiedCellsOffset = maxEnemyOccupiedCells * index;
@@ -769,32 +782,36 @@ public struct EnemyFieldLocation : IJobParallelFor
                 }
                 int CellIndex = OccupiedCellsToCheck[OccupiedCellsOffset + processedCount];
 
-                int EnemyNumSlot;
-                bool CalculateSlot = true;
-                while (CalculateSlot)
+                int* cellCounters = (int*)NativeArrayUnsafeUtility.GetUnsafePtr(cellEnemiesNum);
+
+                int* counter = cellCounters + CellIndex;
+
+                int enemyNumSlot = -1;
+                bool calculateSlot = true;
+
+                while (calculateSlot)
                 {
                     int current = cellEnemiesNum[CellIndex];
 
                     if (current >= maxEnemiesPerCell)
                     {
-                        EnemyNumSlot = -1;
-                        CalculateSlot = false;
-                        //break;
+                        enemyNumSlot = -1;
+                        calculateSlot = false;
                     }
-
-                    if (CalculateSlot && Interlocked.CompareExchange( ref cellEnemiesNum.ElementAt(CellIndex),current + 1,current ) == current)
+                    else if (Interlocked.CompareExchange(ref *counter,current + 1,current) == current)
                     {
-                        EnemyNumSlot = current;
-                        CalculateSlot = false;
-                        //break;
+                        enemyNumSlot = current;
+                        calculateSlot = false;
                     }
                 }
-                if (cellEnemiesNum[CellIndex] < maxEnemiesPerCell)
+
+
+                if (enemyNumSlot > -1)
                 {
                     int enemyInFieldOffset = CellIndex * maxEnemiesPerCell;
                     enemyOcupiedCells[OccupiedCellsOffset + occupiedCellNum] = CellIndex;
-                    enemiesInField[enemyInFieldOffset + cellEnemiesNum[CellIndex]] = index;
-                    cellEnemiesNum[CellIndex]++;
+                    enemiesInField[enemyInFieldOffset + enemyNumSlot] = index;
+                    //enemyNumSlot++;
                     occupiedCellNum++;
                     if (occupiedCellNum >= maxEnemyOccupiedCells)
                     {
@@ -1085,7 +1102,8 @@ public struct AvoidanceCalculation : IJobParallelFor
         for (int i = 0; i < Directions.Length; i++)
         {
             enemiesInterest[i + InterestOffset] = 0.01f;
-            float dot = math.dot(Cells[EnemyData[index].CurrentCell].Direction, Directions[i]);
+            //float dot = math.dot(Cells[EnemyData[index].CurrentCell].Direction, Directions[i]);
+            float dot = math.dot(EnemyData[index].interestDirection, Directions[i]);
             if (dot > 0)
             {
                 enemiesInterest[i + InterestOffset] += dot;
@@ -1127,12 +1145,17 @@ public struct EnemyJobData
     public int Priority;
     public float DetectionRadius;
     public int occupiedCellDepth;
+    public float activationDistance;
     //public float TargetStoppingDistance;
 
     //Prompted
     public float3 Position;
     //public float3 Velocity;
     public int CurrentCell;
+    public int fowardCell;
+    public float3 interestDirection;
+    public float3 targetVector;
+    public bool canSeePlayer;
 
 }
 public struct CellJobData
