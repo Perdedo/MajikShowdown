@@ -61,6 +61,7 @@ public class FlowFieldManager : MonoBehaviour
         {
             Targets.Add(p.transform);
             lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+            p.TargetCellID = lastTargetsPos[lastTargetsPos.Count-1].ID;
         }
         flowField.GenerateFlowField(lastTargetsPos);
         StartCoroutine(FlowFieldGenerator());
@@ -75,6 +76,7 @@ public class FlowFieldManager : MonoBehaviour
             {
                 lastTargetsPos[i] = current;
                 moved = true;
+                GameManager.Instance.Players[i].TargetCellID = current.ID;
             }
         }
         if(moved)
@@ -95,6 +97,7 @@ public class FlowFieldManager : MonoBehaviour
             {
                 Targets.Add(p.transform);
                 lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+                p.TargetCellID = lastTargetsPos[lastTargetsPos.Count-1].ID;
             }
         }
         flowField.GenerateFlowField(lastTargetsPos);
