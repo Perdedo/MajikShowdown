@@ -66,6 +66,12 @@ public class Enemy : CrowdCharacter
     Vector3 predTarget;
     int detectRadius;
     public float maxDistanceFromPlayer = 100, repositionRange = 20;
+
+    public Animator animator;
+    bool prevMoving = false, moving = false;
+    public enum EnemyAnimState : byte { None, Attack, Jump, Land };
+    [SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
+
     public void Initialize()
     {
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
@@ -158,6 +164,12 @@ public class Enemy : CrowdCharacter
             Quaternion targetRot = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
         }
+        prevMoving = moving;
+        moving = rb.linearVelocity != Vector3.zero;
+        if (prevMoving != moving)
+        {
+            animator.SetBool("Moving", moving);
+        }
     }
 
     public void EnemyUpdate()
@@ -208,8 +220,40 @@ public class Enemy : CrowdCharacter
             attackCooldownTimer.Paused = true;
         }
         PathToTarget(currentCell);
+        prevMoving = moving;
+        moving = rb.linearVelocity != Vector3.zero;
+        if(prevMoving != moving)
+        {
+            animator.SetBool("Moving", moving);
+        }
         UpdateTransform();
     }
+
+    public void OnAnimStateChange(EnemyAnimState oldVal, EnemyAnimState newVal)
+    {
+        switch(newVal)
+        {
+            case EnemyAnimState.Attack:
+                animator.ResetTrigger("Attack");
+                animator.SetTrigger("Attack");
+                break;
+            case EnemyAnimState.Jump:
+                animator.ResetTrigger("Jump");
+                animator.SetTrigger("Jump");
+                break;
+            case EnemyAnimState.Land:
+                animator.ResetTrigger("Land");
+                animator.SetTrigger("Land");
+                break;
+        }
+    }
+
+    public void PlayAnimation(EnemyAnimState state)
+    {
+        animState = state;
+        animState = EnemyAnimState.None;
+    }
+
 
     public void UpdateTransform()
     {
@@ -397,6 +441,82 @@ public class Enemy : CrowdCharacter
             Jump(true);
         }
     }
+
+    protected override void Jump(bool pressed)
+    {
+        if (pressed && !movePaused)
+        {
+            if ((CvState == CharVerticalState.grounded || canJumpOnAir) && !jumpOnCooldown)
+            {
+                jumpTimer.SetTimer(0);
+                jumpTimer.Paused = false;
+                CvState = CharVerticalState.jumping;
+                if(isServer)
+                {
+                    PlayAnimation(EnemyAnimState.Jump);
+                }
+                InvokeIfAllowed(Jumped);
+                StartCoroutine(JumpCooldown());
+            }
+        }
+        else if (CvState == CharVerticalState.jumping)
+        {
+            jumpTimer.SetTimer(jumpTime);
+        }
+    }
+
+    protected override void Gravity()
+    {
+        RaycastGround();
+        float groundDistance = LastHitInfo.distance - (height / 2);
+
+        if (!gravityPaused)
+        {
+            if (LastHitInfo.collider == null || (normalDot > 0.9f && groundDistance > 0.05f && !IgnoreSlope))
+            {
+                verticalVelocity += Vector3.up * Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
+            }
+            else if (groundDistance <= terrainBuffer && vState == VerticalState.grounded)
+            {
+                verticalVelocity.y = 0;
+            }
+        }
+        else
+        {
+            verticalVelocity.y = 0;
+        }
+
+        if (LastHitInfo.collider != null)
+        {
+            if (vState == VerticalState.falling)
+            {
+                vState = VerticalState.grounded;
+                InvokeIfAllowed(HitGround);
+                if(isServer)
+                {
+                    PlayAnimation(EnemyAnimState.Land);
+                }
+            }
+            else
+            {
+                vState = VerticalState.grounded;
+            }
+        }
+        else
+        {
+            if (vState == VerticalState.grounded)
+            {
+                vState = VerticalState.falling;
+                InvokeIfAllowed(Fell);
+            }
+            else
+            {
+                vState = VerticalState.falling;
+            }
+        }
+
+    }
+
     public void PathToTarget(FieldCell currentCell)
     {
         if (targetVector.magnitude <= TargetStoppingDistance || (MoveDirection == Vector3.zero && canSeeTarget))
@@ -419,16 +539,18 @@ public class Enemy : CrowdCharacter
                     attackTimer.SetTimer(0);
                     attackedPlayer = target;
                     attackTimer.Paused = false;
+                    PlayAnimation(EnemyAnimState.Attack);
                 }
             }
-            else
+            /*else
             {
+                attacked = true;
                 attackTimer.Paused = true;
-            }
+            }*/
         }
         else
         {
-            attackTimer.Paused = true;
+            //attackTimer.Paused = true;
             //Move(MoveDirection, speed);
             if (detectedObstacle)
             {
