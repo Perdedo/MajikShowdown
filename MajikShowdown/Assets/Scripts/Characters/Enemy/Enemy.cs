@@ -798,7 +798,7 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
     [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
     public int maxEnemiesPerCell;
     public int maxEnemyOccupiedCells;
-    public NativeArray<CellJobData> Cells;
+    [Unity.Collections.ReadOnly]public NativeArray<CellJobData> Cells;
 
     //Prompted && output
     public NativeArray<EnemyJobData> EnemyData;
@@ -985,7 +985,7 @@ public struct AvoidanceCalculation : IJobParallelFor
     public int maxEnemiesPerCell;
     [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
     [Unity.Collections.ReadOnly] public NativeArray<int> enemiesInField;
-    public NativeArray<int> cellEnemiesNum;
+    [Unity.Collections.ReadOnly]public NativeArray<int> cellEnemiesNum;
 
     //calculated
     [NativeDisableParallelForRestriction] public NativeArray<int> EnemyNeighbors;
