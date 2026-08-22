@@ -64,7 +64,7 @@ public class CrowdRB : NetworkBehaviour
         Physics.Raycast(rb.position, Vector3.down, out LastHitInfo, terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
         normalDot = Vector3.Dot(LastHitInfo.normal, Vector3.up);
     }
-    protected void Gravity()
+    protected virtual void Gravity()
     {
         RaycastGround();
         float groundDistance = LastHitInfo.distance - (height / 2);

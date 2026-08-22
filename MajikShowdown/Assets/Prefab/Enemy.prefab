@@ -222,8 +222,8 @@ MonoBehaviour:
   PoolProbability:
     Entries: []
   size: 0
-  attackDuration: 0.3
-  attackCooldown: 0.5
+  attackDuration: 0.7
+  attackCooldown: 0.6
   damage: 1
   element: 0
   instanceIndex: 0
@@ -231,6 +231,7 @@ MonoBehaviour:
     ID: 0
   maxDistanceFromPlayer: 100
   repositionRange: 20
+  animator: {fileID: 2299643720158326213}
 --- !u!114 &1432205814886390903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,11 +487,24 @@ PrefabInstance:
       propertyPath: m_CastShadows
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 8890f9324665ae74eb4f0d659206f4e1, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 8890f9324665ae74eb4f0d659206f4e1, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: d2efdbf9eb853284187432ded6e3ef4a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8890f9324665ae74eb4f0d659206f4e1, type: 3}
+--- !u!95 &2299643720158326213 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 8890f9324665ae74eb4f0d659206f4e1, type: 3}
+  m_PrefabInstance: {fileID: 5657484778526347348}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5262971917350172607 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8890f9324665ae74eb4f0d659206f4e1, type: 3}

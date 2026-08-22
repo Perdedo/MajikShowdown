@@ -155,6 +155,7 @@ public class SpellCaster : NetworkBehaviour
 
         if (spell.validSpell)
         {
+            player.CastAnim();
             //ServerInstantiateSpellCollider(spell, CastingPoint.position,transform.forward, true);
             if (spell.coreNode.castPoint == null)
             {
@@ -210,6 +211,7 @@ public class SpellCaster : NetworkBehaviour
         if (spell.onCooldown) return;
         if (spell.validSpell)
         {
+            player.CastAnim();
             spell.onCooldown = true;
             if (spell.coreNode.castPoint == null)
             {

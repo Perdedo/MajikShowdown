@@ -78,7 +78,7 @@ public class CrowdCharacter : CrowdRB, IGameCharacter
         RotateFoward();
     }
 
-    protected void Jump(bool pressed)
+    protected virtual void Jump(bool pressed)
     {
         if (pressed && !movePaused)
         {
@@ -87,7 +87,8 @@ public class CrowdCharacter : CrowdRB, IGameCharacter
                 jumpTimer.SetTimer(0);
                 jumpTimer.Paused = false;
                 CvState = CharVerticalState.jumping;
-                Jumped.Invoke();
+                //Jumped.Invoke();
+                InvokeIfAllowed(Jumped);
                 StartCoroutine(JumpCooldown());
             }
         }
@@ -100,7 +101,8 @@ public class CrowdCharacter : CrowdRB, IGameCharacter
     {
         CvState = CharVerticalState.falling;
         jumpTimer.SetTimer(0);
-        FellOnJump.Invoke();
+        //FellOnJump.Invoke();
+        InvokeIfAllowed(FellOnJump);
         jumpTimer.Paused = true;
     }
     protected void JumpForce()
