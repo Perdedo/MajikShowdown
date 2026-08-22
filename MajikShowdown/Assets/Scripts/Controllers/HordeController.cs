@@ -240,14 +240,15 @@ public class HordeController : NetworkBehaviour
             e.currentCell = FlowFieldManager.instance.flowField.allCells[EJD.CurrentCell];
             e.forwardCell = FlowFieldManager.instance.flowField.allCells[EJD.fowardCell];
 
-            if (!Physics.Raycast(transform.position, math.normalize(EJD.targetVector),  math.length(EJD.targetVector), ~e.CanSeeTargetThrough))
+            /*if (!Physics.Raycast(transform.position, math.normalize(EJD.targetVector),  math.length(EJD.targetVector), ~e.CanSeeTargetThrough))
             {
                 EJD.canSeePlayer = true;
             }
             else
             {
                 EJD.canSeePlayer = false;
-            }
+            }*/
+            EJD.canSeePlayer = false;
             if(EJD.canSeePlayer && math.length(EJD.targetVector) < EJD.activationDistance)
             {
                 EJD.interestDirection = math.normalize(EJD.targetVector);
