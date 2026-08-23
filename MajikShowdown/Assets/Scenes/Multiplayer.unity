@@ -7538,6 +7538,7 @@ GameObject:
   - component: {fileID: 794886440}
   - component: {fileID: 794886442}
   - component: {fileID: 794886441}
+  - component: {fileID: 794886443}
   m_Layer: 5
   m_Name: ClockBorder
   m_TagString: Untagged
@@ -7602,6 +7603,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 794886439}
   m_CullTransparentMesh: 1
+--- !u!114 &794886443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 794886439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f53c031e92f20f14d8c993c2bca2e967, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpinningTimer
+  hordeController: {fileID: 138050242}
+  preparationSpeed: 30
+  hordeSpeed: 75
 --- !u!65 &797682199
 BoxCollider:
   m_ObjectHideFlags: 0
