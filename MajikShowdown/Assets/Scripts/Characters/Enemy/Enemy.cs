@@ -385,6 +385,11 @@ public class Enemy : CrowdCharacter
 
     public void Reposition()
     {
+        if (!isServer)
+        {
+            target = GetClosestPlayer();
+            targetVector = target.transform.position - transform.position;
+        }
         if (targetVector.sqrMagnitude > maxDistanceFromPlayer * maxDistanceFromPlayer)
         {
             Vector3 reposition = CheckReposition();
