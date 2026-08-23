@@ -52,7 +52,7 @@ public class Enemy : CrowdCharacter
     public float damage = 1;
     public Elements element = Elements.None;
     Damage dmgCtrl;
-    [HideInInspector][SyncVar (hook = "ClientInitialize")] public int instanceIndex;
+    [HideInInspector][SyncVar (hook = "ClientInitialize")] public int instanceIndex = -1;
     [HideInInspector][SyncVar] public IdWrapper ActiveID;
     [Serializable]
     public struct IdWrapper
