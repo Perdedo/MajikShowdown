@@ -56,6 +56,7 @@ public class Player : Character
     float xAux = 0, yAux = 0;
 
     [SyncVar] public Vector2 netInput = Vector2.zero;
+    public int TargetCellID;
 
     //public PlayerData data;
 
