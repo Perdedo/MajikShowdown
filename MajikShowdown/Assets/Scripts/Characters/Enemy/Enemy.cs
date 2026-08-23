@@ -173,7 +173,7 @@ public class Enemy : CrowdCharacter
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
         }
         prevMoving = moving;
-        moving = rb.linearVelocity != Vector3.zero;
+        moving = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel.sqrMagnitude > 0.01;
         if (prevMoving != moving)
         {
             animator.SetBool("Moving", moving);
@@ -229,7 +229,7 @@ public class Enemy : CrowdCharacter
         }
         PathToTarget(currentCell);
         prevMoving = moving;
-        moving = rb.linearVelocity != Vector3.zero;
+        moving = worldVelocity.sqrMagnitude > 0.01;
         if(prevMoving != moving)
         {
             animator.SetBool("Moving", moving);
