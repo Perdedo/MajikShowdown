@@ -17,7 +17,7 @@ public class HordeController : NetworkBehaviour
     public List<DifficultySetting> difficulties;
     public int difficulty;
     public AnimationCurve spawnerFrequencyCurve;
-    public float minSpawnRadius, maxSpawnRadius, maxEnemySpawnRadius = 3, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
+    public float minSpawnRadius, maxSpawnRadius, radiusStepIncrease = 2, radiusLimit = 100, maxEnemySpawnRadius = 3, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
     float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime, randEnemy;
     public GameObject spawner;
     GameObject aux;
@@ -36,7 +36,7 @@ public class HordeController : NetworkBehaviour
     [HideInInspector] public List<GameObject> spawners = new List<GameObject>();
     [HideInInspector] public HashSet<GameObject> usedSpawners = new HashSet<GameObject>();
     [HideInInspector][SyncVar] public bool running = false;
-    public LayerMask spawnableLocations;
+    public LayerMask spawnableLocations, ignoredObstacles;
     Vector2 dir;
     bool possiblePos;
     public TextMeshProUGUI enemyCounterTxt;
@@ -405,7 +405,7 @@ public class HordeController : NetworkBehaviour
         }*/
         while (inHorde)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.2f);
             UpdateEnemiesPos(enemiesInfo);
         }
     }
@@ -462,33 +462,36 @@ public class HordeController : NetworkBehaviour
         foreach (Player p in GameManager.Instance.Players)
         {
             spawnPos = GetSpawnPos(p.transform.position);
-            if (spawners.Count <= usedSpawners.Count)
+            if(spawnPos != Vector3.zero)
             {
-                aux = Instantiate(spawner, spawnPos, Quaternion.identity);
-                spawners.Add(aux);
-                NetworkServer.Spawn(aux);
-            }
-            else
-            {
-                foreach (GameObject s in spawners)
+                if (spawners.Count <= usedSpawners.Count)
                 {
-                    if (!usedSpawners.Contains(s))
+                    aux = Instantiate(spawner, spawnPos, Quaternion.identity);
+                    spawners.Add(aux);
+                    NetworkServer.Spawn(aux);
+                }
+                else
+                {
+                    foreach (GameObject s in spawners)
                     {
-                        aux = s;
-                        aux.transform.position = spawnPos;
-                        aux.SetActive(true);
-                        ActivateSpawner(aux);
-                        break;
+                        if (!usedSpawners.Contains(s))
+                        {
+                            aux = s;
+                            aux.transform.position = spawnPos;
+                            aux.SetActive(true);
+                            ActivateSpawner(aux);
+                            break;
+                        }
                     }
                 }
+                //selections.Clear();
+                /*foreach(int i in difficulties[difficulty].indexes)
+                {
+                    selections.Add(enemyChances[i]);
+                }*/
+                aux.GetComponent<EnemySpawner>().Initialize(enemyChances, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental, hordeStartTime, hordeDuration, maxEnemySpawnRadius);
+                usedSpawners.Add(aux);
             }
-            //selections.Clear();
-            /*foreach(int i in difficulties[difficulty].indexes)
-            {
-                selections.Add(enemyChances[i]);
-            }*/
-            aux.GetComponent<EnemySpawner>().Initialize(enemyChances, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental, hordeStartTime, hordeDuration, maxEnemySpawnRadius);
-            usedSpawners.Add(aux);
         }
         if (inHordeTime)
         {
@@ -523,12 +526,13 @@ public class HordeController : NetworkBehaviour
 
     public Vector3 GetSpawnPos(Vector3 playerPos)
     {
-        RaycastHit hit = new RaycastHit();
+        FieldCell auxCell = null;
+        //RaycastHit hit = new RaycastHit();
         Vector3 pos, aux;
         possiblePos = false;
         bool oppositeOccupied = false;
-        float radius;
-        while (!possiblePos)
+        float radius, auxMaxRadius = maxSpawnRadius, auxMinRadius = minSpawnRadius;
+        while (!possiblePos && auxMaxRadius < radiusLimit)
         {
             if(usedSpawners.Count > 0 && !oppositeOccupied)
             {
@@ -543,19 +547,34 @@ public class HordeController : NetworkBehaviour
                 }
                 while (dir == Vector2.zero);
             }
-            radius = UnityEngine.Random.Range(minSpawnRadius, maxSpawnRadius);
+            radius = UnityEngine.Random.Range(auxMinRadius, auxMaxRadius);
             pos = playerPos + new Vector3(dir.x * radius, heightCheckPoint, dir.y * radius);
-            if (Physics.Raycast(pos, Vector3.down, out hit, checkHeight, spawnableLocations))
+            /*if (Physics.Raycast(pos, Vector3.down, out hit, checkHeight, spawnableLocations))
             {
-                Collider[] obstacles = Physics.OverlapSphere(pos, maxEnemySpawnRadius, ~spawnableLocations);
+                Collider[] obstacles = Physics.OverlapSphere(pos, maxEnemySpawnRadius, ignoredObstacles);
                 if(obstacles.Length <= 0)
                 {
                     possiblePos = true;
                 }
+            }*/
+            auxCell = FlowFieldManager.instance.WorldToGridPosition(pos);
+            if(auxCell != null && auxCell.Neighbors.Count >= 8)
+            {
+                possiblePos = true;
             }
             oppositeOccupied = true;
+            auxMinRadius += radiusStepIncrease;
+            auxMaxRadius += radiusStepIncrease;
         }
-        return hit.point + Vector3.up * spawnerHeight;
+        if(possiblePos)
+        {
+            return auxCell.position + Vector3.up * spawnerHeight;
+            //return hit.point + Vector3.up * spawnerHeight;
+        }
+        else
+        {
+            return Vector3.zero;
+        }
     }
 
     Vector3 GetOppositeDirection(Vector3 playerPos)

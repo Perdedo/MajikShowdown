@@ -1004,6 +1004,7 @@ MonoBehaviour:
   inPause: 0
   timerTxt: {fileID: 869467198}
   enemies: []
+  clientEnemies: []
   GameEnemies: []
   UsedEnemies: []
   spawners: []
@@ -1011,9 +1012,13 @@ MonoBehaviour:
   spawnableLocations:
     serializedVersion: 2
     m_Bits: 512
+  ignoredObstacles:
+    serializedVersion: 2
+    m_Bits: 640
   enemyCounterTxt: {fileID: 375887363}
   maxEnemyCount: 500
   hordesToWin: 3
+  lastTime: 0
 --- !u!4 &138050243
 Transform:
   m_ObjectHideFlags: 0
