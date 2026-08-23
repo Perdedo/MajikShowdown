@@ -309,8 +309,8 @@ public class Player : Character
     {
         if(!isLocalPlayer)
         {
-            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
-            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
+            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, newVal.x, Time.deltaTime * speedChangeRate), 2);
+            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, newVal.y, Time.deltaTime * speedChangeRate), 2);
             animator.SetFloat("InputX", xAux);
             animator.SetFloat("InputY", yAux);
         }
