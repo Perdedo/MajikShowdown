@@ -12,6 +12,7 @@ using Unity.Multiplayer.PlayMode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Rendering.Universal;
 
 public class UIController : MonoBehaviour
 {
@@ -73,6 +74,7 @@ public class UIController : MonoBehaviour
     List<Resolution> selectedResList = new List<Resolution>();
     public TMP_Dropdown resDropdown;
     public TMP_Dropdown screenModeDropdown;
+    public TMP_Dropdown antiAliasingDropdown;
 
     [Header("Credits Panel Objects")]
     public GameObject creditsScrollView;
@@ -124,9 +126,9 @@ public class UIController : MonoBehaviour
         GameManager.Instance.uiController = this;
         ResolutionDropdown();
         ScreenModeDropdown();
-
+        AntiAliasingDropdown();
         // sempre deixar comentado, só usar se quiser apagar o save, depois comente denovo
-        // File.Delete(Application.persistentDataPath + "/configSave.json");
+        File.Delete(Application.persistentDataPath + "/configSave.json");
 
 
         /*if (File.Exists(Application.persistentDataPath + "/configSave.json"))
@@ -691,160 +693,187 @@ public class UIController : MonoBehaviour
         }
     }
 
-   /* public void OpenEditSpellHUD(Spell spell)
+    public void AntiAliasingDropdown()
     {
-        createSpellPanel.gameObject.SetActive(false);
-        editSpellPanel.gameObject.SetActive(true);
+        if (antiAliasingDropdown == null) return;
 
-        if (activeGrid != null)
+        List<string> antiAliasingOptions = new List<string>{"No Anti-aliasing", "FXAA", "SMAA", "TAA"};
+        antiAliasingDropdown.ClearOptions();
+        antiAliasingDropdown.AddOptions(antiAliasingOptions);
+        antiAliasingDropdown.onValueChanged.RemoveAllListeners();
+        antiAliasingDropdown.onValueChanged.AddListener(ChangeAntiAliasing);
+    }
+
+    public void ChangeAntiAliasing(int index)
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null) return;
+        UniversalAdditionalCameraData cameraData = mainCamera.GetUniversalAdditionalCameraData();
+        cameraData.antialiasing = index switch
         {
-            activeGrid.gameObject.SetActive(false);
-        }
-
-        activeGrid = spell.grid;
-        activeGrid.gameObject.SetActive(true);
-
-        SetActiveSpell(spell);
+            0 => AntialiasingMode.None,
+            1 => AntialiasingMode.FastApproximateAntialiasing,
+            2 => AntialiasingMode.SubpixelMorphologicalAntiAliasing,
+            3 => AntialiasingMode.TemporalAntiAliasing,
+            _ => AntialiasingMode.None
+        };
+        data.antiAliasing = index;
     }
 
-    void SetActiveSpell(Spell spell)
-    {
-        if (activeSpell != null)
-        {
-            activeSpell.OnSpellUpdated -= RefreshSpellInfo;
-        }
-        activeSpell = spell;
-        if (activeSpell == null) return;
-        spellNameInput.onValueChanged.RemoveAllListeners();
-        spellNameInput.text = activeSpell.spellName;
-        spellNameInput.onValueChanged.AddListener(OnSpellNameChanged);
-        RefreshSpellInfo();
-        activeSpell.OnSpellUpdated += RefreshSpellInfo;
-    }
+    /* public void OpenEditSpellHUD(Spell spell)
+     {
+         createSpellPanel.gameObject.SetActive(false);
+         editSpellPanel.gameObject.SetActive(true);
 
-    void OnSpellNameChanged(string newName)
-    {
-        if (activeSpell == null) return;
-        if (string.IsNullOrWhiteSpace(newName)) return;
+         if (activeGrid != null)
+         {
+             activeGrid.gameObject.SetActive(false);
+         }
 
-        activeSpell.spellName = newName;
-        activeSpell.OnSpellUpdated?.Invoke();
-        for (int i = 0; i < caster.equippedSpells.Length; i++)
-        {
-            if (caster.equippedSpells[i] == activeSpell)
-            {
-                equipSlotTexts[i].text = newName;
-                break;
-            }
-        }
-    }
+         activeGrid = spell.grid;
+         activeGrid.gameObject.SetActive(true);
 
-    void UpdateAllEquippedSlots()
-    {
-        if (caster == null) return;
+         SetActiveSpell(spell);
+     }
 
-        for (int i = 0; i < equipSlotTexts.Length; i++)
-        {
-            equipSlotTexts[i].text = caster.IsSlotValid(i)
-                ? caster.equippedSpells[i].spellName
-                : "Spell Slot " + (i + 1);
-        }
-    }
+     void SetActiveSpell(Spell spell)
+     {
+         if (activeSpell != null)
+         {
+             activeSpell.OnSpellUpdated -= RefreshSpellInfo;
+         }
+         activeSpell = spell;
+         if (activeSpell == null) return;
+         spellNameInput.onValueChanged.RemoveAllListeners();
+         spellNameInput.text = activeSpell.spellName;
+         spellNameInput.onValueChanged.AddListener(OnSpellNameChanged);
+         RefreshSpellInfo();
+         activeSpell.OnSpellUpdated += RefreshSpellInfo;
+     }
 
-    void RefreshSpellInfo()
-    {
-        if (activeSpell == null) return;
-        spellCooldownText.text = "Cooldown: " + activeSpell.SpellCooldown.ToString("0.0") + "s";
-    }
+     void OnSpellNameChanged(string newName)
+     {
+         if (activeSpell == null) return;
+         if (string.IsNullOrWhiteSpace(newName)) return;
 
-    public void CloseEditSpellHUD()
-    {
-        editSpellPanel.gameObject.SetActive(false);
-        spellNameInput.onValueChanged.RemoveAllListeners();
-        spellNodeDescription.HideDescription();
+         activeSpell.spellName = newName;
+         activeSpell.OnSpellUpdated?.Invoke();
+         for (int i = 0; i < caster.equippedSpells.Length; i++)
+         {
+             if (caster.equippedSpells[i] == activeSpell)
+             {
+                 equipSlotTexts[i].text = newName;
+                 break;
+             }
+         }
+     }
 
-        if (activeSpell != null)
-            activeSpell.OnSpellUpdated -= RefreshSpellInfo;
+     void UpdateAllEquippedSlots()
+     {
+         if (caster == null) return;
 
-        activeSpell = null;
-        selectedNode = null;
+         for (int i = 0; i < equipSlotTexts.Length; i++)
+         {
+             equipSlotTexts[i].text = caster.IsSlotValid(i)
+                 ? caster.equippedSpells[i].spellName
+                 : "Spell Slot " + (i + 1);
+         }
+     }
 
-        createSpellPanel.gameObject.SetActive(true);
-        UpdateAllEquippedSlots();
-    }
+     void RefreshSpellInfo()
+     {
+         if (activeSpell == null) return;
+         spellCooldownText.text = "Cooldown: " + activeSpell.SpellCooldown.ToString("0.0") + "s";
+     }
 
-    public void StartEquipSpell(Spell spell)
-    {
-        spellToEquip = spell;
-    }
+     public void CloseEditSpellHUD()
+     {
+         editSpellPanel.gameObject.SetActive(false);
+         spellNameInput.onValueChanged.RemoveAllListeners();
+         spellNodeDescription.HideDescription();
 
-    public void EquipSpellToSlot(int index)
-    {
-        if (spellToEquip == null) return;
-        if (caster.equippedSpells[index] == spellToEquip)
-        {
-            spellToEquip = null;
-            return;
-        }
+         if (activeSpell != null)
+             activeSpell.OnSpellUpdated -= RefreshSpellInfo;
 
-        for (int i = 0; i < caster.equippedSpells.Length; i++)
-        {
-            if (caster.equippedSpells[i] == spellToEquip)
-            {
-                caster.equippedSpells[i] = null;
-                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
-            }
-        }
+         activeSpell = null;
+         selectedNode = null;
 
-        caster.equippedSpells[index] = spellToEquip;
-        equipSlotTexts[index].text = spellToEquip.spellName;
+         createSpellPanel.gameObject.SetActive(true);
+         UpdateAllEquippedSlots();
+     }
 
-        spellToEquip = null;
+     public void StartEquipSpell(Spell spell)
+     {
+         spellToEquip = spell;
+     }
 
-        var inventory = FindFirstObjectByType<SpellInventoryUI>();
-        if (inventory != null)
-        {
-            inventory.DeselectAllCards();
-        }
-    }
+     public void EquipSpellToSlot(int index)
+     {
+         if (spellToEquip == null) return;
+         if (caster.equippedSpells[index] == spellToEquip)
+         {
+             spellToEquip = null;
+             return;
+         }
 
-    public void OnSpellNameInputSelected(string currentText)
-    {
-        if (string.IsNullOrEmpty(currentText))
-        {
-            if (spellNameInput.placeholder != null)
-            {
-                spellNameInput.placeholder.gameObject.SetActive(false);
-            }
-        }
-    }
+         for (int i = 0; i < caster.equippedSpells.Length; i++)
+         {
+             if (caster.equippedSpells[i] == spellToEquip)
+             {
+                 caster.equippedSpells[i] = null;
+                 equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+             }
+         }
 
-    public void OnSpellNameInputDeselected(string currentText)
-    {
-        if (string.IsNullOrEmpty(currentText))
-        {
-            if (spellNameInput.placeholder != null)
-            {
-                spellNameInput.placeholder.gameObject.SetActive(true);
-            }
-        }
-    }
+         caster.equippedSpells[index] = spellToEquip;
+         equipSlotTexts[index].text = spellToEquip.spellName;
 
-    public void ActivateRunesInventoryPage()
-    {
-        spellsInventoryPageButton.GetComponent<Image>().color = Color.grey;
-        spellPage.SetActive(false);
+         spellToEquip = null;
 
-        runesInventoryPageButton.GetComponent<Image>().color = Color.white;
-        runePage.SetActive(true);
-    }
+         var inventory = FindFirstObjectByType<SpellInventoryUI>();
+         if (inventory != null)
+         {
+             inventory.DeselectAllCards();
+         }
+     }
 
-    public void ActivateSpellsInventoryPage()
-    {
-        runesInventoryPageButton.GetComponent<Image>().color = Color.grey;
-        runePage.SetActive(false);
+     public void OnSpellNameInputSelected(string currentText)
+     {
+         if (string.IsNullOrEmpty(currentText))
+         {
+             if (spellNameInput.placeholder != null)
+             {
+                 spellNameInput.placeholder.gameObject.SetActive(false);
+             }
+         }
+     }
 
-        spellsInventoryPageButton.GetComponent<Image>().color = Color.white;
-        spellPage.SetActive(true);
-    }*/
+     public void OnSpellNameInputDeselected(string currentText)
+     {
+         if (string.IsNullOrEmpty(currentText))
+         {
+             if (spellNameInput.placeholder != null)
+             {
+                 spellNameInput.placeholder.gameObject.SetActive(true);
+             }
+         }
+     }
+
+     public void ActivateRunesInventoryPage()
+     {
+         spellsInventoryPageButton.GetComponent<Image>().color = Color.grey;
+         spellPage.SetActive(false);
+
+         runesInventoryPageButton.GetComponent<Image>().color = Color.white;
+         runePage.SetActive(true);
+     }
+
+     public void ActivateSpellsInventoryPage()
+     {
+         runesInventoryPageButton.GetComponent<Image>().color = Color.grey;
+         runePage.SetActive(false);
+
+         spellsInventoryPageButton.GetComponent<Image>().color = Color.white;
+         spellPage.SetActive(true);
+     }*/
 }
