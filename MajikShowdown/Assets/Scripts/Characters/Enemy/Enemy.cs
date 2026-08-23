@@ -52,7 +52,7 @@ public class Enemy : CrowdCharacter
     public float damage = 1;
     public Elements element = Elements.None;
     Damage dmgCtrl;
-    [HideInInspector][SyncVar] public int instanceIndex;
+    [HideInInspector][SyncVar (hook = "ClientInitialize")] public int instanceIndex;
     [HideInInspector][SyncVar] public IdWrapper ActiveID;
     [Serializable]
     public struct IdWrapper
@@ -70,6 +70,15 @@ public class Enemy : CrowdCharacter
     bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land };
     [SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
+
+
+    public void ClientInitialize(int oldVal, int newVal)
+    {
+        if(!isServer)
+        {
+            GameManager.Instance.hordeController.clientEnemies.Insert(newVal, this);
+        }
+    }
 
     public void Initialize()
     {
@@ -138,7 +147,7 @@ public class Enemy : CrowdCharacter
     }
 #endif
 
-    [ClientRpc]
+    //[ClientRpc]
     public void EnemyClientUpdate()
     {
         if (isServer)
@@ -153,9 +162,9 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        timePred = Time.time - GameManager.Instance.hordeController.enemiesInfo[instanceIndex].lastTime;
+        timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.enemiesInfo[instanceIndex].lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
-        transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
+        transform.position = Vector3.MoveTowards(transform.position, predTarget, Time.deltaTime * 15);
         Vector3 dir = predTarget - transform.position;
         dir.y = 0;
         if (dir.sqrMagnitude >= 0.01f)
@@ -177,7 +186,7 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        EnemyClientUpdate();
+        //EnemyClientUpdate();
         /*if(aiCalcTimer.timer(updateRate, Time.deltaTime, false, true))
         {
             AICalculation();
@@ -260,6 +269,7 @@ public class Enemy : CrowdCharacter
         transformInfo.rot = (byte)transform.rotation.eulerAngles.y;
         //transformInfo.scale = transform.localScale;
         transformInfo.vel = rb.linearVelocity;
+        transformInfo.lastTime = (float)NetworkTime.time;
         //transformInfo.vel = worldVelocity - rb.linearVelocity + externalVelocity;
         GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
     }
