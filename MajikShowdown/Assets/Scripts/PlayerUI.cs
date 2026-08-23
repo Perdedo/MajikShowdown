@@ -14,9 +14,6 @@ public class PlayerUI : NetworkBehaviour
 {
     [Header("Shop")]
     [SerializeField] private GameObject shopPanel;
-
-    private ShopInteractionZone currentShopZone; 
-    private InputAction interactAction;
     public bool IsShopOpen => shopPanel != null && shopPanel.activeSelf;
 
     [Header("Test Panels")]
@@ -160,7 +157,6 @@ public class PlayerUI : NetworkBehaviour
         UpdateEquipSlotIcons();
         if (isLocalPlayer || !network)
         {
-            SetupInteractInput();
             if (LoadingScreenController.Instance != null && LoadingScreenController.Instance.IsShowing)
             {
                 EnableLoadingState();
@@ -168,6 +164,14 @@ public class PlayerUI : NetworkBehaviour
             }
             else
             {
+                if (network)
+                {
+                    myPlayer.gameplayLoaded = true;
+                    if (isServer && GameManager.Instance.hordeController != null)
+                    {
+                        GameManager.Instance.hordeController.Initialize();
+                    }
+                }
                 ResumeGameplay();
             }
         }
@@ -1100,57 +1104,6 @@ public class PlayerUI : NetworkBehaviour
         }
     }
 
-    public void EnterShopZone(ShopInteractionZone zone)
-    {
-        if (!isLocalPlayer && network) return;
-
-        currentShopZone = zone;
-    }
-
-    public void ExitShopZone(ShopInteractionZone zone)
-    {
-        if (!isLocalPlayer && network) return;
-        if (currentShopZone != zone) return;
-
-        currentShopZone = null;
-
-        if (IsShopOpen)
-        {
-            CloseShopPanel();
-        }
-    }
-
-    public void InteractInput(InputAction.CallbackContext context)
-    {
-        if (!isLocalPlayer && network) return;
-        if (!context.performed) return;
-
-        Debug.Log("Interact pressionado.", this);
-
-        if (currentShopZone == null)
-        {
-            Debug.Log("O jogador não está dentro da área da loja.", this);
-            return;
-        }
-
-        if (IsShopOpen)
-        {
-            CloseShopPanel();
-        }
-        else
-        {
-            OpenShopPanel();
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (interactAction != null)
-        {
-            interactAction.performed -= InteractInput;
-        }
-    }
-
     public void OpenShopPanel()
     {
         if (!isLocalPlayer && network) return;
@@ -1172,28 +1125,5 @@ public class PlayerUI : NetworkBehaviour
         if (shopPanel == null || !shopPanel.activeSelf) return;
 
         HideAnimatedPanel(shopPanel, ResumeGameplay);
-    }
-
-    private void SetupInteractInput()
-    {
-        if (myPlayer == null || myPlayer.input == null)
-        {
-            Debug.LogError("Player ou PlayerInput não foi atribuído no PlayerUI.", this);
-            return;
-        }
-
-        interactAction = myPlayer.input.actions.FindAction("Interact", false);
-
-        if (interactAction == null)
-        {
-            Debug.LogError("A Action 'Interact' não foi encontrada.", this);
-            return;
-        }
-
-        interactAction.performed -= InteractInput;
-        interactAction.performed += InteractInput;
-        interactAction.Enable();
-
-        Debug.Log("Action Interact conectada ao PlayerUI.", this);
     }
 }
