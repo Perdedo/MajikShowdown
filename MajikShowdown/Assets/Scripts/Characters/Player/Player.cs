@@ -55,7 +55,7 @@ public class Player : Character
     [SerializeField] float speedChangeRate = 10;
     float xAux = 0, yAux = 0;
 
-    [SyncVar(hook = "OnInputChanged")] public Vector2 netInput = Vector2.zero;
+    [SyncVar] public Vector2 netInput = Vector2.zero;
 
     //public PlayerData data;
 
@@ -131,9 +131,14 @@ public class Player : Character
         {
             xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
             yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
-            animator.SetFloat("InputX", xAux);
-            animator.SetFloat("InputY", yAux);
         }
+        else if(network)
+        {
+            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, netInput.x, Time.deltaTime * speedChangeRate), 2);
+            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, netInput.y, Time.deltaTime * speedChangeRate), 2);
+        }
+        animator.SetFloat("InputX", xAux);
+        animator.SetFloat("InputY", yAux);
         /*if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
         {
             if(Input.GetKeyDown(KeyCode.R))
@@ -302,17 +307,6 @@ public class Player : Character
             }
             animator.SetFloat("InputX", 0);
             animator.SetFloat("InputY", 0);
-        }
-    }
-
-    public void OnInputChanged(Vector2 oldVal, Vector2 newVal)
-    {
-        if(!isLocalPlayer)
-        {
-            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, newVal.x, Time.deltaTime * speedChangeRate), 2);
-            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, newVal.y, Time.deltaTime * speedChangeRate), 2);
-            animator.SetFloat("InputX", xAux);
-            animator.SetFloat("InputY", yAux);
         }
     }
 
