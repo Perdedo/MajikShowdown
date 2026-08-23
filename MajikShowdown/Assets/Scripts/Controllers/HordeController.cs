@@ -27,6 +27,7 @@ public class HordeController : NetworkBehaviour
     [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
     [HideInInspector] public List<Enemy> enemies = new List<Enemy>();
+    [HideInInspector] public Enemy[] clientEnemies;
     [HideInInspector] public List<Enemy> GameEnemies = new List<Enemy>();
     [HideInInspector] public List<Enemy> UsedEnemies = new List<Enemy>();
     [HideInInspector] public List<EnemyTransformInfo> enemiesInfo = new List<EnemyTransformInfo>();
@@ -42,11 +43,12 @@ public class HordeController : NetworkBehaviour
     public int maxEnemyCount = 500;
     public int hordesToWin = 3;
     int hordeCount;
-
+    public float lastTime;
     Timer aiCalcTimer = new Timer(false);
     float enemyAIupdateRate = 1f / 10f; // Hz
     private void Awake()
     {
+        clientEnemies = new Enemy[maxEnemyCount];
         GameManager.Instance.hordeController = this;
         for (int i = 0; i < Directions.Length; i++)
         {
@@ -88,15 +90,74 @@ public class HordeController : NetworkBehaviour
 
     private void Update()
     {
-        if (!isServer || !running)
+        if (!running)
         {
             return;
         }
-        if (inHorde)
+        if(isServer)
         {
-            timer = Mathf.Round(hordeEndTime - Time.time);
-            if (timer > 0)
+            if (inHorde)
             {
+                timer = Mathf.Round(hordeEndTime - Time.time);
+                if (timer > 0)
+                {
+                    if ((int)timer % 60 >= 10)
+                    {
+                        UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
+                    }
+                    else
+                    {
+                        UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
+                    }
+                }
+                else
+                {
+                    UpdateTimerText("0:00");
+                }
+                bool aux = aiCalcTimer.timer(enemyAIupdateRate, Time.deltaTime, false, true);
+                /*for (int i = 0; i < usedEnemiesByType.Count; i++)
+                {
+                    foreach (Enemy e in usedEnemiesByType[i])
+                    {
+                        if (e != null)
+                        {
+                            if (aux)
+                            {
+                                e.AICalculation();
+                            }
+                            //e.EnemyUpdate();
+                        }
+                    }
+                }*/
+                if (aux)
+                {
+                    Vector3[] results = StartAvoidanceJob();
+                    for (int i = 0; i < UsedEnemies.Count; i++)
+                    {
+                        if (UsedEnemies[i] != null)
+                        {
+                            UsedEnemies[i].MoveDirection = results[i];
+                            UsedEnemies[i].EnemyUpdate();
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < UsedEnemies.Count; i++)
+                    {
+                        if (UsedEnemies[i] != null)
+                        {
+                            UsedEnemies[i].EnemyUpdate();
+                        }
+                    }
+                }
+
+
+                //UpdateEnemiesPos(enemiesInfo);
+            }
+            else
+            {
+                timer = Mathf.Round(pauseEndTime - Time.time);
                 if ((int)timer % 60 >= 10)
                 {
                     UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
@@ -106,61 +167,18 @@ public class HordeController : NetworkBehaviour
                     UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
                 }
             }
-            else
-            {
-                UpdateTimerText("0:00");
-            }
-            bool aux = aiCalcTimer.timer(enemyAIupdateRate, Time.deltaTime, false, true);
-            /*for (int i = 0; i < usedEnemiesByType.Count; i++)
-            {
-                foreach (Enemy e in usedEnemiesByType[i])
-                {
-                    if (e != null)
-                    {
-                        if (aux)
-                        {
-                            e.AICalculation();
-                        }
-                        //e.EnemyUpdate();
-                    }
-                }
-            }*/
-            if (aux)
-            {
-                Vector3[] results = StartAvoidanceJob();
-                for (int i = 0; i < UsedEnemies.Count; i++)
-                {
-                    if (UsedEnemies[i] != null)
-                    {
-                        UsedEnemies[i].MoveDirection = results[i];
-                        UsedEnemies[i].EnemyUpdate();
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < UsedEnemies.Count; i++)
-                {
-                    if (UsedEnemies[i] != null)
-                    {
-                        UsedEnemies[i].EnemyUpdate();
-                    }
-                }
-            }
-
-
-            //UpdateEnemiesPos(enemiesInfo);
         }
         else
         {
-            timer = Mathf.Round(pauseEndTime - Time.time);
-            if ((int)timer % 60 >= 10)
+            if (inHorde)
             {
-                UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
-            }
-            else
-            {
-                UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
+                foreach (Enemy e in clientEnemies)
+                {
+                    if (e != null && e.gameObject.activeSelf)
+                    {
+                        e.EnemyClientUpdate();
+                    }
+                }
             }
         }
     }
@@ -377,11 +395,16 @@ public class HordeController : NetworkBehaviour
     }
     IEnumerator DelayUpdateEnemiesPos()
     {
-        yield return new WaitForSeconds(0.25f);
+        /*yield return new WaitForSeconds(0.2f);
         UpdateEnemiesPos(enemiesInfo);
         if (inHorde)
         {
             StartCoroutine(DelayUpdateEnemiesPos());
+        }*/
+        while (inHorde)
+        {
+            yield return new WaitForSeconds(0.5f);
+            UpdateEnemiesPos(enemiesInfo);
         }
     }
 
@@ -394,7 +417,7 @@ public class HordeController : NetworkBehaviour
         }
         for (int i = 0; i < aux.Count; i++)
         {
-            if (aux[i].enemy != null && aux[i].enemy.activeSelf)
+            /*if (aux[i].enemy != null && aux[i].enemy.activeSelf)
             {
                 if (enemiesInfo.Count == i)
                 {
@@ -406,9 +429,18 @@ public class HordeController : NetworkBehaviour
                 }
                 //aux[i].enemy.transform.position = aux[i].pos;
                 //aux[i].enemy.transform.rotation = Quaternion.Euler(0, aux[i].rot, 0);
+            }*/
+            if (enemiesInfo.Count == i)
+            {
+                enemiesInfo.Add(new EnemyTransformInfo(aux[i].pos, aux[i].rot, /*aux[i].lastTime,*/ aux[i].vel));
+            }
+            else
+            {
+                enemiesInfo[i] = new EnemyTransformInfo(aux[i].pos, aux[i].rot,/* aux[i].lastTime, */aux[i].vel);
             }
         }
     }
+
 
     [ClientRpc]
     public void UpdateTimerText(string txt)
@@ -662,18 +694,18 @@ public class DifficultySetting
 
 public struct EnemyTransformInfo
 {
-    public GameObject enemy;
+    //public GameObject enemy;
     public Vector3 pos;
     public byte rot;
-    public float lastTime;
+    //public float lastTime;
     public Vector3 vel;
 
-    public EnemyTransformInfo(GameObject enemy, Vector3 pos, byte rot, float lastTime, Vector3 vel)
+    public EnemyTransformInfo(/*GameObject enemy, */Vector3 pos, byte rot/*, float lastTime*/, Vector3 vel)
     {
-        this.enemy = enemy;
+        //this.enemy = enemy;
         this.pos = pos;
         this.rot = rot;
-        this.lastTime = lastTime;
+        //this.lastTime = lastTime;
         this.vel = vel;
     }
 }
