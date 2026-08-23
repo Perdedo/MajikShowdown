@@ -1,15 +1,16 @@
+using Mirror;
+using System;
 using System.Collections.Generic;
+using System.Threading;
+//using UnityEngine.Jobs;
+using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
-using Mirror;
-using Unity.Jobs;
-//using UnityEngine.Jobs;
-using Unity.Burst;
-using System;
-using Unity.Collections.LowLevel.Unsafe;
-using System.Threading;
+using static UnityEditor.PlayerSettings;
 
 public class Enemy : CrowdCharacter
 {
@@ -381,22 +382,46 @@ public class Enemy : CrowdCharacter
             }
         }
     }
+
+    public void Reposition()
+    {
+        if (targetVector.sqrMagnitude > maxDistanceFromPlayer * maxDistanceFromPlayer)
+        {
+            Vector3 reposition = CheckReposition();
+            if (reposition != Vector3.zero)
+            {
+                rb.interpolation = RigidbodyInterpolation.None;
+                rb.position = reposition;
+                transform.position = reposition;
+                ResetAllVelocities();
+                rb.interpolation = RigidbodyInterpolation.Interpolate;
+            }
+        }
+    }
+
     Vector3 CheckReposition()
     {
-        RaycastHit hit;
+        FieldCell auxCell = null;
+        //RaycastHit hit;
         bool canReposition = false;
         Vector3 repos = target.gameObject.transform.position + targetVector.normalized * repositionRange;
-        if (Physics.Raycast(repos + Vector3.up * GameManager.Instance.hordeController.heightCheckPoint, Vector3.down, out hit, GameManager.Instance.hordeController.checkHeight, GameManager.Instance.hordeController.spawnableLocations))
+        /*if (Physics.Raycast(repos + Vector3.up * GameManager.Instance.hordeController.heightCheckPoint, Vector3.down, out hit, GameManager.Instance.hordeController.checkHeight, GameManager.Instance.hordeController.spawnableLocations))
         {
             Collider[] obstacles = Physics.OverlapSphere(repos, GameManager.Instance.hordeController.maxEnemySpawnRadius, ~GameManager.Instance.hordeController.spawnableLocations);
             if (obstacles.Length <= 0)
             {
                 canReposition = true;
             }
+        }*/
+        auxCell = FlowFieldManager.instance.WorldToGridPosition(repos);
+        if(auxCell != null && auxCell.Neighbors.Count >= 8)
+        {
+            canReposition = true;
         }
         if (canReposition)
         {
-            return hit.point + Vector3.up * GameManager.Instance.hordeController.spawnerHeight;
+            //return hit.point + Vector3.up * GameManager.Instance.hordeController.spawnerHeight;
+            return auxCell.position + Vector3.up * GameManager.Instance.hordeController.spawnerHeight;
         }
         else
         {
