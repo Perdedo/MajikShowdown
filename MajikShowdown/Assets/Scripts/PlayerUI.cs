@@ -168,6 +168,14 @@ public class PlayerUI : NetworkBehaviour
             }
             else
             {
+                if (network)
+                {
+                    myPlayer.gameplayLoaded = true;
+                    if (isServer && GameManager.Instance.hordeController != null)
+                    {
+                        GameManager.Instance.hordeController.Initialize();
+                    }
+                }
                 ResumeGameplay();
             }
         }
