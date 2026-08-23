@@ -173,11 +173,16 @@ public class HordeController : NetworkBehaviour
         {
             if (inHorde)
             {
+                bool aux = aiCalcTimer.timer(enemyAIupdateRate, Time.deltaTime, false, true);
                 foreach (Enemy e in clientEnemies)
                 {
                     if (e != null && e.gameObject.activeSelf)
                     {
                         e.EnemyClientUpdate();
+                        if(aux)
+                        {
+                            e.Reposition();
+                        }
                     }
                 }
             }
