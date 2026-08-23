@@ -185,7 +185,8 @@ public class HordeController : NetworkBehaviour
                     //CurrentCell = UsedEnemies[i].currentCell.ID,
                     occupiedCellDepth = UsedEnemies[i].occupiedCellNum,
                     activationDistance = UsedEnemies[i].FlowfieldActivationDistance,
-                    canSeePlayer = UsedEnemies[i].canSeeTarget
+                    canSeePlayer = UsedEnemies[i].canSeeTarget,
+                    CurrentCell = UsedEnemies[i].currentCell.ID
 
                 };
             }
