@@ -76,7 +76,7 @@ public class Enemy : CrowdCharacter
     {
         if(!isServer)
         {
-            GameManager.Instance.hordeController.clientEnemies.Insert(newVal, this);
+            GameManager.Instance.hordeController.clientEnemies[newVal] = this;
         }
     }
 

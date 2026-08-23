@@ -27,7 +27,7 @@ public class HordeController : NetworkBehaviour
     [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
     [HideInInspector] public List<Enemy> enemies = new List<Enemy>();
-    [HideInInspector] public List<Enemy> clientEnemies = new List<Enemy>();
+    [HideInInspector] public Enemy[] clientEnemies;
     [HideInInspector] public List<Enemy> GameEnemies = new List<Enemy>();
     [HideInInspector] public List<Enemy> UsedEnemies = new List<Enemy>();
     [HideInInspector] public List<EnemyTransformInfo> enemiesInfo = new List<EnemyTransformInfo>();
@@ -48,6 +48,7 @@ public class HordeController : NetworkBehaviour
     float enemyAIupdateRate = 1f / 10f; // Hz
     private void Awake()
     {
+        clientEnemies = new Enemy[maxEnemyCount];
         GameManager.Instance.hordeController = this;
         for (int i = 0; i < Directions.Length; i++)
         {
