@@ -332,11 +332,16 @@ public class HordeController : NetworkBehaviour
     }
     IEnumerator DelayUpdateEnemiesPos()
     {
-        yield return new WaitForSeconds(0.2f);
+        /*yield return new WaitForSeconds(0.2f);
         UpdateEnemiesPos(enemiesInfo);
         if (inHorde)
         {
             StartCoroutine(DelayUpdateEnemiesPos());
+        }*/
+        while(inHorde)
+        {
+            yield return new WaitForSeconds(0.5f);
+            UpdateEnemiesPos(enemiesInfo);
         }
     }
 
