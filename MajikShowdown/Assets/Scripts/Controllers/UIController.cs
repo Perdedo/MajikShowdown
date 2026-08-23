@@ -128,7 +128,7 @@ public class UIController : MonoBehaviour
         ScreenModeDropdown();
         AntiAliasingDropdown();
         // sempre deixar comentado, só usar se quiser apagar o save, depois comente denovo
-        File.Delete(Application.persistentDataPath + "/configSave.json");
+        //File.Delete(Application.persistentDataPath + "/configSave.json");
 
 
         /*if (File.Exists(Application.persistentDataPath + "/configSave.json"))
@@ -530,6 +530,11 @@ public class UIController : MonoBehaviour
         {
             screenModeDropdown.value = data.screenMode;
         }
+        if (antiAliasingDropdown != null)
+        {
+            antiAliasingDropdown.SetValueWithoutNotify(data.antiAliasing);
+        }
+        ApplyAntiAliasing(data.antiAliasing);
         AudioController.instance.ChangeMasterVol(data.master);
         if (_masterVolumeSlider != null)
         {
@@ -704,11 +709,13 @@ public class UIController : MonoBehaviour
         antiAliasingDropdown.onValueChanged.AddListener(ChangeAntiAliasing);
     }
 
-    public void ChangeAntiAliasing(int index)
+    private void ApplyAntiAliasing(int index)
     {
         Camera mainCamera = Camera.main;
         if (mainCamera == null) return;
+
         UniversalAdditionalCameraData cameraData = mainCamera.GetUniversalAdditionalCameraData();
+
         cameraData.antialiasing = index switch
         {
             0 => AntialiasingMode.None,
@@ -717,7 +724,12 @@ public class UIController : MonoBehaviour
             3 => AntialiasingMode.TemporalAntiAliasing,
             _ => AntialiasingMode.None
         };
+    }
+
+    public void ChangeAntiAliasing(int index)
+    {
         data.antiAliasing = index;
+        ApplyAntiAliasing(index);
     }
 
     /* public void OpenEditSpellHUD(Spell spell)
