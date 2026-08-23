@@ -181,6 +181,7 @@ public class HordeController : NetworkBehaviour
                 }
             }
         }
+        lastTime = (float)NetworkTime.time;
     }
     public Vector3[] StartAvoidanceJob()
     {
