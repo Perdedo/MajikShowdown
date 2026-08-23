@@ -69,7 +69,7 @@ public class Enemy : CrowdCharacter
     public Animator animator;
     bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land };
-    [SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
+    //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
 
     public void ClientInitialize(int oldVal, int newVal)
@@ -237,7 +237,7 @@ public class Enemy : CrowdCharacter
         UpdateTransform();
     }
 
-    public void OnAnimStateChange(EnemyAnimState oldVal, EnemyAnimState newVal)
+    /*public void OnAnimStateChange(EnemyAnimState oldVal, EnemyAnimState newVal)
     {
         switch(newVal)
         {
@@ -260,6 +260,46 @@ public class Enemy : CrowdCharacter
     {
         animState = state;
         animState = EnemyAnimState.None;
+    }*/
+
+    public void PlayAnimation(EnemyAnimState state)
+    {
+        /*switch (state)
+        {
+            case EnemyAnimState.Attack:
+                animator.ResetTrigger("Attack");
+                animator.SetTrigger("Attack");
+                break;
+            case EnemyAnimState.Jump:
+                animator.ResetTrigger("Jump");
+                animator.SetTrigger("Jump");
+                break;
+            case EnemyAnimState.Land:
+                animator.ResetTrigger("Land");
+                animator.SetTrigger("Land");
+                break;
+        }*/
+        RPCPlayAnimation(state);
+    }
+
+    [ClientRpc]
+    public void RPCPlayAnimation(EnemyAnimState state)
+    {
+        switch (state)
+        {
+            case EnemyAnimState.Attack:
+                animator.ResetTrigger("Attack");
+                animator.SetTrigger("Attack");
+                break;
+            case EnemyAnimState.Jump:
+                animator.ResetTrigger("Jump");
+                animator.SetTrigger("Jump");
+                break;
+            case EnemyAnimState.Land:
+                animator.ResetTrigger("Land");
+                animator.SetTrigger("Land");
+                break;
+        }
     }
 
 
