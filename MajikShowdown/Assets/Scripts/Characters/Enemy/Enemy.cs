@@ -162,9 +162,9 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.enemiesInfo[instanceIndex].lastTime;
+        timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
-        transform.position = Vector3.MoveTowards(transform.position, predTarget, Time.deltaTime * 15);
+        transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
         Vector3 dir = predTarget - transform.position;
         dir.y = 0;
         if (dir.sqrMagnitude >= 0.01f)
@@ -269,7 +269,6 @@ public class Enemy : CrowdCharacter
         transformInfo.rot = (byte)transform.rotation.eulerAngles.y;
         //transformInfo.scale = transform.localScale;
         transformInfo.vel = rb.linearVelocity;
-        transformInfo.lastTime = (float)NetworkTime.time;
         //transformInfo.vel = worldVelocity - rb.linearVelocity + externalVelocity;
         GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
     }

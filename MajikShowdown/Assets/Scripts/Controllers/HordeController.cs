@@ -43,7 +43,7 @@ public class HordeController : NetworkBehaviour
     public int maxEnemyCount = 500;
     public int hordesToWin = 3;
     int hordeCount;
-
+    public float lastTime;
     Timer aiCalcTimer = new Timer(false);
     float enemyAIupdateRate = 1f / 10f; // Hz
     private void Awake()
@@ -181,6 +181,8 @@ public class HordeController : NetworkBehaviour
                 }
             }
         }
+
+        lastTime = (float)NetworkTime.time;
     }
     public Vector3[] StartAvoidanceJob()
     {
@@ -330,7 +332,7 @@ public class HordeController : NetworkBehaviour
     }
     IEnumerator DelayUpdateEnemiesPos()
     {
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.1f);
         UpdateEnemiesPos(enemiesInfo);
         if (inHorde)
         {
@@ -362,11 +364,11 @@ public class HordeController : NetworkBehaviour
             }*/
             if (enemiesInfo.Count == i)
             {
-                enemiesInfo.Add(new EnemyTransformInfo(aux[i].pos, aux[i].rot, aux[i].lastTime, aux[i].vel));
+                enemiesInfo.Add(new EnemyTransformInfo(aux[i].pos, aux[i].rot, /*aux[i].lastTime,*/ aux[i].vel));
             }
             else
             {
-                enemiesInfo[i] = new EnemyTransformInfo(aux[i].pos, aux[i].rot, aux[i].lastTime, aux[i].vel);
+                enemiesInfo[i] = new EnemyTransformInfo(aux[i].pos, aux[i].rot,/* aux[i].lastTime, */aux[i].vel);
             }
         }
     }
@@ -626,15 +628,15 @@ public struct EnemyTransformInfo
     //public GameObject enemy;
     public Vector3 pos;
     public byte rot;
-    public float lastTime;
+    //public float lastTime;
     public Vector3 vel;
 
-    public EnemyTransformInfo(/*GameObject enemy, */Vector3 pos, byte rot, float lastTime, Vector3 vel)
+    public EnemyTransformInfo(/*GameObject enemy, */Vector3 pos, byte rot/*, float lastTime*/, Vector3 vel)
     {
         //this.enemy = enemy;
         this.pos = pos;
         this.rot = rot;
-        this.lastTime = lastTime;
+        //this.lastTime = lastTime;
         this.vel = vel;
     }
 }
