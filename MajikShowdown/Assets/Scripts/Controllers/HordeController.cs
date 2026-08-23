@@ -27,7 +27,6 @@ public class HordeController : NetworkBehaviour
     [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
     [HideInInspector] public List<Enemy> enemies = new List<Enemy>();
-    [HideInInspector] public Enemy[] clientEnemies;
     [HideInInspector] public List<Enemy> GameEnemies = new List<Enemy>();
     [HideInInspector] public List<Enemy> UsedEnemies = new List<Enemy>();
     [HideInInspector] public List<EnemyTransformInfo> enemiesInfo = new List<EnemyTransformInfo>();
@@ -43,12 +42,11 @@ public class HordeController : NetworkBehaviour
     public int maxEnemyCount = 500;
     public int hordesToWin = 3;
     int hordeCount;
-    public float lastTime;
+
     Timer aiCalcTimer = new Timer(false);
     float enemyAIupdateRate = 1f / 10f; // Hz
     private void Awake()
     {
-        clientEnemies = new Enemy[maxEnemyCount];
         GameManager.Instance.hordeController = this;
         for (int i = 0; i < Directions.Length; i++)
         {
@@ -90,74 +88,15 @@ public class HordeController : NetworkBehaviour
 
     private void Update()
     {
-        if (!running)
+        if (!isServer || !running)
         {
             return;
         }
-        if(isServer)
+        if (inHorde)
         {
-            if (inHorde)
+            timer = Mathf.Round(hordeEndTime - Time.time);
+            if (timer > 0)
             {
-                timer = Mathf.Round(hordeEndTime - Time.time);
-                if (timer > 0)
-                {
-                    if ((int)timer % 60 >= 10)
-                    {
-                        UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
-                    }
-                    else
-                    {
-                        UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
-                    }
-                }
-                else
-                {
-                    UpdateTimerText("0:00");
-                }
-                bool aux = aiCalcTimer.timer(enemyAIupdateRate, Time.deltaTime, false, true);
-                for (int i = 0; i < usedEnemiesByType.Count; i++)
-                {
-                    foreach (Enemy e in usedEnemiesByType[i])
-                    {
-                        if (e != null)
-                        {
-                            if (aux)
-                            {
-                                e.AICalculation();
-                            }
-                            //e.EnemyUpdate();
-                        }
-                    }
-                }
-                if (aux)
-                {
-                    Vector3[] results = StartAvoidanceJob();
-                    for (int i = 0; i < UsedEnemies.Count; i++)
-                    {
-                        if (UsedEnemies[i] != null)
-                        {
-                            UsedEnemies[i].MoveDirection = results[i];
-                            UsedEnemies[i].EnemyUpdate();
-                        }
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < UsedEnemies.Count; i++)
-                    {
-                        if (UsedEnemies[i] != null)
-                        {
-                            UsedEnemies[i].EnemyUpdate();
-                        }
-                    }
-                }
-
-
-                //UpdateEnemiesPos(enemiesInfo);
-            }
-            else
-            {
-                timer = Mathf.Round(pauseEndTime - Time.time);
                 if ((int)timer % 60 >= 10)
                 {
                     UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
@@ -167,22 +106,63 @@ public class HordeController : NetworkBehaviour
                     UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
                 }
             }
-        }
-        else
-        {
-            if(inHorde)
+            else
             {
-                foreach(Enemy e in clientEnemies)
+                UpdateTimerText("0:00");
+            }
+            bool aux = aiCalcTimer.timer(enemyAIupdateRate, Time.deltaTime, false, true);
+            /*for (int i = 0; i < usedEnemiesByType.Count; i++)
+            {
+                foreach (Enemy e in usedEnemiesByType[i])
                 {
-                    if(e != null && e.gameObject.activeSelf)
+                    if (e != null)
                     {
-                        e.EnemyClientUpdate();
+                        if (aux)
+                        {
+                            e.AICalculation();
+                        }
+                        //e.EnemyUpdate();
+                    }
+                }
+            }*/
+            if (aux)
+            {
+                Vector3[] results = StartAvoidanceJob();
+                for (int i = 0; i < UsedEnemies.Count; i++)
+                {
+                    if (UsedEnemies[i] != null)
+                    {
+                        UsedEnemies[i].MoveDirection = results[i];
+                        UsedEnemies[i].EnemyUpdate();
                     }
                 }
             }
-        }
+            else
+            {
+                for (int i = 0; i < UsedEnemies.Count; i++)
+                {
+                    if (UsedEnemies[i] != null)
+                    {
+                        UsedEnemies[i].EnemyUpdate();
+                    }
+                }
+            }
 
-        lastTime = (float)NetworkTime.time;
+
+            //UpdateEnemiesPos(enemiesInfo);
+        }
+        else
+        {
+            timer = Mathf.Round(pauseEndTime - Time.time);
+            if ((int)timer % 60 >= 10)
+            {
+                UpdateTimerText(((int)timer / 60) + ":" + ((int)timer % 60));
+            }
+            else
+            {
+                UpdateTimerText(((int)timer / 60) + ":0" + ((int)timer % 60));
+            }
+        }
     }
     public Vector3[] StartAvoidanceJob()
     {
@@ -202,31 +182,87 @@ public class HordeController : NetworkBehaviour
                     SeparationForce = UsedEnemies[i].SeparationForce,
                     Priority = UsedEnemies[i].priority,
                     DetectionRadius = UsedEnemies[i].DetectionRadius,
-                    CurrentCell = UsedEnemies[i].currentCell.ID,
-                    occupiedCellDepth = UsedEnemies[i].occupiedCellNum
+                    //CurrentCell = UsedEnemies[i].currentCell.ID,
+                    occupiedCellDepth = UsedEnemies[i].occupiedCellNum,
+                    activationDistance = UsedEnemies[i].FlowfieldActivationDistance,
+                    canSeePlayer = UsedEnemies[i].canSeeTarget
 
                 };
             }
         }
         //NativeArray<CellJobData> cellInfo = new NativeArray<CellJobData>(FlowFieldManager.instance.flowField.allCells.Count, Allocator.TempJob);
-        NativeList<int> EnemyFieldData = new NativeList<int>(Allocator.TempJob);
+        //NativeList<int> EnemyFieldData = new NativeList<int>(Allocator.TempJob);
         for (int i = 0; i < FlowFieldManager.instance.cellJobDatas.Length; i++)
         {
             CellJobData cell = FlowFieldManager.instance.cellJobDatas[i];
-            cell.firstEnemy = EnemyFieldData.Length;
+            //cell.firstEnemy = EnemyFieldData.Length;
             cell.Direction = FlowFieldManager.instance.flowField.allCells[i].direction;
-            cell.EnemiesNum = FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies.Count;
-            FlowFieldManager.instance.cellJobDatas[i] =  cell;
+            //cell.EnemiesNum = FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies.Count;
+            FlowFieldManager.instance.cellJobDatas[i] = cell;
 
-            for (int j = 0; j < cell.EnemiesNum; j++)
+            /*for (int j = 0; j < cell.EnemiesNum; j++)
             {
                 EnemyFieldData.Add(FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies[j].ID);
-            }
+            }*/
 
 
         }
-        //NativeArray<int> cellNData = new NativeArray<int>(FlowFieldManager.instance.flowField.neighborsID.Count, Allocator.TempJob);
-        //cellNData.CopyFrom(FlowFieldManager.instance.flowField.neighborsID.ToArray());
+        NativeArray<float3> playerPos = new NativeArray<float3>(GameManager.Instance.Players.Count, Allocator.TempJob);
+        for(int i =0; i<GameManager.Instance.Players.Count; i++)
+        {
+            playerPos[i] = GameManager.Instance.Players[i].transform.position;
+        }
+        EnemyFieldLocation enemyLocation = new EnemyFieldLocation()
+        {
+            PlayerPositions = playerPos,
+            CellNeighbors = FlowFieldManager.instance.CellNeighborID,
+            maxEnemiesPerCell = 5,
+            maxEnemyOccupiedCells = 9,
+            Cells = FlowFieldManager.instance.cellJobDatas,
+            EnemyData = enemiesInfo,
+
+            cellEnemiesNum = new NativeArray<int>(FlowFieldManager.instance.cellJobDatas.Length, Allocator.TempJob),
+            TargetIndices = new NativeArray<int>(UsedEnemies.Count, Allocator.TempJob),
+            enemiesInField = new NativeArray<int>(5 * FlowFieldManager.instance.cellJobDatas.Length, Allocator.TempJob),
+            enemyOcupiedCells = new NativeArray<int>(9 * UsedEnemies.Count, Allocator.TempJob),
+            OccupiedCellsToCheck = new NativeArray<int>(9 * UsedEnemies.Count, Allocator.TempJob)
+        };
+        JobHandle handle = enemyLocation.Schedule(UsedEnemies.Count, 64);
+        handle.Complete();
+
+        //ProcessResults
+        for(int i = 0; i< UsedEnemies.Count; i++)
+        {
+            Enemy e = UsedEnemies[i];
+            EnemyJobData EJD = enemyLocation.EnemyData[i];
+            e.target = GameManager.Instance.Players[enemyLocation.TargetIndices[i]];
+            e.targetVector = EJD.targetVector;
+            e.currentCell = FlowFieldManager.instance.flowField.allCells[EJD.CurrentCell];
+            e.forwardCell = FlowFieldManager.instance.flowField.allCells[EJD.fowardCell];
+
+            //if (!Physics.Raycast(transform.position, math.normalize(EJD.targetVector),  math.length(EJD.targetVector), ~e.CanSeeTargetThrough))
+            if(math.dot(enemyLocation.Cells[EJD.CurrentCell].Direction, enemyLocation.Cells[e.target.TargetCellID].Position) > 0.9f || EJD.CurrentCell== e.target.TargetCellID)
+            {
+                EJD.canSeePlayer = true;
+            }
+            else
+            {
+                EJD.canSeePlayer = false;
+            }
+            if(EJD.canSeePlayer && math.length(EJD.targetVector) < EJD.activationDistance)
+            {
+                EJD.interestDirection = math.normalize(EJD.targetVector);
+            }
+            else
+            {
+                EJD.interestDirection = enemyLocation.Cells[EJD.CurrentCell].Direction;
+            }
+            enemyLocation.EnemyData[i] = EJD;
+
+            e.interestDirection = EJD.interestDirection;
+            e.canSeeTarget = EJD.canSeePlayer;
+        }
+
         AvoidanceCalculation calculation = new AvoidanceCalculation()
         {
             Directions = JobDirectionData,
@@ -234,10 +270,13 @@ public class HordeController : NetworkBehaviour
             CellSize = FlowFieldManager.instance.CellSize,
             MaxCellsChecked = 64,
             MaxEnemyNeighbors = 32,
+            maxEnemiesPerCell = enemyLocation.maxEnemiesPerCell,
             CellNeighbors = FlowFieldManager.instance.CellNeighborID,
-            enemiesInField = EnemyFieldData.AsArray(),
-            EnemyData = enemiesInfo,
+            //enemiesInField = EnemyFieldData.AsArray(),
+            enemiesInField = enemyLocation.enemiesInField,
+            EnemyData = enemyLocation.EnemyData,
             DirectionsOutput = results,
+            cellEnemiesNum = enemyLocation.cellEnemiesNum,
 
             EnemyNeighbors = new NativeArray<int>(UsedEnemies.Count * 32, Allocator.TempJob),
             EnemyNeighborCounts = new NativeArray<int>(UsedEnemies.Count, Allocator.TempJob),
@@ -247,7 +286,7 @@ public class HordeController : NetworkBehaviour
 
         };
 
-        JobHandle handle = calculation.Schedule(UsedEnemies.Count, 64);
+        handle = calculation.Schedule(UsedEnemies.Count, 64);
         handle.Complete();
 
         finalDirections = new Vector3[results.Length];
@@ -255,11 +294,17 @@ public class HordeController : NetworkBehaviour
         {
             finalDirections[i] = results[i];
         }
+        enemyLocation.TargetIndices.Dispose();
+        enemyLocation.enemiesInField.Dispose();
+        enemyLocation.enemyOcupiedCells.Dispose();
+        enemyLocation.OccupiedCellsToCheck.Dispose();
+        enemyLocation.cellEnemiesNum.Dispose();
 
         enemiesInfo.Dispose();
+        playerPos.Dispose();
         //cellNData.Dispose();
         //cellInfo.Dispose();
-        EnemyFieldData.Dispose();
+        //EnemyFieldData.Dispose();
         results.Dispose();
         //calculation.Directions.Dispose();
         calculation.EnemyNeighbors.Dispose();
@@ -332,16 +377,11 @@ public class HordeController : NetworkBehaviour
     }
     IEnumerator DelayUpdateEnemiesPos()
     {
-        /*yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.25f);
         UpdateEnemiesPos(enemiesInfo);
         if (inHorde)
         {
             StartCoroutine(DelayUpdateEnemiesPos());
-        }*/
-        while(inHorde)
-        {
-            yield return new WaitForSeconds(0.5f);
-            UpdateEnemiesPos(enemiesInfo);
         }
     }
 
@@ -354,7 +394,7 @@ public class HordeController : NetworkBehaviour
         }
         for (int i = 0; i < aux.Count; i++)
         {
-            /*if (aux[i].enemy != null && aux[i].enemy.activeSelf)
+            if (aux[i].enemy != null && aux[i].enemy.activeSelf)
             {
                 if (enemiesInfo.Count == i)
                 {
@@ -366,14 +406,6 @@ public class HordeController : NetworkBehaviour
                 }
                 //aux[i].enemy.transform.position = aux[i].pos;
                 //aux[i].enemy.transform.rotation = Quaternion.Euler(0, aux[i].rot, 0);
-            }*/
-            if (enemiesInfo.Count == i)
-            {
-                enemiesInfo.Add(new EnemyTransformInfo(aux[i].pos, aux[i].rot, /*aux[i].lastTime,*/ aux[i].vel));
-            }
-            else
-            {
-                enemiesInfo[i] = new EnemyTransformInfo(aux[i].pos, aux[i].rot,/* aux[i].lastTime, */aux[i].vel);
             }
         }
     }
@@ -630,18 +662,18 @@ public class DifficultySetting
 
 public struct EnemyTransformInfo
 {
-    //public GameObject enemy;
+    public GameObject enemy;
     public Vector3 pos;
     public byte rot;
-    //public float lastTime;
+    public float lastTime;
     public Vector3 vel;
 
-    public EnemyTransformInfo(/*GameObject enemy, */Vector3 pos, byte rot/*, float lastTime*/, Vector3 vel)
+    public EnemyTransformInfo(GameObject enemy, Vector3 pos, byte rot, float lastTime, Vector3 vel)
     {
-        //this.enemy = enemy;
+        this.enemy = enemy;
         this.pos = pos;
         this.rot = rot;
-        //this.lastTime = lastTime;
+        this.lastTime = lastTime;
         this.vel = vel;
     }
 }
