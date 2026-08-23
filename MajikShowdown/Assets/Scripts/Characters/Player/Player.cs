@@ -295,7 +295,14 @@ public class Player : Character
             directionInput = Vector2.ClampMagnitude(context.ReadValue<Vector2>(), 1);
             if(network)
             {
-                netInput = directionInput;
+                if(isServer)
+                {
+                    netInput = directionInput;
+                }
+                else
+                {
+                    CMDNetInput(directionInput);
+                }
             }
         }
         else
@@ -303,12 +310,24 @@ public class Player : Character
             directionInput = Vector2.zero;
             if (network)
             {
-                netInput = directionInput;
+                if (isServer)
+                {
+                    netInput = directionInput;
+                }
+                else
+                {
+                    CMDNetInput(directionInput);
+                }
             }
-            animator.SetFloat("InputX", 0);
-            animator.SetFloat("InputY", 0);
         }
     }
+
+    [Command]
+    public void CMDNetInput(Vector2 dir)
+    {
+        netInput = dir;
+    }
+
 
     public void JumpInput(InputAction.CallbackContext context)
     {
