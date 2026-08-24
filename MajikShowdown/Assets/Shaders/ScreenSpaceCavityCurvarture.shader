@@ -120,8 +120,8 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
 
                 float depth = SampleSceneDepth(uv);
                 float linearDepth  = Linear01Depth(depth, _ZBufferParams);
-
-                BlendSoftLight(color, curvature, _Opacity * (1-linearDepth), finalColor);
+                float opacM = 1 - smoothstep(0.005, 0.05, linearDepth);
+                BlendSoftLight(color, curvature, _Opacity * opacM, finalColor);
                 //BlendSoftLight(color, curvature, _Opacity, finalColor);
                 return finalColor;
             }
