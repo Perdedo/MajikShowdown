@@ -74,10 +74,10 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
             }
 
             
-            float GetCurvatureAtPoint(float2 uv, float sensitivity, float multiplier, float3x3 viewMatrix)
+            float GetCurvatureAtPoint(float2 uv, float sensitivity, float multiplier, float3x3 viewMatrix, float dis)
             {
-                float2 leftRight = float2(1.0 / _ScreenParams.x, 0);
-                float2 upDown = float2(0, 1.0 / _ScreenParams.y);
+                float2 leftRight = float2((1.0 * dis) / _ScreenParams.x, 0);
+                float2 upDown = float2(0, (1.0 * dis) / _ScreenParams.y);
 
                 float2 left = SampleSceneNormalBuffer(uv + leftRight, viewMatrix);
                 float2 right = SampleSceneNormalBuffer(uv - leftRight, viewMatrix);
@@ -89,7 +89,7 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
             }
 
             //Calculates the average curvature from around any given point
-            void GetAverageCurvature(float2 screenPosition, int radius, float sensitivity, float multiplier, float sharpness, out float curvature)
+            void GetAverageCurvature(float2 screenPosition, int radius, float sensitivity, float multiplier, float sharpness, out float curvature, float dis)
             {
                 float3x3 viewMatrix = (float3x3)UNITY_MATRIX_V;
                 float totalWeight = 0.0;
@@ -103,7 +103,7 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                         float2 uvOffset = pixelOffset / _ScreenParams.xy;
                         float weight = 1 / (dot(pixelOffset, pixelOffset) + sharpness);
                         totalWeight += weight;
-                        curvature += weight * GetCurvatureAtPoint(screenPosition + uvOffset, sensitivity, multiplier, viewMatrix);
+                        curvature += weight * GetCurvatureAtPoint(screenPosition + uvOffset, sensitivity, multiplier, viewMatrix, dis);
                     }
                 }
 
@@ -116,13 +116,15 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                 float4 color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_PointClamp, uv);
                 float4 finalColor;
                 float curvature;
-                GetAverageCurvature(uv, _Radius, _Sensitivity, _Multiplier, _Sharpness, curvature);
-
                 float depth = SampleSceneDepth(uv);
                 float linearDepth  = Linear01Depth(depth, _ZBufferParams);
-                float opacM = 1 - smoothstep(0.005, 0.05, linearDepth);
-                BlendSoftLight(color, curvature, _Opacity * opacM, finalColor);
-                //BlendSoftLight(color, curvature, _Opacity, finalColor);
+                float opacM = 1 - smoothstep(0.05, 0.5, linearDepth);
+
+                GetAverageCurvature(uv, _Radius, _Sensitivity, _Multiplier, _Sharpness, curvature,1- linearDepth);
+
+                
+                //BlendSoftLight(color, curvature, _Opacity * opacM, finalColor);
+                BlendSoftLight(color, curvature, _Opacity, finalColor);
                 return finalColor;
             }
             
