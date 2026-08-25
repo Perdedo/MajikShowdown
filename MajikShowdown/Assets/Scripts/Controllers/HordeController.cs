@@ -257,7 +257,7 @@ public class HordeController : NetworkBehaviour
             CellSize = FlowFieldManager.instance.CellSize,
             CellCollumCount = FlowFieldManager.instance.CellCollumCount,
             CellCollumFirst = FlowFieldManager.instance.CellCollumFirst,
-            ColumWidthValue = FlowFieldManager.instance.width
+            ColumWidthValue = FlowFieldManager.instance.depth
         };
         JobHandle handle = enemyLocation.Schedule(UsedEnemies.Count, 64);
         handle.Complete();

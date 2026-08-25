@@ -32,11 +32,13 @@ public class FlowField
         int width = Mathf.CeilToInt(mapSize.x / cellSize);
         int depth = Mathf.CeilToInt(mapSize.y / cellSize);
         fieldSize = new Vector2Int(width, depth);
+        int columnINDEX = -1;
 
         for (int x = 0; x < width; x++)
         {
             for (int z = 0; z < depth; z++)
             {
+                columnINDEX++;
                 Vector2Int gridPos = new Vector2Int(x, z);
                 CellColumn column = new CellColumn(gridPos);
 
@@ -63,6 +65,7 @@ public class FlowField
 
                 if (column.Layers.Count > 0)
                 {
+                    column.ID = columnINDEX;
                     field.Add(gridPos, column);
                     manager.flowFieldAsset.fieldAsset.Add(new FlowFieldDivision(column, gridPos));
                 }
@@ -93,13 +96,11 @@ public class FlowField
         {
             field.Add(ffd.key, ffd.column);
         }
-        int ColumIndex = -1;
-        FlowFieldManager.instance.CellCollumCount = new Unity.Collections.NativeArray<int>(field.Count, Unity.Collections.Allocator.Persistent);
-        FlowFieldManager.instance.CellCollumFirst = new Unity.Collections.NativeArray<int>(field.Count, Unity.Collections.Allocator.Persistent);
+        FlowFieldManager.instance.CellCollumCount = new Unity.Collections.NativeArray<int>(FlowFieldManager.instance.width*FlowFieldManager.instance.depth, Unity.Collections.Allocator.Persistent);
+        FlowFieldManager.instance.CellCollumFirst = new Unity.Collections.NativeArray<int>(FlowFieldManager.instance.width*FlowFieldManager.instance.depth, Unity.Collections.Allocator.Persistent);
         foreach (var v in field)
         {
-            ColumIndex++;
-            FlowFieldManager.instance.CellCollumCount[ColumIndex] = v.Value.Layers.Count;
+            FlowFieldManager.instance.CellCollumCount[v.Value.ID] = v.Value.Layers.Count;
             for(int i = 0; i<v.Value.Layers.Count; i++)
             {
                 FieldCell cell = v.Value.Layers[i];
@@ -108,7 +109,7 @@ public class FlowField
                 cell.closeToObstacle = CheckForObstacles(cell);
                 if(i == 0)
                 {
-                    FlowFieldManager.instance.CellCollumFirst[ColumIndex] = allCells.Count;
+                    FlowFieldManager.instance.CellCollumFirst[v.Value.ID] = allCells.Count;
                 }
                 allCells.Add(cell);
             }

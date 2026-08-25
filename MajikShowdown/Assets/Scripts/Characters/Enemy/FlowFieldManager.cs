@@ -251,10 +251,10 @@ public class FlowFieldManager : MonoBehaviour
 
     public void InitializeGrid()
     {
-        flowField = new FlowField(CellSize, this);
-        flowField.GetFieldFromAsset();
         width = Mathf.CeilToInt(MapSize.x / CellSize);
         depth = Mathf.CeilToInt(MapSize.y / CellSize);
+        flowField = new FlowField(CellSize, this);
+        flowField.GetFieldFromAsset();
 
         cellJobDatas = new NativeArray<CellJobData>(flowField.allCells.Count,Allocator.Persistent);
         for(int i = 0; i< cellJobDatas.Length; i++)

@@ -990,6 +990,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   minSpawnRadius: 10
   maxSpawnRadius: 20
+  radiusStepIncrease: 2
+  radiusLimit: 100
   maxEnemySpawnRadius: 3
   hordeDuration: 180
   pauseDuration: 300
@@ -1014,7 +1016,7 @@ MonoBehaviour:
     m_Bits: 512
   ignoredObstacles:
     serializedVersion: 2
-    m_Bits: 640
+    m_Bits: 0
   enemyCounterTxt: {fileID: 375887363}
   maxEnemyCount: 500
   hordesToWin: 3
@@ -1653,6 +1655,7 @@ MonoBehaviour:
   toggleDeny: {fileID: 0}
   resDropdown: {fileID: 0}
   screenModeDropdown: {fileID: 0}
+  antiAliasingDropdown: {fileID: 0}
   creditsScrollView: {fileID: 0}
   leaveCreditsPanel: {fileID: 0}
   confirmQuitGame: {fileID: 0}
@@ -1663,6 +1666,7 @@ MonoBehaviour:
   data:
     selectedRes: 0
     screenMode: 0
+    antiAliasing: 0
     master: 0
     music: 0
     sfx: 0
@@ -12809,10 +12813,10 @@ MonoBehaviour:
   Target: {fileID: 0}
   Targets: []
   flowFieldDelay: 0.5
-  ShowCells: 1
+  ShowCells: 0
   ShowFieldArea: 0
   ShowDirections: 0
-  ShowTargetPos: 0
+  ShowTargetPos: 1
   cellCountAux: 0
   maxSqrRenderDistance: 2500
 --- !u!4 &1318178715
