@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.VisualScripting;
+using System;
+
 
 
 #if UNITY_EDITOR
@@ -14,6 +16,7 @@ public class FlowFieldManager : MonoBehaviour
     public FlowFieldAsset flowFieldAsset;
     public static FlowFieldManager instance;
     public Vector2 MapSize;
+    [NonSerialized] public int width, depth;
     public float MinHeight;
     public float MaxHeight;
     public float CellSize = 1f;
@@ -47,7 +50,9 @@ public class FlowFieldManager : MonoBehaviour
     public bool ShowTargetPos = true;
 
     [HideInInspector] public NativeArray<CellJobData> cellJobDatas;
-    [HideInInspector] public NativeArray<int>CellNeighborID;
+    [HideInInspector] public NativeArray<int> CellNeighborID;
+    [HideInInspector] public NativeArray<int> CellCollumFirst;
+    [HideInInspector] public NativeArray<int> CellCollumCount;
     void Awake()
     {
         instance = this;
@@ -248,6 +253,8 @@ public class FlowFieldManager : MonoBehaviour
     {
         flowField = new FlowField(CellSize, this);
         flowField.GetFieldFromAsset();
+        width = Mathf.CeilToInt(MapSize.x / CellSize);
+        depth = Mathf.CeilToInt(MapSize.y / CellSize);
 
         cellJobDatas = new NativeArray<CellJobData>(flowField.allCells.Count,Allocator.Persistent);
         for(int i = 0; i< cellJobDatas.Length; i++)
@@ -270,6 +277,14 @@ public class FlowFieldManager : MonoBehaviour
         if (CellNeighborID.IsCreated)
         {
             CellNeighborID.Dispose();
+        }
+        if (CellCollumCount.IsCreated)
+        {
+            CellCollumCount.Dispose();
+        }
+        if (CellCollumFirst.IsCreated)
+        {
+            CellCollumFirst.Dispose();
         }
     }
 

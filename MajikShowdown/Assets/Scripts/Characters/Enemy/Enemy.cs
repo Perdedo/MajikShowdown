@@ -10,6 +10,7 @@ using Unity.Burst;
 using System;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Threading;
+using UnityEngine.UIElements;
 
 public class Enemy : CrowdCharacter
 {
@@ -22,7 +23,7 @@ public class Enemy : CrowdCharacter
     public float EnemyAvoidanceRadius;
     public float TargetStoppingDistance;
     public float SeparationForce = 1;
-    [NonSerialized]public float FlowfieldActivationDistance = 20;
+    [NonSerialized] public float FlowfieldActivationDistance = 20;
     public int priority = 1;
 
     [Header("DropConfig")]
@@ -37,7 +38,7 @@ public class Enemy : CrowdCharacter
     //Vector3[] Directions = new Vector3[8];
     float[] Danger = new float[8];
     float[] Interest = new float[8];
-    [NonSerialized]public  Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
+    [NonSerialized] public Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
     bool detectedObstacle = false, detectedHigherPriority = false;
     [NonSerialized] public Vector3 MoveDirection;
     [NonSerialized] public Vector3 interestDirection;
@@ -70,7 +71,7 @@ public class Enemy : CrowdCharacter
     public Animator animator;
     bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land };
-    [SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
+    [SyncVar(hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
     public void Initialize()
     {
@@ -222,7 +223,7 @@ public class Enemy : CrowdCharacter
         PathToTarget(currentCell);
         prevMoving = moving;
         moving = rb.linearVelocity != Vector3.zero;
-        if(prevMoving != moving)
+        if (prevMoving != moving)
         {
             animator.SetBool("Moving", moving);
         }
@@ -231,7 +232,7 @@ public class Enemy : CrowdCharacter
 
     public void OnAnimStateChange(EnemyAnimState oldVal, EnemyAnimState newVal)
     {
-        switch(newVal)
+        switch (newVal)
         {
             case EnemyAnimState.Attack:
                 animator.ResetTrigger("Attack");
@@ -451,7 +452,7 @@ public class Enemy : CrowdCharacter
                 jumpTimer.SetTimer(0);
                 jumpTimer.Paused = false;
                 CvState = CharVerticalState.jumping;
-                if(isServer)
+                if (isServer)
                 {
                     PlayAnimation(EnemyAnimState.Jump);
                 }
@@ -492,7 +493,7 @@ public class Enemy : CrowdCharacter
             {
                 vState = VerticalState.grounded;
                 InvokeIfAllowed(HitGround);
-                if(isServer)
+                if (isServer)
                 {
                     PlayAnimation(EnemyAnimState.Land);
                 }
@@ -798,7 +799,13 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
     [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
     public int maxEnemiesPerCell;
     public int maxEnemyOccupiedCells;
-    [Unity.Collections.ReadOnly]public NativeArray<CellJobData> Cells;
+    [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
+
+    public float3 flowfieldOffset;
+    public float CellSize;
+    [Unity.Collections.ReadOnly] public NativeArray<int> CellCollumFirst;
+    [Unity.Collections.ReadOnly] public NativeArray<int> CellCollumCount;
+    public int ColumWidthValue;
 
     //Prompted && output
     public NativeArray<EnemyJobData> EnemyData;
@@ -834,7 +841,7 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
         }
         TargetIndices[index] = closestPlayerIndex;
     }
-    public int WorldToGridPosition(float3 worldPosition)
+    /*public int WorldToGridPosition(float3 worldPosition)
     {
         int closest = -1;
         float closestDist = float.MaxValue;
@@ -846,6 +853,29 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
                 closestDist = newDistance;
                 closest = i;
             }
+        }
+        return closest;
+    }*/
+    public int WorldToGridPosition(float3 worldPosition, bool ToLowerOnly = true)
+    {
+        int closest = -1;
+        float closestDist = float.MaxValue;
+        float3 localPos = worldPosition + flowfieldOffset;
+        int2 coords = new int2((int)math.floor(localPos.x / CellSize), (int)math.floor(localPos.z / CellSize));
+        int columIndex = (coords.x * ColumWidthValue) + coords.y;
+        for (int i = 0; i < CellCollumCount[columIndex]; i++)
+        {
+            int cellindex = i + CellCollumFirst[columIndex];
+            float newDistance = math.abs(worldPosition.y - Cells[cellindex].Position.y);
+            if (newDistance < closestDist)
+            {
+                if (!ToLowerOnly || Cells[cellindex].Position.y <= worldPosition.y)
+                {
+                    closestDist = newDistance;
+                    closest = cellindex;
+                }
+            }
+
         }
         return closest;
     }
@@ -875,7 +905,7 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
         EnemyJobData EJD = EnemyData[index];
         EJD.CurrentCell = currentCell;
         int fC = WorldToGridPosition(EJD.Position + Cells[currentCell].Direction * EJD.Size);
-        if(fC > -1)
+        if (fC > -1)
         {
             EJD.fowardCell = fC;
         }
@@ -920,7 +950,7 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
                         enemyNumSlot = -1;
                         calculateSlot = false;
                     }
-                    else if (Interlocked.CompareExchange(ref *counter,current + 1,current) == current)
+                    else if (Interlocked.CompareExchange(ref *counter, current + 1, current) == current)
                     {
                         enemyNumSlot = current;
                         calculateSlot = false;
@@ -985,7 +1015,7 @@ public struct AvoidanceCalculation : IJobParallelFor
     public int maxEnemiesPerCell;
     [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
     [Unity.Collections.ReadOnly] public NativeArray<int> enemiesInField;
-    [Unity.Collections.ReadOnly]public NativeArray<int> cellEnemiesNum;
+    [Unity.Collections.ReadOnly] public NativeArray<int> cellEnemiesNum;
 
     //calculated
     [NativeDisableParallelForRestriction] public NativeArray<int> EnemyNeighbors;

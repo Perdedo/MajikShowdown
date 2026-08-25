@@ -93,15 +93,32 @@ public class FlowField
         {
             field.Add(ffd.key, ffd.column);
         }
+        int ColumIndex = -1;
+        FlowFieldManager.instance.CellCollumCount = new Unity.Collections.NativeArray<int>(field.Count, Unity.Collections.Allocator.Persistent);
+        FlowFieldManager.instance.CellCollumFirst = new Unity.Collections.NativeArray<int>(field.Count, Unity.Collections.Allocator.Persistent);
         foreach (var v in field)
         {
-            foreach (FieldCell cell in v.Value.Layers)
+            ColumIndex++;
+            FlowFieldManager.instance.CellCollumCount[ColumIndex] = v.Value.Layers.Count;
+            for(int i = 0; i<v.Value.Layers.Count; i++)
+            {
+                FieldCell cell = v.Value.Layers[i];
+                cell.ContainedEnemies.Clear();
+                cell.Neighbors = GetNeighbors(cell);
+                cell.closeToObstacle = CheckForObstacles(cell);
+                if(i == 0)
+                {
+                    FlowFieldManager.instance.CellCollumFirst[ColumIndex] = allCells.Count;
+                }
+                allCells.Add(cell);
+            }
+            /*foreach (FieldCell cell in v.Value.Layers)
             {
                 cell.ContainedEnemies.Clear();
                 cell.Neighbors = GetNeighbors(cell);
                 cell.closeToObstacle = CheckForObstacles(cell);
                 allCells.Add(cell);
-            }
+            }*/
         }
         FlowFieldManager.instance.CellNeighborID = new Unity.Collections.NativeArray<int>(neighborsID.Count, Unity.Collections.Allocator.Persistent);
         FlowFieldManager.instance.CellNeighborID.CopyFrom(neighborsID.ToArray());
