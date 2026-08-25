@@ -251,7 +251,13 @@ public class HordeController : NetworkBehaviour
             TargetIndices = new NativeArray<int>(UsedEnemies.Count, Allocator.TempJob),
             enemiesInField = new NativeArray<int>(5 * FlowFieldManager.instance.cellJobDatas.Length, Allocator.TempJob),
             enemyOcupiedCells = new NativeArray<int>(9 * UsedEnemies.Count, Allocator.TempJob),
-            OccupiedCellsToCheck = new NativeArray<int>(9 * UsedEnemies.Count, Allocator.TempJob)
+            OccupiedCellsToCheck = new NativeArray<int>(9 * UsedEnemies.Count, Allocator.TempJob),
+
+            flowfieldOffset = FlowFieldManager.instance.Offset - FlowFieldManager.instance.transform.position,
+            CellSize = FlowFieldManager.instance.CellSize,
+            CellCollumCount = FlowFieldManager.instance.CellCollumCount,
+            CellCollumFirst = FlowFieldManager.instance.CellCollumFirst,
+            ColumWidthValue = FlowFieldManager.instance.depth
         };
         JobHandle handle = enemyLocation.Schedule(UsedEnemies.Count, 64);
         handle.Complete();

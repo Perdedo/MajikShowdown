@@ -80,6 +80,7 @@ public class CellColumn
     }
     public List<FieldCell> Layers = new List<FieldCell>();
     public Vector2Int gridPosition;
+    public int ID;
 }
 
 [Serializable]
