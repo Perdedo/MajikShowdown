@@ -57,9 +57,9 @@ public class CharacterDamageHandler : NetworkBehaviour
     public virtual void Die()
     {
         gameCharacter.Die();
-        if(GameManager.Instance.hordeController.enemies.Contains(this.gameObject))
+        if(GameManager.Instance.hordeController.enemies.Contains((Enemy)gameCharacter))
         {
-            GameManager.Instance.hordeController.enemies.Remove(this.gameObject);
+            GameManager.Instance.hordeController.enemies.Remove((Enemy)gameCharacter);
             GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
             if (!GameManager.Instance.hordeController.inHordeTime)
             {
@@ -69,8 +69,11 @@ public class CharacterDamageHandler : NetworkBehaviour
         if (network)
         {
             //NetworkServer.Destroy(gameObject);
-            GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove(this.gameObject.GetComponent<Enemy>());
-            RPCDisable();
+            GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
+            GameManager.Instance.hordeController.UsedEnemies.Remove((Enemy)gameCharacter);
+            ((Enemy)gameCharacter).UpdateIdWrapper(-1);
+            GameManager.Instance.hordeController.UpdateEnemyActiveID()
+;            RPCDisable();
             this.gameObject.SetActive(false);
         }
         else

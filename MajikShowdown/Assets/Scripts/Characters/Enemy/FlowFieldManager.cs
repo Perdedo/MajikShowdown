@@ -2,6 +2,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.VisualScripting;
+
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -41,6 +45,9 @@ public class FlowFieldManager : MonoBehaviour
     public bool ShowFieldArea = true;
     public bool ShowDirections = true;
     public bool ShowTargetPos = true;
+
+    [HideInInspector] public NativeArray<CellJobData> cellJobDatas;
+    [HideInInspector] public NativeArray<int>CellNeighborID;
     void Awake()
     {
         instance = this;
@@ -54,19 +61,11 @@ public class FlowFieldManager : MonoBehaviour
         {
             Targets.Add(p.transform);
             lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+            p.TargetCellID = lastTargetsPos[lastTargetsPos.Count-1].ID;
         }
         flowField.GenerateFlowField(lastTargetsPos);
         StartCoroutine(FlowFieldGenerator());
     }
-    /*void Update()
-    {
-        FieldCell current = WorldToGridPosition(Target.position);
-        if (current != null && ((current.fieldPos.gridPosition - lastTargetPos.fieldPos.gridPosition).magnitude > TargetRecalculationOffset || current.position.y - lastTargetPos.position.y > SlopeThreshold))
-        {
-            lastTargetPos = current;
-            flowField.GenerateFlowField(current);
-        }
-    }*/
     IEnumerator FlowFieldGenerator()
     {
         moved = false;
@@ -77,6 +76,7 @@ public class FlowFieldManager : MonoBehaviour
             {
                 lastTargetsPos[i] = current;
                 moved = true;
+                GameManager.Instance.Players[i].TargetCellID = current.ID;
             }
         }
         if(moved)
@@ -97,6 +97,7 @@ public class FlowFieldManager : MonoBehaviour
             {
                 Targets.Add(p.transform);
                 lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+                p.TargetCellID = lastTargetsPos[lastTargetsPos.Count-1].ID;
             }
         }
         flowField.GenerateFlowField(lastTargetsPos);
@@ -247,6 +248,29 @@ public class FlowFieldManager : MonoBehaviour
     {
         flowField = new FlowField(CellSize, this);
         flowField.GetFieldFromAsset();
+
+        cellJobDatas = new NativeArray<CellJobData>(flowField.allCells.Count,Allocator.Persistent);
+        for(int i = 0; i< cellJobDatas.Length; i++)
+        {
+            cellJobDatas[i] = new CellJobData()
+            {
+                firstNeighbor = flowField.allCells[i].firstNeighbor,
+                lastNeighbor = flowField.allCells[i].lastNeighbor,
+                Position = flowField.allCells[i].position
+            };
+        }
+
+    }
+    public void OnDestroy()
+    {
+        if (cellJobDatas.IsCreated)
+        {
+            cellJobDatas.Dispose();
+        }
+        if (CellNeighborID.IsCreated)
+        {
+            CellNeighborID.Dispose();
+        }
     }
 
     [ContextMenu("GenerateGrid")]

@@ -12,6 +12,10 @@ using UnityEngine.UI;
 
 public class PlayerUI : NetworkBehaviour
 {
+    [Header("Shop")]
+    [SerializeField] private GameObject shopPanel;
+    public bool IsShopOpen => shopPanel != null && shopPanel.activeSelf;
+
     [Header("Test Panels")]
     public GameObject spellPanel;
     public GameObject createSpellPanel;
@@ -83,7 +87,6 @@ public class PlayerUI : NetworkBehaviour
     public PopupManager popupManager;
     [Header("Network")]
     public bool network = true;
-
     bool loaded;
 
     private void Start()
@@ -124,6 +127,10 @@ public class PlayerUI : NetworkBehaviour
         {
             deathPanel.SetActive(false);
         }
+        if (shopPanel != null)
+        {
+            shopPanel.SetActive(false);
+        }
         ResolutionDropdown();
         ScreenModeDropdown();
         loaded = true;
@@ -148,7 +155,26 @@ public class PlayerUI : NetworkBehaviour
         SetupColors();
         SetupIcons();
         UpdateEquipSlotIcons();
-        EnableGameplayCursor();
+        if (isLocalPlayer || !network)
+        {
+            if (LoadingScreenController.Instance != null && LoadingScreenController.Instance.IsShowing)
+            {
+                EnableLoadingState();
+                LoadingScreenController.Instance.WaitUntilMinimumTime(NotifyGameplayLoaded);
+            }
+            else
+            {
+                if (network)
+                {
+                    myPlayer.gameplayLoaded = true;
+                    if (isServer && GameManager.Instance.hordeController != null)
+                    {
+                        GameManager.Instance.hordeController.Initialize();
+                    }
+                }
+                ResumeGameplay();
+            }
+        }
     }
     private void Update()
     {
@@ -160,17 +186,45 @@ public class PlayerUI : NetworkBehaviour
 
     public void OpenPanel(GameObject panel)
     {
-        panel.SetActive(true);
+        ShowAnimatedPanel(panel);
     }
 
     public void ClosePanel(GameObject panel)
     {
-        panel.SetActive(false);
-        if (panel == optionsPanel)
+        HideAnimatedPanel(panel, () =>
         {
-            SaveManager.SaveConfig(data);
+            if (panel == optionsPanel)
+            {
+                SaveManager.SaveConfig(data);
+            }
+        });
+    }
+
+    private void ShowAnimatedPanel(GameObject panel)
+    {
+        if (panel.TryGetComponent(out PanelTween panelTween))
+        {
+            panelTween.Show();
+        }
+        else
+        {
+            panel.SetActive(true);
         }
     }
+
+    private void HideAnimatedPanel(GameObject panel, Action onComplete = null)
+    {
+        if (panel.TryGetComponent(out PanelTween panelTween))
+        {
+            panelTween.Hide(onComplete);
+        }
+        else
+        {
+            panel.SetActive(false);
+            onComplete?.Invoke();
+        }
+    }
+
     public void UpdateVsyncToggleImages(bool isOn)
     {
         if (isOn)
@@ -366,8 +420,11 @@ public class PlayerUI : NetworkBehaviour
         {
             return;
         }
-        pausePanel.SetActive(false);
-        //myPlayer.input.ActivateInput();
+        HideAnimatedPanel(pausePanel, ResumeGameplay);
+    }
+
+    private void ResumeGameplay()
+    {
         SetGameplayInput(true);
         EnableGameplayCursor();
         caster.canCast = true;
@@ -749,28 +806,27 @@ public class PlayerUI : NetworkBehaviour
     {
         if (!isLocalPlayer && network) return;
         if (!context.started) return;
+        if (IsLoading()) return;
         if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
+
         if (pausePanel.activeSelf && !spellPanel.activeSelf)
         {
-            if(optionsPanel.activeSelf)
+            if (optionsPanel.activeSelf)
             {
                 ClosePanel(optionsPanel);
             }
-            else if(confirmLeavePanel.activeSelf)
+            else if (confirmLeavePanel.activeSelf)
             {
                 ClosePanel(confirmLeavePanel);
             }
             else
             {
-                pausePanel.SetActive(false);
-                SetGameplayInput(true);
-                caster.canCast = true;
-                EnableGameplayCursor();
+                HideAnimatedPanel(pausePanel, ResumeGameplay);
             }
         }
         else if (!pausePanel.activeSelf && !spellPanel.activeSelf)
         {
-            pausePanel.SetActive(true);
+            ShowAnimatedPanel(pausePanel);
             SetGameplayInput(false);
             caster.canCast = false;
             EnableUICursor();
@@ -781,7 +837,9 @@ public class PlayerUI : NetworkBehaviour
     {
         if (!isLocalPlayer && network) return;
         if (!context.started) return;
+        if (IsLoading()) return;
         if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
+
         if (pausePanel.activeSelf)
         {
             if (confirmLeavePanel.activeSelf)
@@ -790,14 +848,16 @@ public class PlayerUI : NetworkBehaviour
             }
             else
             {
-                pausePanel.SetActive(false);
-                SetGameplayInput(true);
-                EnableGameplayCursor();
+                HideAnimatedPanel(pausePanel, () =>
+                {
+                    SetGameplayInput(true);
+                    EnableGameplayCursor();
+                });
             }
         }
         else if (!pausePanel.activeSelf)
         {
-            pausePanel.SetActive(true);
+            ShowAnimatedPanel(pausePanel);
             SetGameplayInput(false);
             EnableUICursor();
         }
@@ -807,8 +867,10 @@ public class PlayerUI : NetworkBehaviour
     {
         if (!isLocalPlayer && network) return;
         if (!context.started) return;
+        if (IsLoading()) return;
         if (myPlayer.dead) return;
         if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
+
         if (spellPanel.activeSelf && !pausePanel.activeSelf)
         {
             if (editSpellPanel.activeSelf)
@@ -817,23 +879,16 @@ public class PlayerUI : NetworkBehaviour
             }
             else
             {
-                spellPanel.SetActive(false);
-                SetGameplayInput(true);
-                if(GameManager.Instance.uiController.sharedUI != null)
-                {
-                    GameManager.Instance.uiController.sharedUI.SetActive(true);
-                }
-                caster.canCast = true;
-                EnableGameplayCursor();
+                HideAnimatedPanel(spellPanel, FinishClosingSpellPanel);
             }
         }
         else if (!spellPanel.activeSelf && !pausePanel.activeSelf)
         {
-            if(GameManager.Instance.uiController.sharedUI != null)
+            if (GameManager.Instance.uiController.sharedUI != null)
             {
                 GameManager.Instance.uiController.sharedUI.SetActive(false);
             }
-            spellPanel.SetActive(true);
+            ShowAnimatedPanel(spellPanel);
             ActivateSpellsInventoryPage();
             SetGameplayInput(false);
             caster.canCast = false;
@@ -841,6 +896,18 @@ public class PlayerUI : NetworkBehaviour
         }
     }
 
+    private void FinishClosingSpellPanel()
+    {
+        SetGameplayInput(true);
+
+        if (GameManager.Instance.uiController.sharedUI != null)
+        {
+            GameManager.Instance.uiController.sharedUI.SetActive(true);
+        }
+
+        caster.canCast = true;
+        EnableGameplayCursor();
+    }
     void SetupColors()
     {
         for (int i = 0; i < colorButtons.Length; i++)
@@ -995,5 +1062,68 @@ public class PlayerUI : NetworkBehaviour
     public void CloseTriggerSpellSelection()
     {
         triggerSpellSelectionPanel.SetActive(false);
+    }
+
+    private void EnableLoadingState()
+    {
+        SetGameplayInput(false);
+        caster.canCast = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        crosshair.SetActive(false);
+        myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
+        inGame = false;
+    }
+
+    private bool IsLoading()
+    {
+        return LoadingScreenController.Instance != null && LoadingScreenController.Instance.IsShowing;
+    }
+
+    public void FinishLoading()
+    {
+        if (LoadingScreenController.Instance != null)
+        {
+            LoadingScreenController.Instance.Hide(ResumeGameplay);
+        }
+        else
+        {
+            ResumeGameplay();
+        }
+    }
+
+    private void NotifyGameplayLoaded()
+    {
+        if (network)
+        {
+            myPlayer.CMDSetGameplayLoaded();
+        }
+        else
+        {
+            FinishLoading();
+        }
+    }
+
+    public void OpenShopPanel()
+    {
+        if (!isLocalPlayer && network) return;
+        if (shopPanel == null) return;
+        if (IsLoading()) return;
+        if (myPlayer != null && myPlayer.dead) return;
+        if (pausePanel != null && pausePanel.activeSelf) return;
+        if (spellPanel != null && spellPanel.activeSelf) return;
+
+        ShowAnimatedPanel(shopPanel);
+        SetGameplayInput(false);
+        caster.canCast = false;
+        EnableUICursor();
+    }
+
+    public void CloseShopPanel()
+    {
+        if (!isLocalPlayer && network) return;
+        if (shopPanel == null || !shopPanel.activeSelf) return;
+
+        HideAnimatedPanel(shopPanel, ResumeGameplay);
     }
 }

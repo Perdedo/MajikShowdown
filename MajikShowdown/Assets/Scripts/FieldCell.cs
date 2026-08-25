@@ -13,19 +13,27 @@ public class FieldCell
     public Vector3 direction;
     public Vector3 directionToDestiny;
     public int generation = 0;
+    public int ID;
+    public int firstNeighbor, lastNeighbor;
     public List<NeighborContext> Neighbors;
+    public List<Enemy.IdWrapper> ContainedEnemies = new List<Enemy.IdWrapper>();
+
     //public float angle;
-    public FieldCell(Vector3 position, Vector2Int gridPosition, int layerIndex/*, float angle*/)
+    public FieldCell(Vector3 position, Vector2Int gridPosition, int layerIndex, int id/*, float angle*/)
     {
         this.position = position;
         fieldPos.gridPosition = gridPosition;
         fieldPos.layerIndex = layerIndex;
+        this.ID = id;
+        ContainedEnemies = new List<Enemy.IdWrapper>();
         //this.angle = angle;
     }
-    public FieldCell(Vector3 position, FieldPos pos/*, float angle*/)
+    public FieldCell(Vector3 position, FieldPos pos, int id/*, float angle*/)
     {
         this.position = position;
         fieldPos = pos;
+        this.ID = id;
+        ContainedEnemies = new List<Enemy.IdWrapper>();
         //this.angle = angle;
     }
     public void SetDirection(Vector3 direction)
