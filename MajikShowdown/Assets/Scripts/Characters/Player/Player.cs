@@ -55,7 +55,7 @@ public class Player : Character
     [SerializeField] float speedChangeRate = 10;
     float xAux = 0, yAux = 0;
 
-    [SyncVar(hook = "OnInputChanged")] public Vector2 netInput = Vector2.zero;
+    [SyncVar] public Vector2 netInput = Vector2.zero;
     public int TargetCellID;
 
     //public PlayerData data;
@@ -132,9 +132,14 @@ public class Player : Character
         {
             xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
             yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
-            animator.SetFloat("InputX", xAux);
-            animator.SetFloat("InputY", yAux);
         }
+        else if(network)
+        {
+            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, netInput.x, Time.deltaTime * speedChangeRate), 2);
+            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, netInput.y, Time.deltaTime * speedChangeRate), 2);
+        }
+        animator.SetFloat("InputX", xAux);
+        animator.SetFloat("InputY", yAux);
         /*if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
         {
             if(Input.GetKeyDown(KeyCode.R))
@@ -291,7 +296,14 @@ public class Player : Character
             directionInput = Vector2.ClampMagnitude(context.ReadValue<Vector2>(), 1);
             if(network)
             {
-                netInput = directionInput;
+                if(isServer)
+                {
+                    netInput = directionInput;
+                }
+                else
+                {
+                    CMDNetInput(directionInput);
+                }
             }
         }
         else
@@ -299,23 +311,24 @@ public class Player : Character
             directionInput = Vector2.zero;
             if (network)
             {
-                netInput = directionInput;
+                if (isServer)
+                {
+                    netInput = directionInput;
+                }
+                else
+                {
+                    CMDNetInput(directionInput);
+                }
             }
-            animator.SetFloat("InputX", 0);
-            animator.SetFloat("InputY", 0);
         }
     }
 
-    public void OnInputChanged(Vector2 oldVal, Vector2 newVal)
+    [Command]
+    public void CMDNetInput(Vector2 dir)
     {
-        if(!isLocalPlayer)
-        {
-            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
-            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
-            animator.SetFloat("InputX", xAux);
-            animator.SetFloat("InputY", yAux);
-        }
+        netInput = dir;
     }
+
 
     public void JumpInput(InputAction.CallbackContext context)
     {
