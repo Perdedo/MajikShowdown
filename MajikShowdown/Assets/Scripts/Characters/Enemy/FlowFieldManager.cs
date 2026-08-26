@@ -7,6 +7,8 @@ using Unity.VisualScripting;
 using System;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Burst;
+
 
 
 
@@ -310,56 +312,67 @@ public class FlowFieldManager : MonoBehaviour
         flowField.GenerateFlowField(WorldToGridPosition(Target.position));
     }
 }
+[BurstCompile]
 public struct GenerateIntegrationJob : IJob
 {
-    public int4 targetCells;
+    public NativeArray<int> targetCells;
     public NativeArray<CellJobData> Cells;
     public NativeArray<int> cellNeighbors;
+    public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
+    public int currentGeneration;
+    public float borderCellWeight;
+    public float diagonalWeight;
     public void Execute()
     {
-        
+        GenerateIntegration();
     }
-    /*void GenerateIntegration(FieldCell target)
+    void GenerateIntegration()
     {
-        DestinationCell = target;
-        if (DestinationCell == null) return;
-        Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
-        DestinationCell.BestCost = 0;
-        DestinationCell.generation = CurrentGeneration;
-        cellsToProcess.Enqueue(DestinationCell);
+        NativeQueue<int> cellsToProcess = new NativeQueue<int>();
+        foreach(int index in targetCells)
+        {
+            CellJobData c = Cells[index];
+            c.bestCost = 0;
+            c.generation = currentGeneration;
+            Cells[index] = c;
+            cellsToProcess.Enqueue(index);
+        }
         while (cellsToProcess.Count > 0)
         {
-            FieldCell currentCell = cellsToProcess.Dequeue();
-            foreach (FieldCell.NeighborContext n in currentCell.Neighbors)
+            CellJobData currentCell = Cells[cellsToProcess.Dequeue()];
+            for(int i = currentCell.firstNeighbor; i <= currentCell.lastNeighbor; i++)
             {
-                if (currentCell.Neighbors.Count < 8)
+                int neighborID = cellNeighbors[i];
+                CellJobData neighborCell = Cells[neighborID];
+                if(currentCell.lastNeighbor - currentCell.lastNeighbor +1 < 8)
                 {
-                    n.neighborCell.BaseCost = manager.BorderCellWeight;
+                    neighborCell.baseCost = borderCellWeight;
                 }
-                if (n.neighborCell.generation != CurrentGeneration)
+                if(neighborCell.generation != currentGeneration)
                 {
-                    n.neighborCell.generation = CurrentGeneration;
-                    n.neighborCell.ResetCost();
+                    neighborCell.generation = currentGeneration;
+                    neighborCell.bestCost = float.MaxValue;
                 }
-                if (n.context == FieldCell.NeighborContext.Context.Lower)
+                if(NeighborContext[i] == FieldCell.NeighborContext.Context.Lower)
                 {
+                    Cells[neighborID] = neighborCell;
                     continue;
                 }
-                if (n.neighborCell.BestCost > currentCell.BestCost + n.neighborCell.BaseCost)
+                if(neighborCell.bestCost > currentCell.bestCost + neighborCell.baseCost)
                 {
                     float mult = 1;
-                    Vector2 dir = new Vector2(n.neighborCell.position.x - currentCell.position.x, n.neighborCell.position.z - currentCell.position.z);
-                    //Vector2 dir = new Vector2(n.neighborCell.position.x - currentCell.position.x, n.neighborCell.position.z - currentCell.position.z).normalized;
+                    float2 dir = new float2( neighborCell.Position.x - currentCell.Position.x, neighborCell.Position.z - currentCell.Position.z);
                     if (dir.x != 0 && dir.y != 0)
                     {
-                        mult = manager.DiagonalWeight;
+                        mult = diagonalWeight;
                     }
-                    n.neighborCell.BestCost = currentCell.BestCost + n.neighborCell.BaseCost * mult;
+                    neighborCell.bestCost = currentCell.bestCost + neighborCell.bestCost * mult;
 
-                    cellsToProcess.Enqueue(n.neighborCell);
+                    cellsToProcess.Enqueue(neighborID);
                 }
-
+                Cells[neighborID] = neighborCell;
             }
+            
         }
-    }*/
+    }
 }

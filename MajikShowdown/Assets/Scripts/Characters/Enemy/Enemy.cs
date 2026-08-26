@@ -1386,6 +1386,9 @@ public struct CellJobData
     //public int EnemiesNum;
     //public int firstEnemy;
     public int firstNeighbor, lastNeighbor;
+    public int generation;
+    public float bestCost;
+    public float baseCost;
     //public int ID;
 }
 
