@@ -69,11 +69,11 @@ public class FlowFieldManager : MonoBehaviour
         //lastTargetPos = WorldToGridPosition(Target.position);
         Targets.Clear();
         lastTargetsPos.Clear();
-        foreach(Player p in GameManager.Instance.Players)
+        foreach (Player p in GameManager.Instance.Players)
         {
             Targets.Add(p.transform);
             lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
-            p.TargetCellID = lastTargetsPos[lastTargetsPos.Count-1].ID;
+            p.TargetCellID = lastTargetsPos[lastTargetsPos.Count - 1].ID;
         }
         flowField.GenerateFlowField(lastTargetsPos);
         StartCoroutine(FlowFieldGenerator());
@@ -81,7 +81,7 @@ public class FlowFieldManager : MonoBehaviour
     IEnumerator FlowFieldGenerator()
     {
         moved = false;
-        for(int i = 0; i < Targets.Count; i++)
+        for (int i = 0; i < Targets.Count; i++)
         {
             current = WorldToGridPosition(Targets[i].position);
             if (current != null && ((current.fieldPos.gridPosition - lastTargetsPos[i].fieldPos.gridPosition).magnitude > TargetRecalculationOffset || current.position.y - lastTargetsPos[i].position.y > SlopeThreshold))
@@ -91,7 +91,7 @@ public class FlowFieldManager : MonoBehaviour
                 GameManager.Instance.Players[i].TargetCellID = current.ID;
             }
         }
-        if(moved)
+        if (moved)
         {
             flowField.GenerateFlowField(lastTargetsPos);
         }
@@ -105,11 +105,11 @@ public class FlowFieldManager : MonoBehaviour
         lastTargetsPos.Clear();
         foreach (Player p in GameManager.Instance.Players)
         {
-            if(!p.dead)
+            if (!p.dead)
             {
                 Targets.Add(p.transform);
                 lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
-                p.TargetCellID = lastTargetsPos[lastTargetsPos.Count-1].ID;
+                p.TargetCellID = lastTargetsPos[lastTargetsPos.Count - 1].ID;
             }
         }
         flowField.GenerateFlowField(lastTargetsPos);
@@ -124,7 +124,7 @@ public class FlowFieldManager : MonoBehaviour
 
     IEnumerator GenerateFFIntegrations()
     {
-        if(!integrated)
+        if (!integrated)
         {
             integrated = flowField.GenerateIntegration();
             yield return new WaitForEndOfFrame();
@@ -142,7 +142,7 @@ public class FlowFieldManager : MonoBehaviour
 
     IEnumerator GenerateFFDirections()
     {
-        if(!directed)
+        if (!directed)
         {
             directed = flowField.GenerateDirections(ref cellCountAux);
             yield return new WaitForEndOfFrame();
@@ -195,10 +195,10 @@ public class FlowFieldManager : MonoBehaviour
         }
         if (flowField != null && ShowTargetPos)
         {
-            foreach(Transform p in Targets)
+            foreach (Transform p in Targets)
             {
                 FieldCell c = WorldToGridPosition(p.position);
-                if(c != null)
+                if (c != null)
                 {
                     Gizmos.color = Color.magenta;
                     Gizmos.DrawCube(c.position, Vector3.one * CellSize * 0.9f);
@@ -213,7 +213,7 @@ public class FlowFieldManager : MonoBehaviour
                                 Gizmos.color = Color.red;
                                 break;
                             default:
-                            Gizmos.color = Color.blue;
+                                Gizmos.color = Color.blue;
                                 break;
                         }
                         Gizmos.DrawCube(n.neighborCell.position, Vector3.one * CellSize * 0.9f);
@@ -238,7 +238,7 @@ public class FlowFieldManager : MonoBehaviour
     //public Vector2Int cellpos;
     public FieldCell WorldToGridPosition(Vector3 worldPosition, bool ToLowestLayer = true)
     {
-        Vector3 localPos = worldPosition - transform.position +Offset;
+        Vector3 localPos = worldPosition - transform.position + Offset;
         Vector2Int v = new Vector2Int(Mathf.FloorToInt(localPos.x / CellSize), Mathf.FloorToInt(localPos.z / CellSize));
         FieldCell closest = null;
         CellColumn col = flowField.GetColumn(v);
@@ -263,8 +263,8 @@ public class FlowFieldManager : MonoBehaviour
         flowField = new FlowField(CellSize, this);
         flowField.GetFieldFromAsset();
 
-        cellJobDatas = new NativeArray<CellJobData>(flowField.allCells.Count,Allocator.Persistent);
-        for(int i = 0; i< cellJobDatas.Length; i++)
+        cellJobDatas = new NativeArray<CellJobData>(flowField.allCells.Count, Allocator.Persistent);
+        for (int i = 0; i < cellJobDatas.Length; i++)
         {
             cellJobDatas[i] = new CellJobData()
             {
@@ -329,7 +329,7 @@ public struct GenerateIntegrationJob : IJob
     void GenerateIntegration()
     {
         NativeQueue<int> cellsToProcess = new NativeQueue<int>();
-        foreach(int index in targetCells)
+        foreach (int index in targetCells)
         {
             CellJobData c = Cells[index];
             c.bestCost = 0;
@@ -340,28 +340,28 @@ public struct GenerateIntegrationJob : IJob
         while (cellsToProcess.Count > 0)
         {
             CellJobData currentCell = Cells[cellsToProcess.Dequeue()];
-            for(int i = currentCell.firstNeighbor; i <= currentCell.lastNeighbor; i++)
+            for (int i = currentCell.firstNeighbor; i <= currentCell.lastNeighbor; i++)
             {
                 int neighborID = cellNeighbors[i];
                 CellJobData neighborCell = Cells[neighborID];
-                if(currentCell.lastNeighbor - currentCell.lastNeighbor +1 < 8)
+                if (currentCell.lastNeighbor - currentCell.lastNeighbor + 1 < 8)
                 {
                     neighborCell.baseCost = borderCellWeight;
                 }
-                if(neighborCell.generation != currentGeneration)
+                if (neighborCell.generation != currentGeneration)
                 {
                     neighborCell.generation = currentGeneration;
                     neighborCell.bestCost = float.MaxValue;
                 }
-                if(NeighborContext[i] == FieldCell.NeighborContext.Context.Lower)
+                if (NeighborContext[i] == FieldCell.NeighborContext.Context.Lower)
                 {
                     Cells[neighborID] = neighborCell;
                     continue;
                 }
-                if(neighborCell.bestCost > currentCell.bestCost + neighborCell.baseCost)
+                if (neighborCell.bestCost > currentCell.bestCost + neighborCell.baseCost)
                 {
                     float mult = 1;
-                    float2 dir = new float2( neighborCell.Position.x - currentCell.Position.x, neighborCell.Position.z - currentCell.Position.z);
+                    float2 dir = new float2(neighborCell.Position.x - currentCell.Position.x, neighborCell.Position.z - currentCell.Position.z);
                     if (dir.x != 0 && dir.y != 0)
                     {
                         mult = diagonalWeight;
@@ -372,7 +372,92 @@ public struct GenerateIntegrationJob : IJob
                 }
                 Cells[neighborID] = neighborCell;
             }
-            
+
         }
+    }
+}
+public struct GenerateDirectionJob : IJobParallelFor
+{
+    public NativeArray<CellJobData> Cells;
+    public NativeArray<int> cellNeighbors;
+    public NativeArray<float3> cellNeighborsDir;
+    public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
+    public NativeParallelHashSet<int> targetCells;
+    public float NeighborSumDirectionStrenght, BestDirectionStrenght, TargetDirectionStrenght;
+    public void Execute(int index)
+    {
+        GenerateDirections(index);
+    }
+    void GenerateDirections(int index)
+    {
+        CellJobData c = Cells[index];
+        if (targetCells.Contains(index))
+        {
+            c.Direction = float3.zero;
+            Cells[index] = c;
+            return;
+        }
+        int lowest = -1;
+        float3 dirToDestiny = GetDistanceToClosestDestinationCell(index);
+        dirToDestiny *= 1f / (Mathf.Abs(dirToDestiny.x) + Mathf.Abs(dirToDestiny.z) + 0.0001f);
+        float bestDot = float.MinValue;
+        float3 dirSum = float3.zero;
+        for (int i = c.firstNeighbor; i <= c.lastNeighbor; i++)
+        {
+            CellJobData neighborCell = Cells[cellNeighbors[i]];
+            if(NeighborContext[i]== FieldCell.NeighborContext.Context.Upper)
+            {
+                continue;
+            }
+            if(neighborCell.bestCost > c.bestCost)
+            {
+                continue;
+            }
+            dirSum += cellNeighborsDir[i] * (1 + c.bestCost - neighborCell.bestCost);
+            if (lowest == -1 || neighborCell.bestCost < Cells[lowest].bestCost)
+            {
+                lowest = cellNeighbors[i];
+                bestDot = math.dot(dirToDestiny, cellNeighborsDir[i]);
+            }
+            else if (neighborCell.bestCost == Cells[lowest].bestCost)
+            {
+                float dot = math.dot(dirToDestiny, cellNeighborsDir[i]);
+                if (dot > bestDot)
+                {
+                    lowest = cellNeighbors[i];
+                    bestDot = dot;
+                }
+            }
+        }
+        if (lowest == -1)
+        {
+            c.Direction = float3.zero;
+            Cells[index] = c;
+            return;
+        }
+        float3 dir = math.normalize(CellDistance(index, lowest));
+        c.Direction = math.normalize(dirSum * NeighborSumDirectionStrenght + dir * BestDirectionStrenght + dirToDestiny * TargetDirectionStrenght);
+        Cells[index] = c;
+
+    }
+    public float3 GetDistanceToClosestDestinationCell(int cellIndex)
+    {
+        float3 dir = float3.zero, aux;
+        float sqrMag = float.MaxValue;
+        foreach (int i in targetCells)
+        {
+            aux = CellDistance(cellIndex, i);
+            float auxMagSqr = math.lengthsq(aux);
+            if (auxMagSqr < sqrMag)
+            {
+                sqrMag = auxMagSqr;
+                dir = aux;
+            }
+        }
+        return dir;
+    }
+    public float3 CellDistance(int from, int to)
+    {
+        return new float3(Cells[to].Position.x - Cells[from].Position.x, 0, Cells[to].Position.z - Cells[from].Position.z);
     }
 }
