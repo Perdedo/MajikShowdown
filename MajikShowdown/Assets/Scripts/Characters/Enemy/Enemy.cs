@@ -1077,6 +1077,7 @@ public struct AvoidanceCalculation : IJobParallelFor
     public int MaxEnemyNeighbors;
     public int maxEnemiesPerCell;
     [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
+    [Unity.Collections.ReadOnly] public NativeArray<FieldCell.NeighborContext.Context> NeighborContexts;
     [Unity.Collections.ReadOnly] public NativeArray<int> enemiesInField;
     [Unity.Collections.ReadOnly]public NativeArray<int> cellEnemiesNum;
 
@@ -1182,6 +1183,10 @@ public struct AvoidanceCalculation : IJobParallelFor
                 }
                 for (int j = Cells[cInd].firstNeighbor; j <= Cells[cInd].lastNeighbor; j++)
                 {
+                    if(NeighborContexts[j] != FieldCell.NeighborContext.Context.None)
+                    {
+                        continue;
+                    }
                     int neighborID = CellNeighbors[j];
 
                     bool alreadyChecked = false;

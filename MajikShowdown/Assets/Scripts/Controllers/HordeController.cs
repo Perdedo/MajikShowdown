@@ -304,6 +304,7 @@ public class HordeController : NetworkBehaviour
             MaxEnemyNeighbors = 32,
             maxEnemiesPerCell = enemyLocation.maxEnemiesPerCell,
             CellNeighbors = FlowFieldManager.instance.CellNeighborID,
+            NeighborContexts = FlowFieldManager.instance.neighborContexts,
             //enemiesInField = EnemyFieldData.AsArray(),
             enemiesInField = enemyLocation.enemiesInField,
             EnemyData = enemyLocation.EnemyData,

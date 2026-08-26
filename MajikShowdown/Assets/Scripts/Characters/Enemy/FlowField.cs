@@ -7,6 +7,7 @@ public class FlowField
     public Dictionary<Vector2Int, CellColumn> field = new Dictionary<Vector2Int, CellColumn>();
     public List<FieldCell> allCells = new List<FieldCell>();
     [SerializeField] List<int> neighborsID = new List<int>();
+    [SerializeField] List<FieldCell.NeighborContext.Context> neighborsContext = new List<FieldCell.NeighborContext.Context>();
     public Vector2Int fieldSize;
     public float cellSize = 1f;
     public float maxStepOffset = 1f;
@@ -123,6 +124,8 @@ public class FlowField
         }
         FlowFieldManager.instance.CellNeighborID = new Unity.Collections.NativeArray<int>(neighborsID.Count, Unity.Collections.Allocator.Persistent);
         FlowFieldManager.instance.CellNeighborID.CopyFrom(neighborsID.ToArray());
+        FlowFieldManager.instance.neighborContexts = new Unity.Collections.NativeArray<FieldCell.NeighborContext.Context>(neighborsContext.Count, Unity.Collections.Allocator.Persistent);
+        FlowFieldManager.instance.neighborContexts.CopyFrom(neighborsContext.ToArray());
     }
 
     float DetectionRadius = 4;
@@ -206,18 +209,18 @@ public class FlowField
                             {
                                 if (c.position.y < cell.position.y - maxJumpHeight)
                                 {
-                                    AddNeighborID(cell, c.ID, neighbors.Count);
+                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.Lower);
                                     neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.Lower));
                                 }
                                 else
                                 {
-                                    AddNeighborID(cell, c.ID, neighbors.Count);
+                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.ABitLower);
                                     neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.ABitLower));
                                 }
                             }
                             else
                             {
-                                AddNeighborID(cell, c.ID, neighbors.Count);
+                                AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.None);
                                 neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.None));
                             }
                         }
@@ -226,11 +229,12 @@ public class FlowField
                     {
                         if (c.position.y < cell.position.y + maxJumpHeight)
                         {
-                            AddNeighborID(cell, c.ID, neighbors.Count);
+                            AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Jumpable);
                             neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.Jumpable));
                         }
                         else
                         {
+                            AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Upper);
                             neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.Upper));
                         }
                     }
@@ -241,7 +245,7 @@ public class FlowField
 
         return neighbors;
     }
-    void AddNeighborID(FieldCell cell, int neighborID, int neighborCount)
+    void AddNeighborID(FieldCell cell, int neighborID, int neighborCount, FieldCell.NeighborContext.Context context)
     {
         if (neighborCount == 0)
         {
@@ -253,6 +257,7 @@ public class FlowField
             cell.lastNeighbor = neighborsID.Count;
         }
         neighborsID.Add(neighborID);
+        neighborsContext.Add(context);
     }
     public void GenerateFlowField(Vector2Int targetCellPos, int targetCellLayer)
     {

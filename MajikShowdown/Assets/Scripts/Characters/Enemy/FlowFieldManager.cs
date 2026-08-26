@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.VisualScripting;
 using System;
+using Unity.Jobs;
+using Unity.Mathematics;
+
+
 
 
 
@@ -53,6 +57,7 @@ public class FlowFieldManager : MonoBehaviour
     [HideInInspector] public NativeArray<int> CellNeighborID;
     [HideInInspector] public NativeArray<int> CellCollumFirst;
     [HideInInspector] public NativeArray<int> CellCollumCount;
+    [HideInInspector] public NativeArray<FieldCell.NeighborContext.Context> neighborContexts;
     void Awake()
     {
         instance = this;
@@ -286,6 +291,10 @@ public class FlowFieldManager : MonoBehaviour
         {
             CellCollumFirst.Dispose();
         }
+        if (neighborContexts.IsCreated)
+        {
+            neighborContexts.Dispose();
+        }
     }
 
     [ContextMenu("GenerateGrid")]
@@ -300,4 +309,57 @@ public class FlowFieldManager : MonoBehaviour
     {
         flowField.GenerateFlowField(WorldToGridPosition(Target.position));
     }
+}
+public struct GenerateIntegrationJob : IJob
+{
+    public int4 targetCells;
+    public NativeArray<CellJobData> Cells;
+    public NativeArray<int> cellNeighbors;
+    public void Execute()
+    {
+        
+    }
+    /*void GenerateIntegration(FieldCell target)
+    {
+        DestinationCell = target;
+        if (DestinationCell == null) return;
+        Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
+        DestinationCell.BestCost = 0;
+        DestinationCell.generation = CurrentGeneration;
+        cellsToProcess.Enqueue(DestinationCell);
+        while (cellsToProcess.Count > 0)
+        {
+            FieldCell currentCell = cellsToProcess.Dequeue();
+            foreach (FieldCell.NeighborContext n in currentCell.Neighbors)
+            {
+                if (currentCell.Neighbors.Count < 8)
+                {
+                    n.neighborCell.BaseCost = manager.BorderCellWeight;
+                }
+                if (n.neighborCell.generation != CurrentGeneration)
+                {
+                    n.neighborCell.generation = CurrentGeneration;
+                    n.neighborCell.ResetCost();
+                }
+                if (n.context == FieldCell.NeighborContext.Context.Lower)
+                {
+                    continue;
+                }
+                if (n.neighborCell.BestCost > currentCell.BestCost + n.neighborCell.BaseCost)
+                {
+                    float mult = 1;
+                    Vector2 dir = new Vector2(n.neighborCell.position.x - currentCell.position.x, n.neighborCell.position.z - currentCell.position.z);
+                    //Vector2 dir = new Vector2(n.neighborCell.position.x - currentCell.position.x, n.neighborCell.position.z - currentCell.position.z).normalized;
+                    if (dir.x != 0 && dir.y != 0)
+                    {
+                        mult = manager.DiagonalWeight;
+                    }
+                    n.neighborCell.BestCost = currentCell.BestCost + n.neighborCell.BaseCost * mult;
+
+                    cellsToProcess.Enqueue(n.neighborCell);
+                }
+
+            }
+        }
+    }*/
 }
