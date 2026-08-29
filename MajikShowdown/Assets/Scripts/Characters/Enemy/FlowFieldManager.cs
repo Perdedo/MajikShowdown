@@ -9,11 +9,6 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Burst;
 
-
-
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -60,6 +55,7 @@ public class FlowFieldManager : MonoBehaviour
     [HideInInspector] public NativeArray<int> CellCollumFirst;
     [HideInInspector] public NativeArray<int> CellCollumCount;
     [HideInInspector] public NativeArray<FieldCell.NeighborContext.Context> neighborContexts;
+    [HideInInspector] public NativeArray<float3> CellNeighborDir;
     void Awake()
     {
         instance = this;
@@ -76,7 +72,7 @@ public class FlowFieldManager : MonoBehaviour
             p.TargetCellID = lastTargetsPos[lastTargetsPos.Count - 1].ID;
         }
         flowField.GenerateFlowField(lastTargetsPos);
-        StartCoroutine(FlowFieldGenerator());
+        //StartCoroutine(FlowFieldGenerator());
     }
     IEnumerator FlowFieldGenerator()
     {
@@ -93,7 +89,7 @@ public class FlowFieldManager : MonoBehaviour
         }
         if (moved)
         {
-            flowField.GenerateFlowField(lastTargetsPos);
+            flowField.GenerateFlowFieldOld(lastTargetsPos);
         }
         yield return new WaitForSeconds(flowFieldDelay);
         StartCoroutine(FlowFieldGenerator());
@@ -297,6 +293,10 @@ public class FlowFieldManager : MonoBehaviour
         {
             neighborContexts.Dispose();
         }
+        if (CellNeighborDir.IsCreated)
+        {
+            CellNeighborDir.Dispose();
+        }
     }
 
     [ContextMenu("GenerateGrid")]
@@ -328,7 +328,7 @@ public struct GenerateIntegrationJob : IJob
     }
     void GenerateIntegration()
     {
-        NativeQueue<int> cellsToProcess = new NativeQueue<int>();
+        NativeQueue<int> cellsToProcess = new NativeQueue<int>(Allocator.Temp);
         foreach (int index in targetCells)
         {
             CellJobData c = Cells[index];
@@ -340,11 +340,12 @@ public struct GenerateIntegrationJob : IJob
         while (cellsToProcess.Count > 0)
         {
             CellJobData currentCell = Cells[cellsToProcess.Dequeue()];
+            int neighborCount = currentCell.lastNeighbor -currentCell.firstNeighbor + 1;
             for (int i = currentCell.firstNeighbor; i <= currentCell.lastNeighbor; i++)
             {
                 int neighborID = cellNeighbors[i];
                 CellJobData neighborCell = Cells[neighborID];
-                if (currentCell.lastNeighbor - currentCell.lastNeighbor + 1 < 8)
+                if (neighborCount < 8)
                 {
                     neighborCell.baseCost = borderCellWeight;
                 }
@@ -366,7 +367,7 @@ public struct GenerateIntegrationJob : IJob
                     {
                         mult = diagonalWeight;
                     }
-                    neighborCell.bestCost = currentCell.bestCost + neighborCell.bestCost * mult;
+                    neighborCell.bestCost = currentCell.bestCost + neighborCell.baseCost * mult;
 
                     cellsToProcess.Enqueue(neighborID);
                 }
@@ -374,28 +375,30 @@ public struct GenerateIntegrationJob : IJob
             }
 
         }
+        cellsToProcess.Dispose();
     }
 }
+[BurstCompile]
 public struct GenerateDirectionJob : IJobParallelFor
 {
-    public NativeArray<CellJobData> Cells;
-    public NativeArray<int> cellNeighbors;
-    public NativeArray<float3> cellNeighborsDir;
-    public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
-    public NativeParallelHashSet<int> targetCells;
+    [Unity.Collections.ReadOnly]public NativeArray<CellJobData> Cells;
+    [Unity.Collections.ReadOnly]public NativeArray<int> cellNeighbors;
+    [Unity.Collections.ReadOnly]public NativeArray<float3> cellNeighborsDir;
+    [Unity.Collections.ReadOnly]public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
+    [Unity.Collections.ReadOnly]public NativeParallelHashSet<int> targetCells;
+    [WriteOnly]
+    public NativeArray<float3> DirectionsOutput;
     public float NeighborSumDirectionStrenght, BestDirectionStrenght, TargetDirectionStrenght;
     public void Execute(int index)
     {
-        GenerateDirections(index);
+        DirectionsOutput[index] = GenerateDirections(index);
     }
-    void GenerateDirections(int index)
+    float3 GenerateDirections(int index)
     {
         CellJobData c = Cells[index];
         if (targetCells.Contains(index))
         {
-            c.Direction = float3.zero;
-            Cells[index] = c;
-            return;
+            return float3.zero;
         }
         int lowest = -1;
         float3 dirToDestiny = GetDistanceToClosestDestinationCell(index);
@@ -431,13 +434,10 @@ public struct GenerateDirectionJob : IJobParallelFor
         }
         if (lowest == -1)
         {
-            c.Direction = float3.zero;
-            Cells[index] = c;
-            return;
+            return float3.zero;
         }
         float3 dir = math.normalize(CellDistance(index, lowest));
-        c.Direction = math.normalize(dirSum * NeighborSumDirectionStrenght + dir * BestDirectionStrenght + dirToDestiny * TargetDirectionStrenght);
-        Cells[index] = c;
+        return math.normalize(dirSum * NeighborSumDirectionStrenght + dir * BestDirectionStrenght + dirToDestiny * TargetDirectionStrenght);
 
     }
     public float3 GetDistanceToClosestDestinationCell(int cellIndex)
