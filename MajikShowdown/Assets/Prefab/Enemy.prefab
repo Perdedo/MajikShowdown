@@ -215,13 +215,14 @@ MonoBehaviour:
   EnemyAvoidanceRadius: 1.25
   TargetStoppingDistance: 2
   SeparationForce: 10
-  FlowfieldActivationDistance: 20
   priority: 1
   DropChance: 0
   AvailablePools: []
   PoolProbability:
     Entries: []
   size: 0
+  target: {fileID: 0}
+  canSeeTarget: 0
   attackDuration: 0.7
   attackCooldown: 0.6
   damage: 1
@@ -232,7 +233,6 @@ MonoBehaviour:
   maxDistanceFromPlayer: 100
   repositionRange: 20
   animator: {fileID: 2299643720158326213}
-  animState: 0
 --- !u!114 &1432205814886390903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +337,9 @@ MonoBehaviour:
   Health: 1
   Resistances: []
   enemyIndex: 0
+  lootDropPoolInd: 0
+  lootDropChance: 5
+  moneyDrop: 10
   network: 1
 --- !u!1 &2002080844044921225
 GameObject:

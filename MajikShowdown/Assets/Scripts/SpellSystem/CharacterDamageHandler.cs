@@ -9,6 +9,9 @@ public class CharacterDamageHandler : NetworkBehaviour
     [SyncVar]public float Health;
     public List<Resistance> Resistances;
     public int enemyIndex;
+    public int lootDropPoolInd;
+    public int lootDropChance;
+    public int moneyDrop;
     [Header("Network")]
     public bool network = true;
     public IGameCharacter gameCharacter;
@@ -69,6 +72,10 @@ public class CharacterDamageHandler : NetworkBehaviour
         if (network)
         {
             //NetworkServer.Destroy(gameObject);
+            /*if(UnityEngine.Random.Range(0, 100) < lootDropChance)
+            {
+                LootSpawner.Instance.SpawnLootBox(transform.position, lootDropPoolInd);
+            }*/
             GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
             GameManager.Instance.hordeController.UsedEnemies.Remove((Enemy)gameCharacter);
             ((Enemy)gameCharacter).UpdateIdWrapper(-1);
