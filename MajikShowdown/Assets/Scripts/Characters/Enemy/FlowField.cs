@@ -2,12 +2,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEditor;
+using Unity.Jobs;
+using Unity.Collections;
+using Unity.Mathematics;
+using System.Linq;
 public class FlowField
 {
     public Dictionary<Vector2Int, CellColumn> field = new Dictionary<Vector2Int, CellColumn>();
     public List<FieldCell> allCells = new List<FieldCell>();
     [SerializeField] List<int> neighborsID = new List<int>();
     [SerializeField] List<FieldCell.NeighborContext.Context> neighborsContext = new List<FieldCell.NeighborContext.Context>();
+    [SerializeField] List<float3> neighborsDir = new List<float3>();
     public Vector2Int fieldSize;
     public float cellSize = 1f;
     public float maxStepOffset = 1f;
@@ -126,6 +131,8 @@ public class FlowField
         FlowFieldManager.instance.CellNeighborID.CopyFrom(neighborsID.ToArray());
         FlowFieldManager.instance.neighborContexts = new Unity.Collections.NativeArray<FieldCell.NeighborContext.Context>(neighborsContext.Count, Unity.Collections.Allocator.Persistent);
         FlowFieldManager.instance.neighborContexts.CopyFrom(neighborsContext.ToArray());
+        FlowFieldManager.instance.CellNeighborDir = new Unity.Collections.NativeArray<float3>(neighborsID.Count, Unity.Collections.Allocator.Persistent);
+        FlowFieldManager.instance.CellNeighborDir.CopyFrom(neighborsDir.ToArray());
     }
 
     float DetectionRadius = 4;
@@ -209,19 +216,22 @@ public class FlowField
                             {
                                 if (c.position.y < cell.position.y - maxJumpHeight)
                                 {
-                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.Lower);
-                                    neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.Lower));
+                                    Vector3 Ndir = CellDistance(cell, c);
+                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.Lower,Ndir);
+                                    neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.Lower));
                                 }
                                 else
                                 {
-                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.ABitLower);
-                                    neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.ABitLower));
+                                    Vector3 Ndir = CellDistance(cell, c);
+                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.ABitLower,Ndir);
+                                    neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.ABitLower));
                                 }
                             }
                             else
                             {
-                                AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.None);
-                                neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.None));
+                                Vector3 Ndir = CellDistance(cell, c);
+                                AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.None,Ndir);
+                                neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.None));
                             }
                         }
                     }
@@ -229,13 +239,15 @@ public class FlowField
                     {
                         if (c.position.y < cell.position.y + maxJumpHeight)
                         {
-                            AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Jumpable);
-                            neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.Jumpable));
+                            Vector3 Ndir = CellDistance(cell, c);
+                            AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Jumpable,Ndir);
+                            neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.Jumpable));
                         }
                         else
                         {
-                            AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Upper);
-                            neighbors.Add(new FieldCell.NeighborContext(c, CellDistance(cell, c), FieldCell.NeighborContext.Context.Upper));
+                            Vector3 Ndir = CellDistance(cell, c);
+                            AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Upper,Ndir);
+                            neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.Upper));
                         }
                     }
                 }
@@ -245,7 +257,7 @@ public class FlowField
 
         return neighbors;
     }
-    void AddNeighborID(FieldCell cell, int neighborID, int neighborCount, FieldCell.NeighborContext.Context context)
+    void AddNeighborID(FieldCell cell, int neighborID, int neighborCount, FieldCell.NeighborContext.Context context, Vector3 dir)
     {
         if (neighborCount == 0)
         {
@@ -258,6 +270,7 @@ public class FlowField
         }
         neighborsID.Add(neighborID);
         neighborsContext.Add(context);
+        neighborsDir.Add(dir);
     }
     public void GenerateFlowField(Vector2Int targetCellPos, int targetCellLayer)
     {
@@ -281,15 +294,13 @@ public class FlowField
     int cellCount = 0;
     //float maxSqrDistance = 10000;
 
-    public void GenerateFlowField(List<FieldCell> targets)
+    public void GenerateFlowFieldOld(List<FieldCell> targets)
     {
-        //ResetCost();
         CurrentGeneration++;
         cellsToProcess.Clear();
         processedCells.Clear();
         DestinationCells = targets;
         if (DestinationCells.Count <= 0) return;
-        //Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
         destinationSet.Clear();
         foreach (FieldCell cell in DestinationCells)
         {
@@ -299,9 +310,57 @@ public class FlowField
             destinationSet.Add(cell);
         }
         manager.GenerateFlowFieldIntegrations();
-        //GenerateIntegration();
-        //GenerateDirections();
     }
+    public void GenerateFlowField(List<FieldCell> targets)
+    {
+        CurrentGeneration++;
+        DestinationCells = targets;
+        if (DestinationCells.Count <= 0) return;
+        NativeArray<int> tCells = new NativeArray<int>(targets.Count, Allocator.TempJob);
+        NativeParallelHashSet<int> HashTCells = new NativeParallelHashSet<int>(targets.Count, Allocator.TempJob);
+        for(int i = 0; i< targets.Count; i++)
+        {
+            tCells[i] = targets[i].ID;
+            HashTCells.Add(targets[i].ID);
+        }
+        GenerateIntegrationJob integration = new GenerateIntegrationJob()
+        {
+            targetCells = tCells,
+            Cells = FlowFieldManager.instance.cellJobDatas,
+            cellNeighbors = FlowFieldManager.instance.CellNeighborID,
+            NeighborContext = FlowFieldManager.instance.neighborContexts,
+            currentGeneration = CurrentGeneration,
+            borderCellWeight = FlowFieldManager.instance.BorderCellWeight,
+            diagonalWeight = FlowFieldManager.instance.DiagonalWeight
+        };
+        JobHandle handle = integration.Schedule();
+        handle.Complete();
+        tCells.Dispose();
+        GenerateDirectionJob direction = new GenerateDirectionJob()
+        {
+            Cells = FlowFieldManager.instance.cellJobDatas,
+            cellNeighbors = FlowFieldManager.instance.CellNeighborID,
+            NeighborContext = FlowFieldManager.instance.neighborContexts,
+            cellNeighborsDir = FlowFieldManager.instance.CellNeighborDir,
+            targetCells = HashTCells,
+            DirectionsOutput = new NativeArray<float3>(FlowFieldManager.instance.cellJobDatas.Length, Allocator.TempJob),
+            NeighborSumDirectionStrenght = FlowFieldManager.instance.NeighborSumDirectionStrenght,
+            BestDirectionStrenght = FlowFieldManager.instance.BestDirectionStrenght,
+            TargetDirectionStrenght = FlowFieldManager.instance.TargetDirectionStrenght
+        };
+        handle = direction.Schedule(allCells.Count, 64);
+        handle.Complete();
+        for(int i =0; i< direction.Cells.Length; i++)
+        {
+            CellJobData c = FlowFieldManager.instance.cellJobDatas[i];
+            c.Direction = direction.DirectionsOutput[i];
+            allCells[i].direction = direction.DirectionsOutput[i];
+            FlowFieldManager.instance.cellJobDatas[i] = c;
+        }
+        HashTCells.Dispose();
+        direction.DirectionsOutput.Dispose();
+    }
+
     void GenerateIntegration(Vector2Int targetCellPos, int targetCellLayer)
     {
         DestinationCell = GetCell(targetCellPos, targetCellLayer);
