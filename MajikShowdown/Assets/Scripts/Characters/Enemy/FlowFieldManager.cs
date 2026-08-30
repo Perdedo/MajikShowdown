@@ -74,6 +74,25 @@ public class FlowFieldManager : MonoBehaviour
         flowField.GenerateFlowField(lastTargetsPos);
         //StartCoroutine(FlowFieldGenerator());
     }
+
+    private void Update()
+    {
+        moved = false;
+        for (int i = 0; i < Targets.Count; i++)
+        {
+            current = WorldToGridPosition(Targets[i].position);
+            if (current != null && ((current.fieldPos.gridPosition - lastTargetsPos[i].fieldPos.gridPosition).magnitude > TargetRecalculationOffset || current.position.y - lastTargetsPos[i].position.y > SlopeThreshold))
+            {
+                lastTargetsPos[i] = current;
+                moved = true;
+                GameManager.Instance.Players[i].TargetCellID = current.ID;
+            }
+        }
+        if (moved)
+        {
+            flowField.GenerateFlowFieldOld(lastTargetsPos);
+        }
+    }
     IEnumerator FlowFieldGenerator()
     {
         moved = false;
