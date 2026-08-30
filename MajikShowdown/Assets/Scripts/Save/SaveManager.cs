@@ -16,7 +16,7 @@ public class SaveManager : MonoBehaviour
         if (!File.Exists(path))
         {
             success = false;
-            return new ConfigData(0, 0, 0f, -15f, -15f, false);
+            return new ConfigData(0, 0, 0, 0f, -15f, -15f, false);
         }
         string s = File.ReadAllText(path);
         return JsonUtility.FromJson<ConfigData>(s);

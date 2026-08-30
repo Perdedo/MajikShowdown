@@ -39,6 +39,7 @@ public class Player : Character
     [HideInInspector] public PlayerInput input;
     
     [SyncVar(hook = "GetReady")]public bool readyForHorde = false;
+    [SyncVar] public bool gameplayLoaded = false;
     [Header("Network")]
     public bool network = true;
 
@@ -49,6 +50,13 @@ public class Player : Character
     public float CastPoseTime = 3f;
 
     public InteractableObject currentInteraction;
+
+    public Animator animator;
+    [SerializeField] float speedChangeRate = 10;
+    float xAux = 0, yAux = 0;
+
+    [SyncVar] public Vector2 netInput = Vector2.zero;
+    public int TargetCellID;
 
     //public PlayerData data;
 
@@ -82,7 +90,7 @@ public class Player : Character
         base.OnStartLocalPlayer();
         playerCamera.Priority = 2;
         input.enabled = true;
-        readyForHorde = false;
+        //readyForHorde = false;
     }
     protected override void FixedUpdate()
     {
@@ -120,7 +128,18 @@ public class Player : Character
                 gravityTimer.SetTimer(0);
             }
         }
-
+        if(isLocalPlayer || !network)
+        {
+            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, directionInput.x, Time.deltaTime * speedChangeRate), 2);
+            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, directionInput.y, Time.deltaTime * speedChangeRate), 2);
+        }
+        else if(network)
+        {
+            xAux = (float)System.Math.Round(Mathf.MoveTowards(xAux, netInput.x, Time.deltaTime * speedChangeRate), 2);
+            yAux = (float)System.Math.Round(Mathf.MoveTowards(yAux, netInput.y, Time.deltaTime * speedChangeRate), 2);
+        }
+        animator.SetFloat("InputX", xAux);
+        animator.SetFloat("InputY", yAux);
         /*if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
         {
             if(Input.GetKeyDown(KeyCode.R))
@@ -198,6 +217,74 @@ public class Player : Character
             jumpBuffer = false;
         }
     }
+
+    public void JumpAnim()
+    {
+        if(network)
+        {
+            CMDAnimTrigger("Jump");
+        }
+        else
+        {
+            animator.ResetTrigger("Jump");
+            animator.SetTrigger("Jump");
+        }
+    }
+
+    public void LandAnim()
+    {
+        if (network)
+        {
+            CMDAnimTrigger("Land");
+        }
+        else
+        {
+            animator.ResetTrigger("Land");
+            animator.SetTrigger("Land");
+        }
+    }
+
+    public void CastAnim()
+    {
+        if (network)
+        {
+            CMDAnimTrigger("Casting");
+        }
+        else
+        {
+            animator.ResetTrigger("Casting");
+            animator.SetTrigger("Casting");
+        }
+    }
+
+    public void DashAnim()
+    {
+        if (network)
+        {
+            CMDAnimTrigger("Dash");
+        }
+        else
+        {
+            animator.ResetTrigger("Dash");
+            animator.SetTrigger("Dash");
+        }
+    }
+
+    [Command]
+    public void CMDAnimTrigger(string trigger)
+    {
+        RPCAnimTrigger(trigger);
+    }
+
+    [ClientRpc]
+    public void RPCAnimTrigger(string trigger)
+    {
+        animator.ResetTrigger(trigger);
+        animator.SetTrigger(trigger);
+    }
+
+
+
     public void MoveInput(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network) return;
@@ -207,12 +294,41 @@ public class Player : Character
         if (!movePaused)
         {
             directionInput = Vector2.ClampMagnitude(context.ReadValue<Vector2>(), 1);
+            if(network)
+            {
+                if(isServer)
+                {
+                    netInput = directionInput;
+                }
+                else
+                {
+                    CMDNetInput(directionInput);
+                }
+            }
         }
         else
         {
             directionInput = Vector2.zero;
+            if (network)
+            {
+                if (isServer)
+                {
+                    netInput = directionInput;
+                }
+                else
+                {
+                    CMDNetInput(directionInput);
+                }
+            }
         }
     }
+
+    [Command]
+    public void CMDNetInput(Vector2 dir)
+    {
+        netInput = dir;
+    }
+
 
     public void JumpInput(InputAction.CallbackContext context)
     {
@@ -269,6 +385,7 @@ public class Player : Character
                 v = directionAnchor.transform.forward;
             }
             AddExternalVelocity(v.normalized * DashForce);
+            DashAnim();
             dashOnCooldown = true;
             gravityPaused = true;
         }
@@ -309,15 +426,16 @@ public class Player : Character
     }*/
     protected override void HandleRotation()
     {
-        if (Casting)
+        /*if (Casting)
         {
             RotateTowards(directionAnchor.forward);
         }
         else
         {
             RotateFoward();
-        }
+        }*/
 
+        RotateTowards(directionAnchor.forward);
         //transform.eulerAngles = new Vector3(0, lookAnchor.eulerAngles.y, 0);
     }
     IEnumerator CoyoteTimer()
@@ -370,5 +488,17 @@ public class Player : Character
         worldVelocity = parentVelocity + Vector3.ClampMagnitude(localVelocity, maxVelocity);
         Vector3 velocityChange = worldVelocity - rb.linearVelocity;
         rb.AddForce(velocityChange, ForceMode.VelocityChange);
+    }
+
+    [Command]
+    public void CMDSetGameplayLoaded()
+    {
+        if (gameplayLoaded) return;
+
+        gameplayLoaded = true;
+        if (GameManager.Instance.hordeController != null)
+        {
+            GameManager.Instance.hordeController.CheckGameplayLoaded();
+        }
     }
 }

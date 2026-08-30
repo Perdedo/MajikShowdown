@@ -11,14 +11,13 @@ public class FieldCell
     public float BestCost = float.MaxValue;
     public bool closeToObstacle = false;
     public Vector3 direction;
-    public Vector3 directionToDestiny;
+    //public Vector3 directionToDestiny;
     public int generation = 0;
     public int ID;
     public int firstNeighbor, lastNeighbor;
     public List<NeighborContext> Neighbors;
-    [NonSerialized]
-    private HashSet<int> containedEnemies;
-    public HashSet<int> ContainedEnemies => containedEnemies ??= new HashSet<int>();
+    public List<Enemy.IdWrapper> ContainedEnemies = new List<Enemy.IdWrapper>();
+
     //public float angle;
     public FieldCell(Vector3 position, Vector2Int gridPosition, int layerIndex, int id/*, float angle*/)
     {
@@ -26,6 +25,7 @@ public class FieldCell
         fieldPos.gridPosition = gridPosition;
         fieldPos.layerIndex = layerIndex;
         this.ID = id;
+        ContainedEnemies = new List<Enemy.IdWrapper>();
         //this.angle = angle;
     }
     public FieldCell(Vector3 position, FieldPos pos, int id/*, float angle*/)
@@ -33,6 +33,7 @@ public class FieldCell
         this.position = position;
         fieldPos = pos;
         this.ID = id;
+        ContainedEnemies = new List<Enemy.IdWrapper>();
         //this.angle = angle;
     }
     public void SetDirection(Vector3 direction)
@@ -79,6 +80,7 @@ public class CellColumn
     }
     public List<FieldCell> Layers = new List<FieldCell>();
     public Vector2Int gridPosition;
+    public int ID;
 }
 
 [Serializable]

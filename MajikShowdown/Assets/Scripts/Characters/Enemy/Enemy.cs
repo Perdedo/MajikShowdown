@@ -1,12 +1,16 @@
+using Mirror;
+using System;
 using System.Collections.Generic;
+using System.Threading;
+//using UnityEngine.Jobs;
+using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
-using Mirror;
-using Unity.Jobs;
-using UnityEngine.Jobs;
-using Unity.Burst;
+using static UnityEditor.PlayerSettings;
 
 public class Enemy : CrowdCharacter
 {
@@ -19,7 +23,7 @@ public class Enemy : CrowdCharacter
     public float EnemyAvoidanceRadius;
     public float TargetStoppingDistance;
     public float SeparationForce = 1;
-    public float FlowfieldActivationDistance = 20;
+    [NonSerialized]public float FlowfieldActivationDistance = 20;
     public int priority = 1;
 
     [Header("DropConfig")]
@@ -27,22 +31,22 @@ public class Enemy : CrowdCharacter
     public List<RuneLootPool> AvailablePools;
     public ProbabilitySlider<int> PoolProbability = new ProbabilitySlider<int>();
 
-    float size;
-    Player target;
+    [HideInInspector] public float size;
+    public Player target;
     HashSet<Enemy> neighbors = new HashSet<Enemy>();
-    Collider[] neighborBuffer = new Collider[32];
-    Vector3[] Directions = new Vector3[8];
+    //Collider[] neighborBuffer = new Collider[32];
+    //Vector3[] Directions = new Vector3[8];
     float[] Danger = new float[8];
     float[] Interest = new float[8];
-    Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
+    [NonSerialized]public  Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
     bool detectedObstacle = false, detectedHigherPriority = false;
-    Vector3 MoveDirection;
-    Vector3 interestDirection;
+    [NonSerialized] public Vector3 MoveDirection;
+    [NonSerialized] public Vector3 interestDirection;
     Vector3 priorityAvoidDirection;
-    bool canSeeTarget;
-    FieldCell currentCell, forwardCell;
+    public bool canSeeTarget;
+    [NonSerialized] public FieldCell currentCell, forwardCell;
     HashSet<FieldCell> OccupiedCells = new HashSet<FieldCell>();
-    int occupiedCellNum;
+    [NonSerialized] public int occupiedCellNum;
 
     bool attacked = true, onAttackCooldown = false;
     Timer attackTimer = new Timer(false), attackCooldownTimer = new Timer(false);
@@ -50,22 +54,44 @@ public class Enemy : CrowdCharacter
     public float damage = 1;
     public Elements element = Elements.None;
     Damage dmgCtrl;
-    [HideInInspector][SyncVar] public int instanceIndex;
-    [HideInInspector] public int GameID;
+    [HideInInspector][SyncVar (hook = "ClientInitialize")] public int instanceIndex = -1;
+    [HideInInspector][SyncVar] public IdWrapper ActiveID;
+    [Serializable]
+    public struct IdWrapper
+    {
+        public int ID;
+    }
     public EnemyTransformInfo transformInfo;
     Player attackedPlayer;
     float timePred;
     Vector3 predTarget;
     int detectRadius;
+    public float maxDistanceFromPlayer = 100, repositionRange = 20;
+
+    public Animator animator;
+    bool prevMoving = false, moving = false;
+    public enum EnemyAnimState : byte { None, Attack, Jump, Land };
+    //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
+
+
+    public void ClientInitialize(int oldVal, int newVal)
+    {
+        if(!isServer)
+        {
+            GameManager.Instance.hordeController.clientEnemies[newVal] = this;
+        }
+    }
+
     public void Initialize()
     {
+        currentCell = FlowFieldManager.instance.flowField.allCells[0];
         DamageHandler.Initialize(this);
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
-        for (int i = 0; i < Directions.Length; i++)
+        /*for (int i = 0; i < Directions.Length; i++)
         {
             float angle = i * Mathf.PI * 2f / Directions.Length;
             Directions[i] = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
-        }
+        }*/
         //updateRate = 1f / 30f;
         dmgCtrl = new Damage(damage, element);
         //aiCalcTimer.timedEvent.AddListener(AICalculation);
@@ -79,6 +105,12 @@ public class Enemy : CrowdCharacter
         detectRadius = math.max((int)math.ceil(DetectionRadius / FlowFieldManager.instance.CellSize), 1);
         RigidbodySetting();
         //CheckFieldLocation();
+    }
+    public void UpdateIdWrapper(int value)
+    {
+        IdWrapper aux = ActiveID;
+        aux.ID = value;
+        ActiveID = aux;
     }
 
     [ClientRpc]
@@ -117,7 +149,7 @@ public class Enemy : CrowdCharacter
     }
 #endif
 
-    [ClientRpc]
+    //[ClientRpc]
     public void EnemyClientUpdate()
     {
         if (isServer)
@@ -132,15 +164,21 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        timePred = Time.time - GameManager.Instance.hordeController.enemiesInfo[instanceIndex].lastTime;
+        timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
         transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
         Vector3 dir = predTarget - transform.position;
         dir.y = 0;
-        if (dir.sqrMagnitude >= 0.001f)
+        if (dir.sqrMagnitude >= 0.01f)
         {
             Quaternion targetRot = Quaternion.LookRotation(dir);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
+        }
+        prevMoving = moving;
+        moving = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel.sqrMagnitude > 0.01;
+        if (prevMoving != moving)
+        {
+            animator.SetBool("Moving", moving);
         }
     }
 
@@ -150,7 +188,7 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        EnemyClientUpdate();
+        //EnemyClientUpdate();
         /*if(aiCalcTimer.timer(updateRate, Time.deltaTime, false, true))
         {
             AICalculation();
@@ -192,8 +230,80 @@ public class Enemy : CrowdCharacter
             attackCooldownTimer.Paused = true;
         }
         PathToTarget(currentCell);
+        prevMoving = moving;
+        moving = worldVelocity.sqrMagnitude > 0.01;
+        if(prevMoving != moving)
+        {
+            animator.SetBool("Moving", moving);
+        }
         UpdateTransform();
     }
+
+    /*public void OnAnimStateChange(EnemyAnimState oldVal, EnemyAnimState newVal)
+    {
+        switch(newVal)
+        {
+            case EnemyAnimState.Attack:
+                animator.ResetTrigger("Attack");
+                animator.SetTrigger("Attack");
+                break;
+            case EnemyAnimState.Jump:
+                animator.ResetTrigger("Jump");
+                animator.SetTrigger("Jump");
+                break;
+            case EnemyAnimState.Land:
+                animator.ResetTrigger("Land");
+                animator.SetTrigger("Land");
+                break;
+        }
+    }
+
+    public void PlayAnimation(EnemyAnimState state)
+    {
+        animState = state;
+        animState = EnemyAnimState.None;
+    }*/
+
+    public void PlayAnimation(EnemyAnimState state)
+    {
+        /*switch (state)
+        {
+            case EnemyAnimState.Attack:
+                animator.ResetTrigger("Attack");
+                animator.SetTrigger("Attack");
+                break;
+            case EnemyAnimState.Jump:
+                animator.ResetTrigger("Jump");
+                animator.SetTrigger("Jump");
+                break;
+            case EnemyAnimState.Land:
+                animator.ResetTrigger("Land");
+                animator.SetTrigger("Land");
+                break;
+        }*/
+        RPCPlayAnimation(state);
+    }
+
+    [ClientRpc]
+    public void RPCPlayAnimation(EnemyAnimState state)
+    {
+        switch (state)
+        {
+            case EnemyAnimState.Attack:
+                animator.ResetTrigger("Attack");
+                animator.SetTrigger("Attack");
+                break;
+            case EnemyAnimState.Jump:
+                animator.ResetTrigger("Jump");
+                animator.SetTrigger("Jump");
+                break;
+            case EnemyAnimState.Land:
+                animator.ResetTrigger("Land");
+                animator.SetTrigger("Land");
+                break;
+        }
+    }
+
 
     public void UpdateTransform()
     {
@@ -211,6 +321,7 @@ public class Enemy : CrowdCharacter
         if (target != null)
         {
             targetVector = target.transform.position - transform.position;
+
             /*if (targetVector.sqrMagnitude > 2500)
             {
                 updateRate = 1f / 15f;
@@ -227,6 +338,18 @@ public class Enemy : CrowdCharacter
             {
                 updateRate = 1f / 30f;
             }*/
+            if (targetVector.sqrMagnitude > maxDistanceFromPlayer * maxDistanceFromPlayer)
+            {
+                Vector3 reposition = CheckReposition();
+                if (reposition != Vector3.zero)
+                {
+                    rb.interpolation = RigidbodyInterpolation.None;
+                    rb.position = reposition;
+                    transform.position = reposition;
+                    ResetAllVelocities();
+                    rb.interpolation = RigidbodyInterpolation.Interpolate;
+                }
+            }
             if (!Physics.Raycast(transform.position, targetVector.normalized, targetVector.magnitude, ~CanSeeTargetThrough))
             {
                 //targetLastSeen = targetVector;
@@ -239,6 +362,7 @@ public class Enemy : CrowdCharacter
                 //Debug.Log("can see");
             }
             CheckFieldLocation();
+
             if (currentCell != null)
             {
                 forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);
@@ -250,22 +374,78 @@ public class Enemy : CrowdCharacter
                 {
                     interestDirection = currentCell.direction;
                 }
-                FindObstacles();
+
+                /*FindObstacles();
                 CalculateDanger();
                 CalculateInterest();
-                MoveDirection = GetBestDirection();
+                MoveDirection = GetBestDirection();*/
             }
+        }
+    }
+
+    public void Reposition()
+    {
+        if (!isServer)
+        {
+            target = GetClosestPlayer();
+            targetVector = target.transform.position - transform.position;
+        }
+        if (targetVector.sqrMagnitude > maxDistanceFromPlayer * maxDistanceFromPlayer)
+        {
+            Vector3 reposition = CheckReposition();
+            if (reposition != Vector3.zero)
+            {
+                rb.interpolation = RigidbodyInterpolation.None;
+                rb.position = reposition;
+                transform.position = reposition;
+                ResetAllVelocities();
+                rb.interpolation = RigidbodyInterpolation.Interpolate;
+            }
+        }
+    }
+
+    Vector3 CheckReposition()
+    {
+        FieldCell auxCell = null;
+        //RaycastHit hit;
+        bool canReposition = false;
+        Vector3 repos = target.gameObject.transform.position + targetVector.normalized * repositionRange;
+        /*if (Physics.Raycast(repos + Vector3.up * GameManager.Instance.hordeController.heightCheckPoint, Vector3.down, out hit, GameManager.Instance.hordeController.checkHeight, GameManager.Instance.hordeController.spawnableLocations))
+        {
+            Collider[] obstacles = Physics.OverlapSphere(repos, GameManager.Instance.hordeController.maxEnemySpawnRadius, ~GameManager.Instance.hordeController.spawnableLocations);
+            if (obstacles.Length <= 0)
+            {
+                canReposition = true;
+            }
+        }*/
+        auxCell = FlowFieldManager.instance.WorldToGridPosition(repos);
+        if(auxCell != null && auxCell.Neighbors.Count >= 8)
+        {
+            canReposition = true;
+        }
+        if (canReposition)
+        {
+            //return hit.point + Vector3.up * GameManager.Instance.hordeController.spawnerHeight;
+            return auxCell.position + Vector3.up * GameManager.Instance.hordeController.spawnerHeight;
+        }
+        else
+        {
+            return Vector3.zero;
         }
     }
     Queue<FieldCell> ocupiedQueue = new Queue<FieldCell>();
     public void CheckFieldLocation()
     {
-        currentCell = FlowFieldManager.instance.WorldToGridPosition(transform.position);
+        FieldCell temp = FlowFieldManager.instance.WorldToGridPosition(transform.position);
+        if (temp != null)
+        {
+            currentCell = temp;
+        }
         int aux = 1;
 
         foreach (FieldCell c in OccupiedCells)
         {
-            c.ContainedEnemies.Remove(GameID);
+            c.ContainedEnemies.Remove(ActiveID);
         }
         OccupiedCells.Clear();
         if (currentCell == null) return;
@@ -276,7 +456,7 @@ public class Enemy : CrowdCharacter
         {
             FieldCell c = ocupiedQueue.Dequeue();
             OccupiedCells.Add(c);
-            c.ContainedEnemies.Add(GameID);
+            c.ContainedEnemies.Add(ActiveID);
             if (aux < occupiedCellNum)
             {
                 foreach (FieldCell.NeighborContext n in c.Neighbors)
@@ -340,6 +520,82 @@ public class Enemy : CrowdCharacter
             Jump(true);
         }
     }
+
+    protected override void Jump(bool pressed)
+    {
+        if (pressed && !movePaused)
+        {
+            if ((CvState == CharVerticalState.grounded || canJumpOnAir) && !jumpOnCooldown)
+            {
+                jumpTimer.SetTimer(0);
+                jumpTimer.Paused = false;
+                CvState = CharVerticalState.jumping;
+                if(isServer)
+                {
+                    PlayAnimation(EnemyAnimState.Jump);
+                }
+                InvokeIfAllowed(Jumped);
+                StartCoroutine(JumpCooldown());
+            }
+        }
+        else if (CvState == CharVerticalState.jumping)
+        {
+            jumpTimer.SetTimer(jumpTime);
+        }
+    }
+
+    protected override void Gravity()
+    {
+        RaycastGround();
+        float groundDistance = LastHitInfo.distance - (height / 2);
+
+        if (!gravityPaused)
+        {
+            if (LastHitInfo.collider == null || (normalDot > 0.9f && groundDistance > 0.05f && !IgnoreSlope))
+            {
+                verticalVelocity += Vector3.up * Physics.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
+            }
+            else if (groundDistance <= terrainBuffer && vState == VerticalState.grounded)
+            {
+                verticalVelocity.y = 0;
+            }
+        }
+        else
+        {
+            verticalVelocity.y = 0;
+        }
+
+        if (LastHitInfo.collider != null)
+        {
+            if (vState == VerticalState.falling)
+            {
+                vState = VerticalState.grounded;
+                InvokeIfAllowed(HitGround);
+                if(isServer)
+                {
+                    PlayAnimation(EnemyAnimState.Land);
+                }
+            }
+            else
+            {
+                vState = VerticalState.grounded;
+            }
+        }
+        else
+        {
+            if (vState == VerticalState.grounded)
+            {
+                vState = VerticalState.falling;
+                InvokeIfAllowed(Fell);
+            }
+            else
+            {
+                vState = VerticalState.falling;
+            }
+        }
+
+    }
+
     public void PathToTarget(FieldCell currentCell)
     {
         if (targetVector.magnitude <= TargetStoppingDistance || (MoveDirection == Vector3.zero && canSeeTarget))
@@ -362,16 +618,18 @@ public class Enemy : CrowdCharacter
                     attackTimer.SetTimer(0);
                     attackedPlayer = target;
                     attackTimer.Paused = false;
+                    PlayAnimation(EnemyAnimState.Attack);
                 }
             }
-            else
+            /*else
             {
+                attacked = true;
                 attackTimer.Paused = true;
-            }
+            }*/
         }
         else
         {
-            attackTimer.Paused = true;
+            //attackTimer.Paused = true;
             //Move(MoveDirection, speed);
             if (detectedObstacle)
             {
@@ -422,9 +680,9 @@ public class Enemy : CrowdCharacter
             if (distance < EnemyAvoidanceRadius)
             {
                 float strength = Mathf.Pow(2 - (distance / EnemyAvoidanceRadius), 2) - 1;
-                for (int i = 0; i < Directions.Length; i++)
+                for (int i = 0; i < GameManager.Instance.hordeController.Directions.Length; i++)
                 {
-                    float dot = Vector3.Dot(toEnemy.normalized, Directions[i]);
+                    float dot = Vector3.Dot(toEnemy.normalized, GameManager.Instance.hordeController.Directions[i]);
                     if (dot > 0)
                     {
                         Danger[i] += strength * dot * SeparationForce * (e.priority / priority);
@@ -438,10 +696,10 @@ public class Enemy : CrowdCharacter
         }
         if (detectedObstacle)
         {
-            for (int i = 0; i < Directions.Length; i++)
+            for (int i = 0; i < GameManager.Instance.hordeController.Directions.Length; i++)
             {
                 RaycastHit hit;
-                if (Physics.Raycast(transform.position, Directions[i], out hit, DetectionRadius, ObstacleMask))
+                if (Physics.Raycast(transform.position, GameManager.Instance.hordeController.Directions[i], out hit, DetectionRadius, ObstacleMask))
                 {
                     //float dot = Mathf.Clamp01(Vector3.Dot(Directions[i], targetVector.normalized));
                     float strength = 1 - (hit.distance / DetectionRadius);
@@ -454,10 +712,10 @@ public class Enemy : CrowdCharacter
     {
         if (target != null)
         {
-            for (int i = 0; i < Directions.Length; i++)
+            for (int i = 0; i < GameManager.Instance.hordeController.Directions.Length; i++)
             {
                 Interest[i] = 0.01f;
-                float dot = Vector3.Dot(interestDirection.normalized, Directions[i]);
+                float dot = Vector3.Dot(interestDirection.normalized, GameManager.Instance.hordeController.Directions[i]);
                 if (dot > 0)
                 {
                     Interest[i] += dot;
@@ -468,9 +726,10 @@ public class Enemy : CrowdCharacter
     public Vector3 GetBestDirection()
     {
         Vector3 add = Vector3.zero;
-        for (int i = 0; i < Directions.Length; i++)
+
+        for (int i = 0; i < GameManager.Instance.hordeController.Directions.Length; i++)
         {
-            add += Directions[i] * Mathf.Clamp01(Interest[i] - Danger[i]);
+            add += (Vector3)GameManager.Instance.hordeController.Directions[i] * Mathf.Clamp01(Interest[i] - Danger[i]);
         }
         add.y = 0;
         return add.normalized;
@@ -492,9 +751,9 @@ public class Enemy : CrowdCharacter
         {
             FieldCell c = cellsToCheck.Dequeue();
             checkedCells.Add(c);
-            foreach (int eID in c.ContainedEnemies)
+            foreach (IdWrapper eID in c.ContainedEnemies)
             {
-                Enemy e = GameManager.Instance.hordeController.GameEnemies[eID];
+                Enemy e = GameManager.Instance.hordeController.GameEnemies[eID.ID];
                 if (e != this && e.priority >= priority)
                 {
                     if (e.priority > priority)
@@ -603,54 +862,47 @@ public class Enemy : CrowdCharacter
     {
         foreach (FieldCell c in OccupiedCells)
         {
-            c.ContainedEnemies.Remove(GameID);
+            c.ContainedEnemies.Remove(ActiveID);
         }
         OccupiedCells.Clear();
         base.Die();
     }
 }
 [BurstCompile]
-public struct AvoidanceCalculation : IJobParallelFor
+public unsafe struct EnemyFieldLocation : IJobParallelFor
 {
-    public NativeArray<float3> PlayerPositions;
-    public NativeArray<int> TargetIndices;
-    public NativeArray<float3> Directions;
+    //prompted
+    [Unity.Collections.ReadOnly] public NativeArray<float3> PlayerPositions;
+    //[Unity.Collections.ReadOnly] public NativeArray<float3> EnemyPositions;
+    [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
+    public int maxEnemiesPerCell;
+    public int maxEnemyOccupiedCells;
+    [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
+    
+    public float3 flowfieldOffset;
     public float CellSize;
-    public NativeArray<CellJobData> Cells;
-    public NativeArray<int> CellNeighbors;
+    [Unity.Collections.ReadOnly] public NativeArray<int> CellCollumFirst;
+    [Unity.Collections.ReadOnly] public NativeArray<int> CellCollumCount;
+    public int ColumWidthValue;
 
-
-    NativeArray<float> Interest;
-    NativeArray<float> Danger;
-    NativeHashSet<int> checkedCells;
-    NativeQueue<int> cellsToCheck;
-    bool detectedHigherPriority;
-
+    //Prompted && output
     public NativeArray<EnemyJobData> EnemyData;
-    /*public NativeList<int> FindCellNeighbors(int cellIndex)
-    {
-        CellJobData cell = Cells[cellIndex];
-        NativeList<int> neighbors = new NativeList<int>();
-        for(int i = cell.firstNeighbor; i <= cell.lastNeighbor; i++)
-        {
-            //int neighborID = CellNeighbors[i];
-            neighbors.Add(CellNeighbors[i]);
-            //if (neighborID >= 0)
-            //{
-            //    neighbors.Add(neighborID);
-            //}
-        }
-        return neighbors;
-    }*/
 
+    //Output
+    public NativeArray<int> TargetIndices;
+    [NativeDisableParallelForRestriction] public NativeArray<int> enemiesInField;
+    [NativeDisableParallelForRestriction] public NativeArray<int> enemyOcupiedCells;
+    [NativeDisableParallelForRestriction] public NativeArray<int> cellEnemiesNum;
+    //public NativeArray<float3> interestDirections;
+
+    //calculated
+    [NativeDisableParallelForRestriction] public NativeArray<int> OccupiedCellsToCheck;
     public void Execute(int index)
     {
+        //EnemyData[index].CurrentCell = FlowFieldManager.instance.WorldToGridPosition(EnemyData[index].Position).ID;
         DefineTarget(index);
         CheckFieldLocation(index);
-        FindObstacles(index);
-        CalculateDanger(index);
-        CalculateInterest(index);
-        GetBestDirection();
+        CalculateTargetVectors(index);
     }
     public void DefineTarget(int index)
     {
@@ -667,68 +919,305 @@ public struct AvoidanceCalculation : IJobParallelFor
         }
         TargetIndices[index] = closestPlayerIndex;
     }
+    public int WorldToGridPosition(float3 worldPosition, bool ToLowerOnly = true)
+    {
+        int closest = -1;
+        float closestDist = float.MaxValue;
+        float3 localPos = worldPosition + flowfieldOffset;
+        int2 coords = new int2((int)math.floor(localPos.x / CellSize), (int)math.floor(localPos.z / CellSize));
+        int columIndex = (coords.x * ColumWidthValue) + coords.y;
+        for (int i = 0; i < CellCollumCount[columIndex]; i++)
+        {
+            int cellindex = i + CellCollumFirst[columIndex];
+            float newDistance = math.abs(worldPosition.y - Cells[cellindex].Position.y);
+            if (newDistance < closestDist)
+            {
+                if (!ToLowerOnly || Cells[cellindex].Position.y <= worldPosition.y)
+                {
+                    closestDist = newDistance;
+                    closest = cellindex;
+                }
+            }
+
+        }
+        return closest;
+    }
+    public void CalculateTargetVectors(int index)
+    {
+        EnemyJobData e = EnemyData[index];
+        e.targetVector = PlayerPositions[TargetIndices[index]] - e.Position;
+        EnemyData[index] = e;
+    }
     public void CheckFieldLocation(int index)
     {
+        int currentCell = WorldToGridPosition(EnemyData[index].Position);
+        int depth = 1;
+        int occupiedCellNum = 0;
+        int queueCount = 0;
+        int processedCount = 0;
+        bool reachedLimit = false;
+        //int checkedAmount = 0;
 
-    }
-    public void FindObstacles(int index)
-    {
-        //EnemyData[index].Neighbors.Dispose();
-        checkedCells.Clear();
-        detectedHigherPriority = false;
-        //detectedObstacle = false;
-        int detectRadius = math.max((int)math.ceil(EnemyData[index].DetectionRadius / CellSize), 1);
-        int aux = 0;
-
-
-        //HashSet<FieldCell> cellsToCheck = new HashSet<FieldCell>();
-        cellsToCheck.Enqueue(EnemyData[index].CurrentCell);
-        while (cellsToCheck.Count > 0)
+        /*foreach (FieldCell c in OccupiedCells)
         {
-            int cInd = cellsToCheck.Dequeue();
-            if (checkedCells.Contains(cInd))
+            c.ContainedEnemies.Remove(GameID);
+        }
+        OccupiedCells.Clear();*/
+
+        if (currentCell == -1) return;
+        EnemyJobData EJD = EnemyData[index];
+        EJD.CurrentCell = currentCell;
+        int fC = WorldToGridPosition(EJD.Position + Cells[currentCell].Direction * EJD.Size);
+        if(fC > -1)
+        {
+            EJD.fowardCell = fC;
+        }
+        EnemyData[index] = EJD;
+
+        int OccupiedCellsOffset = maxEnemyOccupiedCells * index;
+        //ocupiedQueue.Enqueue(currentCell);
+        OccupiedCellsToCheck[OccupiedCellsOffset + queueCount] = currentCell;
+        queueCount++;
+
+        //OccupiedCells.Add(currentCell);
+        /*enemyOcupiedCells[OccupiedCellsOffset + occupiedCellNum] = currentCell;
+        //currentCell.ContainedEnemies.Add(GameID);
+        enemiesInField[(currentCell * maxEnemiesPerCell) + Cells[currentCell].EnemiesNum] = index;
+        aux++;
+        occupiedCellNum++;*/
+        while (queueCount > processedCount && depth <= EnemyData[index].occupiedCellDepth)
+        {
+
+            int nodesThisDepth = queueCount - processedCount;
+            for (int i = 0; i < nodesThisDepth; i++)
             {
-                continue;
-            }
-            checkedCells.Add(cInd);
-            /*NativeList<int> neighbors = new NativeList<int>();
-            for (int i = Cells[cInd].firstNeighbor; i <= Cells[cInd].lastNeighbor; i++)
-            {
-                neighbors.Add(CellNeighbors[i]);
-            }*/
-            foreach (int eID in Cells[cInd].ContainedEnemies)
-            {
-                EnemyJobData e = EnemyData[eID];
-                if (eID != index && e.Priority >= EnemyData[index].Priority)
+                if (reachedLimit)
                 {
-                    if (e.Priority > EnemyData[index].Priority)
+                    break;
+                }
+                int CellIndex = OccupiedCellsToCheck[OccupiedCellsOffset + processedCount];
+
+                int* cellCounters = (int*)NativeArrayUnsafeUtility.GetUnsafePtr(cellEnemiesNum);
+
+                int* counter = cellCounters + CellIndex;
+
+                int enemyNumSlot = -1;
+                bool calculateSlot = true;
+
+                while (calculateSlot)
+                {
+                    int current = cellEnemiesNum[CellIndex];
+
+                    if (current >= maxEnemiesPerCell)
                     {
-                        detectedHigherPriority = true;
+                        enemyNumSlot = -1;
+                        calculateSlot = false;
                     }
-                    EnemyData[index].Neighbors.Add(eID);
+                    else if (Interlocked.CompareExchange(ref *counter,current + 1,current) == current)
+                    {
+                        enemyNumSlot = current;
+                        calculateSlot = false;
+                    }
+                }
+
+
+                if (enemyNumSlot > -1)
+                {
+                    int enemyInFieldOffset = CellIndex * maxEnemiesPerCell;
+                    enemyOcupiedCells[OccupiedCellsOffset + occupiedCellNum] = CellIndex;
+                    enemiesInField[enemyInFieldOffset + enemyNumSlot] = index;
+                    //enemyNumSlot++;
+                    occupiedCellNum++;
+                    if (occupiedCellNum >= maxEnemyOccupiedCells)
+                    {
+                        reachedLimit = true;
+                    }
+                }
+                processedCount++;
+
+                if (depth < EnemyData[index].occupiedCellDepth)
+                {
+                    for (int j = Cells[CellIndex].firstNeighbor; j <= Cells[CellIndex].lastNeighbor; j++)
+                    {
+                        int neighborID = CellNeighbors[j];
+                        bool alreadyChecked = false;
+                        for (int k = OccupiedCellsOffset; k < OccupiedCellsOffset + queueCount; k++)
+                        {
+                            if (OccupiedCellsToCheck[k] == neighborID)
+                            {
+                                alreadyChecked = true;
+                            }
+                        }
+                        if (!alreadyChecked)
+                        {
+                            OccupiedCellsToCheck[OccupiedCellsOffset + queueCount] = neighborID;
+                            queueCount++;
+                        }
+
+                    }
+
                 }
             }
-            if (aux < detectRadius)
-            {
-                /*foreach (int n in Cells[cInd].neighbors)
-                {
-                    if (!checkedCells.Contains(n))
-                    {
-                        cellsToCheck.Enqueue(n);
-                    }
-                }*/
-                for (int i = Cells[cInd].firstNeighbor; i <= Cells[cInd].lastNeighbor; i++)
-                {
-                    if (!checkedCells.Contains(CellNeighbors[i]))
-                    {
-                        cellsToCheck.Enqueue(CellNeighbors[i]);
-                    }
-                }
-                aux++;
-            }
+            depth++;
+
         }
     }
-    public void CalculateDanger(int index)
+}
+[BurstCompile]
+public struct AvoidanceCalculation : IJobParallelFor
+{
+    //prompted
+
+    [Unity.Collections.ReadOnly] public NativeArray<float3> Directions;
+    public float CellSize;
+    [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
+    [Unity.Collections.ReadOnly] public NativeArray<EnemyJobData> EnemyData;
+
+    public int MaxCellsChecked;
+    public int MaxEnemyNeighbors;
+    public int maxEnemiesPerCell;
+    [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
+    [Unity.Collections.ReadOnly] public NativeArray<FieldCell.NeighborContext.Context> NeighborContexts;
+    [Unity.Collections.ReadOnly] public NativeArray<int> enemiesInField;
+    [Unity.Collections.ReadOnly]public NativeArray<int> cellEnemiesNum;
+
+    //calculated
+    [NativeDisableParallelForRestriction] public NativeArray<int> EnemyNeighbors;
+    public NativeArray<int> EnemyNeighborCounts;
+    [NativeDisableParallelForRestriction] public NativeArray<int> cellsToCheck;
+    [NativeDisableParallelForRestriction] public NativeArray<float> enemiesInterest;
+    [NativeDisableParallelForRestriction] public NativeArray<float> enemiesDanger;
+
+    //Output
+    public NativeArray<float3> DirectionsOutput;
+
+
+
+    public void Execute(int index)
+    {
+        //DefineTarget(index);
+        //CheckFieldLocation(index);
+
+
+        FindObstacles(index);
+        //CalculateDanger(index);
+        DirectionsOutput[index] = CalculateInterest(index);
+        //GetBestDirection();
+    }
+
+    public bool FindObstacles(int index)
+    {
+        int offset = index * MaxCellsChecked;
+        int eOffset = index * MaxEnemyNeighbors;
+        int queueCount = 0;
+        int processedCount = 0;
+        //NativeHashSet<int> checkedCells = new NativeHashSet<int>();
+        //NativeQueue<int> cellsToCheck = new NativeQueue<int>(Allocator.Temp);
+        bool detectedHigherPriority = false;
+        //detectedObstacle = false;
+        int detectRadius = math.max((int)math.ceil(EnemyData[index].DetectionRadius / CellSize), 1);
+        int Depth = 0;
+        bool ReachedLimit = false;
+
+
+        //HashSet<FieldCell> cellsToCheck = new HashSet<FieldCell>()
+        int startCell = EnemyData[index].CurrentCell;
+
+        //checkedCells[queueCount + offset] = startCell;
+        cellsToCheck[queueCount + offset] = startCell;
+        queueCount++;
+
+        while (queueCount > processedCount && Depth <= detectRadius /*&& queueCount <= MaxCellsChecked*/)
+        {
+            int nodesThisDepth = queueCount - processedCount;
+            for (int i = 0; i < nodesThisDepth; i++)
+            {
+                if (ReachedLimit)
+                {
+                    break;
+                }
+                int cInd = cellsToCheck[processedCount + offset];
+                processedCount++;
+                int EnemiesInFieldOffset = maxEnemiesPerCell * cInd;
+                //Check enemies in cell
+                for (int j = EnemiesInFieldOffset; j < EnemiesInFieldOffset + cellEnemiesNum[cInd]; j++)
+                {
+                    int eID = enemiesInField[j];
+                    EnemyJobData e = EnemyData[eID];
+                    //EnemyJobData currentEnemy = EnemyData[index];
+                    if (eID != index && e.Priority >= EnemyData[index].Priority)
+                    {
+                        if (EnemyNeighborCounts[index] >= MaxEnemyNeighbors)
+                        {
+                            ReachedLimit = true;
+                            break;
+                        }
+                        if (e.Priority > EnemyData[index].Priority)
+                        {
+                            detectedHigherPriority = true;
+                        }
+                        EnemyNeighbors[EnemyNeighborCounts[index] + eOffset] = eID;
+                        /*if (currentEnemy.neighborNum == 0)
+                        {
+                            currentEnemy.firstNeighbor = offset;
+                        }*/
+                        EnemyNeighborCounts[index]++;
+                        //EnemyData[index].Neighbors.Add(eID);
+                    }
+                }
+                /*foreach (int eID in Cells[cInd].ContainedEnemies)
+                {
+                    EnemyJobData e = EnemyData[eID];
+                    if (eID != index && e.Priority >= EnemyData[index].Priority)
+                    {
+                        if (e.Priority > EnemyData[index].Priority)
+                        {
+                            detectedHigherPriority = true;
+                        }
+                        EnemyData[index].Neighbors.Add(eID);
+                    }
+                }*/
+                if (Depth == detectRadius)
+                {
+                    continue;
+                }
+                for (int j = Cells[cInd].firstNeighbor; j <= Cells[cInd].lastNeighbor; j++)
+                {
+                    if(NeighborContexts[j] != FieldCell.NeighborContext.Context.None)
+                    {
+                        continue;
+                    }
+                    int neighborID = CellNeighbors[j];
+
+                    bool alreadyChecked = false;
+                    for (int k = 0; k < queueCount; k++)
+                    {
+                        if (cellsToCheck[offset + k] == neighborID)
+                        {
+                            alreadyChecked = true;
+                            break;
+                        }
+                    }
+                    if (!alreadyChecked)
+                    {
+                        if (queueCount >= MaxCellsChecked)
+                        {
+                            ReachedLimit = true;
+                            break;
+                        }
+                        //checkedCells[queueCount + offset] = neighborID;
+                        cellsToCheck[queueCount + offset] = neighborID;
+                        queueCount++;
+                    }
+                }
+            }
+            Depth++;
+        }
+        //checkedCells.Dispose();
+        //cellsToCheck.Dispose();
+        return detectedHigherPriority;
+    }
+    /*public void CalculateDanger(int index)
     {
         float3 priorityAvoidDirection = float3.zero;
         for (int i = 0; i < Danger.Length; i++)
@@ -757,7 +1246,7 @@ public struct AvoidanceCalculation : IJobParallelFor
                 }
             }
         }
-        /*if (detectedObstacle)
+        if (detectedObstacle)
         {
             for (int i = 0; i < Directions.Length; i++)
             {
@@ -769,21 +1258,94 @@ public struct AvoidanceCalculation : IJobParallelFor
                     Danger[i] += strength;
                 }
             }
-        }*/
-    }
-    public void CalculateInterest(int index)
+        }
+    }*/
+    public float3 CalculateInterest(int index)
     {
+        int InterestOffset = Directions.Length * index;
+        //NativeArray<float> Interest = new NativeArray<float>(Directions.Length, Allocator.Temp);
+        //NativeArray<float> Danger = new NativeArray<float>(Directions.Length, Allocator.Temp);
+        int eOffset = index * MaxEnemyNeighbors;
+        //Danger Calculation
+        float3 priorityAvoidDirection = float3.zero;
         for (int i = 0; i < Directions.Length; i++)
         {
-            Interest[i] = 0.01f;
-            float dot = math.dot(Cells[EnemyData[index].CurrentCell].Direction, Directions[i]);
-            if (dot > 0)
+            enemiesDanger[i + InterestOffset] = 0;
+        }
+        for (int i = eOffset; i < eOffset + EnemyNeighborCounts[index]; i++)
+        {
+            int eID = EnemyNeighbors[i];
+            EnemyJobData e = EnemyData[eID];
+            float3 toEnemy = e.Position - EnemyData[index].Position;
+            float distance = math.distance(toEnemy, float3.zero) - e.Size;
+            if (distance < EnemyData[index].EnemyAvoidanceRadius && distance != 0)
             {
-                Interest[i] += dot;
+                float strength = Mathf.Pow(2 - (distance / EnemyData[index].EnemyAvoidanceRadius), 2) - 1;
+                for (int j = 0; j < Directions.Length; j++)
+                {
+                    float dot = math.dot(math.normalize(toEnemy), Directions[j]);
+                    if (dot > 0)
+                    {
+                        enemiesDanger[j + InterestOffset] += strength * dot * EnemyData[index].SeparationForce * (e.Priority / EnemyData[index].Priority);
+                    }
+                }
+                if (e.Priority > EnemyData[index].Priority)
+                {
+                    priorityAvoidDirection -= toEnemy * (e.Priority / EnemyData[index].Priority);
+                }
             }
         }
+        /*foreach (int eID in EnemyData[index].Neighbors)
+        {
+            EnemyJobData e = EnemyData[eID];
+            float3 toEnemy = e.Position - EnemyData[index].Position;
+            float distance = math.distance(toEnemy, float3.zero) - e.Size;
+            if (distance < EnemyData[index].EnemyAvoidanceRadius)
+            {
+                float strength = Mathf.Pow(2 - (distance / EnemyData[index].EnemyAvoidanceRadius), 2) - 1;
+                for (int i = 0; i < Directions.Length; i++)
+                {
+                    float dot = math.dot(math.normalize(toEnemy), Directions[i]);
+                    if (dot > 0)
+                    {
+                        Danger[i] += strength * dot * EnemyData[index].SeparationForce * (e.Priority / EnemyData[index].Priority);
+                    }
+                }
+                if (e.Priority > EnemyData[index].Priority)
+                {
+                    priorityAvoidDirection -= toEnemy * (e.Priority / EnemyData[index].Priority);
+                }
+            }
+        }*/
+
+        //Interest Calculation
+        for (int i = 0; i < Directions.Length; i++)
+        {
+            enemiesInterest[i + InterestOffset] = 0.01f;
+            //float dot = math.dot(Cells[EnemyData[index].CurrentCell].Direction, Directions[i]);
+            float dot = math.dot(EnemyData[index].interestDirection, Directions[i]);
+            if (dot > 0)
+            {
+                enemiesInterest[i + InterestOffset] += dot;
+            }
+        }
+
+        //Get Best Direction
+        float3 add = float3.zero;
+        for (int i = 0; i < Directions.Length; i++)
+        {
+            add += Directions[i] * math.clamp(enemiesInterest[i + InterestOffset] - enemiesDanger[i + InterestOffset], 0, 1);
+        }
+        add.y = 0;
+        //Interest.Dispose();
+        //Danger.Dispose();
+        if (add.x == 0 && add.z == 0)
+        {
+            return float3.zero;
+        }
+        return math.normalize(add);
     }
-    public float3 GetBestDirection()
+    /*public float3 GetBestDirection()
     {
         float3 add = float3.zero;
         for (int i = 0; i < Directions.Length; i++)
@@ -792,7 +1354,7 @@ public struct AvoidanceCalculation : IJobParallelFor
         }
         add.y = 0;
         return math.normalize(add);
-    }
+    }*/
 }
 public struct EnemyJobData
 {
@@ -802,25 +1364,31 @@ public struct EnemyJobData
     public float SeparationForce;
     public int Priority;
     public float DetectionRadius;
-    public float TargetStoppingDistance;
+    public int occupiedCellDepth;
+    public float activationDistance;
+    //public float TargetStoppingDistance;
 
     //Prompted
     public float3 Position;
-    public float3 Velocity;
-
-    //Calculated
+    //public float3 Velocity;
     public int CurrentCell;
-    public NativeList<int> Neighbors;
+    public int fowardCell;
+    public float3 interestDirection;
+    public float3 targetVector;
+    public bool canSeePlayer;
 
 }
 public struct CellJobData
 {
     public float3 Position;
     public float3 Direction;
-    //public NativeArray<int> neighbors;
-    public int ContainedEnemiesCount;
-    public NativeArray<int> ContainedEnemies;
+
+    //public int EnemiesNum;
+    //public int firstEnemy;
     public int firstNeighbor, lastNeighbor;
-    public int ID;
+    public int generation;
+    public float bestCost;
+    public float baseCost;
+    //public int ID;
 }
 
