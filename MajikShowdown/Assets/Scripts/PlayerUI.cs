@@ -425,6 +425,11 @@ public class PlayerUI : NetworkBehaviour
 
     private void ResumeGameplay()
     {
+        if ((victoryPanel != null && victoryPanel.activeSelf) || (defeatPanel != null && defeatPanel.activeSelf) || (deathPanel != null && deathPanel.activeSelf))
+        {
+            EnableUICursor();
+            return;
+        }
         SetGameplayInput(true);
         EnableGameplayCursor();
         caster.canCast = true;
