@@ -36,6 +36,7 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                 float _Sharpness;
                 float _Multiplier;
                 float _Opacity;
+                float2 _Vec;
             CBUFFER_END
 
 
@@ -78,8 +79,12 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
             
             float GetCurvatureAtPoint(float2 uv, float sensitivity, float multiplier, float3x3 viewMatrix, float dis)
             {
+                if(dis < 0.75)
+                {
+                    dis = 0.75;
+                }
                 float2 leftRight = float2((1.0 * dis) / _ScreenParams.x, 0);
-                float2 upDown = float2(0, (1.0 * dis) / _ScreenParams.y);
+                float2 upDown = float2(0, (1.0  * dis ) / _ScreenParams.y);
 
                 float2 left = SampleSceneNormalBuffer(uv + leftRight, viewMatrix);
                 float2 right = SampleSceneNormalBuffer(uv - leftRight, viewMatrix);
