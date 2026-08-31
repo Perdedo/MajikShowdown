@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2840850606842577478}
+  - component: {fileID: 852579136251896210}
   m_Layer: 0
   m_Name: StonePillar1
   m_TagString: Untagged
@@ -33,6 +34,22 @@ Transform:
   - {fileID: 5006824199617538011}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!208 &852579136251896210
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439914019816452805}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 0.87, y: 1.55, z: 0.87}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &2037674335238099509
 GameObject:
   m_ObjectHideFlags: 0
@@ -43,6 +60,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5006824199617538011}
   - component: {fileID: 1159612183240084865}
+  - component: {fileID: 4370461119953516288}
   m_Layer: 0
   m_Name: StonePillar1Collider
   m_TagString: Untagged
@@ -88,6 +106,22 @@ CapsuleCollider:
   m_Height: 13.12
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!208 &4370461119953516288
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037674335238099509}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 0
+  m_Extents: {x: 1.28, y: 0.56, z: 1.28}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 6.15, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1001 &2068186964333856927
 PrefabInstance:
   m_ObjectHideFlags: 0
