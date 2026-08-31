@@ -17,7 +17,7 @@ public class SetGraphicsBuffer : MonoBehaviour
     [SerializeField] private List<Transform> instances = new List<Transform>();
 
     
-    void Awake()
+    void Start()
     {
         EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
     }

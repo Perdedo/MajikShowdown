@@ -29,10 +29,7 @@ public class BuffersControl : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            SpawnEffect(VfxElement.Poison,VfxType.Explosion, buffers[0].transform, 1);
-            SpawnEffect(VfxElement.Poison,VfxType.Projectile, buffers[1].transform, 1);
-            SpawnEffect(VfxElement.Poison,VfxType.Area, buffers[2].transform, 1);
-
+            SpawnEffect(VfxElement.Poison,VfxType.Area, buffers[5].transform, 1);
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {

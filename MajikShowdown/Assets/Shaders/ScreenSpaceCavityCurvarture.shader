@@ -2,6 +2,7 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
 {      Properties
     {
         [Radius][IntRange] _Radius("Radius", Range(0,10)) = 1
+        [Power][IntRange] _Power("Distance power", Range(1,10)) = 5
         [Sensitivity] _Sensitivity("Angle sensitivity", Range(1,5)) = 2.5
         [Multiplier] _Multiplier("Edge intensity multiplier", Range(0,10)) = 0.6
         [Sharpness] _Sharpness("Sharpness", Range(0,1)) = 0.9
@@ -30,6 +31,7 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
 
             CBUFFER_START(UnityPerMaterial)
                 int _Radius;
+                int _Power;
                 float _Sensitivity;
                 float _Sharpness;
                 float _Multiplier;
@@ -109,6 +111,10 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
 
                 curvature /= totalWeight;
             }
+            float EaseFunc(float x)
+            {
+                return pow(1 - x, _Power);
+            }
             float4 Frag (Varyings input) : SV_Target
             {
                 float3x3 viewMatrix = (float3x3)UNITY_MATRIX_V;
@@ -120,7 +126,7 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                 float linearDepth  = Linear01Depth(depth, _ZBufferParams);
                 float opacM = 1 - smoothstep(0.05, 0.5, linearDepth);
 
-                GetAverageCurvature(uv, _Radius, _Sensitivity, _Multiplier, _Sharpness, curvature,1- linearDepth);
+                GetAverageCurvature(uv, _Radius, _Sensitivity, _Multiplier, _Sharpness, curvature, EaseFunc(linearDepth));
 
                 
                 //BlendSoftLight(color, curvature, _Opacity * opacM, finalColor);
