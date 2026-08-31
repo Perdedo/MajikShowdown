@@ -10,7 +10,9 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
+#if UNITY_EDITOR
 using static UnityEditor.PlayerSettings;
+#endif
 
 public class Enemy : CrowdCharacter
 {
