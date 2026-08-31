@@ -144,12 +144,16 @@ public class RuneLootBox : InteractableObject
         {
             CMDInteract(GameManager.Instance.Players.IndexOf(player));
         }
-        LootSpawner.Instance.DespawnLootBox(this);
+        else
+        {
+            LootSpawner.Instance.DespawnLootBox(this);
+        }
     }
 
     [Command]
     public void CMDInteract(int playerInd)
     {
         GameManager.Instance.Players[playerInd].caster.AddRune(loot);
+        LootSpawner.Instance.DespawnLootBox(this);
     }
 }
