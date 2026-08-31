@@ -90,7 +90,7 @@ public class FlowFieldManager : MonoBehaviour
         }
         if (moved)
         {
-            flowField.GenerateFlowFieldOld(lastTargetsPos);
+            flowField.GenerateFlowField(lastTargetsPos);
         }
     }
     IEnumerator FlowFieldGenerator()
@@ -421,7 +421,7 @@ public struct GenerateDirectionJob : IJobParallelFor
         }
         int lowest = -1;
         float3 dirToDestiny = GetDistanceToClosestDestinationCell(index);
-        dirToDestiny *= 1f / (Mathf.Abs(dirToDestiny.x) + Mathf.Abs(dirToDestiny.z) + 0.0001f);
+        dirToDestiny *= 1f / (math.abs(dirToDestiny.x) + math.abs(dirToDestiny.z) + 0.0001f);
         float bestDot = float.MinValue;
         float3 dirSum = float3.zero;
         for (int i = c.firstNeighbor; i <= c.lastNeighbor; i++)
