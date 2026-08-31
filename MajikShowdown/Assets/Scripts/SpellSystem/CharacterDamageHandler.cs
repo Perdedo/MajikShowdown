@@ -62,6 +62,10 @@ public class CharacterDamageHandler : NetworkBehaviour
         gameCharacter.Die();
         if(GameManager.Instance.hordeController.enemies.Contains((Enemy)gameCharacter))
         {
+            foreach (Player player in GameManager.Instance.Players)
+            {
+                player.AddMoney(moneyDrop);
+            }
             GameManager.Instance.hordeController.enemies.Remove((Enemy)gameCharacter);
             GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
             if (!GameManager.Instance.hordeController.inHordeTime)
