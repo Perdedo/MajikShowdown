@@ -92,6 +92,7 @@ public class RuneLootBox : InteractableObject
         {
             return;
         }
+        lootPool = LootSpawner.Instance.lootPools[lootPoolInd];
         RuneRaretyGroup aux = null;
         switch(rarityInd)
         {
