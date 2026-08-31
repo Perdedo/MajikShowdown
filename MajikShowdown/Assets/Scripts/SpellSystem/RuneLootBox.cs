@@ -151,7 +151,7 @@ public class RuneLootBox : InteractableObject
         }
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CMDInteract(int playerInd)
     {
         GameManager.Instance.Players[playerInd].caster.AddRune(loot);
