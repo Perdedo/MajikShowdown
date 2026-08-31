@@ -9,6 +9,9 @@ public class CharacterDamageHandler : NetworkBehaviour
     [SyncVar]public float Health;
     public List<Resistance> Resistances;
     public int enemyIndex;
+    public int lootDropPoolInd;
+    public int lootDropChance;
+    public int moneyDrop;
     [Header("Network")]
     public bool network = true;
     public IGameCharacter gameCharacter;
@@ -59,6 +62,10 @@ public class CharacterDamageHandler : NetworkBehaviour
         gameCharacter.Die();
         if(GameManager.Instance.hordeController.enemies.Contains((Enemy)gameCharacter))
         {
+            foreach (Player player in GameManager.Instance.Players)
+            {
+                player.AddMoney(moneyDrop);
+            }
             GameManager.Instance.hordeController.enemies.Remove((Enemy)gameCharacter);
             GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
             if (!GameManager.Instance.hordeController.inHordeTime)
@@ -69,6 +76,10 @@ public class CharacterDamageHandler : NetworkBehaviour
         if (network)
         {
             //NetworkServer.Destroy(gameObject);
+            if(UnityEngine.Random.Range(0, 100) < lootDropChance)
+            {
+                LootSpawner.Instance.SpawnLootBox(transform.position, lootDropPoolInd);
+            }
             GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
             GameManager.Instance.hordeController.UsedEnemies.Remove((Enemy)gameCharacter);
             ((Enemy)gameCharacter).UpdateIdWrapper(-1);

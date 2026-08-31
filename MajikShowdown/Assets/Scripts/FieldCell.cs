@@ -11,7 +11,7 @@ public class FieldCell
     public float BestCost = float.MaxValue;
     public bool closeToObstacle = false;
     public Vector3 direction;
-    public Vector3 directionToDestiny;
+    //public Vector3 directionToDestiny;
     public int generation = 0;
     public int ID;
     public int firstNeighbor, lastNeighbor;
@@ -80,6 +80,7 @@ public class CellColumn
     }
     public List<FieldCell> Layers = new List<FieldCell>();
     public Vector2Int gridPosition;
+    public int ID;
 }
 
 [Serializable]

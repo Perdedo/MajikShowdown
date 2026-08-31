@@ -16,6 +16,9 @@ public class PlayerUI : NetworkBehaviour
     [SerializeField] private GameObject shopPanel;
     public bool IsShopOpen => shopPanel != null && shopPanel.activeSelf;
 
+    [Header("Currency")]
+    [SerializeField] private TMP_Text moneyText;
+
     [Header("Test Panels")]
     public GameObject spellPanel;
     public GameObject createSpellPanel;
@@ -152,6 +155,10 @@ public class PlayerUI : NetworkBehaviour
         InitializeStatsUI();
         healthSlider.maxValue = damageHandler.MaxHealth;
         healthSlider.value = damageHandler.Health;
+        if (myPlayer != null)
+        {
+            UpdateMoneyUI(myPlayer.Money);
+        }
         SetupColors();
         SetupIcons();
         UpdateEquipSlotIcons();
@@ -425,6 +432,11 @@ public class PlayerUI : NetworkBehaviour
 
     private void ResumeGameplay()
     {
+        if ((victoryPanel != null && victoryPanel.activeSelf) || (defeatPanel != null && defeatPanel.activeSelf) || (deathPanel != null && deathPanel.activeSelf))
+        {
+            EnableUICursor();
+            return;
+        }
         SetGameplayInput(true);
         EnableGameplayCursor();
         caster.canCast = true;
@@ -1125,5 +1137,12 @@ public class PlayerUI : NetworkBehaviour
         if (shopPanel == null || !shopPanel.activeSelf) return;
 
         HideAnimatedPanel(shopPanel, ResumeGameplay);
+    }
+
+    public void UpdateMoneyUI(int amount)
+    {
+        if (moneyText == null) return;
+
+        moneyText.text = amount.ToString();
     }
 }

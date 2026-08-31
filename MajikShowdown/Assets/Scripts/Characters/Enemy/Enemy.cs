@@ -10,7 +10,9 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
+#if UNITY_EDITOR
 using static UnityEditor.PlayerSettings;
+#endif
 
 public class Enemy : CrowdCharacter
 {
@@ -877,7 +879,13 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
     [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
     public int maxEnemiesPerCell;
     public int maxEnemyOccupiedCells;
-    [Unity.Collections.ReadOnly]public NativeArray<CellJobData> Cells;
+    [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
+    
+    public float3 flowfieldOffset;
+    public float CellSize;
+    [Unity.Collections.ReadOnly] public NativeArray<int> CellCollumFirst;
+    [Unity.Collections.ReadOnly] public NativeArray<int> CellCollumCount;
+    public int ColumWidthValue;
 
     //Prompted && output
     public NativeArray<EnemyJobData> EnemyData;
@@ -913,18 +921,26 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
         }
         TargetIndices[index] = closestPlayerIndex;
     }
-    public int WorldToGridPosition(float3 worldPosition)
+    public int WorldToGridPosition(float3 worldPosition, bool ToLowerOnly = true)
     {
         int closest = -1;
         float closestDist = float.MaxValue;
-        for (int i = 0; i < Cells.Length; i++)
+        float3 localPos = worldPosition + flowfieldOffset;
+        int2 coords = new int2((int)math.floor(localPos.x / CellSize), (int)math.floor(localPos.z / CellSize));
+        int columIndex = (coords.x * ColumWidthValue) + coords.y;
+        for (int i = 0; i < CellCollumCount[columIndex]; i++)
         {
-            float newDistance = math.distance(worldPosition, Cells[i].Position);
+            int cellindex = i + CellCollumFirst[columIndex];
+            float newDistance = math.abs(worldPosition.y - Cells[cellindex].Position.y);
             if (newDistance < closestDist)
             {
-                closestDist = newDistance;
-                closest = i;
+                if (!ToLowerOnly || Cells[cellindex].Position.y <= worldPosition.y)
+                {
+                    closestDist = newDistance;
+                    closest = cellindex;
+                }
             }
+
         }
         return closest;
     }
@@ -1063,6 +1079,7 @@ public struct AvoidanceCalculation : IJobParallelFor
     public int MaxEnemyNeighbors;
     public int maxEnemiesPerCell;
     [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
+    [Unity.Collections.ReadOnly] public NativeArray<FieldCell.NeighborContext.Context> NeighborContexts;
     [Unity.Collections.ReadOnly] public NativeArray<int> enemiesInField;
     [Unity.Collections.ReadOnly]public NativeArray<int> cellEnemiesNum;
 
@@ -1168,6 +1185,10 @@ public struct AvoidanceCalculation : IJobParallelFor
                 }
                 for (int j = Cells[cInd].firstNeighbor; j <= Cells[cInd].lastNeighbor; j++)
                 {
+                    if(NeighborContexts[j] != FieldCell.NeighborContext.Context.None)
+                    {
+                        continue;
+                    }
                     int neighborID = CellNeighbors[j];
 
                     bool alreadyChecked = false;
@@ -1367,6 +1388,9 @@ public struct CellJobData
     //public int EnemiesNum;
     //public int firstEnemy;
     public int firstNeighbor, lastNeighbor;
+    public int generation;
+    public float bestCost;
+    public float baseCost;
     //public int ID;
 }
 

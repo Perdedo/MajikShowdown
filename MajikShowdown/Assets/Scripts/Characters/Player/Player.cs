@@ -49,6 +49,14 @@ public class Player : Character
     [HideInInspector][SyncVar (hook = nameof(OnDeathValueChange))] public bool dead = false;
     public float CastPoseTime = 3f;
 
+    [Header("Currency")]
+    [SerializeField] private int startingMoney = 500;
+
+    [SyncVar(hook = nameof(OnMoneyChanged))]
+    [SerializeField] private int money;
+
+    public int Money => money;
+
     public InteractableObject currentInteraction;
 
     public Animator animator;
@@ -92,6 +100,13 @@ public class Player : Character
         input.enabled = true;
         //readyForHorde = false;
     }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        money = startingMoney;
+    }
+
     protected override void FixedUpdate()
     {
         if (CvState != CharVerticalState.jumping)
@@ -499,6 +514,34 @@ public class Player : Character
         if (GameManager.Instance.hordeController != null)
         {
             GameManager.Instance.hordeController.CheckGameplayLoaded();
+        }
+    }
+
+    [Server]
+    public void AddMoney(int amount)
+    {
+        if (amount <= 0) return;
+
+        money += amount;
+    }
+
+    [Server]
+    public bool SpendMoney(int amount)
+    {
+        if (amount <= 0) return false;
+        if (money < amount) return false;
+
+        money -= amount;
+        return true;
+    }
+
+    private void OnMoneyChanged(int oldMoney, int newMoney)
+    {
+        if (!isLocalPlayer && network) return;
+
+        if (GameManager.Instance.uiController.playerUI != null)
+        {
+            GameManager.Instance.uiController.playerUI.UpdateMoneyUI(newMoney);
         }
     }
 }
