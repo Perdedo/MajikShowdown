@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4798241215588229654}
   - component: {fileID: 8361587272817329908}
   - component: {fileID: 5071483236906277674}
+  - component: {fileID: 7559134816978450360}
   m_Layer: 0
   m_Name: Explosion_Poison
   m_TagString: Untagged
@@ -159,3 +160,24 @@ VFXRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
+--- !u!114 &7559134816978450360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918258618331976660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95940c49eab4f634e919205d59359247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SetGraphicsBuffer
+  myType: 1
+  spawnPoints: []
+  bufferCapacity: 8
+  visualEffect: {fileID: 8361587272817329908}
+  bufferPoints:
+    m_Name: SpawnPoints
+  bufferCount:
+    m_Name: PointsCount
+  instances: []

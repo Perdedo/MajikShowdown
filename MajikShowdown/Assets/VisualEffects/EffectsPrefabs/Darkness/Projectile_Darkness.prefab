@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5473950963561203957}
   - component: {fileID: 6609570842327971013}
   - component: {fileID: 1022411836259715510}
+  - component: {fileID: 5812127618953226901}
   m_Layer: 0
   m_Name: Projectile_Darkness
   m_TagString: Untagged
@@ -41,7 +42,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2966697395247992509}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 82dc714424b775d4ca24e6f73ce04dcf, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: eb326cf6fca2dfa41abb204a24e57d39, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -156,3 +157,24 @@ VFXRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
+--- !u!114 &5812127618953226901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2966697395247992509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95940c49eab4f634e919205d59359247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SetGraphicsBuffer
+  myType: 0
+  spawnPoints: []
+  bufferCapacity: 8
+  visualEffect: {fileID: 6609570842327971013}
+  bufferPoints:
+    m_Name: SpawnPoints
+  bufferCount:
+    m_Name: PointsCount
+  instances: []

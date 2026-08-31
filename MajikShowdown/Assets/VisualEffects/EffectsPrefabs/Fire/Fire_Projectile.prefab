@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7173020041928360083}
   - component: {fileID: 5048305317516151223}
   - component: {fileID: 3371744124771192432}
+  - component: {fileID: 428336205373636800}
   m_Layer: 0
   m_Name: Fire_Projectile
   m_TagString: Untagged
@@ -41,7 +42,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7123060377451831057}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 82dc714424b775d4ca24e6f73ce04dcf, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: eb326cf6fca2dfa41abb204a24e57d39, type: 3}
   m_InitialEventName: OnPlay
   m_InitialEventNameOverriden: 0
   m_StartSeed: 0
@@ -80,7 +81,7 @@ VFXRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7123060377451831057}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -118,3 +119,24 @@ VFXRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
+--- !u!114 &428336205373636800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7123060377451831057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95940c49eab4f634e919205d59359247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SetGraphicsBuffer
+  myType: 0
+  spawnPoints: []
+  bufferCapacity: 8
+  visualEffect: {fileID: 5048305317516151223}
+  bufferPoints:
+    m_Name: SpawnPoints
+  bufferCount:
+    m_Name: PointsCount
+  instances: []

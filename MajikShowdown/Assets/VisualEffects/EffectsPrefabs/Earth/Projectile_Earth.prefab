@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3341371665566530993}
   - component: {fileID: 998269512555441018}
   - component: {fileID: 8051986497521428545}
+  - component: {fileID: 7165605892766359273}
   m_Layer: 0
   m_Name: Projectile_Earth
   m_TagString: Untagged
@@ -28,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 539234074665074287}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.09, y: 1.79, z: 6.03539}
+  m_LocalPosition: {x: 4.01, y: 1.79, z: 6.03539}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -241,3 +242,24 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &7165605892766359273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539234074665074287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95940c49eab4f634e919205d59359247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SetGraphicsBuffer
+  myType: 0
+  spawnPoints: []
+  bufferCapacity: 8
+  visualEffect: {fileID: 3341371665566530993}
+  bufferPoints:
+    m_Name: SpawnPoints
+  bufferCount:
+    m_Name: PointsCount
+  instances: []
