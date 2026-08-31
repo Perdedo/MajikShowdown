@@ -2,15 +2,17 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
 {      Properties
     {
         [Radius][IntRange] _Radius("Radius", Range(0,10)) = 1
+        [Power][IntRange] _Power("Distance power", Range(1,10)) = 5
         [Sensitivity] _Sensitivity("Angle sensitivity", Range(1,5)) = 2.5
         [Multiplier] _Multiplier("Edge intensity multiplier", Range(0,10)) = 0.6
         [Sharpness] _Sharpness("Sharpness", Range(0,1)) = 0.9
-        [Opacity] _Opacity("Opacity", Range(0,10)) = 1
+        [Opacity] _Opacity("Opacity", Range(0,1)) = 1
     }
     SubShader
     {
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareNormalsTexture.hlsl"
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
         ENDHLSL
@@ -29,10 +31,12 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
 
             CBUFFER_START(UnityPerMaterial)
                 int _Radius;
+                int _Power;
                 float _Sensitivity;
                 float _Sharpness;
                 float _Multiplier;
                 float _Opacity;
+                float2 _Vec;
             CBUFFER_END
 
 
@@ -45,6 +49,12 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                 Out = result2 * zeroOrOne + (1 - zeroOrOne) * result1;
                 Out = lerp(Base, Out, Opacity);
             }
+
+            float4 overlay(float3 base, float3 blend)
+            {
+                return float4(lerp(2.0 * base * blend, 1.0 - 2.0 * (1.0 - blend) * (1.0 - blend), clamp(base, 0.0, 1.0)), 1);
+            }
+
 
             //Sample the world normal and coverts to view space normal
             float2 SampleSceneNormalBuffer(float2 uv, float3x3 viewMatrix)
@@ -67,10 +77,14 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
             }
 
             
-            float GetCurvatureAtPoint(float2 uv, float sensitivity, float multiplier, float3x3 viewMatrix)
+            float GetCurvatureAtPoint(float2 uv, float sensitivity, float multiplier, float3x3 viewMatrix, float dis)
             {
-                float2 leftRight = float2(1.0 / _ScreenParams.x, 0);
-                float2 upDown = float2(0, 1.0 / _ScreenParams.y);
+                if(dis < 0.75)
+                {
+                    dis = 0.75;
+                }
+                float2 leftRight = float2((1.0 * dis) / _ScreenParams.x, 0);
+                float2 upDown = float2(0, (1.0  * dis ) / _ScreenParams.y);
 
                 float2 left = SampleSceneNormalBuffer(uv + leftRight, viewMatrix);
                 float2 right = SampleSceneNormalBuffer(uv - leftRight, viewMatrix);
@@ -82,7 +96,7 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
             }
 
             //Calculates the average curvature from around any given point
-            void GetAverageCurvature(float2 screenPosition, int radius, float sensitivity, float multiplier, float sharpness, out float curvature)
+            void GetAverageCurvature(float2 screenPosition, int radius, float sensitivity, float multiplier, float sharpness, out float curvature, float dis)
             {
                 float3x3 viewMatrix = (float3x3)UNITY_MATRIX_V;
                 float totalWeight = 0.0;
@@ -96,11 +110,15 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                         float2 uvOffset = pixelOffset / _ScreenParams.xy;
                         float weight = 1 / (dot(pixelOffset, pixelOffset) + sharpness);
                         totalWeight += weight;
-                        curvature += weight * GetCurvatureAtPoint(screenPosition + uvOffset, sensitivity, multiplier, viewMatrix);
+                        curvature += weight * GetCurvatureAtPoint(screenPosition + uvOffset, sensitivity, multiplier, viewMatrix, dis);
                     }
                 }
 
                 curvature /= totalWeight;
+            }
+            float EaseFunc(float x)
+            {
+                return pow(1 - x, _Power);
             }
             float4 Frag (Varyings input) : SV_Target
             {
@@ -109,9 +127,15 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                 float4 color = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_PointClamp, uv);
                 float4 finalColor;
                 float curvature;
-                GetAverageCurvature(uv, _Radius, _Sensitivity, _Multiplier, _Sharpness, curvature);
-                BlendSoftLight(color, curvature, _Opacity, finalColor);
+                float depth = SampleSceneDepth(uv);
+                float linearDepth  = Linear01Depth(depth, _ZBufferParams);
+                float opacM = 1 - smoothstep(0.05, 0.5, linearDepth);
+
+                GetAverageCurvature(uv, _Radius, _Sensitivity, _Multiplier, _Sharpness, curvature, EaseFunc(linearDepth));
+
                 
+                //BlendSoftLight(color, curvature, _Opacity * opacM, finalColor);
+                BlendSoftLight(color, curvature, _Opacity, finalColor);
                 return finalColor;
             }
             

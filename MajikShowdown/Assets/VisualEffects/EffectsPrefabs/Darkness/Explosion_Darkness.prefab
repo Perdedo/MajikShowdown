@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4130647871488385829}
   - component: {fileID: 814931028583700371}
   - component: {fileID: 5752273462109789556}
+  - component: {fileID: 2783616687262298912}
   m_Layer: 0
   m_Name: Explosion_Darkness
   m_TagString: Untagged
@@ -195,6 +196,27 @@ VFXRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
+--- !u!114 &2783616687262298912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5515879962559443679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95940c49eab4f634e919205d59359247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SetGraphicsBuffer
+  myType: 1
+  spawnPoints: []
+  bufferCapacity: 8
+  visualEffect: {fileID: 814931028583700371}
+  bufferPoints:
+    m_Name: SpawnPoints
+  bufferCount:
+    m_Name: PointsCount
+  instances: []
 --- !u!1 &5831006020287615369
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,7 +234,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3547524188769243654
 Transform:
   m_ObjectHideFlags: 0
@@ -312,7 +334,7 @@ VFXRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5831006020287615369}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1

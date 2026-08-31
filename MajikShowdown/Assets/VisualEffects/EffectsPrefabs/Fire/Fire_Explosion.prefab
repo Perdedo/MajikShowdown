@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 425063217960774076}
   - component: {fileID: 3615843376753232717}
   - component: {fileID: 8540056869444356124}
+  - component: {fileID: 3416277106265456793}
   m_Layer: 0
   m_Name: Fire_Explosion
   m_TagString: Untagged
@@ -156,3 +157,24 @@ VFXRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
+--- !u!114 &3416277106265456793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7818226963201154594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95940c49eab4f634e919205d59359247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SetGraphicsBuffer
+  myType: 1
+  spawnPoints: []
+  bufferCapacity: 8
+  visualEffect: {fileID: 3615843376753232717}
+  bufferPoints:
+    m_Name: SpawnPoints
+  bufferCount:
+    m_Name: PointsCount
+  instances: []
