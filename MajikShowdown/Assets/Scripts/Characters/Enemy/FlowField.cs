@@ -216,20 +216,20 @@ public class FlowField
                             {
                                 if (c.position.y < cell.position.y - maxJumpHeight)
                                 {
-                                    Vector3 Ndir = CellDistance(cell, c);
+                                    Vector3 Ndir = CellDistance(cell, c).normalized;
                                     AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.Lower,Ndir);
                                     neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.Lower));
                                 }
                                 else
                                 {
-                                    Vector3 Ndir = CellDistance(cell, c);
+                                    Vector3 Ndir = CellDistance(cell, c).normalized;
                                     AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.ABitLower,Ndir);
                                     neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.ABitLower));
                                 }
                             }
                             else
                             {
-                                Vector3 Ndir = CellDistance(cell, c);
+                                Vector3 Ndir = CellDistance(cell, c).normalized;
                                 AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.None,Ndir);
                                 neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.None));
                             }
@@ -239,13 +239,13 @@ public class FlowField
                     {
                         if (c.position.y < cell.position.y + maxJumpHeight)
                         {
-                            Vector3 Ndir = CellDistance(cell, c);
+                            Vector3 Ndir = CellDistance(cell, c).normalized;
                             AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Jumpable,Ndir);
                             neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.Jumpable));
                         }
                         else
                         {
-                            Vector3 Ndir = CellDistance(cell, c);
+                            Vector3 Ndir = CellDistance(cell, c).normalized;
                             AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Upper,Ndir);
                             neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.Upper));
                         }

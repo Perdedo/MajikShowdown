@@ -353,6 +353,7 @@ public struct GenerateIntegrationJob : IJob
             CellJobData c = Cells[index];
             c.bestCost = 0;
             c.generation = currentGeneration;
+            c.TargetID = index;
             Cells[index] = c;
             cellsToProcess.Enqueue(index);
         }
@@ -372,6 +373,7 @@ public struct GenerateIntegrationJob : IJob
                 {
                     neighborCell.generation = currentGeneration;
                     neighborCell.bestCost = float.MaxValue;
+                    neighborCell.TargetID = -1;
                 }
                 if (NeighborContext[i] == FieldCell.NeighborContext.Context.Lower)
                 {
@@ -387,6 +389,7 @@ public struct GenerateIntegrationJob : IJob
                         mult = diagonalWeight;
                     }
                     neighborCell.bestCost = currentCell.bestCost + neighborCell.baseCost * mult;
+                    neighborCell.TargetID = currentCell.TargetID;
 
                     cellsToProcess.Enqueue(neighborID);
                 }
@@ -420,7 +423,8 @@ public struct GenerateDirectionJob : IJobParallelFor
             return float3.zero;
         }
         int lowest = -1;
-        float3 dirToDestiny = GetDistanceToClosestDestinationCell(index);
+        float3 dirToDestiny = Cells[c.TargetID].Position - c.Position;
+        dirToDestiny.y = 0;
         dirToDestiny *= 1f / (math.abs(dirToDestiny.x) + math.abs(dirToDestiny.z) + 0.0001f);
         float bestDot = float.MinValue;
         float3 dirSum = float3.zero;
@@ -459,7 +463,7 @@ public struct GenerateDirectionJob : IJobParallelFor
         return math.normalize(dirSum * NeighborSumDirectionStrenght + dir * BestDirectionStrenght + dirToDestiny * TargetDirectionStrenght);
 
     }
-    public float3 GetDistanceToClosestDestinationCell(int cellIndex)
+    /*public float3 GetDistanceToClosestDestinationCell(int cellIndex)
     {
         float3 dir = float3.zero, aux;
         float sqrMag = float.MaxValue;
@@ -474,7 +478,7 @@ public struct GenerateDirectionJob : IJobParallelFor
             }
         }
         return dir;
-    }
+    }*/
     public float3 CellDistance(int from, int to)
     {
         return new float3(Cells[to].Position.x - Cells[from].Position.x, 0, Cells[to].Position.z - Cells[from].Position.z);

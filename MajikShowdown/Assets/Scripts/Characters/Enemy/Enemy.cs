@@ -1391,6 +1391,7 @@ public struct CellJobData
     public int generation;
     public float bestCost;
     public float baseCost;
+    public int TargetID;
     //public int ID;
 }
 
