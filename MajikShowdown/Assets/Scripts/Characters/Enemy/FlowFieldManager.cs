@@ -423,6 +423,7 @@ public struct GenerateDirectionJob : IJobParallelFor
             return float3.zero;
         }
         int lowest = -1;
+        float3 lowestDir = float3.zero;
         float3 dirToDestiny = Cells[c.TargetID].Position - c.Position;
         dirToDestiny.y = 0;
         dirToDestiny *= 1f / (math.abs(dirToDestiny.x) + math.abs(dirToDestiny.z) + 0.0001f);
@@ -443,6 +444,7 @@ public struct GenerateDirectionJob : IJobParallelFor
             if (lowest == -1 || neighborCell.bestCost < Cells[lowest].bestCost)
             {
                 lowest = cellNeighbors[i];
+                lowestDir = cellNeighborsDir[i];
                 bestDot = math.dot(dirToDestiny, cellNeighborsDir[i]);
             }
             else if (neighborCell.bestCost == Cells[lowest].bestCost)
@@ -451,6 +453,7 @@ public struct GenerateDirectionJob : IJobParallelFor
                 if (dot > bestDot)
                 {
                     lowest = cellNeighbors[i];
+                    lowestDir = cellNeighborsDir[i];
                     bestDot = dot;
                 }
             }
@@ -459,8 +462,8 @@ public struct GenerateDirectionJob : IJobParallelFor
         {
             return float3.zero;
         }
-        float3 dir = math.normalize(CellDistance(index, lowest));
-        return math.normalize(dirSum * NeighborSumDirectionStrenght + dir * BestDirectionStrenght + dirToDestiny * TargetDirectionStrenght);
+        //float3 dir = math.normalize(CellDistance(index, lowest));
+        return math.normalizesafe(dirSum * NeighborSumDirectionStrenght + lowestDir * BestDirectionStrenght + dirToDestiny * TargetDirectionStrenght);
 
     }
     /*public float3 GetDistanceToClosestDestinationCell(int cellIndex)
@@ -478,9 +481,9 @@ public struct GenerateDirectionJob : IJobParallelFor
             }
         }
         return dir;
-    }*/
+    }
     public float3 CellDistance(int from, int to)
     {
         return new float3(Cells[to].Position.x - Cells[from].Position.x, 0, Cells[to].Position.z - Cells[from].Position.z);
-    }
+    }*/
 }
