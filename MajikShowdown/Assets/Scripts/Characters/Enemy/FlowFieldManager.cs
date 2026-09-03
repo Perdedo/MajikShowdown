@@ -179,8 +179,8 @@ public class FlowFieldManager : MonoBehaviour
                 {
                     if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                     {
-                        
-                        if(cellJobDatas[cell.ID].bestCost == float.MaxValue)
+
+                        if (cellJobDatas[cell.ID].bestCost == float.MaxValue)
                         {
                             Gizmos.color = Color.red;
                         }
@@ -290,11 +290,18 @@ public class FlowFieldManager : MonoBehaviour
         cellJobDatas = new NativeArray<CellJobData>(flowField.allCells.Count, Allocator.Persistent);
         for (int i = 0; i < cellJobDatas.Length; i++)
         {
+            int neighborCount = flowField.allCells[i].lastNeighbor - flowField.allCells[i].firstNeighbor + 1;
+            float baseC = 1;
+            if (neighborCount < 8)
+            {
+                baseC = BorderCellWeight;
+            }
             cellJobDatas[i] = new CellJobData()
             {
                 firstNeighbor = flowField.allCells[i].firstNeighbor,
                 lastNeighbor = flowField.allCells[i].lastNeighbor,
-                Position = flowField.allCells[i].position
+                Position = flowField.allCells[i].position,
+                baseCost = baseC
             };
         }
 
@@ -325,7 +332,7 @@ public class FlowFieldManager : MonoBehaviour
         {
             CellNeighborDir.Dispose();
         }
-        if(cellNeighborDiagonal.IsCreated)
+        if (cellNeighborDiagonal.IsCreated)
         {
             cellNeighborDiagonal.Dispose();
         }
@@ -374,15 +381,15 @@ public struct GenerateIntegrationJob : IJob
         while (cellsToProcess.Count > 0)
         {
             CellJobData currentCell = Cells[cellsToProcess.Dequeue()];
-            int neighborCount = currentCell.lastNeighbor - currentCell.firstNeighbor + 1;
+            //int neighborCount = currentCell.lastNeighbor - currentCell.firstNeighbor + 1;
             for (int i = currentCell.firstNeighbor; i <= currentCell.lastNeighbor; i++)
             {
                 int neighborID = cellNeighbors[i];
                 CellJobData neighborCell = Cells[neighborID];
-                if (neighborCount < 8)
+                /*if (neighborCount < 8)
                 {
                     neighborCell.baseCost = borderCellWeight;
-                }
+                }*/
                 if (neighborCell.generation != currentGeneration)
                 {
                     neighborCell.generation = currentGeneration;
@@ -416,11 +423,11 @@ public struct GenerateIntegrationJob : IJob
 [BurstCompile]
 public struct GenerateDirectionJob : IJobParallelFor
 {
-    [Unity.Collections.ReadOnly]public NativeArray<CellJobData> Cells;
-    [Unity.Collections.ReadOnly]public NativeArray<int> cellNeighbors;
-    [Unity.Collections.ReadOnly]public NativeArray<float3> cellNeighborsDir;
-    [Unity.Collections.ReadOnly]public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
-    [Unity.Collections.ReadOnly]public NativeParallelHashSet<int> targetCells;
+    [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
+    [Unity.Collections.ReadOnly] public NativeArray<int> cellNeighbors;
+    [Unity.Collections.ReadOnly] public NativeArray<float3> cellNeighborsDir;
+    [Unity.Collections.ReadOnly] public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
+    [Unity.Collections.ReadOnly] public NativeParallelHashSet<int> targetCells;
     [WriteOnly]
     public NativeArray<float3> DirectionsOutput;
     public float NeighborSumDirectionStrenght, BestDirectionStrenght, TargetDirectionStrenght;
@@ -445,11 +452,11 @@ public struct GenerateDirectionJob : IJobParallelFor
         for (int i = c.firstNeighbor; i <= c.lastNeighbor; i++)
         {
             CellJobData neighborCell = Cells[cellNeighbors[i]];
-            if(NeighborContext[i]== FieldCell.NeighborContext.Context.Upper)
+            if (NeighborContext[i] == FieldCell.NeighborContext.Context.Upper)
             {
                 continue;
             }
-            if(neighborCell.bestCost > c.bestCost)
+            if (neighborCell.bestCost > c.bestCost)
             {
                 continue;
             }
