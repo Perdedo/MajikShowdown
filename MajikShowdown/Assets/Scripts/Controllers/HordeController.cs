@@ -216,23 +216,12 @@ public class HordeController : NetworkBehaviour
                 };
             }
         }
-        //NativeArray<CellJobData> cellInfo = new NativeArray<CellJobData>(FlowFieldManager.instance.flowField.allCells.Count, Allocator.TempJob);
-        //NativeList<int> EnemyFieldData = new NativeList<int>(Allocator.TempJob);
-        for (int i = 0; i < FlowFieldManager.instance.cellJobDatas.Length; i++)
+        /*for (int i = 0; i < FlowFieldManager.instance.cellJobDatas.Length; i++)
         {
             CellJobData cell = FlowFieldManager.instance.cellJobDatas[i];
-            //cell.firstEnemy = EnemyFieldData.Length;
             cell.Direction = FlowFieldManager.instance.flowField.allCells[i].direction;
-            //cell.EnemiesNum = FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies.Count;
             FlowFieldManager.instance.cellJobDatas[i] = cell;
-
-            /*for (int j = 0; j < cell.EnemiesNum; j++)
-            {
-                EnemyFieldData.Add(FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies[j].ID);
-            }*/
-
-
-        }
+        }*/
         NativeArray<float3> playerPos = new NativeArray<float3>(GameManager.Instance.Players.Count, Allocator.TempJob);
         for(int i =0; i<GameManager.Instance.Players.Count; i++)
         {
