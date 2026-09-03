@@ -418,7 +418,7 @@ public struct GenerateDirectionJob : IJobParallelFor
     float3 GenerateDirections(int index)
     {
         CellJobData c = Cells[index];
-        if (targetCells.Contains(index))
+        if (targetCells.Contains(index) || c.TargetID == -1)
         {
             return float3.zero;
         }
