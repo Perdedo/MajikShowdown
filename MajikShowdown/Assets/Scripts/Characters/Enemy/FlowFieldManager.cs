@@ -56,6 +56,7 @@ public class FlowFieldManager : MonoBehaviour
     [HideInInspector] public NativeArray<int> CellCollumCount;
     [HideInInspector] public NativeArray<FieldCell.NeighborContext.Context> neighborContexts;
     [HideInInspector] public NativeArray<float3> CellNeighborDir;
+    [HideInInspector] public NativeArray<byte> cellNeighborDiagonal;
     void Awake()
     {
         instance = this;
@@ -324,6 +325,10 @@ public class FlowFieldManager : MonoBehaviour
         {
             CellNeighborDir.Dispose();
         }
+        if(cellNeighborDiagonal.IsCreated)
+        {
+            cellNeighborDiagonal.Dispose();
+        }
     }
 
     [ContextMenu("GenerateGrid")]
@@ -346,6 +351,7 @@ public struct GenerateIntegrationJob : IJob
     public NativeArray<CellJobData> Cells;
     public NativeArray<int> cellNeighbors;
     public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
+    public NativeArray<byte> CellNeighborDiagonal;
     public int currentGeneration;
     public float borderCellWeight;
     public float diagonalWeight;
@@ -368,7 +374,7 @@ public struct GenerateIntegrationJob : IJob
         while (cellsToProcess.Count > 0)
         {
             CellJobData currentCell = Cells[cellsToProcess.Dequeue()];
-            int neighborCount = currentCell.lastNeighbor -currentCell.firstNeighbor + 1;
+            int neighborCount = currentCell.lastNeighbor - currentCell.firstNeighbor + 1;
             for (int i = currentCell.firstNeighbor; i <= currentCell.lastNeighbor; i++)
             {
                 int neighborID = cellNeighbors[i];
@@ -391,8 +397,7 @@ public struct GenerateIntegrationJob : IJob
                 if (neighborCell.bestCost > currentCell.bestCost + neighborCell.baseCost)
                 {
                     float mult = 1;
-                    float2 dir = new float2(neighborCell.Position.x - currentCell.Position.x, neighborCell.Position.z - currentCell.Position.z);
-                    if (dir.x != 0 && dir.y != 0)
+                    if (CellNeighborDiagonal[i] == 1)
                     {
                         mult = diagonalWeight;
                     }

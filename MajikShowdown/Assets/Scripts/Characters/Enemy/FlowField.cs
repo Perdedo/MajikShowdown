@@ -133,6 +133,19 @@ public class FlowField
         FlowFieldManager.instance.neighborContexts.CopyFrom(neighborsContext.ToArray());
         FlowFieldManager.instance.CellNeighborDir = new Unity.Collections.NativeArray<float3>(neighborsID.Count, Unity.Collections.Allocator.Persistent);
         FlowFieldManager.instance.CellNeighborDir.CopyFrom(neighborsDir.ToArray());
+        FlowFieldManager.instance.cellNeighborDiagonal = new Unity.Collections.NativeArray<byte>(neighborsID.Count, Unity.Collections.Allocator.Persistent);
+        for(int i = 0; i< neighborsDir.Count; i++)
+        {
+            Vector3 dir = neighborsDir[i];
+            if(math.abs(dir.x) > 0 && math.abs(dir.z) > 0)
+            {
+                FlowFieldManager.instance.cellNeighborDiagonal[i] = 1;
+            }
+            else
+            {
+                FlowFieldManager.instance.cellNeighborDiagonal[i] = 0;
+            }
+        }
     }
 
     float DetectionRadius = 4;
@@ -329,6 +342,7 @@ public class FlowField
             Cells = FlowFieldManager.instance.cellJobDatas,
             cellNeighbors = FlowFieldManager.instance.CellNeighborID,
             NeighborContext = FlowFieldManager.instance.neighborContexts,
+            CellNeighborDiagonal = FlowFieldManager.instance.cellNeighborDiagonal,
             currentGeneration = CurrentGeneration,
             borderCellWeight = FlowFieldManager.instance.BorderCellWeight,
             diagonalWeight = FlowFieldManager.instance.DiagonalWeight
