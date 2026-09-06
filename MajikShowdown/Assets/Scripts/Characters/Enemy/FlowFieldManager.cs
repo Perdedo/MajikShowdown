@@ -72,7 +72,7 @@ public class FlowFieldManager : MonoBehaviour
             lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
             p.TargetCellID = lastTargetsPos[lastTargetsPos.Count - 1].ID;
         }
-        flowField.GenerateFlowField(lastTargetsPos);
+        GenerateFlowField(lastTargetsPos);
         //StartCoroutine(FlowFieldGenerator());
     }
 
@@ -91,7 +91,7 @@ public class FlowFieldManager : MonoBehaviour
         }
         if (moved)
         {
-            flowField.GenerateFlowField(lastTargetsPos);
+            GenerateFlowField(lastTargetsPos);
         }
     }
     IEnumerator FlowFieldGenerator()
@@ -128,7 +128,7 @@ public class FlowFieldManager : MonoBehaviour
                 p.TargetCellID = lastTargetsPos[lastTargetsPos.Count - 1].ID;
             }
         }
-        flowField.GenerateFlowField(lastTargetsPos);
+        GenerateFlowField(lastTargetsPos);
     }
 
     bool integrated = false;
@@ -211,7 +211,7 @@ public class FlowFieldManager : MonoBehaviour
                         if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                         {
                             Gizmos.color = Color.blue;
-                            Gizmos.DrawRay(cell.position, cell.direction * CellSize * 0.5f);
+                            Gizmos.DrawRay(cell.position, cellJobDatas[cell.ID].Direction * CellSize * 0.5f);
                         }
                     }
                 }
@@ -349,6 +349,63 @@ public class FlowFieldManager : MonoBehaviour
     public void PlayerTest()
     {
         flowField.GenerateFlowField(WorldToGridPosition(Target.position));
+    }
+    public void GenerateFlowField(List<FieldCell> targets)
+    {
+        flowField.CurrentGeneration++;
+        flowField.DestinationCells = targets;
+        if (flowField.DestinationCells.Count <= 0) return;
+        NativeArray<int> tCells = new NativeArray<int>(targets.Count, Allocator.TempJob);
+        NativeParallelHashSet<int> HashTCells = new NativeParallelHashSet<int>(targets.Count, Allocator.TempJob);
+        for(int i = 0; i< targets.Count; i++)
+        {
+            tCells[i] = targets[i].ID;
+            HashTCells.Add(targets[i].ID);
+        }
+        GenerateIntegrationJob integration = new GenerateIntegrationJob()
+        {
+            targetCells = tCells,
+            Cells = cellJobDatas,
+            cellNeighbors = CellNeighborID,
+            NeighborContext = neighborContexts,
+            CellNeighborDiagonal = cellNeighborDiagonal,
+            currentGeneration = flowField.CurrentGeneration,
+            borderCellWeight = BorderCellWeight,
+            diagonalWeight = DiagonalWeight
+        };
+        JobHandle handle = integration.Schedule();
+        handle.Complete();
+        tCells.Dispose();
+        GenerateDirectionJob direction = new GenerateDirectionJob()
+        {
+            Cells = cellJobDatas,
+            cellNeighbors = CellNeighborID,
+            NeighborContext = neighborContexts,
+            cellNeighborsDir = CellNeighborDir,
+            targetCells = HashTCells,
+            DirectionsOutput = new NativeArray<float3>(cellJobDatas.Length, Allocator.TempJob),
+            NeighborSumDirectionStrenght = NeighborSumDirectionStrenght,
+            BestDirectionStrenght = BestDirectionStrenght,
+            TargetDirectionStrenght = TargetDirectionStrenght
+        };
+        handle = direction.Schedule(flowField.allCells.Count, 64);
+        handle.Complete();
+        UpdateCellsJob updateCells = new UpdateCellsJob()
+        {
+            Cells = cellJobDatas,
+            DirOutput = direction.DirectionsOutput
+        };
+        handle = updateCells.Schedule(flowField.allCells.Count, 64);
+        handle.Complete();
+        /*for(int i =0; i< direction.Cells.Length; i++)
+        {
+            CellJobData c = cellJobDatas[i];
+            c.Direction = direction.DirectionsOutput[i];
+            flowField.allCells[i].direction = direction.DirectionsOutput[i];
+            cellJobDatas[i] = c;
+        }*/
+        HashTCells.Dispose();
+        direction.DirectionsOutput.Dispose();
     }
 }
 [BurstCompile]
@@ -506,4 +563,16 @@ public struct GenerateDirectionJob : IJobParallelFor
     {
         return new float3(Cells[to].Position.x - Cells[from].Position.x, 0, Cells[to].Position.z - Cells[from].Position.z);
     }*/
+}
+[BurstCompile]
+public struct UpdateCellsJob : IJobParallelFor
+{
+    public NativeArray<CellJobData> Cells;
+    public NativeArray<float3> DirOutput;
+    public void Execute(int index)
+    {
+        CellJobData c = Cells[index];
+        c.Direction = DirOutput[index];
+        Cells[index] = c;
+    }
 }

@@ -324,56 +324,7 @@ public class FlowField
         }
         manager.GenerateFlowFieldIntegrations();
     }
-    public void GenerateFlowField(List<FieldCell> targets)
-    {
-        CurrentGeneration++;
-        DestinationCells = targets;
-        if (DestinationCells.Count <= 0) return;
-        NativeArray<int> tCells = new NativeArray<int>(targets.Count, Allocator.TempJob);
-        NativeParallelHashSet<int> HashTCells = new NativeParallelHashSet<int>(targets.Count, Allocator.TempJob);
-        for(int i = 0; i< targets.Count; i++)
-        {
-            tCells[i] = targets[i].ID;
-            HashTCells.Add(targets[i].ID);
-        }
-        GenerateIntegrationJob integration = new GenerateIntegrationJob()
-        {
-            targetCells = tCells,
-            Cells = FlowFieldManager.instance.cellJobDatas,
-            cellNeighbors = FlowFieldManager.instance.CellNeighborID,
-            NeighborContext = FlowFieldManager.instance.neighborContexts,
-            CellNeighborDiagonal = FlowFieldManager.instance.cellNeighborDiagonal,
-            currentGeneration = CurrentGeneration,
-            borderCellWeight = FlowFieldManager.instance.BorderCellWeight,
-            diagonalWeight = FlowFieldManager.instance.DiagonalWeight
-        };
-        JobHandle handle = integration.Schedule();
-        handle.Complete();
-        tCells.Dispose();
-        GenerateDirectionJob direction = new GenerateDirectionJob()
-        {
-            Cells = FlowFieldManager.instance.cellJobDatas,
-            cellNeighbors = FlowFieldManager.instance.CellNeighborID,
-            NeighborContext = FlowFieldManager.instance.neighborContexts,
-            cellNeighborsDir = FlowFieldManager.instance.CellNeighborDir,
-            targetCells = HashTCells,
-            DirectionsOutput = new NativeArray<float3>(FlowFieldManager.instance.cellJobDatas.Length, Allocator.TempJob),
-            NeighborSumDirectionStrenght = FlowFieldManager.instance.NeighborSumDirectionStrenght,
-            BestDirectionStrenght = FlowFieldManager.instance.BestDirectionStrenght,
-            TargetDirectionStrenght = FlowFieldManager.instance.TargetDirectionStrenght
-        };
-        handle = direction.Schedule(allCells.Count, 64);
-        handle.Complete();
-        for(int i =0; i< direction.Cells.Length; i++)
-        {
-            CellJobData c = FlowFieldManager.instance.cellJobDatas[i];
-            c.Direction = direction.DirectionsOutput[i];
-            allCells[i].direction = direction.DirectionsOutput[i];
-            FlowFieldManager.instance.cellJobDatas[i] = c;
-        }
-        HashTCells.Dispose();
-        direction.DirectionsOutput.Dispose();
-    }
+    
 
     void GenerateIntegration(Vector2Int targetCellPos, int targetCellLayer)
     {

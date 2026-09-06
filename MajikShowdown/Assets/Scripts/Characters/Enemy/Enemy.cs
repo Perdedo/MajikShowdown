@@ -206,7 +206,7 @@ public class Enemy : CrowdCharacter
 
         if (forwardCell != null)
         {
-            CheckForJump(currentCell);
+            CheckForJump();
         }
         if (attackedPlayer != null)
         {
@@ -506,12 +506,12 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    public void CheckForJump(FieldCell currentCell)
+    public void CheckForJump()
     {
         bool needsJump = false;
         foreach (FieldCell.NeighborContext n in forwardCell.Neighbors)
         {
-            if (n.context == FieldCell.NeighborContext.Context.Jumpable && Vector3.Dot(forwardCell.direction, FlowField.CellDistance(forwardCell, n.neighborCell)) > 0.75f)
+            if (n.context == FieldCell.NeighborContext.Context.Jumpable && Vector3.Dot(FlowFieldManager.instance.cellJobDatas[forwardCell.ID].Direction, FlowField.CellDistance(forwardCell, n.neighborCell)) > 0.75f)
             {
                 needsJump = true;
                 break;
