@@ -345,17 +345,17 @@ public class HordeController : NetworkBehaviour
         {
             return;
         }
-        /*RaycastHit[] hit;
+        RaycastHit[] hit;
         float[] dot;
-        StartEnemyRaycastJob(out hit, out dot);*/
+        StartEnemyRaycastJob(out hit, out dot);
         for (int i = 0; i < usedEnemiesByType.Count; i++)
         {
             foreach (Enemy e in usedEnemiesByType[i])
             {
                 if (e != null)
                 {
-                    /*e.normalDot = dot[e.ActiveID.ID];
-                    e.LastHitInfo = hit[e.ActiveID.ID];*/
+                    e.normalDot = dot[e.ActiveID.ID];
+                    e.LastHitInfo = hit[e.ActiveID.ID];
                     e.FixedRBUpdate();
                 }
             }

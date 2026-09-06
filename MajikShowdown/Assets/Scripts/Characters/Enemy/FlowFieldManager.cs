@@ -373,9 +373,7 @@ public class FlowFieldManager : MonoBehaviour
             borderCellWeight = BorderCellWeight,
             diagonalWeight = DiagonalWeight
         };
-        JobHandle handle = integration.Schedule();
-        handle.Complete();
-        tCells.Dispose();
+        JobHandle integrationHandle = integration.Schedule();
         GenerateDirectionJob direction = new GenerateDirectionJob()
         {
             Cells = cellJobDatas,
@@ -388,15 +386,15 @@ public class FlowFieldManager : MonoBehaviour
             BestDirectionStrenght = BestDirectionStrenght,
             TargetDirectionStrenght = TargetDirectionStrenght
         };
-        handle = direction.Schedule(flowField.allCells.Count, 64);
-        handle.Complete();
+        JobHandle directionHandle = direction.Schedule(flowField.allCells.Count, 64, integrationHandle);
         UpdateCellsJob updateCells = new UpdateCellsJob()
         {
             Cells = cellJobDatas,
             DirOutput = direction.DirectionsOutput
         };
-        handle = updateCells.Schedule(flowField.allCells.Count, 64);
-        handle.Complete();
+        JobHandle updateHandle = updateCells.Schedule(flowField.allCells.Count, 64, directionHandle);
+        updateHandle.Complete();
+        tCells.Dispose();
         /*for(int i =0; i< direction.Cells.Length; i++)
         {
             CellJobData c = cellJobDatas[i];

@@ -548,7 +548,7 @@ public class Enemy : CrowdCharacter
 
     protected override void Gravity()
     {
-        RaycastGround();
+        //RaycastGround();
         float groundDistance = LastHitInfo.distance - (height / 2);
 
         if (!gravityPaused)
