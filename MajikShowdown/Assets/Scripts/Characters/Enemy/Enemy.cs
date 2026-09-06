@@ -1358,6 +1358,30 @@ public struct AvoidanceCalculation : IJobParallelFor
         return math.normalize(add);
     }*/
 }
+
+public struct EnemyGroundRaycastJob : IJobParallelFor
+{
+    [Unity.Collections.ReadOnly] public NativeArray<EnemyJobData> EnemyData;
+    [WriteOnly]
+    public NativeArray<RaycastCommand> Commands;
+
+    public LayerMask GroundMask;
+
+    public void Execute(int index)
+    {
+        QueryParameters queryParams = new QueryParameters( GroundMask, false, QueryTriggerInteraction.Ignore, false);
+        Commands[index] = new RaycastCommand(EnemyData[index].Position, Vector3.down, queryParams, EnemyData[index].height/2 + EnemyData[index].terrainBuffer);
+    }
+}
+public struct EnemyCalculateDotJob : IJobParallelFor
+{
+    public NativeArray<RaycastHit> Res;
+    public NativeArray<float> NormalDot;
+    public void Execute(int index)
+    {
+        NormalDot[index] = math.dot(Res[index].normal, Vector3.up);
+    }
+}
 public struct EnemyJobData
 {
     //Imutable
@@ -1368,6 +1392,9 @@ public struct EnemyJobData
     public float DetectionRadius;
     public int occupiedCellDepth;
     public float activationDistance;
+
+    public float height;
+    public float terrainBuffer;
     //public float TargetStoppingDistance;
 
     //Prompted
