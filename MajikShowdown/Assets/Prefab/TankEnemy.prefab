@@ -131,7 +131,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1272920518353865679}
   serializedVersion: 5
-  m_Mass: 5
+  m_Mass: 50
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -168,7 +168,7 @@ MonoBehaviour:
   maxVelocity: 100
   gravityMultiplier: 5
   terrainBuffer: 0.5
-  BaseFriction: 0.5
+  BaseFriction: 5
   callEvents: 0
   Fell:
     m_PersistentCalls:
@@ -237,6 +237,8 @@ MonoBehaviour:
   hitPoint: {fileID: 6818907241630132136}
   hitRadius: 5
   tremorRadius: 15
+  hitKnockbackStrength: 25
+  tremorKnockbackStrength: 10
   tremorDamage: 5
   affectedByHit:
     serializedVersion: 2

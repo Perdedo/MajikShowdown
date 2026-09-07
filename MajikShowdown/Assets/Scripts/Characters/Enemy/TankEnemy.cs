@@ -4,12 +4,13 @@ using UnityEngine;
 public class TankEnemy : Enemy
 {
     public Transform hitPoint;
-    public float hitRadius = 5, tremorRadius = 15;
+    public float hitRadius = 5, tremorRadius = 15, hitKnockbackStrength = 100, tremorKnockbackStrength = 50;
     public int tremorDamage = 5;
     public LayerMask affectedByHit;
     Collider[] inRadius;
     Damage tremorDmgCtrl;
-
+    Vector3 hitDir;
+    IGameCharacter aux;
     public override void Initialize()
     {
         base.Initialize();
@@ -22,13 +23,23 @@ public class TankEnemy : Enemy
         {
             if (collider.gameObject != this.gameObject)
             {
-                if(Vector3.SqrMagnitude(hitPoint.position - collider.transform.position) < hitRadius * hitRadius)
+                hitDir = collider.transform.position - hitPoint.position;
+                aux = collider.gameObject.GetComponent<IGameCharacter>();
+                if (Vector3.SqrMagnitude(hitDir) < hitRadius * hitRadius)
                 {
-                    collider.gameObject.GetComponent<IGameCharacter>().DamageHandler.TakeDamage(dmgCtrl);
+                    if(aux is Character)
+                    {
+                        aux.DamageHandler.TakeDamage(dmgCtrl);
+                    }
+                    aux.Knockback((hitDir.normalized + Vector3.up).normalized, hitKnockbackStrength);
                 }
                 else
                 {
-                    collider.gameObject.GetComponent<IGameCharacter>().DamageHandler.TakeDamage(tremorDmgCtrl);
+                    if(aux is Character)
+                    {
+                        aux.DamageHandler.TakeDamage(tremorDmgCtrl);
+                    }
+                    aux.Knockback((hitDir.normalized + Vector3.up).normalized, tremorKnockbackStrength);
                 }
             }
         }
