@@ -180,14 +180,15 @@ public class FlowFieldManager : MonoBehaviour
                     if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                     {
 
-                        if (cellJobDatas[cell.ID].bestCost == float.MaxValue)
+                        /*if (cellJobDatas[cell.ID].bestCost == float.MaxValue)
                         {
                             Gizmos.color = Color.red;
                         }
                         else
                         {
                             Gizmos.color = Color.green;
-                        }
+                        }*/
+                        Gizmos.color = Color.green;
                         Gizmos.DrawCube(cell.position, Vector3.one * CellSize * 0.9f);
                     }
                 }
