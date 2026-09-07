@@ -41,21 +41,21 @@ public class Enemy : CrowdCharacter
     float[] Danger = new float[8];
     float[] Interest = new float[8];
     [NonSerialized]public  Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
-    bool detectedObstacle = false, detectedHigherPriority = false;
+    protected bool detectedObstacle = false, detectedHigherPriority = false;
     [NonSerialized] public Vector3 MoveDirection;
     [NonSerialized] public Vector3 interestDirection;
-    Vector3 priorityAvoidDirection;
+    protected Vector3 priorityAvoidDirection;
     public bool canSeeTarget;
     [NonSerialized] public FieldCell currentCell, forwardCell;
     HashSet<FieldCell> OccupiedCells = new HashSet<FieldCell>();
     [NonSerialized] public int occupiedCellNum;
 
-    bool attacked = true, onAttackCooldown = false;
-    Timer attackTimer = new Timer(false), attackCooldownTimer = new Timer(false);
+    protected bool attacked = true, onAttackCooldown = false;
+    protected Timer attackTimer = new Timer(false), attackCooldownTimer = new Timer(false);
     public float attackDuration = 0.3f, attackCooldown = 0.5f;
     public float damage = 1;
     public Elements element = Elements.None;
-    Damage dmgCtrl;
+    protected Damage dmgCtrl;
     [HideInInspector][SyncVar (hook = "ClientInitialize")] public int instanceIndex = -1;
     [HideInInspector][SyncVar] public IdWrapper ActiveID;
     [Serializable]
@@ -64,15 +64,15 @@ public class Enemy : CrowdCharacter
         public int ID;
     }
     public EnemyTransformInfo transformInfo;
-    Player attackedPlayer;
+    protected Player attackedPlayer;
     float timePred;
     Vector3 predTarget;
     int detectRadius;
     public float maxDistanceFromPlayer = 100, repositionRange = 20;
 
     public Animator animator;
-    bool prevMoving = false, moving = false;
-    public enum EnemyAnimState : byte { None, Attack, Jump, Land };
+    protected bool prevMoving = false, moving = false;
+    public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
 
@@ -84,7 +84,7 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    public void Initialize()
+    public virtual void Initialize()
     {
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
         DamageHandler.Initialize(this);
@@ -184,7 +184,7 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    public void EnemyUpdate()
+    public virtual void EnemyUpdate()
     {
         if (FlowFieldManager.instance == null)
         {
@@ -387,7 +387,7 @@ public class Enemy : CrowdCharacter
 
     public void Reposition()
     {
-        if (!isServer)
+        if (!isServer || target == null)
         {
             target = GetClosestPlayer();
             targetVector = target.transform.position - transform.position;
@@ -598,7 +598,7 @@ public class Enemy : CrowdCharacter
 
     }
 
-    public void PathToTarget(FieldCell currentCell)
+    public virtual void PathToTarget(FieldCell currentCell)
     {
         if (targetVector.magnitude <= TargetStoppingDistance || (MoveDirection == Vector3.zero && canSeeTarget))
         {
@@ -660,7 +660,7 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    void AttackPlayer()
+    protected virtual void AttackPlayer()
     {
         //if (targetVector.magnitude <= TargetStoppingDistance)
         if (attackedTargetVector.magnitude <= TargetStoppingDistance)

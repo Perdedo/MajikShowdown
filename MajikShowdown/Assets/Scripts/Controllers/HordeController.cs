@@ -140,8 +140,8 @@ public class HordeController : NetworkBehaviour
                         if (UsedEnemies[i] != null)
                         {
                             UsedEnemies[i].MoveDirection = results[i];
-                            UsedEnemies[i].EnemyUpdate();
                             UsedEnemies[i].Reposition();
+                            UsedEnemies[i].EnemyUpdate();
                         }
                     }
                 }
