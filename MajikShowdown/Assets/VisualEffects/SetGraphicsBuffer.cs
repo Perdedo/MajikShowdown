@@ -68,11 +68,15 @@ public class SetGraphicsBuffer : MonoBehaviour
     }
     private void UpdatePoints()
     {
-        for(int i = 0; i< spawnPoints.Count; i++)
+        if(spawnPoints.Count > 0 && instances.Count > 0)
         {
-            Vector4 newpos = new Vector4(instances[i].position.x,instances[i].position.y,instances[i].position.z,spawnPoints[i].w);
-            spawnPoints[i] = newpos;
+            for(int i = 0; i< spawnPoints.Count; i++)
+            {
+                Vector4 newpos = new Vector4(instances[i].position.x,instances[i].position.y,instances[i].position.z,spawnPoints[i].w);
+                spawnPoints[i] = newpos;
+            }
         }
+        
     }
     private void ReleaseBuffer(ref GraphicsBuffer buffer)
     {

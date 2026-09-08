@@ -79,10 +79,10 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
             
             float GetCurvatureAtPoint(float2 uv, float sensitivity, float multiplier, float3x3 viewMatrix, float dis)
             {
-                if(dis < 0.75)
+                /*if(dis < 0.75)
                 {
                     dis = 0.75;
-                }
+                }*/
                 float2 leftRight = float2((1.0 * dis) / _ScreenParams.x, 0);
                 float2 upDown = float2(0, (1.0  * dis ) / _ScreenParams.y);
 
@@ -131,7 +131,7 @@ Shader "Custom/ScreenSpaceCavityCurvarture"
                 float linearDepth  = Linear01Depth(depth, _ZBufferParams);
                 float opacM = 1 - smoothstep(0.05, 0.5, linearDepth);
 
-                GetAverageCurvature(uv, _Radius, _Sensitivity, _Multiplier, _Sharpness, curvature, EaseFunc(linearDepth));
+                GetAverageCurvature(uv, _Radius, _Sensitivity, _Multiplier, _Sharpness, curvature, opacM);
 
                 
                 //BlendSoftLight(color, curvature, _Opacity * opacM, finalColor);
