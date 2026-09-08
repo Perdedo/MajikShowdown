@@ -251,6 +251,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     public void AddNodeToInventory(SpellNodeInterface node)
     {
         node.linkedDescription = nodeDescription;
+
         if (!activeNodes.Contains(node))
             activeNodes.Add(node);
 
@@ -259,16 +260,11 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         RectTransform rect = node.GetComponent<RectTransform>();
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
-        if(!isServer && network)
+
+        node.SetInventoryVisual();
+
+        if (!isServer && network)
         {
-            /*if(NetworkClient.ready)
-            {
-                CMDAddNodeToInventory(commander.interfaces.IndexOf(node));
-            }
-            else
-            {
-                StartCoroutine(WaitAddNodeToInventory(node));
-            }*/
             StartCoroutine(WaitAddNodeToInventory(node));
         }
     }
@@ -285,17 +281,14 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     [Command]
     public void CMDAddNodeToInventory(int index)
     {
-        //SpellNodeInterface node = commander.interfaces[index];
         SpellNodeInterface node = commander.interfaces.Find(i => i.acquisitionOrder == index);
         node.linkedDescription = nodeDescription;
-        if (!activeNodes.Contains(node))
-            activeNodes.Add(node);
-
+        if (!activeNodes.Contains(node)) activeNodes.Add(node);
         node.transform.SetParent(transform, false);
-
         RectTransform rect = node.GetComponent<RectTransform>();
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
+        node.SetInventoryVisual();
     }
 
     public void RemoveNodeFromInventory(SpellNodeInterface node)

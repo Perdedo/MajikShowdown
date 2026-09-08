@@ -62,10 +62,14 @@ public class SpellNodeInterface : MonoBehaviour
     {
         bool hasBackground = Node.nodeSymbolSprite != null;
         nodeSymbol.gameObject.SetActive(hasBackground);
+
         if (!hasBackground) return;
+
         nodeSymbol.sprite = Node.nodeSymbolSprite;
         nodeSymbol.color = Node.symbolColor;
         nodeSymbol.alphaHitTestMinimumThreshold = 0.1f;
+
+        SetInventoryVisual();
     }
 
     private void SetupUsedState()
@@ -269,5 +273,29 @@ public class SpellNodeInterface : MonoBehaviour
     public NodeCategory GetCategory()
     {
         return Node.GetCategory();
+    }
+
+    public void SetSymbolAlpha(byte alpha)
+    {
+        if (nodeSymbol == null) return;
+
+        Color color = nodeSymbol.color;
+        color.a = alpha / 255f;
+        nodeSymbol.color = color;
+    }
+
+    public void SetInventoryVisual()
+    {
+        SetSymbolAlpha(80);
+    }
+
+    public void SetGridValidVisual()
+    {
+        SetSymbolAlpha(255);
+    }
+
+    public void SetGridInvalidVisual()
+    {
+        SetSymbolAlpha(35);
     }
 }
