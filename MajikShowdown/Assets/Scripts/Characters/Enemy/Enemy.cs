@@ -106,6 +106,7 @@ public class Enemy : CrowdCharacter
         occupiedCellNum = (int)math.ceil(size / FlowFieldManager.instance.CellSize);
         detectRadius = math.max((int)math.ceil(DetectionRadius / FlowFieldManager.instance.CellSize), 1);
         RigidbodySetting();
+        canBeKnocked = true;
         //CheckFieldLocation();
     }
     public void UpdateIdWrapper(int value)

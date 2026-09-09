@@ -23,6 +23,7 @@ public class CrowdCharacter : CrowdRB, IGameCharacter
     [Header("Jump Events")]
     [SerializeField] protected UnityEvent Jumped;
     [SerializeField] protected UnityEvent FellOnJump;
+    protected bool canBeKnocked = true;
     public enum CharVerticalState { falling, grounded, jumping };
     CharVerticalState cvState; // N�O USE ESTA VARIAVEL use PvState ao inv�s
     public CharacterDamageHandler DamageHandler { get; private set; }
@@ -220,7 +221,16 @@ public class CrowdCharacter : CrowdRB, IGameCharacter
     }
     public void Knockback(Vector3 direction, float strenght)
     {
-        AddExternalVelocity(direction * strenght);
+        if(canBeKnocked)
+        {
+            canBeKnocked = false;
+            AddExternalVelocity(direction * strenght);
+        }
+    }
+
+    public void ResetKnockbackCooldown()
+    {
+        canBeKnocked = true;
     }
     public virtual void Die()
     {
