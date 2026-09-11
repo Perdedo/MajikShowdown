@@ -3,10 +3,17 @@ using UnityEngine;
 using Mirror;
 public class ExplosiveEnemy : Enemy
 {
-    public float explosionRadius = 10, knockbackStrength = 100;
+    public float explosionRadius = 10, knockbackStrength = 100, knockbackLift = 0.5f;
     public GameObject explosionVFX;
     public LayerMask affectedByExplosion;
     Collider[] hits;
+    bool exploded = false;
+    Vector3 knockbackDir;
+    public override void Initialize()
+    {
+        base.Initialize();
+        exploded = false;
+    }
     protected override void AttackPlayer()
     {
         this.DamageHandler.Die();
@@ -14,6 +21,7 @@ public class ExplosiveEnemy : Enemy
 
     void Explode()
     {
+        exploded = true;
         GameObject inst = Instantiate(explosionVFX, transform.position, Quaternion.identity);
         NetworkServer.Spawn(inst);
         hits = Physics.OverlapSphere(transform.position, explosionRadius, affectedByExplosion);
@@ -22,14 +30,19 @@ public class ExplosiveEnemy : Enemy
             if (collider.gameObject != this.gameObject)
             {
                 collider.gameObject.GetComponent<IGameCharacter>().DamageHandler.TakeDamage(dmgCtrl);
-                collider.gameObject.GetComponent<IGameCharacter>().Knockback(((collider.transform.position - transform.position).normalized + Vector3.up).normalized, knockbackStrength);
+                knockbackDir = collider.transform.position - transform.position;
+                knockbackDir.y = 0;
+                collider.gameObject.GetComponent<IGameCharacter>().Knockback(knockbackDir.normalized + Vector3.up * knockbackLift, knockbackStrength);
             }
         }
     }
 
     public override void Die()
     {
-        Explode();
+        if(!exploded)
+        {
+            Explode();
+        }
         base.Die();
     }
 }

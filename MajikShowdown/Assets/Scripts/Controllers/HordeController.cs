@@ -141,6 +141,7 @@ public class HordeController : NetworkBehaviour
                         {
                             UsedEnemies[i].MoveDirection = results[i];
                             UsedEnemies[i].Reposition();
+                            UsedEnemies[i].ResetKnockbackCooldown();
                             UsedEnemies[i].EnemyUpdate();
                         }
                     }

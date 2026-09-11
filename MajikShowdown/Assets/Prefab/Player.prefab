@@ -259,6 +259,8 @@ MonoBehaviour:
   gravityMultiplier: 5
   terrainBuffer: 0.3
   BaseFriction: 0.5
+  SlopeAngle: 45
+  SlopeStrenght: 20
   Fell:
     m_PersistentCalls:
       m_Calls: []
@@ -290,6 +292,8 @@ MonoBehaviour:
   FellOnJump:
     m_PersistentCalls:
       m_Calls: []
+  mesh: {fileID: 0}
+  col: {fileID: 0}
   playerCamera: {fileID: 0}
   directionAnchor: {fileID: 0}
   lookAnchor: {fileID: 0}
@@ -307,11 +311,19 @@ MonoBehaviour:
   pushing: {fileID: 0}
   input: {fileID: 0}
   readyForHorde: 0
+  gameplayLoaded: 0
   network: 1
   caster: {fileID: 0}
   Casting: 0
+  dead: 0
   CastPoseTime: 3
+  startingMoney: 500
+  money: 0
   currentInteraction: {fileID: 0}
+  animator: {fileID: 0}
+  speedChangeRate: 10
+  netInput: {x: 0, y: 0}
+  TargetCellID: 0
 --- !u!114 &6598984743513336198
 MonoBehaviour:
   m_ObjectHideFlags: 0
