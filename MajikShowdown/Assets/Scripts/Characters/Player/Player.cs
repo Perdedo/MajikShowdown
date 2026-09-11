@@ -89,6 +89,7 @@ public class Player : Character
         HitGround.AddListener(PeformJumpBuffering);
         input = GetComponent<PlayerInput>();
         DamageHandler = GetComponent<PlayerDamageHandler>();
+        canBeKnocked = true;
         //cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }
@@ -155,6 +156,15 @@ public class Player : Character
         }
         animator.SetFloat("InputX", xAux);
         animator.SetFloat("InputY", yAux);
+
+        if(!canBeKnocked)
+        {
+            if(knockbackTimer.timer(knockbackCooldown, Time.deltaTime, false, false))
+            {
+                canBeKnocked = true;
+                knockbackTimer.Paused = true;
+            }
+        }
         /*if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
         {
             if(Input.GetKeyDown(KeyCode.R))

@@ -4,7 +4,7 @@ using UnityEngine;
 public class TankEnemy : Enemy
 {
     public Transform hitPoint;
-    public float hitRadius = 5, tremorRadius = 15, hitKnockbackStrength = 100, tremorKnockbackStrength = 50;
+    public float hitRadius = 5, tremorRadius = 15, hitKnockbackStrength = 100, tremorKnockbackStrength = 50, knockbackLift = 0.5f;
     public int tremorDamage = 5;
     public LayerMask affectedByHit;
     Collider[] inRadius;
@@ -31,7 +31,8 @@ public class TankEnemy : Enemy
                     {
                         aux.DamageHandler.TakeDamage(dmgCtrl);
                     }
-                    aux.Knockback((hitDir.normalized + Vector3.up).normalized, hitKnockbackStrength);
+                    hitDir.y = 0;
+                    aux.Knockback(hitDir.normalized + Vector3.up * knockbackLift, hitKnockbackStrength);
                 }
                 else
                 {
@@ -39,7 +40,8 @@ public class TankEnemy : Enemy
                     {
                         aux.DamageHandler.TakeDamage(tremorDmgCtrl);
                     }
-                    aux.Knockback((hitDir.normalized + Vector3.up).normalized, tremorKnockbackStrength);
+                    hitDir.y = 0;
+                    aux.Knockback(hitDir.normalized + Vector3.up * knockbackLift * 0.5f, tremorKnockbackStrength);
                 }
             }
         }

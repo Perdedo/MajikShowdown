@@ -3,7 +3,7 @@ using UnityEngine;
 public class WheelEnemy : Enemy
 {
     public float chargeStartDistance = 30;
-    public float chargeSpeed = 30, baseRotationSpeed = 180, chargeRotationSpeed = 15, knockbackStrength = 50;
+    public float chargeSpeed = 30, baseRotationSpeed = 180, chargeRotationSpeed = 15, knockbackStrength = 50, knockbackLift = 0.5f;
     Vector3 chargeDir, knockbackDir;
     public override void EnemyUpdate()
     {
@@ -174,8 +174,9 @@ public class WheelEnemy : Enemy
             {
                 c.DamageHandler.TakeDamage(dmgCtrl);
             }
-            knockbackDir = (collision.transform.position - transform.position).normalized;
-            c.Knockback((knockbackDir + transform.right + Vector3.up).normalized, knockbackStrength);
+            knockbackDir = collision.transform.position - transform.position;
+            knockbackDir.y = 0;
+            c.Knockback(knockbackDir.normalized + transform.right + Vector3.up * knockbackLift, knockbackStrength);
         }
     }
 }
