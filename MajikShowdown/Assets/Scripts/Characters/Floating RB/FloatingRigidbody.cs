@@ -12,8 +12,10 @@ public class FloatingRigidbody : NetworkBehaviour
     [SerializeField] protected float gravityMultiplier;
     [SerializeField] protected float terrainBuffer;
     [SerializeField] protected float BaseFriction = 0.5f;
+    [SerializeField] protected float SlopeAngle = 45;
+    [SerializeField] protected float SlopeStrenght = 1;
 
-    [NonSerialized] public Vector3 localVelocity, worldVelocity, parentVelocity, externalVelocity, lastHorizontalDirection, hDir, acceleration;
+    [NonSerialized] public Vector3 localVelocity, worldVelocity, parentVelocity, externalVelocity, lastHorizontalDirection, hDir, acceleration, SlopeVelocity;
     public Vector3 HolrizontalDirection { get { return hDir; } }
     [System.NonSerialized] public Rigidbody rb;
     protected float height;
@@ -34,7 +36,7 @@ public class FloatingRigidbody : NetworkBehaviour
     [SerializeField] protected int raycastNumber;
     [SerializeField] protected float raycastRadius;
     public GameObject OnTopOf { get; protected set; }
-    [System.NonSerialized] public bool movePaused, gravityPaused;
+    [System.NonSerialized] public bool movePaused, gravityPaused, sloping;
     protected virtual void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody>();
@@ -100,17 +102,25 @@ public class FloatingRigidbody : NetworkBehaviour
 
         return hitInfo;
     }
-
+    RaycastHit groundHit;
     protected void Float()
     {
-        RaycastHit hitInfo = RaycastGround();
-        float groundDistance = hitInfo.distance - (floatingHeight + (height / 2));
+        groundHit = RaycastGround();
+        if (Vector3.Angle(groundHit.normal, Vector3.up) > SlopeAngle)
+        {
+            sloping = true;
+        }
+        else
+        {
+            sloping = false;
+        }
+        float groundDistance = groundHit.distance - (floatingHeight + (height / 2));
 
-        if (hitInfo.collider == null || Mathf.Sign(groundDistance) > 0)
+        if (groundHit.collider == null || Mathf.Sign(groundDistance) > 0)
         {
             if (!gravityPaused)
             {
-                if (hitInfo.collider != null || (groundDistance <= terrainBuffer && vState == VerticalState.grounded))
+                if (groundHit.collider != null || (groundDistance <= terrainBuffer && vState == VerticalState.grounded))
                 {
                     localVelocity.y = Mathf.Clamp(groundDistance, 0, 1) * Physics.gravity.y * gravityMultiplier;
                 }
@@ -130,7 +140,7 @@ public class FloatingRigidbody : NetworkBehaviour
             localVelocity.y = Mathf.Clamp(groundDistance, -1, 0) * Physics.gravity.y * gravityMultiplier;
         }
 
-        if (hitInfo.collider != null)
+        if (groundHit.collider != null)
         {
             if (vState == VerticalState.falling)
             {
@@ -224,13 +234,23 @@ public class FloatingRigidbody : NetworkBehaviour
         {
             externalVelocity -= atritionVector;
         }
-        Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity;
-        
-        if(velocityChange.sqrMagnitude > 0.01f)
+        if (sloping)
+        {
+            Vector3 acrossSlope = Vector3.Cross(Vector3.up, groundHit.normal);
+
+            SlopeVelocity = Vector3.Cross(acrossSlope, groundHit.normal).normalized*SlopeStrenght;
+        }
+        else
+        {
+            SlopeVelocity = Vector3.zero;
+        }
+        Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity + SlopeVelocity;
+
+        if (velocityChange.sqrMagnitude > 0.01f)
         {
             rb.AddForce(velocityChange, ForceMode.VelocityChange);
         }
-        
+
     }
     /*public void InvokeIfHasListener(UnityEvent e)
     {
