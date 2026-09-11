@@ -242,7 +242,14 @@ public class FloatingRigidbody : NetworkBehaviour
         }
         else
         {
-            SlopeVelocity = Vector3.zero;
+            if(SlopeVelocity.sqrMagnitude < 0.01f)
+            {
+                SlopeVelocity = Vector3.zero;
+            }
+            else
+            {
+                SlopeVelocity -= Vector3.ClampMagnitude(SlopeVelocity, SlopeStrenght * Time.fixedDeltaTime*3);
+            }
         }
         Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity + SlopeVelocity;
 
