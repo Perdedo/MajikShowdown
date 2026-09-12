@@ -146,10 +146,11 @@ public class HexGrid : MonoBehaviour
             }
         }
     }
-    
+
     public void ConfigurateSpell()
     {
         spell.spellNodes.Clear();
+
         foreach (var node in spellNodes)
         {
             if (node != null)
@@ -157,8 +158,8 @@ public class HexGrid : MonoBehaviour
                 node.Node.hierarchy = node.hexGridNode.Layer;
                 spell.spellNodes.Add(node.Node);
             }
-
         }
+
         if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
         {
             spell.validSpell = true;

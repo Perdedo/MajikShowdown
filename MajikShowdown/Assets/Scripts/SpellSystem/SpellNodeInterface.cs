@@ -128,29 +128,28 @@ public class SpellNodeInterface : MonoBehaviour
         }
         return false;
     }
-    public void BreakConection(int Index)
+    public void BreakConection(int index)
     {
-        if (Index >= conections.Length)
-        {
+        if (index < 0 || index >= conections.Length)
             return;
-        }
-        //ConectedNodes[Index] = null;
-        SpellNode aux = conections[Index].conectedNode;
-        //Debug.Log(aux);
-        //Debug.Log(aux.Interface);
-        if (aux != null)
+
+        NodeConection connection = conections[index];
+
+        if (connection != null && connection.conectedNode != null)
         {
-            conections[Index].RemoveConection();
-            aux.Interface.UpdateConected();
+            connection.RemoveConection();
+
             UpdateConected();
+
             var spell = Node.OwnerSpell;
+
             if (spell != null)
             {
                 spell.UpdateSpell();
             }
         }
-        //inventory.commander.BreakSNIConnection(this, Index);
-        GameManager.Instance.uiController.playerUI.caster.commander.BreakSNIConnection(this, Index);
+
+        GameManager.Instance.uiController.playerUI.caster.commander.BreakSNIConnection(this, index);
     }
     public void UpdateConected()
     {
