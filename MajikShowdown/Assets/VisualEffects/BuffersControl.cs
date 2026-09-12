@@ -29,7 +29,13 @@ public class BuffersControl : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            SpawnEffect(VfxElement.Radiance,VfxType.Area, buffers[5].transform, 1);
+            SpawnEffect(VfxElement.Fire,VfxType.Projectile, buffers[0].transform, 1);
+            SpawnEffect(VfxElement.Radiance,VfxType.Projectile, buffers[1].transform, 1);
+            SpawnEffect(VfxElement.Darkness,VfxType.Projectile, buffers[2].transform, 1);
+            SpawnEffect(VfxElement.Ice,VfxType.Projectile, buffers[3].transform, 1);
+            SpawnEffect(VfxElement.Earth,VfxType.Projectile, buffers[4].transform, 1);
+            SpawnEffect(VfxElement.Poison,VfxType.Projectile, buffers[5].transform, 1);
+
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
