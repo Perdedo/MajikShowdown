@@ -139,9 +139,14 @@ public class RuneLootBox : InteractableObject
 
     public override void Interact(Player player)
     {
-        //player.caster.AddRune(GetLoot());
         player.caster.AddRune(loot);
-        if(!isServer)
+
+        if (player.isLocalPlayer)
+        {
+            GameManager.Instance.uiController.playerUI.ShowRunePickup(loot);
+        }
+
+        if (!isServer)
         {
             CMDInteract(GameManager.Instance.Players.IndexOf(player));
         }

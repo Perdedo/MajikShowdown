@@ -146,10 +146,11 @@ public class HexGrid : MonoBehaviour
             }
         }
     }
-    
+
     public void ConfigurateSpell()
     {
         spell.spellNodes.Clear();
+
         foreach (var node in spellNodes)
         {
             if (node != null)
@@ -157,8 +158,8 @@ public class HexGrid : MonoBehaviour
                 node.Node.hierarchy = node.hexGridNode.Layer;
                 spell.spellNodes.Add(node.Node);
             }
-
         }
+
         if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
         {
             spell.validSpell = true;
@@ -171,6 +172,7 @@ public class HexGrid : MonoBehaviour
         }
 
         spell.UpdateSpell();
+        UpdateNodeVisuals();
         caster.commander.ConfigurateSpell(this);
     }
 
@@ -243,5 +245,24 @@ public class HexGrid : MonoBehaviour
             }
         }
         return found;
+    }
+
+    private void UpdateNodeVisuals()
+    {
+        foreach (var node in spellNodes)
+        {
+            if (node == null) continue;
+
+            bool isConnectedToSpell = spell.spellNodes.Contains(node.Node);
+
+            if (isConnectedToSpell)
+            {
+                node.SetGridValidVisual();
+            }
+            else
+            {
+                node.SetGridInvalidVisual();
+            }
+        }
     }
 }

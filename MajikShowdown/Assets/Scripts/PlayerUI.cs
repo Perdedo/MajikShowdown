@@ -19,6 +19,9 @@ public class PlayerUI : NetworkBehaviour
     [Header("Currency")]
     [SerializeField] private TMP_Text moneyText;
 
+    [Header("Rune Pickup")]
+    [SerializeField] private RunePickupUI runePickupUI;
+
     [Header("Test Panels")]
     public GameObject spellPanel;
     public GameObject createSpellPanel;
@@ -1144,5 +1147,14 @@ public class PlayerUI : NetworkBehaviour
         if (moneyText == null) return;
 
         moneyText.text = amount.ToString();
+    }
+
+    public void ShowRunePickup(SpellNode node)
+    {
+        if (!isLocalPlayer && network) return;
+        if (runePickupUI == null) return;
+        if (node == null) return;
+
+        runePickupUI.ShowRune(node);
     }
 }

@@ -23,6 +23,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     private Dictionary<DraggableNode, int> usageCount = new();
     public SpellCaster caster;
     private Dictionary<SpellNode, SpellNodeInterface> nodeMap = new();
+    private bool initialized = false;
     public bool network = true;
 
     void Start()
@@ -36,6 +37,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
             }
         }*/
         ShowNodeInventory();
+        initialized = true;
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
             "Show All Runes",
@@ -84,6 +86,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     public void CMDInitialize()
     {
         ShowNodeInventory();
+        initialized = true;
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
             "Show All Runes",
@@ -181,19 +184,24 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         {
             return;
         }
+
         SpellNodeInterface instance = Instantiate(caster.genericNodePrefab, transform);
         instance.Setup(nodeData);
         instance.inventory = this;
         instance.acquisitionOrder = activeNodes.Count;
         instance.linkedDescription = nodeDescription;
+
         RectTransform rect = instance.GetComponent<RectTransform>();
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
+
         nodeMap[nodeData] = instance;
         activeNodes.Add(instance);
         commander.drags.Add(instance.GetComponent<DraggableNode>());
         commander.interfaces.Add(instance);
+
         var draggable = instance.GetComponent<DraggableNode>();
+
         if (draggable != null)
         {
             draggable.SetOriginZone(this as IDropZone);
@@ -203,6 +211,11 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
     public void SyncFromCaster()
     {
+        if (!initialized)
+        {
+            return;
+        }
+
         foreach (var nodeData in caster.runtimeNodes)
         {
             if (!nodeMap.ContainsKey(nodeData))
@@ -210,6 +223,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
                 ShowNode(nodeData);
             }
         }
+
         ApplyFilter();
     }
 
@@ -251,6 +265,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     public void AddNodeToInventory(SpellNodeInterface node)
     {
         node.linkedDescription = nodeDescription;
+
         if (!activeNodes.Contains(node))
             activeNodes.Add(node);
 
@@ -259,16 +274,11 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         RectTransform rect = node.GetComponent<RectTransform>();
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
-        if(!isServer && network)
+
+        node.SetInventoryVisual();
+
+        if (!isServer && network)
         {
-            /*if(NetworkClient.ready)
-            {
-                CMDAddNodeToInventory(commander.interfaces.IndexOf(node));
-            }
-            else
-            {
-                StartCoroutine(WaitAddNodeToInventory(node));
-            }*/
             StartCoroutine(WaitAddNodeToInventory(node));
         }
     }
@@ -285,17 +295,14 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     [Command]
     public void CMDAddNodeToInventory(int index)
     {
-        //SpellNodeInterface node = commander.interfaces[index];
         SpellNodeInterface node = commander.interfaces.Find(i => i.acquisitionOrder == index);
         node.linkedDescription = nodeDescription;
-        if (!activeNodes.Contains(node))
-            activeNodes.Add(node);
-
+        if (!activeNodes.Contains(node)) activeNodes.Add(node);
         node.transform.SetParent(transform, false);
-
         RectTransform rect = node.GetComponent<RectTransform>();
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
+        node.SetInventoryVisual();
     }
 
     public void RemoveNodeFromInventory(SpellNodeInterface node)
@@ -409,30 +416,53 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
     public void SetNodeInUse(DraggableNode node, bool inUse)
     {
-        Debug.Log($"SetNodeInUse {node.name} {inUse}");
+        var spellNode = node.GetComponent<SpellNodeInterface>();
+
         if (!usageCount.ContainsKey(node))
         {
             usageCount[node] = 0;
         }
 
         usageCount[node] += inUse ? 1 : -1;
-        if (usageCount[node] < 0) usageCount[node] = 0;
 
-        var spellNode = node.GetComponent<SpellNodeInterface>();
+        if (usageCount[node] < 0)
+            usageCount[node] = 0;
+
         spellNode?.SetUsed(usageCount[node] > 0);
+
         ApplyFilter();
+
         if (!isServer && network)
         {
-            /*if(NetworkClient.ready)
-            {
-                CMDSetNodeInUse(commander.drags.IndexOf(node), inUse);
-            }
-            else
-            {
-                StartCoroutine(WaitSetNodeInUse(node, inUse));
-            }*/
             StartCoroutine(WaitSetNodeInUse(node, inUse));
         }
+    }
+
+    [Command]
+    public void CMDSetNodeInUse(int index, bool inUse)
+    {
+        DraggableNode node = commander.drags.Find(d => d.acquisitionOrder == index);
+
+        var spellNode = node != null
+            ? node.GetComponent<SpellNodeInterface>()
+            : null;
+
+        if (node == null)
+            return;
+
+        if (!usageCount.ContainsKey(node))
+        {
+            usageCount[node] = 0;
+        }
+
+        usageCount[node] += inUse ? 1 : -1;
+
+        if (usageCount[node] < 0)
+            usageCount[node] = 0;
+
+        spellNode?.SetUsed(usageCount[node] > 0);
+
+        ApplyFilter();
     }
     IEnumerator WaitSetNodeInUse(DraggableNode node, bool inUse)
     {
@@ -441,24 +471,6 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         yield return new WaitUntil(() => NetworkClient.ready);
         CMDSetNodeInUse(node.acquisitionOrder, inUse);
         //CMDSetNodeInUse(commander.drags.IndexOf(node), inUse);
-    }
-
-    [Command]
-    public void CMDSetNodeInUse(int index, bool inUse)
-    {
-        //DraggableNode node = commander.drags[index];
-        DraggableNode node = commander.drags.Find(d => d.acquisitionOrder == index);
-        if (!usageCount.ContainsKey(node))
-        {
-            usageCount[node] = 0;
-        }
-
-        usageCount[node] += inUse ? 1 : -1;
-        if (usageCount[node] < 0) usageCount[node] = 0;
-
-        var spellNode = node.GetComponent<SpellNodeInterface>();
-        spellNode?.SetUsed(usageCount[node] > 0);
-        ApplyFilter();
     }
 
     public int GetNodeIndex(SpellNodeInterface node)

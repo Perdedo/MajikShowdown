@@ -176,54 +176,74 @@ public class NodeConection
         ownerNode = owner;
         this.index = index;
     }
+
     public SpellNode ownerNode;
     public SpellNode conectedNode;
-    public enum Conections { None, Circle, Triangle, Square, Penta, All }
+
+    public enum Conections
+    {
+        None,
+        Circle,
+        Triangle,
+        Square,
+        Penta,
+        All
+    }
+
     public Conections conectionType = Conections.None;
+
     public int index;
     public int inverseIndex => (index + 3) % 6;
-    //public NodeConection conection;
+
+    public NodeConection conection;
+
     public bool TryConect(NodeConection c)
     {
-        if (c.conectionType == conectionType /*&& conectionType != Conections.None && c.conectionType != Conections.None*/)
-        {
-            //c.conection = this;
-            //conection = c;
-            c.conectedNode = ownerNode;
-            conectedNode = c.ownerNode;
-            if (conectedNode.hierarchy > ownerNode.hierarchy)
-            {
-                conectedNode.hierarchy = ownerNode.hierarchy + 1;
-            }
-            return true;
-        }
-        else
-        {
+        if (c == null)
             return false;
-        }
-    }
-    public bool CheckConection(NodeConection c)
-    {
-        if (c.conectionType == conectionType /*&& conectionType != Conections.None && c.conectionType != Conections.None*/)
-        {
-            return true;
-        }
-        else
-        {
+
+        if (c.conectionType != conectionType)
             return false;
-        }
-    }
-    public void RemoveConection()
-    {
-        if (conectedNode != null)
+
+        conection = c;
+        c.conection = this;
+
+        conectedNode = c.ownerNode;
+        c.conectedNode = ownerNode;
+
+        ownerNode.ConectedNodes[index] = c.ownerNode;
+        c.ownerNode.ConectedNodes[c.index] = ownerNode;
+
+        if (conectedNode.hierarchy > ownerNode.hierarchy)
         {
-            conectedNode.Interface.conections[inverseIndex].conectedNode = null;
-            conectedNode = null;
-            //conection.conectedNode = null;
-            //conection.conection = null;
-            //conection = null;
+            conectedNode.hierarchy = ownerNode.hierarchy + 1;
         }
 
+        return true;
+    }
+
+    public bool CheckConection(NodeConection c)
+    {
+        if (c == null)
+            return false;
+
+        return c.conectionType == conectionType;
+    }
+
+    public void RemoveConection()
+    {
+        NodeConection other = conection;
+
+        ownerNode.ConectedNodes[index] = null;
+        conectedNode = null;
+        conection = null;
+
+        if (other != null)
+        {
+            other.ownerNode.ConectedNodes[other.index] = null;
+            other.conectedNode = null;
+            other.conection = null;
+        }
     }
 }
 
