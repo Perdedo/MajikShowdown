@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &23224233043539166
+--- !u!1 &2341454715407867590
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,46 +8,83 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4488218721397326561}
-  - component: {fileID: 987989363433232966}
+  - component: {fileID: 888305329950152297}
+  - component: {fileID: 8563115714499732976}
+  - component: {fileID: 4485097810848430842}
+  - component: {fileID: 5050950587948795305}
   m_Layer: 0
-  m_Name: CliffRampColliders1
+  m_Name: CliffRampNavColldders
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4488218721397326561
+--- !u!4 &888305329950152297
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 23224233043539166}
+  m_GameObject: {fileID: 2341454715407867590}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.0045835623, y: 0.27580097, z: 0.0014742592, w: 0.96120274}
+  m_LocalPosition: {x: 8.16, y: 0.12, z: 4.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3835461592603256837}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!208 &987989363433232966
-NavMeshObstacle:
+  m_LocalEulerAnglesHint: {x: -0.551, y: 32.02, z: 0.018}
+--- !u!114 &8563115714499732976
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 23224233043539166}
+  m_GameObject: {fileID: 2341454715407867590}
   m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 0
-  m_Extents: {x: 4.76, y: 0.495, z: 4.76}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: -14.7, y: 4.61, z: 11.09}
-  m_TimeToStationary: 0.5
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 7.184511, y: 6.130419, z: 11.473883}
+  m_Center: {x: 12.144099, y: 4.609852, z: -11.580398}
+  m_Area: 1
+  m_AffectedAgents: ffffffff
+--- !u!114 &4485097810848430842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2341454715407867590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 13.951639, y: 4.9360285, z: 15.566137}
+  m_Center: {x: -22.834404, y: 6.1318116, z: -5.7830687}
+  m_Area: 1
+  m_AffectedAgents: ffffffff
+--- !u!114 &5050950587948795305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2341454715407867590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 15.510295, y: 7.284564, z: 11.084244}
+  m_Center: {x: -2.7629762, y: 6.5217967, z: -19.808313}
+  m_Area: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &2477153184344407891
 GameObject:
   m_ObjectHideFlags: 0
@@ -79,9 +116,7 @@ Transform:
   m_Children:
   - {fileID: 324151425725254582}
   - {fileID: 6325397898553736893}
-  - {fileID: 7492941341433340154}
-  - {fileID: 4488218721397326561}
-  - {fileID: 1105979087441697096}
+  - {fileID: 888305329950152297}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2796148959073501844
@@ -116,102 +151,6 @@ Transform:
   - {fileID: 2267849368074772076}
   m_Father: {fileID: 3835461592603256837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &8184713219339288873
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1105979087441697096}
-  - component: {fileID: 6714334385614423206}
-  m_Layer: 0
-  m_Name: CliffRampColliders2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1105979087441697096
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8184713219339288873}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3835461592603256837}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!208 &6714334385614423206
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8184713219339288873}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 0
-  m_Extents: {x: 5.16, y: 1, z: 5.16}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: -3.53, y: 4.99, z: -10.21}
-  m_TimeToStationary: 0.5
---- !u!1 &8329765484426289032
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7492941341433340154}
-  - component: {fileID: 6556908971760659633}
-  m_Layer: 0
-  m_Name: CliffRampColliders
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7492941341433340154
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8329765484426289032}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3835461592603256837}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!208 &6556908971760659633
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8329765484426289032}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 0
-  m_Extents: {x: 5.16, y: 1, z: 5.16}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 9.35, y: -1.7, z: -7.9}
-  m_TimeToStationary: 0.5
 --- !u!1001 &285177566706740317
 PrefabInstance:
   m_ObjectHideFlags: 0
