@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6123944726237089188}
-  - component: {fileID: 5876073619969133553}
+  - component: {fileID: 8048356738456605558}
   m_Layer: 0
   m_Name: GiantGolemHead
   m_TagString: Untagged
@@ -34,7 +34,7 @@ Transform:
   - {fileID: 1095233465626325739}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5876073619969133553
+--- !u!114 &8048356738456605558
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,13 +43,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 2062673859922872698}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
   m_SerializedVersion: 0
-  m_Size: {x: 18.9, y: 32.7, z: 17.33}
-  m_Center: {x: 0, y: 6.6610546, z: 0}
+  m_OverrideArea: 1
   m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
   m_AffectedAgents: ffffffff
 --- !u!1 &7667513349355841208
 GameObject:
@@ -60,6 +63,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1095233465626325739}
+  - component: {fileID: 7522290507751595912}
+  - component: {fileID: 9051373861753380708}
   m_Layer: 0
   m_Name: GiantGolemHeadCollider
   m_TagString: Untagged
@@ -82,6 +87,46 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6123944726237089188}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &7522290507751595912
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7667513349355841208}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 11.63
+  m_Height: 22.61661
+  m_Direction: 1
+  m_Center: {x: 0.0000005204164, y: 11.367745, z: -0.0000019823644}
+--- !u!114 &9051373861753380708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7667513349355841208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 21.6, y: 10.29, z: 22.24}
+  m_Center: {x: 0, y: 4.7465343, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffff
 --- !u!1001 &704442593804226052
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -137,38 +182,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9d40debba563b6144b4d38fbf5b96c74, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8606602209267371516}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d40debba563b6144b4d38fbf5b96c74, type: 3}
---- !u!1 &362477232802116437 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9d40debba563b6144b4d38fbf5b96c74, type: 3}
-  m_PrefabInstance: {fileID: 704442593804226052}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &8606602209267371516
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362477232802116437}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4157588222111037671, guid: 9d40debba563b6144b4d38fbf5b96c74, type: 3}
 --- !u!4 &1030224476469881327 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9d40debba563b6144b4d38fbf5b96c74, type: 3}
