@@ -35,11 +35,11 @@ public class Enemy : CrowdCharacter
 
     [HideInInspector] public float size;
     public Player target;
-    HashSet<Enemy> neighbors = new HashSet<Enemy>();
+    protected HashSet<Enemy> neighbors = new HashSet<Enemy>();
     //Collider[] neighborBuffer = new Collider[32];
     //Vector3[] Directions = new Vector3[8];
-    float[] Danger = new float[8];
-    float[] Interest = new float[8];
+    protected float[] Danger = new float[8];
+    protected float[] Interest = new float[8];
     [NonSerialized]public  Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
     protected bool detectedObstacle = false, detectedHigherPriority = false;
     [NonSerialized] public Vector3 MoveDirection;
@@ -67,7 +67,7 @@ public class Enemy : CrowdCharacter
     protected Player attackedPlayer;
     float timePred;
     Vector3 predTarget;
-    int detectRadius;
+    protected int detectRadius;
     public float maxDistanceFromPlayer = 100, repositionRange = 20;
 
     public Animator animator;
@@ -269,22 +269,28 @@ public class Enemy : CrowdCharacter
 
     public void PlayAnimation(EnemyAnimState state)
     {
-        /*switch (state)
+        if(DamageHandler.network && isServer)
         {
-            case EnemyAnimState.Attack:
-                animator.ResetTrigger("Attack");
-                animator.SetTrigger("Attack");
-                break;
-            case EnemyAnimState.Jump:
-                animator.ResetTrigger("Jump");
-                animator.SetTrigger("Jump");
-                break;
-            case EnemyAnimState.Land:
-                animator.ResetTrigger("Land");
-                animator.SetTrigger("Land");
-                break;
-        }*/
-        RPCPlayAnimation(state);
+            RPCPlayAnimation(state);
+        }
+        else
+        {
+            switch (state)
+            {
+                case EnemyAnimState.Attack:
+                    animator.ResetTrigger("Attack");
+                    animator.SetTrigger("Attack");
+                    break;
+                case EnemyAnimState.Jump:
+                    animator.ResetTrigger("Jump");
+                    animator.SetTrigger("Jump");
+                    break;
+                case EnemyAnimState.Land:
+                    animator.ResetTrigger("Land");
+                    animator.SetTrigger("Land");
+                    break;
+            }
+        }
     }
 
     [ClientRpc]
@@ -407,7 +413,7 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    Vector3 CheckReposition()
+    protected virtual Vector3 CheckReposition()
     {
         FieldCell auxCell = null;
         //RaycastHit hit;
@@ -533,10 +539,11 @@ public class Enemy : CrowdCharacter
                 jumpTimer.SetTimer(0);
                 jumpTimer.Paused = false;
                 CvState = CharVerticalState.jumping;
-                if(isServer)
+                /*if(isServer)
                 {
                     PlayAnimation(EnemyAnimState.Jump);
-                }
+                }*/
+                PlayAnimation(EnemyAnimState.Jump);
                 InvokeIfAllowed(Jumped);
                 StartCoroutine(JumpCooldown());
             }
@@ -574,10 +581,11 @@ public class Enemy : CrowdCharacter
             {
                 vState = VerticalState.grounded;
                 InvokeIfAllowed(HitGround);
-                if(isServer)
+                /*if(isServer)
                 {
                     PlayAnimation(EnemyAnimState.Land);
-                }
+                }*/
+                PlayAnimation(EnemyAnimState.Land);
             }
             else
             {
@@ -669,7 +677,7 @@ public class Enemy : CrowdCharacter
             attackedPlayer.DamageHandler.TakeDamage(dmgCtrl);
         }
     }
-    public void CalculateDanger()
+    public virtual void CalculateDanger()
     {
         priorityAvoidDirection = Vector3.zero;
         for (int i = 0; i < Danger.Length; i++)
@@ -711,7 +719,7 @@ public class Enemy : CrowdCharacter
             }
         }
     }
-    public void CalculateInterest()
+    public virtual void CalculateInterest()
     {
         if (target != null)
         {
@@ -726,7 +734,7 @@ public class Enemy : CrowdCharacter
             }
         }
     }
-    public Vector3 GetBestDirection()
+    public virtual Vector3 GetBestDirection()
     {
         Vector3 add = Vector3.zero;
 
@@ -737,9 +745,9 @@ public class Enemy : CrowdCharacter
         add.y = 0;
         return add.normalized;
     }
-    Queue<FieldCell> cellsToCheck = new Queue<FieldCell>();
-    HashSet<FieldCell> checkedCells = new HashSet<FieldCell>();
-    public void FindObstacles()
+    protected Queue<FieldCell> cellsToCheck = new Queue<FieldCell>();
+    protected HashSet<FieldCell> checkedCells = new HashSet<FieldCell>();
+    public virtual void FindObstacles()
     {
         neighbors.Clear();
         checkedCells.Clear();
