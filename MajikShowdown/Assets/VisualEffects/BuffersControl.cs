@@ -39,7 +39,12 @@ public class BuffersControl : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
-            UnspawnEffect(VfxElement.Ice, VfxType.Projectile, 0);
+            SpawnEffect(VfxElement.Fire,VfxType.Explosion, buffers[0].transform, 1);
+            SpawnEffect(VfxElement.Radiance,VfxType.Explosion, buffers[1].transform, 1);
+            SpawnEffect(VfxElement.Darkness,VfxType.Explosion, buffers[2].transform, 1);
+            SpawnEffect(VfxElement.Ice,VfxType.Explosion, buffers[3].transform, 1);
+            SpawnEffect(VfxElement.Earth,VfxType.Explosion, buffers[4].transform, 1);
+            SpawnEffect(VfxElement.Poison,VfxType.Explosion, buffers[5].transform, 1);
         }
     }
     public int SpawnEffect(VfxElement element, VfxType type, Transform place, float size)
