@@ -7,7 +7,7 @@ public class ExplosiveEnemy : Enemy
     public GameObject explosionVFX;
     public LayerMask affectedByExplosion;
     Collider[] hits;
-    bool exploded = false;
+    protected bool exploded = false;
     Vector3 knockbackDir;
     public override void Initialize()
     {
@@ -23,7 +23,10 @@ public class ExplosiveEnemy : Enemy
     {
         exploded = true;
         GameObject inst = Instantiate(explosionVFX, transform.position, Quaternion.identity);
-        NetworkServer.Spawn(inst);
+        if(DamageHandler.network)
+        {
+            NetworkServer.Spawn(inst);
+        }
         hits = Physics.OverlapSphere(transform.position, explosionRadius, affectedByExplosion);
         foreach (Collider collider in hits)
         {

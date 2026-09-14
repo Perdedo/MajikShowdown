@@ -61,7 +61,9 @@ public class TrainingWheelEnemy : WheelEnemy
             attacked = attackTimer.timer(attackDuration, Time.deltaTime, false, false);
             if (attacked)
             {
-                AttackPlayer();
+                //AttackPlayer();
+                rotationSpeed = baseRotationSpeed;
+                PlayAnimation(EnemyAnimState.Stop);
                 attackCooldownTimer.SetTimer(0);
                 attackCooldownTimer.Paused = false;
                 onAttackCooldown = true;

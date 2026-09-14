@@ -4,9 +4,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
-using static Unity.Burst.Intrinsics.X86;
 
 public class TrainingEnemiesController : MonoBehaviour
 {
@@ -22,6 +20,7 @@ public class TrainingEnemiesController : MonoBehaviour
     Timer aiCalcTimer = new Timer(false);
     float enemyAIupdateRate = 1f / 10f;
     public float elementalChance = 5;
+    [SerializeField] protected LayerMask RayMasks;
     private void Awake()
     {
         GameManager.Instance.trainingController = this;
@@ -98,7 +97,8 @@ public class TrainingEnemiesController : MonoBehaviour
                 int ind = spawners.IndexOf(spawner);
                 if (enemiesByType[ind].Count <= usedEnemiesByType[ind].Count)
                 {
-                    aux = Instantiate(enemy, pos + distanceBetweenSpawns * ind, Quaternion.identity);
+                    Debug.Log(pos);
+                    aux = Instantiate(enemy, pos + distanceBetweenSpawns * i, Quaternion.identity);
                     auxEnemy = aux.GetComponent<Enemy>();
                     enemiesByType[ind].Add(auxEnemy);
                     GameEnemies.Add(auxEnemy);
@@ -110,7 +110,7 @@ public class TrainingEnemiesController : MonoBehaviour
                         if (!usedEnemiesByType[ind].Contains(e))
                         {
                             aux = e.gameObject;
-                            aux.transform.position = pos + distanceBetweenSpawns * ind;
+                            aux.transform.position = pos + distanceBetweenSpawns * i;
                             aux.SetActive(true);
                             auxEnemy = aux.GetComponent<Enemy>();
                             break;
@@ -118,7 +118,6 @@ public class TrainingEnemiesController : MonoBehaviour
                     }
                 }
                 auxEnemy.ResetAllVelocities();
-                //GameManager.Instance.hordeController.enemies.Add(auxEnemy);
                 usedEnemiesByType[ind].Add(auxEnemy);
                 float randElemental = UnityEngine.Random.Range(0, 100);
                 if (randElemental < elementalChance)
@@ -279,5 +278,70 @@ public class TrainingEnemiesController : MonoBehaviour
         calculation.enemiesInterest.Dispose();
         calculation.enemiesDanger.Dispose();
         return finalDirections;
+    }
+    void FixedUpdate()
+    {
+        if (UsedEnemies.Count <= 0)
+        {
+            return;
+        }
+        RaycastHit[] hit;
+        float[] dot;
+        StartEnemyRaycastJob(out hit, out dot);
+        for (int i = 0; i < usedEnemiesByType.Count; i++)
+        {
+            foreach (Enemy e in usedEnemiesByType[i])
+            {
+                if (e != null)
+                {
+                    e.normalDot = dot[e.ActiveID.ID];
+                    e.LastHitInfo = hit[e.ActiveID.ID];
+                    e.FixedRBUpdate();
+                }
+            }
+        }
+    }
+    void StartEnemyRaycastJob(out RaycastHit[] results, out float[] normalDot)
+    {
+        NativeArray<RaycastCommand> commands = new NativeArray<RaycastCommand>(UsedEnemies.Count, Allocator.TempJob);
+        NativeArray<float> nDot = new NativeArray<float>(UsedEnemies.Count, Allocator.TempJob);
+
+        NativeArray<EnemyJobData> enemiesInfo = new NativeArray<EnemyJobData>(UsedEnemies.Count, Allocator.TempJob);
+        NativeArray<RaycastHit> Results = new NativeArray<RaycastHit>(UsedEnemies.Count, Allocator.TempJob);
+        for (int i = 0; i < UsedEnemies.Count; i++)
+        {
+            if (UsedEnemies[i] != null)
+            {
+                enemiesInfo[i] = new EnemyJobData()
+                {
+                    Position = UsedEnemies[i].transform.position,
+                    height = UsedEnemies[i].height,
+                    terrainBuffer = UsedEnemies[i].terrainBuffer
+                };
+            }
+        }
+        EnemyGroundRaycastJob raycastJob = new EnemyGroundRaycastJob()
+        {
+            EnemyData = enemiesInfo,
+            GroundMask = RayMasks,
+            Commands = commands,
+        };
+        JobHandle handle = raycastJob.Schedule(UsedEnemies.Count, 64);
+        JobHandle RaycastHandle = RaycastCommand.ScheduleBatch(raycastJob.Commands, Results, 64, handle);
+        EnemyCalculateDotJob dotJob = new EnemyCalculateDotJob()
+        {
+            Res = Results,
+            NormalDot = nDot
+        };
+        JobHandle dotHandle = dotJob.Schedule(UsedEnemies.Count, 64, RaycastHandle);
+        dotHandle.Complete();
+        results = Results.ToArray();
+        normalDot = dotJob.NormalDot.ToArray();
+
+        enemiesInfo.Dispose();
+        Results.Dispose();
+        nDot.Dispose();
+        commands.Dispose();
+
     }
 }

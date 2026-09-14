@@ -5,7 +5,7 @@ public class Explosion : NetworkBehaviour
 {
     public float duration = 1;
     Timer disappearTimer = new Timer(false);
-
+    public bool network = true;
     private void Start()
     {
         if(!isServer)
@@ -32,6 +32,13 @@ public class Explosion : NetworkBehaviour
 
     void Disappear()
     {
-        NetworkServer.Destroy(gameObject);
+        if(network)
+        {
+            NetworkServer.Destroy(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 }

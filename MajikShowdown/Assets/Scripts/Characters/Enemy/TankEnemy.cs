@@ -8,7 +8,7 @@ public class TankEnemy : Enemy
     public int tremorDamage = 5;
     public LayerMask affectedByHit;
     Collider[] inRadius;
-    Damage tremorDmgCtrl;
+    protected Damage tremorDmgCtrl;
     Vector3 hitDir;
     IGameCharacter aux;
     public override void Initialize()

@@ -15,6 +15,7 @@ public class CharacterDamageHandler : NetworkBehaviour
     [Header("Network")]
     public bool network = true;
     public IGameCharacter gameCharacter;
+    public bool canDie = true;
     void Awake()
     {
         Health = MaxHealth;
@@ -42,7 +43,7 @@ public class CharacterDamageHandler : NetworkBehaviour
             }
         }
         Health = MathF.Max(Health - finalDamage, 0);
-        if (Health <= 0)
+        if (Health <= 0 && canDie)
         {
             Die();
         }

@@ -15,6 +15,7 @@ public class TrainingTankEnemy : TankEnemy
         }*/
         //updateRate = 1f / 30f;
         dmgCtrl = new Damage(damage, element);
+        tremorDmgCtrl = new Damage(tremorDamage, element);
         //aiCalcTimer.timedEvent.AddListener(AICalculation);
         //aiCalcTimer.SetTimer(0);
         //attackTimer.timedEvent.AddListener(AttackPlayer);

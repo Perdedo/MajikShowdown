@@ -6,6 +6,7 @@ public class TrainingExplosiveEnemy : ExplosiveEnemy
 {
     public override void Initialize()
     {
+        exploded = false;
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
         DamageHandler.Initialize(this);
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
