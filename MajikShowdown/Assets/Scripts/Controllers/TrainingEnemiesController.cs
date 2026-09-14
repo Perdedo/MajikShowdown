@@ -97,7 +97,6 @@ public class TrainingEnemiesController : MonoBehaviour
                 int ind = spawners.IndexOf(spawner);
                 if (enemiesByType[ind].Count <= usedEnemiesByType[ind].Count)
                 {
-                    Debug.Log(pos);
                     aux = Instantiate(enemy, pos + distanceBetweenSpawns * i, Quaternion.identity);
                     auxEnemy = aux.GetComponent<Enemy>();
                     enemiesByType[ind].Add(auxEnemy);
