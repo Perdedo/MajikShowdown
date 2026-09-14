@@ -143,7 +143,7 @@ public class RuneLootBox : InteractableObject
 
         if (player.isLocalPlayer)
         {
-            GameManager.Instance.uiController.playerUI.ShowRunePickup(loot);
+            GameManager.Instance.uiController.playerUI.ShowRunePickup(loot, transform.position);
         }
 
         if (!isServer)
