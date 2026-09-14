@@ -81,23 +81,34 @@ public class Spell
         }
         SpellCooldown = Mathf.Max(SpellCooldown, 0.1f);
         auxCooldown = Mathf.Max(auxCooldown, 0.1f);
+        bool foundCall = false;
         if (updatedCall != null)
         {
-            if(callAux == 0)
+            if (triggerCalls.Contains(updatedCall))
             {
-                Caster.StartCoroutine(ResetCalls());
+                foundCall = true;
             }
-            callAux++;
-            triggerCalls.Add(updatedCall);
-        }
-        foreach (SpellNode n in Caster.runtimeNodes)
-        {
-            if (n is SpellTrigger trigger && !triggerCalls.Contains(trigger) && trigger.TriggeredSpell == this)
+            if (!foundCall)
             {
-                trigger.UpdateTrigger();
+                if (callAux == 0)
+                {
+                    Caster.StartCoroutine(ResetCalls());
+                }
+                callAux++;
+                triggerCalls.Add(updatedCall);
             }
-        }
 
+        }
+        if (!foundCall)
+        {
+            foreach (SpellNode n in Caster.runtimeNodes)
+            {
+                if (n is SpellTrigger trigger && !triggerCalls.Contains(trigger) && trigger.TriggeredSpell == this)
+                {
+                    trigger.UpdateTrigger();
+                }
+            }
+        }
         spellCollisionLayers = 0;
         if (coreNode.Collisions.Objects)
         {

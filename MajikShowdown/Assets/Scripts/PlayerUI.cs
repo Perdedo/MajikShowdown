@@ -12,6 +12,10 @@ using UnityEngine.UI;
 
 public class PlayerUI : NetworkBehaviour
 {
+
+    [Header("Interaction")]
+    [SerializeField] private TMP_Text interactionText;
+
     [Header("Shop")]
     [SerializeField] private GameObject shopPanel;
     public bool IsShopOpen => shopPanel != null && shopPanel.activeSelf;
@@ -137,6 +141,10 @@ public class PlayerUI : NetworkBehaviour
         {
             shopPanel.SetActive(false);
         }
+        if (interactionText != null)
+        {
+            interactionText.gameObject.SetActive(false);
+        }
         ResolutionDropdown();
         ScreenModeDropdown();
         loaded = true;
@@ -192,6 +200,30 @@ public class PlayerUI : NetworkBehaviour
         //UpdateHealthUI();
         UpdateCooldownFills();
         UpdateCooldownIcon();
+        UpdateInteractionIndicator();
+    }
+
+    private void UpdateInteractionIndicator()
+    {
+        if (interactionText == null)
+        {
+            return;
+        }
+
+        bool shouldShow = inGame &&  myPlayer != null && !myPlayer.dead && myPlayer.currentInteraction != null;
+
+        if (!shouldShow)
+        {
+            interactionText.gameObject.SetActive(false);
+            return;
+        }
+
+        interactionText.text = myPlayer.currentInteraction.InteractionMessage;
+
+        if (!interactionText.gameObject.activeSelf)
+        {
+            interactionText.gameObject.SetActive(true);
+        }
     }
 
     public void OpenPanel(GameObject panel)
@@ -1149,12 +1181,11 @@ public class PlayerUI : NetworkBehaviour
         moneyText.text = amount.ToString();
     }
 
-    public void ShowRunePickup(SpellNode node)
+    public void ShowRunePickup(SpellNode node, Vector3 lootboxWorldPosition)
     {
         if (!isLocalPlayer && network) return;
         if (runePickupUI == null) return;
-        if (node == null) return;
 
-        runePickupUI.ShowRune(node);
+        runePickupUI.ShowRune(node, lootboxWorldPosition);
     }
 }
