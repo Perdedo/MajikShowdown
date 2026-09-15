@@ -3,10 +3,10 @@ using Unity.Mathematics;
 
 public class TrainingEnemy : Enemy
 {
-    public override void Initialize()
+    public override void Initialize(float HealthMultiplier)
     {
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
-        DamageHandler.Initialize(this);
+        DamageHandler.Initialize(this, HealthMultiplier);
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
         /*for (int i = 0; i < Directions.Length; i++)
         {

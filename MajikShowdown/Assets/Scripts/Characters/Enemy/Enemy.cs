@@ -84,10 +84,10 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    public virtual void Initialize()
+    public virtual void Initialize(float HealthMultiplier)
     {
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
-        DamageHandler.Initialize(this);
+        DamageHandler.Initialize(this, HealthMultiplier);
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
         /*for (int i = 0; i < Directions.Length; i++)
         {

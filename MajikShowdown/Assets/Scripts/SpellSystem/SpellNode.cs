@@ -8,13 +8,14 @@ public abstract class SpellNode : ScriptableObject
     public enum Quality { Rusty, Forged, FactoryNew}
     public Quality quality;
     [Header("Define Stat Randomization")]
+    public bool RandomizeOnStart = true;
     public StatRandomizer statRandomizer;
     [Header("Display")]
     public string runeName;
     [HideInInspector]public string runeType;
     [TextArea(3, 10)]public string runeDescription;
     [HideInInspector] public Color color = Color.white;
-    [Header("Final Stats Debug")]
+    [Header("Base Stats Debug")]
     public float Cooldown = 0;
     public StatTypes BaseStats = new StatTypes();
     [Header("Debug")]
@@ -74,7 +75,10 @@ public abstract class SpellNode : ScriptableObject
     public virtual void Initialize()
     {
         SetupNodeVisual();
-        RandomizeStats();
+        if(RandomizeOnStart)
+        {
+            RandomizeStats();
+        }
         runeType = GetCategory() == NodeCategory.Type ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }

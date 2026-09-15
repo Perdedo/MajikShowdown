@@ -9,9 +9,9 @@ public class ExplosiveEnemy : Enemy
     Collider[] hits;
     protected bool exploded = false;
     Vector3 knockbackDir;
-    public override void Initialize()
+    public override void Initialize(float HealthMultiplier)
     {
-        base.Initialize();
+        base.Initialize(HealthMultiplier);
         exploded = false;
     }
     protected override void AttackPlayer()

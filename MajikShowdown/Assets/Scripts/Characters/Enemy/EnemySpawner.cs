@@ -129,7 +129,7 @@ public class EnemySpawner : NetworkBehaviour
                     }
                     aux.GetComponent<CharacterDamageHandler>().enemyIndex = i;
                     GameManager.Instance.hordeController.UsedEnemies.Add(auxEnemy);
-                    auxEnemy.Initialize();
+                    auxEnemy.Initialize(1f);
                     i = enemies.Count;
                     GameManager.Instance.hordeController.UpdateEnemyActiveID();
                 }

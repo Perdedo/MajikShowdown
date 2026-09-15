@@ -61,7 +61,7 @@ public class Character : FloatingRigidbody, IGameCharacter
         {
             DamageHandler = GetComponent<CharacterDamageHandler>();
         }
-        DamageHandler.Initialize(this);
+        DamageHandler.Initialize(this, 1f);
     }
 
     protected override void FixedUpdate()
