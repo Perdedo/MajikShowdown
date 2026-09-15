@@ -30,7 +30,7 @@ public class Enemy : CrowdCharacter
 
     [Header("DropConfig")]
     [Range(0, 100)] public float DropChance;
-    public List<RuneLootPool> AvailablePools;
+    public List<int> AvailablePools;
     public ProbabilitySlider<int> PoolProbability = new ProbabilitySlider<int>();
 
     [HideInInspector] public float size;
