@@ -7,25 +7,25 @@ public class PlayerShop : NetworkBehaviour
     [SerializeField] private RuneLootPool lootPool;
     [SerializeField] private int offerCount = 3;
 
-    [Header("Common Price")]
-    [SerializeField] private int commonMinPrice = 350;
-    [SerializeField] private int commonMaxPrice = 500;
+    [Header("Rusty Price")]
+    [SerializeField] private int RustyMinPrice = 350;
+    [SerializeField] private int RustyMaxPrice = 500;
 
-    [Header("Uncommon Price")]
-    [SerializeField] private int uncommonMinPrice = 900;
-    [SerializeField] private int uncommonMaxPrice = 1500;
+    [Header("Forged Price")]
+    [SerializeField] private int ForgedMinPrice = 900;
+    [SerializeField] private int ForgedMaxPrice = 1500;
 
-    [Header("Rare Price")]
-    [SerializeField] private int rareMinPrice = 2000;
-    [SerializeField] private int rareMaxPrice = 3500;
+    [Header("Factory New Price")]
+    [SerializeField] private int NewMinPrice = 2000;
+    [SerializeField] private int NewMaxPrice = 3500;
 
-    [Header("Epic Price")]
+    /*[Header("Epic Price")]
     [SerializeField] private int epicMinPrice = 5000;
     [SerializeField] private int epicMaxPrice = 8000;
 
     [Header("Legendary Price")]
     [SerializeField] private int legendaryMinPrice = 10000;
-    [SerializeField] private int legendaryMaxPrice = 15000;
+    [SerializeField] private int legendaryMaxPrice = 15000;*/
 
     [Header("Price Settings")]
     [SerializeField] private int priceStep = 25;
@@ -253,25 +253,25 @@ public class PlayerShop : NetworkBehaviour
 
     private int GetRunePrice(SpellNode node)
     {
-        switch (node.rarity)
+        switch (node.quality)
         {
-            case SpellNode.Rarity.Common:
-                return GetRandomPrice(commonMinPrice, commonMaxPrice);
+            case SpellNode.Quality.Rusty:
+                return GetRandomPrice(RustyMinPrice, RustyMaxPrice);
 
-            case SpellNode.Rarity.Uncommon:
-                return GetRandomPrice(uncommonMinPrice, uncommonMaxPrice);
+            case SpellNode.Quality.Forged:
+                return GetRandomPrice(ForgedMinPrice, ForgedMaxPrice);
 
-            case SpellNode.Rarity.Rare:
-                return GetRandomPrice(rareMinPrice, rareMaxPrice);
+            case SpellNode.Quality.FactoryNew:
+                return GetRandomPrice(NewMinPrice, NewMaxPrice);
 
-            case SpellNode.Rarity.Epic:
+            /*case SpellNode.Quality.Epic:
                 return GetRandomPrice(epicMinPrice, epicMaxPrice);
 
-            case SpellNode.Rarity.Legendary:
-                return GetRandomPrice(legendaryMinPrice, legendaryMaxPrice);
+            case SpellNode.Quality.Legendary:
+                return GetRandomPrice(legendaryMinPrice, legendaryMaxPrice);*/
 
             default:
-                return commonMinPrice;
+                return RustyMinPrice;
         }
     }
 
@@ -295,12 +295,12 @@ public class PlayerShop : NetworkBehaviour
 
     private int GetNodeRarityIndex(SpellNode node)
     {
-        return (int)node.rarity;
+        return (int)node.quality;
     }
 
     private int GetNodeTypeIndex(SpellNode node)
     {
-        if (node is SpellType) return 0;
+        if (node is SpellCore) return 0;
         if (node is SpellTrajectory) return 1;
         if (node is SpellEffect) return 2;
         if (node is SpellStat) return 3;
@@ -312,16 +312,16 @@ public class PlayerShop : NetworkBehaviour
 
     private int GetNodeListIndex(SpellNode node)
     {
-        RuneRaretyGroup group = GetRarityGroup(node.rarity);
+        RuneQualityGroup group = GetRarityGroup(node.quality);
 
         if (group == null)
         {
             return -1;
         }
 
-        if (node is SpellType)
+        if (node is SpellCore)
         {
-            return group.Core.IndexOf(node as SpellType);
+            return group.Core.IndexOf(node as SpellCore);
         }
 
         if (node is SpellTrajectory)
@@ -354,7 +354,7 @@ public class PlayerShop : NetworkBehaviour
 
     private SpellNode GetNodeFromIndexes(int rarityIndex, int typeIndex, int listIndex)
     {
-        RuneRaretyGroup group = GetRarityGroup((SpellNode.Rarity)rarityIndex);
+        RuneQualityGroup group = GetRarityGroup((SpellNode.Quality)rarityIndex);
 
         if (group == null)
         {
@@ -397,24 +397,24 @@ public class PlayerShop : NetworkBehaviour
         return null;
     }
 
-    private RuneRaretyGroup GetRarityGroup(SpellNode.Rarity rarity)
+    private RuneQualityGroup GetRarityGroup(SpellNode.Quality rarity)
     {
         switch (rarity)
         {
-            case SpellNode.Rarity.Common:
-                return lootPool.Common;
+            case SpellNode.Quality.Rusty:
+                return lootPool.Rusty;
 
-            case SpellNode.Rarity.Uncommon:
-                return lootPool.Uncommon;
+            case SpellNode.Quality.Forged:
+                return lootPool.Forged;
 
-            case SpellNode.Rarity.Rare:
-                return lootPool.Rare;
+            case SpellNode.Quality.FactoryNew:
+                return lootPool.FactoryNew;
 
-            case SpellNode.Rarity.Epic:
+            /*case SpellNode.Quality.Epic:
                 return lootPool.Epic;
 
-            case SpellNode.Rarity.Legendary:
-                return lootPool.Legendary;
+            case SpellNode.Quality.Legendary:
+                return lootPool.Legendary;*/
 
             default:
                 return null;

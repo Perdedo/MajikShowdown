@@ -160,7 +160,7 @@ public class HexGrid : MonoBehaviour
             }
         }
 
-        if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
+        if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellCore t)
         {
             spell.validSpell = true;
             spell.coreNode = t;

@@ -115,7 +115,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     bool CanConnect(SpellNodeInterface node)
     {
         bool isRoot = this == grid.hexGridNodes[0];
-        bool isSpellType = node.Node is SpellType;
+        bool isSpellType = node.Node is SpellCore;
         if (isRoot != isSpellType) return false;
         if (!VerifyNearbyConnections(node)) return false;
         return true;

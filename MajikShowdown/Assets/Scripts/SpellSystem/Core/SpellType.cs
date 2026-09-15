@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Type Node", menuName = "Spell Nodes/TypeNode")]
-public class SpellType : SpellNode
+[CreateAssetMenu(fileName = "Core Node", menuName = "Spell Nodes/CoreNode")]
+public class SpellCore : SpellNode
 {
     public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
     [Header("Core Config")]

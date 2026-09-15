@@ -122,7 +122,7 @@ public class SpellNodeDescription : NetworkBehaviour
     public HexGrid grid;
     Color activeColor = Color.white;
     Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 1f);
-    SpellType currentType;
+    SpellCore currentType;
     SpellTrigger currentTrigger;
     SpellNode currentNode;
     List<Spell> availableSpells = new List<Spell>();
@@ -154,7 +154,7 @@ public class SpellNodeDescription : NetworkBehaviour
 
     void CheckNode(SpellNode node)
     {
-        if (node is SpellType) CoreDesc();
+        if (node is SpellCore) CoreDesc();
         else if (node is SpellTrigger) TriggerDesc();
         else if (node is SpellEffect) EffectDesc();
         else if (node is SpellTrajectory) TrajectoryDesc();
@@ -286,7 +286,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
     void ChangeTextColor(TextMeshProUGUI text, SpellNode node)
     {
         Color color = new Color(1f, 1f, 1f, 1f);
-        if(node is SpellType)
+        if(node is SpellCore)
         {
             color = Color.red;
         }
@@ -391,7 +391,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
 
     void MultiplierDescription(SpellNode node)
     {
-        SpellType typeNode = node as SpellType;
+        SpellCore typeNode = node as SpellCore;
         if (typeNode == null)
         {
             nodeMultipliersContainer.SetActive(false);
@@ -410,7 +410,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
 
     void CollisionDescription(SpellNode node)
     {
-        currentType = node as SpellType;
+        currentType = node as SpellCore;
         bool isType = currentType != null;
         selfToggle.gameObject.SetActive(isType);
         alliesToggle.gameObject.SetActive(isType);
@@ -647,7 +647,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
 
     void UpdateElementIcon()
     {
-        SpellType typeNode = currentNode as SpellType;
+        SpellCore typeNode = currentNode as SpellCore;
         if (typeNode == null)
         {
             elementIcon.gameObject.SetActive(false);

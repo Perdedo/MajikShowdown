@@ -323,7 +323,7 @@ public class SpellCollider : NetworkBehaviour
             float scaleTime;
             switch (OwnerSpell.coreNode.Type)
             {
-                case SpellType.SpellTypes.Explosion:
+                case SpellCore.SpellTypes.Explosion:
                     scaleTime = stats.Duration;
                     break;
                 default:

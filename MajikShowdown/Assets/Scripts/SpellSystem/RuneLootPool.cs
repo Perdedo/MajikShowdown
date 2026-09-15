@@ -5,19 +5,19 @@ using System;
 [CreateAssetMenu(fileName = "RuneLootPool", menuName = "Scriptable Objects/RuneLootPool")]
 public class RuneLootPool : ScriptableObject
 {
-    public ProbabilitySlider<SpellNode.Rarity> RarityChance = new ProbabilitySlider<SpellNode.Rarity>(new List<(string label, float weight, SpellNode.Rarity value)>
+    public ProbabilitySlider<SpellNode.Quality> RarityChance = new ProbabilitySlider<SpellNode.Quality>(new List<(string label, float weight, SpellNode.Quality value)>
     {
-        ("Common", 0.5f, SpellNode.Rarity.Common),
-        ("Uncommon", 0.3f, SpellNode.Rarity.Uncommon),
-        ("Rare", 0.15f, SpellNode.Rarity.Rare),
-        ("Epic", 0.04f, SpellNode.Rarity.Epic),
-        ("Legendary", 0.01f, SpellNode.Rarity.Legendary)
+        ("Rusty", 0.6f, SpellNode.Quality.Rusty),
+        ("Forged", 0.3f, SpellNode.Quality.Forged),
+        ("FactoryNew", 0.1f, SpellNode.Quality.FactoryNew)/*,
+        ("Epic", 0.04f, SpellNode.Quality.Epic),
+        ("Legendary", 0.01f, SpellNode.Quality.Legendary)*/
     });
-    public RuneRaretyGroup Common = new RuneRaretyGroup();
-    public RuneRaretyGroup Uncommon = new RuneRaretyGroup();
-    public RuneRaretyGroup Rare = new RuneRaretyGroup();
-    public RuneRaretyGroup Epic = new RuneRaretyGroup();
-    public RuneRaretyGroup Legendary = new RuneRaretyGroup();
+    public RuneQualityGroup Rusty = new RuneQualityGroup();
+    public RuneQualityGroup Forged = new RuneQualityGroup();
+    public RuneQualityGroup FactoryNew = new RuneQualityGroup();
+    //public RuneQualityGroup Epic = new RuneQualityGroup();
+    //public RuneQualityGroup Legendary = new RuneQualityGroup();
 
     [ContextMenu("Test Probabilities")]
     public void TestProb()
@@ -32,21 +32,21 @@ public class RuneLootPool : ScriptableObject
         SpellNode node;
         switch (RarityChance.GetRandomEntry())
         {
-            case SpellNode.Rarity.Common:
-                node = Common.GetRandomNode();
+            case SpellNode.Quality.Rusty:
+                node = Rusty.GetRandomNode();
                 break;
-            case SpellNode.Rarity.Uncommon:
-                node = Uncommon.GetRandomNode();
+            case SpellNode.Quality.Forged:
+                node = Forged.GetRandomNode();
                 break;
-            case SpellNode.Rarity.Rare:
-                node = Rare.GetRandomNode();
+            case SpellNode.Quality.FactoryNew:
+                node = FactoryNew.GetRandomNode();
                 break;
-            case SpellNode.Rarity.Epic:
+            /*case SpellNode.Quality.Epic:
                 node = Epic.GetRandomNode();
                 break;
-            case SpellNode.Rarity.Legendary:
+            case SpellNode.Quality.Legendary:
                 node = Legendary.GetRandomNode();
-                break;
+                break;*/
             default:
                 node = null;
                 break;
@@ -59,7 +59,7 @@ public class RuneLootPool : ScriptableObject
     }
 }
 [Serializable]
-public class RuneRaretyGroup
+public class RuneQualityGroup
 {
     public ProbabilitySlider<NodeType> TypeChance = new ProbabilitySlider<NodeType>(new List<(string label, float weight, NodeType value)>
     {
@@ -70,7 +70,7 @@ public class RuneRaretyGroup
         ("Trigger", 0.1f, NodeType.Trigger),
         ("CastPoint", 0.1f, NodeType.CastPoint)
     });
-    public List<SpellType> Core = new List<SpellType>();
+    public List<SpellCore> Core = new List<SpellCore>();
     public List<SpellTrajectory> Trajectory = new List<SpellTrajectory>();
     public List<SpellEffect> Effect = new List<SpellEffect>();
     public List<SpellStat> Stat = new List<SpellStat>();

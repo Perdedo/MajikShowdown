@@ -55,7 +55,7 @@ public class UICommandController : NetworkBehaviour
             }
 
         }
-        if (grid.hexGridNodes[0].spellNode != null && grid.hexGridNodes[0].spellNode.Node is SpellType t)
+        if (grid.hexGridNodes[0].spellNode != null && grid.hexGridNodes[0].spellNode.Node is SpellCore t)
         {
             grid.spell.validSpell = true;
             grid.spell.coreNode = t;

@@ -18,7 +18,7 @@ public class Spell
     public List<SpellNode> spellNodes = new List<SpellNode>();
     public float SpellCooldown = 0;
     public float auxCooldown = 0;
-    public SpellType coreNode;
+    public SpellCore coreNode;
     public List<SpellTrigger> triggers = new List<SpellTrigger>();
     public List<SpellEffect> spellEffects = new List<SpellEffect>();
     public bool validSpell;

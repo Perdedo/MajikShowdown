@@ -217,9 +217,13 @@ MonoBehaviour:
   SeparationForce: 10
   priority: 10
   DropChance: 0
-  AvailablePools: []
+  AvailablePools:
+  - {fileID: 11400000, guid: 62d1e129c61e0194c918cc296770808b, type: 2}
   PoolProbability:
-    Entries: []
+    Entries:
+    - Weight: 1
+      label: 0
+      Value: 0
   size: 0
   target: {fileID: 0}
   canSeeTarget: 0
@@ -348,6 +352,7 @@ MonoBehaviour:
   lootDropChance: 15
   moneyDrop: 70
   network: 1
+  canDie: 1
 --- !u!1 &2002080844044921225
 GameObject:
   m_ObjectHideFlags: 0

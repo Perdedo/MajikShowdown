@@ -5,8 +5,8 @@ using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
 {
-    public enum Rarity { Common, Uncommon, Rare, Epic, Legendary }
-    public Rarity rarity;
+    public enum Quality { Rusty, Forged, FactoryNew}
+    public Quality quality;
     [Header("Define Stat Randomization")]
     public StatRandomizer statRandomizer;
     [Header("Display")]
@@ -99,7 +99,7 @@ public abstract class SpellNode : ScriptableObject
 
         if (this is SpellTrigger) return NodeCategory.Trigger;
 
-        if (this is SpellType) return NodeCategory.Type;
+        if (this is SpellCore) return NodeCategory.Type;
 
         if (this is SpellCastPoint) return NodeCategory.CastingPoint;
 
