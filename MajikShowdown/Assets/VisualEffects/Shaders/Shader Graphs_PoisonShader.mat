@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6596589584460316911
+--- !u!114 &-2505156630235680994
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,18 +20,21 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_AlternativeArea
-  m_Shader: {fileID: -6465566751694194690, guid: 3f9086bf9c05af646b6a50882106d62f, type: 3}
+  m_Name: Shader Graphs_PoisonShader
+  m_Shader: {fileID: -6465566751694194690, guid: a19d3ac88b84e3f4fa8c137d86e21024, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap: {}
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Transparent
   disabledShaderPasses:
+  - DepthOnly
   - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
@@ -51,20 +54,29 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Disolve: 1
-    - _HolesSizes: 0.67
-    - _Holes_size: -0.03
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Amount: 9.2
+    - _Blend: 0
+    - _CastShadows: 1
+    - _Cull: 2
+    - _DstBlend: 10
+    - _DstBlendAlpha: 10
+    - _Float: 0
     - _Opacity: 0
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Sped: 5.97
-    - _Speed: 1.46
-    - _SpeedOut: 0.1
+    - _Speed: 0.5
+    - _SrcBlend: 5
+    - _SrcBlendAlpha: 1
+    - _Surface: 1
+    - _Thickness: 0.5
+    - _Thickness2: 0.05
+    - _ZTest: 4
+    - _ZWrite: 0
+    - _ZWriteControl: 0
     m_Colors:
-    - _FrontColor: {r: 0.3802174, g: 0.8773585, b: 0, a: 1}
-    - _FrontColor_1: {r: 0.20647793, g: 0.41509432, b: 0.013705952, a: 1}
-    - _Maincolor: {r: 0.032761835, g: 0.03773582, b: 0, a: 1}
-    - _SideColor: {r: 0.30648395, g: 0.4433962, b: 0.056470275, a: 1}
-    - _Smoke_Color: {r: 0.22187346, g: 0.5188679, b: 0.022027401, a: 1}
+    - _First_Color: {r: 0.5041765, g: 0.8490566, b: 0.01201493, a: 1}
+    - _Second_Color: {r: 0.12639652, g: 0.23584908, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
