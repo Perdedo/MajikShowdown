@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class CharacterDamageHandler : NetworkBehaviour
 {
+    [SyncVar]public float BaseMaxHealth;
     [SyncVar]public float MaxHealth;
     [SyncVar]public float Health;
     public List<Resistance> Resistances;
@@ -21,8 +22,9 @@ public class CharacterDamageHandler : NetworkBehaviour
         Health = MaxHealth;
     }
 
-    public void Initialize(IGameCharacter GC)
+    public void Initialize(IGameCharacter GC, float HealthMultiplier)
     {
+        MaxHealth = BaseMaxHealth * HealthMultiplier;
         Health = MaxHealth;
         gameCharacter = GC;
     }

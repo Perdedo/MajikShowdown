@@ -11,9 +11,9 @@ public class TankEnemy : Enemy
     protected Damage tremorDmgCtrl;
     Vector3 hitDir;
     IGameCharacter aux;
-    public override void Initialize()
+    public override void Initialize(float HealthMultiplier)
     {
-        base.Initialize();
+        base.Initialize(HealthMultiplier);
         tremorDmgCtrl = new Damage(tremorDamage, element);
     }
     protected override void AttackPlayer()

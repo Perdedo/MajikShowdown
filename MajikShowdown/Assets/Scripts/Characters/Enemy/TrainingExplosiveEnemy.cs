@@ -4,11 +4,11 @@ using static Enemy;
 
 public class TrainingExplosiveEnemy : ExplosiveEnemy
 {
-    public override void Initialize()
+    public override void Initialize(float HealthMultiplier)
     {
         exploded = false;
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
-        DamageHandler.Initialize(this);
+        DamageHandler.Initialize(this, HealthMultiplier);
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
         /*for (int i = 0; i < Directions.Length; i++)
         {

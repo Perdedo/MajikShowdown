@@ -125,7 +125,7 @@ public class TrainingEnemiesController : MonoBehaviour
                 }
                 aux.GetComponent<CharacterDamageHandler>().enemyIndex = ind;
                 UsedEnemies.Add(auxEnemy);
-                auxEnemy.Initialize();
+                auxEnemy.Initialize(1f);
                 UpdateEnemyActiveID();
             }
         }
