@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30c8f43e557dc914caf160dbd96537f7, type: 3}
-  m_Name: KnockbackRune
+  m_Name: DurationRune
   m_EditorClassIdentifier: Assembly-CSharp::SpellStat
-  rarity: 0
+  quality: 0
+  RandomizeOnStart: 1
   statRandomizer:
     Cooldown:
       type: 0
-      value: 0
+      value: 1
       min: 0
       max: 0
       curve:
@@ -41,10 +42,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Duration:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 1
+      max: 3
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -106,10 +107,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Knockback:
-      type: 1
+      type: 0
       value: 0
-      min: 5
-      max: 10
+      min: 0
+      max: 0
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -118,9 +119,9 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Add Knockback
+  runeName: Add Duration
   runeType: 
-  runeDescription: Grants additional Knockback stat to attached spell
+  runeDescription: Grants additional Duration stat to attached spell
   color: {r: 1, g: 1, b: 1, a: 1}
   Cooldown: 0
   BaseStats:
@@ -153,7 +154,8 @@ MonoBehaviour:
     validSpell: 0
     grid: {fileID: 0}
     instanceIndex: 0
+    onCooldown: 0
   ConectionPorts: 000000000000000000000000000000000000000000000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 21300000, guid: e85a050518b97254095cd03f47f48cb8, type: 3}
+  nodeSymbolSprite: {fileID: 21300000, guid: 1366210819a149e49b97261369761a07, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}
