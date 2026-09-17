@@ -14,19 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RuneLootPool
   RarityChance:
     Entries:
-    - Weight: 1
+    - Weight: 0.65
       label: Rusty
       Value: 0
-    - Weight: 0
+    - Weight: 0.35
       label: Forged
       Value: 1
-    - Weight: 0
+    - Weight: 0.05
       label: FactoryNew
       Value: 2
   Rusty:
     TypeChance:
       Entries:
-      - Weight: 0.2
+      - Weight: 0.1
         label: Core
         Value: 0
       - Weight: 0.2
@@ -38,7 +38,7 @@ MonoBehaviour:
       - Weight: 0.2
         label: Stat
         Value: 3
-      - Weight: 0.1
+      - Weight: 0.05
         label: Trigger
         Value: 4
       - Weight: 0.1
@@ -79,54 +79,70 @@ MonoBehaviour:
   Forged:
     TypeChance:
       Entries:
-      - Weight: 0.2
+      - Weight: 0
         label: Core
         Value: 0
-      - Weight: 0.2
+      - Weight: 0
         label: Trajectory
         Value: 1
-      - Weight: 0.2
+      - Weight: 0
         label: Effect
         Value: 2
       - Weight: 0.2
         label: Stat
         Value: 3
-      - Weight: 0.1
+      - Weight: 0
         label: Trigger
         Value: 4
-      - Weight: 0.1
+      - Weight: 0
         label: CastPoint
         Value: 5
     Core: []
     Trajectory: []
     Effect: []
-    Stat: []
+    Stat:
+    - {fileID: 11400000, guid: 1d9ff62e904089545b537998732d9784, type: 2}
+    - {fileID: 11400000, guid: 8562eafb3912bc64192b6708d7b97011, type: 2}
+    - {fileID: 11400000, guid: 9e7bffd4ba9921841bb6d7bbe2070a50, type: 2}
+    - {fileID: 11400000, guid: 05fb794fd18b51e49a4e1993686da3ee, type: 2}
+    - {fileID: 11400000, guid: 2f3c00123984dd04892a9db4fdc4286b, type: 2}
+    - {fileID: 11400000, guid: cda9f2213c7450c408ace279fa844b95, type: 2}
+    - {fileID: 11400000, guid: 16b2d9a49d46b684093f88d79bacc505, type: 2}
+    - {fileID: 11400000, guid: eec25f993c0246445b0e1eaa315b9950, type: 2}
     Trigger: []
     CastPoint: []
   FactoryNew:
     TypeChance:
       Entries:
-      - Weight: 0.2
+      - Weight: 0
         label: Core
         Value: 0
-      - Weight: 0.2
+      - Weight: 0
         label: Trajectory
         Value: 1
-      - Weight: 0.2
+      - Weight: 0
         label: Effect
         Value: 2
       - Weight: 0.2
         label: Stat
         Value: 3
-      - Weight: 0.1
+      - Weight: 0
         label: Trigger
         Value: 4
-      - Weight: 0.1
+      - Weight: 0
         label: CastPoint
         Value: 5
     Core: []
     Trajectory: []
     Effect: []
-    Stat: []
+    Stat:
+    - {fileID: 11400000, guid: 5101f76e5330d2b4fa2745f4e55ff3e0, type: 2}
+    - {fileID: 11400000, guid: 451188460737c584d88cf633d36cb44f, type: 2}
+    - {fileID: 11400000, guid: e13dae0dea42eee4287825282fe434db, type: 2}
+    - {fileID: 11400000, guid: f922223ab8d8e9745baf803056d65e18, type: 2}
+    - {fileID: 11400000, guid: 31dd8405377cf7b47bf276c5dae9628b, type: 2}
+    - {fileID: 11400000, guid: 6f80c1d2841151f4ca912a70575269b1, type: 2}
+    - {fileID: 11400000, guid: abe9f7572e3fc254881e770b6f4f35e8, type: 2}
+    - {fileID: 11400000, guid: 872cfb04fcb0c134699eb34ca24d36ee, type: 2}
     Trigger: []
     CastPoint: []
