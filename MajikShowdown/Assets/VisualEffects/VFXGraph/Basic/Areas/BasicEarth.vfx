@@ -75,22 +75,6 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
-  - name: Bubble color
-    path: Bubble color
-    tooltip: 
-    space: -1
-    spaceable: 0
-    sheetType: m_Vector4f
-    realType: Color
-    defaultValue:
-      m_Type:
-        m_SerializableType: UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"r":0.16981130838394166,"g":0.024973522871732713,"b":0.0024029859341681005,"a":1.0}'
-    min: -Infinity
-    max: Infinity
-    enumValues: []
-    descendantCount: 0
   - name: Second Color
     path: Second Color
     tooltip: 
@@ -183,6 +167,22 @@ MonoBehaviour:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
       m_SerializableObject: 0.25
+    min: -Infinity
+    max: Infinity
+    enumValues: []
+    descendantCount: 0
+  - name: Bubble color
+    path: Bubble color
+    tooltip: 
+    space: -1
+    spaceable: 0
+    sheetType: m_Vector4f
+    realType: Color
+    defaultValue:
+      m_Type:
+        m_SerializableType: UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+      m_SerializableObject: '{"r":0.16981130838394166,"g":0.024973522871732713,"b":0.0024029859341681005,"a":1.0}'
     min: -Infinity
     max: Infinity
     enumValues: []
@@ -854,7 +854,7 @@ MonoBehaviour:
   - {fileID: 114350483966675424}
   m_ExposedName: Second Color
   m_Exposed: 1
-  m_Order: 2
+  m_Order: 1
   m_Category: 
   m_Min:
     m_Type:
@@ -1071,7 +1071,7 @@ MonoBehaviour:
   - {fileID: 114350483966675453}
   m_ExposedName: Opacity
   m_Exposed: 1
-  m_Order: 3
+  m_Order: 2
   m_Category: 
   m_Min:
     m_Type:
@@ -3305,7 +3305,7 @@ MonoBehaviour:
   - {fileID: 114350483966676087}
   m_ExposedName: Fresnel Size
   m_Exposed: 1
-  m_Order: 4
+  m_Order: 3
   m_Category: 
   m_Min:
     m_Type:
@@ -3836,7 +3836,7 @@ MonoBehaviour:
   - {fileID: 114350483966676117}
   m_ExposedName: AmountLines
   m_Exposed: 1
-  m_Order: 5
+  m_Order: 4
   m_Category: 
   m_Min:
     m_Type:
@@ -3952,7 +3952,7 @@ MonoBehaviour:
   - {fileID: 114350483966676121}
   m_ExposedName: Speed
   m_Exposed: 1
-  m_Order: 6
+  m_Order: 5
   m_Category: 
   m_Min:
     m_Type:
@@ -4414,7 +4414,7 @@ MonoBehaviour:
     - rid: 5359867754925522945
       type: {class: ParticleShadingShaderGraph, ns: UnityEditor.VFX, asm: Unity.VisualEffectGraph.Editor}
       data:
-        shaderGraph: {fileID: 4333940904281232215, guid: 4ced7df48ea1b3f489309f5d23ffddf2, type: 3}
+        shaderGraph: {fileID: 4333940904281232215, guid: dbbc2ee86f8375642815f2fbc6b0ae97, type: 3}
         materialSettings:
           m_PropertyNames: []
           m_PropertyValues: []
@@ -5364,7 +5364,7 @@ MonoBehaviour:
   - {fileID: 114350483966676172}
   m_ExposedName: Bubbles Size
   m_Exposed: 1
-  m_Order: 7
+  m_Order: 6
   m_Category: 
   m_Min:
     m_Type:
@@ -5628,7 +5628,7 @@ MonoBehaviour:
   - {fileID: 114350483966676180}
   m_ExposedName: Bubble color
   m_Exposed: 1
-  m_Order: 1
+  m_Order: 7
   m_Category: 
   m_Min:
     m_Type:
