@@ -425,6 +425,32 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         alliesToggleIcon.sprite = currentType.Collisions.Allies ? checkSprite : xSprite;
         enemiesToggleIcon.sprite = currentType.Collisions.Enemies ? checkSprite : xSprite;
         objectsToggleIcon.sprite = currentType.Collisions.Objects ? checkSprite : xSprite;
+
+        if(!isServer && network)
+        {
+            CMDCollisionDescription(node.Interface.acquisitionOrder);
+        }
+    }
+
+    [Command]
+    void CMDCollisionDescription(int index)
+    {
+        SpellNode node = caster.commander.interfaces.Find(i => i.acquisitionOrder == index).Node;
+        currentType = node as SpellCore;
+        bool isType = currentType != null;
+        selfToggle.gameObject.SetActive(isType);
+        alliesToggle.gameObject.SetActive(isType);
+        enemiesToggle.gameObject.SetActive(isType);
+        objectsToggle.gameObject.SetActive(isType);
+        if (!isType) return;
+        selfToggle.SetIsOnWithoutNotify(currentType.Collisions.Self);
+        alliesToggle.SetIsOnWithoutNotify(currentType.Collisions.Allies);
+        enemiesToggle.SetIsOnWithoutNotify(currentType.Collisions.Enemies);
+        objectsToggle.SetIsOnWithoutNotify(currentType.Collisions.Objects);
+        selfToggleIcon.sprite = currentType.Collisions.Self ? checkSprite : xSprite;
+        alliesToggleIcon.sprite = currentType.Collisions.Allies ? checkSprite : xSprite;
+        enemiesToggleIcon.sprite = currentType.Collisions.Enemies ? checkSprite : xSprite;
+        objectsToggleIcon.sprite = currentType.Collisions.Objects ? checkSprite : xSprite;
     }
 
     void SetSelfCollision(bool value)
@@ -435,6 +461,11 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         selfToggleIcon.sprite = value ? checkSprite : xSprite;
         currentType.OwnerSpell?.UpdateSpell();
+
+        if(!isServer && network)
+        {
+            CMDSetSelfCollision(value);
+        }
     }
 
     void SetAlliesCollision(bool value)
@@ -445,6 +476,11 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         alliesToggleIcon.sprite = value ? checkSprite : xSprite;
         currentType.OwnerSpell?.UpdateSpell();
+
+        if (!isServer && network)
+        {
+            CMDSetAlliesCollision(value);
+        }
     }
 
     void SetEnemiesCollision(bool value)
@@ -455,9 +491,63 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         enemiesToggleIcon.sprite = value ? checkSprite : xSprite;
         currentType.OwnerSpell?.UpdateSpell();
+
+        if (!isServer && network)
+        {
+            CMDSetEnemiesCollision(value);
+        }
     }
 
     void SetObjectsCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Objects = value;
+        currentType.Collisions = col;
+        objectsToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+
+        if (!isServer && network)
+        {
+            CMDSetObjectsCollision(value);
+        }
+    }
+
+    [Command]
+    void CMDSetSelfCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Self = value;
+        currentType.Collisions = col;
+        selfToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+    }
+
+    [Command]
+    void CMDSetAlliesCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Allies = value;
+        currentType.Collisions = col;
+        alliesToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+    }
+
+    [Command]
+    void CMDSetEnemiesCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Enemies = value;
+        currentType.Collisions = col;
+        enemiesToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+    }
+
+    [Command]
+    void CMDSetObjectsCollision(bool value)
     {
         if (currentType == null) return;
         var col = currentType.Collisions;
