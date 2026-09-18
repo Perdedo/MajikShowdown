@@ -706,6 +706,26 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         NodeCoolDownDescription(currentTrigger);
         UpdateTriggeredSpellUI();
         GameManager.Instance.uiController.playerUI.CloseTriggerSpellSelection();
+
+        if(!isServer && network)
+        {
+            CMDSelectTriggerSpell(availableSpells.IndexOf(spell));
+        }
+    }
+
+    [Command]
+    public void CMDSelectTriggerSpell(int index)
+    {
+        if (currentTrigger == null) return;
+        if(index < 0)
+        {
+            Debug.LogWarning("Spell not in available spells");
+        }
+        currentTrigger.TriggeredSpell = availableSpells[index];
+        currentTrigger.UpdateTrigger();
+        NodeCoolDownDescription(currentTrigger);
+        //UpdateTriggeredSpellUI();
+        //GameManager.Instance.uiController.playerUI.CloseTriggerSpellSelection();
     }
 
     public void OpenTriggerSpellSelection()
