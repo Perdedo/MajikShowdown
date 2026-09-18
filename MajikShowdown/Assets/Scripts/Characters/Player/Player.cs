@@ -554,4 +554,35 @@ public class Player : Character
             GameManager.Instance.uiController.playerUI.UpdateMoneyUI(newMoney);
         }
     }
+
+
+    public override void Knockback(Vector3 direction, float strenght)
+    {
+        if (canBeKnocked)
+        {
+            knockbackTimer.SetTimer(0);
+            canBeKnocked = false;
+            knockbackTimer.Paused = false;
+            AddExternalVelocity(direction * strenght);
+
+            if(!isServer && network)
+            {
+                CMDKnockback(direction, strenght);
+            }
+        }
+    }
+
+
+    [Command]
+    public void CMDKnockback(Vector3 direction, float strenght)
+    {
+        if (canBeKnocked)
+        {
+            knockbackTimer.SetTimer(0);
+            canBeKnocked = false;
+            knockbackTimer.Paused = false;
+            AddExternalVelocity(direction * strenght);
+        }
+    }
+
 }

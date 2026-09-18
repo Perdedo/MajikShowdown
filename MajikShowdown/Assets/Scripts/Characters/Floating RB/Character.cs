@@ -189,7 +189,7 @@ public class Character : FloatingRigidbody, IGameCharacter
         }
 
     }
-    public void Knockback(Vector3 direction, float strenght)
+    public virtual void Knockback(Vector3 direction, float strenght)
     {
         if(canBeKnocked)
         {
@@ -199,6 +199,7 @@ public class Character : FloatingRigidbody, IGameCharacter
             AddExternalVelocity(direction * strenght);
         }
     }
+
     public virtual void Die()
     {
         
