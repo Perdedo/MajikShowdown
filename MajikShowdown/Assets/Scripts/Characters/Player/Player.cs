@@ -565,24 +565,17 @@ public class Player : Character
             knockbackTimer.Paused = false;
             AddExternalVelocity(direction * strenght);
 
-            if(!isServer && network)
+            if(!isLocalPlayer && isServer)
             {
-                CMDKnockback(direction, strenght);
+                RPCKnockback(direction, strenght);
             }
         }
     }
 
-
-    [Command]
-    public void CMDKnockback(Vector3 direction, float strenght)
+    [TargetRpc]
+    public void RPCKnockback(Vector3 direction, float strenght)
     {
-        if (canBeKnocked)
-        {
-            knockbackTimer.SetTimer(0);
-            canBeKnocked = false;
-            knockbackTimer.Paused = false;
-            AddExternalVelocity(direction * strenght);
-        }
+        AddExternalVelocity(direction * strenght);
     }
 
 }
