@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerUI : NetworkBehaviour
 {
@@ -65,6 +66,7 @@ public class PlayerUI : NetworkBehaviour
     List<Resolution> selectedResList = new List<Resolution>();
     public TMP_Dropdown resDropdown;
     public TMP_Dropdown screenModeDropdown;
+    public TMP_Dropdown antiAliasingDropdown;
 
     [Header("Spell Customization")]
     public SpellVisualDatabase visualDatabase;
@@ -147,6 +149,7 @@ public class PlayerUI : NetworkBehaviour
         }
         ResolutionDropdown();
         ScreenModeDropdown();
+        AntiAliasingDropdown();
         loaded = true;
         data = SaveManager.LoadConfig(ref loaded);
         if (!loaded)
@@ -294,6 +297,11 @@ public class PlayerUI : NetworkBehaviour
         {
             screenModeDropdown.value = data.screenMode;
         }
+        if (antiAliasingDropdown != null)
+        {
+            antiAliasingDropdown.SetValueWithoutNotify(data.antiAliasing);
+        }
+        ApplyAntiAliasing(data.antiAliasing);
         AudioController.instance.ChangeMasterVol(data.master);
         if (_masterVolumeSlider != null)
         {
@@ -407,6 +415,40 @@ public class PlayerUI : NetworkBehaviour
                 }
             });
         }
+    }
+
+    public void AntiAliasingDropdown()
+    {
+        if (antiAliasingDropdown == null) return;
+
+        List<string> antiAliasingOptions = new List<string> { "No Anti-aliasing", "FXAA", "SMAA", "TAA" };
+        antiAliasingDropdown.ClearOptions();
+        antiAliasingDropdown.AddOptions(antiAliasingOptions);
+        antiAliasingDropdown.onValueChanged.RemoveAllListeners();
+        antiAliasingDropdown.onValueChanged.AddListener(ChangeAntiAliasing);
+    }
+
+    private void ApplyAntiAliasing(int index)
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null) return;
+
+        UniversalAdditionalCameraData cameraData = mainCamera.GetUniversalAdditionalCameraData();
+
+        cameraData.antialiasing = index switch
+        {
+            0 => AntialiasingMode.None,
+            1 => AntialiasingMode.FastApproximateAntialiasing,
+            2 => AntialiasingMode.SubpixelMorphologicalAntiAliasing,
+            3 => AntialiasingMode.TemporalAntiAliasing,
+            _ => AntialiasingMode.None
+        };
+    }
+
+    public void ChangeAntiAliasing(int index)
+    {
+        data.antiAliasing = index;
+        ApplyAntiAliasing(index);
     }
 
     void UpdateCooldownIcon()

@@ -7,36 +7,22 @@ public class PlayerShop : NetworkBehaviour
     [SerializeField] private RuneLootPool lootPool;
     [SerializeField] private int offerCount = 3;
 
-    [Header("Rusty Price")]
-    [SerializeField] private int RustyMinPrice = 350;
-    [SerializeField] private int RustyMaxPrice = 500;
-
-    [Header("Forged Price")]
-    [SerializeField] private int ForgedMinPrice = 900;
-    [SerializeField] private int ForgedMaxPrice = 1500;
-
-    [Header("Factory New Price")]
-    [SerializeField] private int NewMinPrice = 2000;
-    [SerializeField] private int NewMaxPrice = 3500;
-
-    /*[Header("Epic Price")]
-    [SerializeField] private int epicMinPrice = 5000;
-    [SerializeField] private int epicMaxPrice = 8000;
-
-    [Header("Legendary Price")]
-    [SerializeField] private int legendaryMinPrice = 10000;
-    [SerializeField] private int legendaryMaxPrice = 15000;*/
+    [Header("Rune Prices")]
+    [SerializeField] private SimpleInt rustyPrice;
+    [SerializeField] private SimpleInt forgedPrice;
+    [SerializeField] private SimpleInt factoryNewPrice;
 
     [Header("Price Settings")]
     [SerializeField] private int priceStep = 25;
 
     [Header("Reroll")]
-    [SerializeField] private int rerollPrice = 500;
+    [SerializeField] private SimpleInt rerollPrice;
 
     private Player player;
     private ShopOffer[] offers;
+    private int currentRerollPrice;
 
-    public int RerollPrice => rerollPrice;
+    public int RerollPrice => currentRerollPrice;
 
     private void Awake()
     {
@@ -48,6 +34,7 @@ public class PlayerShop : NetworkBehaviour
     {
         base.OnStartServer();
 
+        GenerateRerollPrice();
         GenerateOffers();
     }
 
@@ -106,20 +93,29 @@ public class PlayerShop : NetworkBehaviour
         {
             return;
         }
+
         player.caster.AddRune(offer.node);
         offer.purchased = true;
-        TargetGiveRune(connectionToClient, GetNodeRarityIndex(offer.node), GetNodeTypeIndex(offer.node), GetNodeListIndex(offer.node));
+
+        TargetGiveRune(
+            connectionToClient,
+            GetNodeRarityIndex(offer.node),
+            GetNodeTypeIndex(offer.node),
+            GetNodeListIndex(offer.node)
+        );
+
         TargetPurchaseCompleted(connectionToClient, slotIndex);
     }
 
     [Command]
     private void CMDReroll()
     {
-        if (!player.SpendMoney(rerollPrice))
+        if (!player.SpendMoney(currentRerollPrice))
         {
             return;
         }
 
+        GenerateRerollPrice();
         GenerateOffers();
         SendShopToOwner();
     }
@@ -153,6 +149,18 @@ public class PlayerShop : NetworkBehaviour
     }
 
     [Server]
+    private void GenerateRerollPrice()
+    {
+        if (rerollPrice == null)
+        {
+            currentRerollPrice = 0;
+            return;
+        }
+
+        currentRerollPrice = GetSteppedPrice(rerollPrice.GetValue());
+    }
+
+    [Server]
     private void SendShopToOwner()
     {
         for (int i = 0; i < offers.Length; i++)
@@ -176,6 +184,7 @@ public class PlayerShop : NetworkBehaviour
             );
         }
 
+        TargetSetRerollPrice(connectionToClient, currentRerollPrice);
         TargetRefreshShop(connectionToClient);
     }
 
@@ -201,6 +210,12 @@ public class PlayerShop : NetworkBehaviour
             price = price,
             purchased = purchased
         };
+    }
+
+    [TargetRpc]
+    private void TargetSetRerollPrice(NetworkConnection target, int price)
+    {
+        currentRerollPrice = price;
     }
 
     [TargetRpc]
@@ -253,44 +268,43 @@ public class PlayerShop : NetworkBehaviour
 
     private int GetRunePrice(SpellNode node)
     {
+        SimpleInt priceConfig;
+
         switch (node.quality)
         {
             case SpellNode.Quality.Rusty:
-                return GetRandomPrice(RustyMinPrice, RustyMaxPrice);
+                priceConfig = rustyPrice;
+                break;
 
             case SpellNode.Quality.Forged:
-                return GetRandomPrice(ForgedMinPrice, ForgedMaxPrice);
+                priceConfig = forgedPrice;
+                break;
 
             case SpellNode.Quality.FactoryNew:
-                return GetRandomPrice(NewMinPrice, NewMaxPrice);
-
-            /*case SpellNode.Quality.Epic:
-                return GetRandomPrice(epicMinPrice, epicMaxPrice);
-
-            case SpellNode.Quality.Legendary:
-                return GetRandomPrice(legendaryMinPrice, legendaryMaxPrice);*/
+                priceConfig = factoryNewPrice;
+                break;
 
             default:
-                return RustyMinPrice;
+                priceConfig = rustyPrice;
+                break;
         }
+
+        if (priceConfig == null)
+        {
+            return 0;
+        }
+
+        return GetSteppedPrice(priceConfig.GetValue());
     }
 
-    private int GetRandomPrice(int minPrice, int maxPrice)
+    private int GetSteppedPrice(int price)
     {
         if (priceStep <= 0)
         {
-            return Random.Range(minPrice, maxPrice + 1);
+            return price;
         }
 
-        int minStep = Mathf.CeilToInt((float)minPrice / priceStep);
-        int maxStep = Mathf.FloorToInt((float)maxPrice / priceStep);
-
-        if (maxStep < minStep)
-        {
-            return minPrice;
-        }
-
-        return Random.Range(minStep, maxStep + 1) * priceStep;
+        return Mathf.RoundToInt((float)price / priceStep) * priceStep;
     }
 
     private int GetNodeRarityIndex(SpellNode node)
@@ -410,19 +424,17 @@ public class PlayerShop : NetworkBehaviour
             case SpellNode.Quality.FactoryNew:
                 return lootPool.FactoryNew;
 
-            /*case SpellNode.Quality.Epic:
-                return lootPool.Epic;
-
-            case SpellNode.Quality.Legendary:
-                return lootPool.Legendary;*/
-
             default:
                 return null;
         }
     }
 
     [TargetRpc]
-    private void TargetGiveRune(NetworkConnection target, int rarityIndex, int typeIndex, int listIndex)
+    private void TargetGiveRune(
+        NetworkConnection target,
+        int rarityIndex,
+        int typeIndex,
+        int listIndex)
     {
         if (isServer) return;
 
