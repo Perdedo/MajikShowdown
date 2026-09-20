@@ -90,7 +90,7 @@ public class UICommandController : NetworkBehaviour
     public void CMDOnEndDrag(int ind)
     {
         DraggableNode node = drags.Find(d => d.acquisitionOrder == ind);
-        if (!node.CanDrag()) return;
+        if (node.isClone) return;
 
         bool startedFromGrid = node.OriginZone is HexGridNode;
         Vector3 releasedWorldPosition = node.rectTransform.position;

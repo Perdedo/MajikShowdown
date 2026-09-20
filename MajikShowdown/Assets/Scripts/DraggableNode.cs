@@ -29,6 +29,14 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         nodeTween = GetComponent<NodeTween>();
     }
 
+    public void Initialize()
+    {
+        canvas = GetComponentInParent<Canvas>();
+        rectTransform = GetComponent<RectTransform>();
+        canvasGroup = GetComponent<CanvasGroup>();
+        nodeTween = GetComponent<NodeTween>();
+    }
+
     public void SetOriginZone(IDropZone zone)
     {
         OriginZone = zone;
