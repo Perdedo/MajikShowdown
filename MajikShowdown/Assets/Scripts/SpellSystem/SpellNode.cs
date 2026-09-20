@@ -5,15 +5,15 @@ using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
 {
-    public enum Quality { Rusty, Forged, FactoryNew}
+    public enum Quality { Rusty, Forged, FactoryNew }
     public Quality quality;
     [Header("Define Stat Randomization")]
     public bool RandomizeOnStart = true;
     public StatRandomizer statRandomizer;
     [Header("Display")]
     public string runeName;
-    [HideInInspector]public string runeType;
-    [TextArea(3, 10)]public string runeDescription;
+    [HideInInspector] public string runeType;
+    [TextArea(3, 10)] public string runeDescription;
     [HideInInspector] public Color color = Color.white;
     [Header("Base Stats Debug")]
     public float Cooldown = 0;
@@ -25,7 +25,7 @@ public abstract class SpellNode : ScriptableObject
     public SpellNode[] ConectedNodes = new SpellNode[6];
     public Spell OwnerSpell;
     [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
-    [NonSerialized]public bool IsInUse;
+    [NonSerialized] public bool IsInUse;
     public SpellNodeInfos spellInfos;
     public Sprite nodeSymbolSprite;
     [HideInInspector] public Color symbolColor;
@@ -75,11 +75,11 @@ public abstract class SpellNode : ScriptableObject
     public virtual void Initialize()
     {
         SetupNodeVisual();
-        if(RandomizeOnStart)
+        if (RandomizeOnStart)
         {
             RandomizeStats();
         }
-        runeType = GetCategory() == NodeCategory.Type ? "Core" : GetCategory().ToString();
+        runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
     }
 
@@ -103,7 +103,7 @@ public abstract class SpellNode : ScriptableObject
 
         if (this is SpellTrigger) return NodeCategory.Trigger;
 
-        if (this is SpellCore) return NodeCategory.Type;
+        if (this is SpellCore) return NodeCategory.Core;
 
         if (this is SpellCastPoint) return NodeCategory.CastingPoint;
 
@@ -183,6 +183,7 @@ public class NodeConection
 
     public SpellNode ownerNode;
     public SpellNode conectedNode;
+    public bool Critical = false;
 
     public enum Conections
     {
@@ -208,6 +209,29 @@ public class NodeConection
 
         if (c.conectionType != conectionType)
             return false;
+        if(ownerNode.GetCategory() == NodeCategory.Stat && c.ownerNode.Interface.CriticalConections <= 0)
+        {
+            return false;
+        }
+        if (conectionType == Conections.None && ownerNode.GetCategory() != NodeCategory.Stat)
+        {
+            if(c.ownerNode.GetCategory() != NodeCategory.Stat)
+            {
+                if(ownerNode.Interface.CriticalConections <= 0|| c.ownerNode.Interface.CriticalConections <= 0)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (ownerNode.Interface.CriticalConections <= 0)
+                {
+                    return false;
+                }
+            }
+        }
+        /*if (conectionType == Conections.None && (ownerNode.GetCategory() != NodeCategory.Stat || c.ownerNode.GetCategory() != NodeCategory.Stat) && c.ownerNode.Interface.CriticalConections <= 0)
+            return false;*/
 
         conection = c;
         c.conection = this;
@@ -217,6 +241,11 @@ public class NodeConection
 
         ownerNode.ConectedNodes[index] = c.ownerNode;
         c.ownerNode.ConectedNodes[c.index] = ownerNode;
+        if (Critical)
+        {
+            ownerNode.Interface.CriticalConections++;
+            c.ownerNode.Interface.CriticalConections++;
+        }
 
         if (conectedNode.hierarchy > ownerNode.hierarchy)
         {
@@ -226,12 +255,17 @@ public class NodeConection
         return true;
     }
 
-    public bool CheckConection(NodeConection c)
+    public bool CheckConection(NodeConection c, bool crit)
     {
         if (c == null)
             return false;
-
-        return c.conectionType == conectionType;
+        if (c.conectionType == conectionType)
+        {
+            Critical = crit;
+            c.Critical = crit;
+            return true;
+        }
+        return false;
     }
 
     public void RemoveConection()
@@ -241,12 +275,22 @@ public class NodeConection
         ownerNode.ConectedNodes[index] = null;
         conectedNode = null;
         conection = null;
+        if (Critical)
+        {
+            Critical = false;
+            ownerNode.Interface.CriticalConections--;
+        }
 
         if (other != null)
         {
             other.ownerNode.ConectedNodes[other.index] = null;
             other.conectedNode = null;
             other.conection = null;
+            if (other.Critical)
+            {
+                other.Critical = false;
+                other.ownerNode.Interface.CriticalConections--;
+            }
         }
     }
 }
