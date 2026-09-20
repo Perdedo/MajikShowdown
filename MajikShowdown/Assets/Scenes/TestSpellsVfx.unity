@@ -1910,7 +1910,7 @@ Transform:
   m_GameObject: {fileID: 842365537}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.60035044, z: -0, w: 0.7997371}
-  m_LocalPosition: {x: 12.507412, y: 0.849643, z: -4.625}
+  m_LocalPosition: {x: 14.633, y: 2.523, z: -4.475}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -1984,10 +1984,16 @@ VisualEffect:
       - m_Value: -0.01
         m_Name: Speed
         m_Overridden: 1
+      - m_Value: 2
+        m_Name: LIfetime
+        m_Overridden: 1
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 0, y: -5, z: 0}
+        m_Name: Gravity Dir
+        m_Overridden: 1
     m_Vector4f:
       m_Array:
       - m_Value: {x: 0.24528301, y: 0.0127269495, z: 0.024343153, w: 1}
@@ -2005,15 +2011,15 @@ VisualEffect:
       m_Array:
       - m_Value:
           serializedVersion: 2
-          key0: {r: 0.39807478, g: 0.4051024, b: 0.3917264, a: 1}
-          key1: {r: 0.25828114, g: 0.6470693, b: 0.021365508, a: 1}
+          key0: {r: 0.24528301, g: 0.031312723, b: 0, a: 1}
+          key1: {r: 0.3678123, g: 0.048652425, b: 0, a: 1}
           key2: {r: 0.023529412, g: 0, b: 0, a: 0}
           key3: {r: 0, g: 0, b: 0, a: 0}
           key4: {r: 0, g: 0, b: 0, a: 0}
           key5: {r: 0, g: 0, b: 0, a: 0}
           key6: {r: 0, g: 0, b: 0, a: 0}
           key7: {r: 0, g: 0, b: 0, a: 0}
-          ctime0: 13893
+          ctime0: 964
           ctime1: 29491
           ctime2: 52621
           ctime3: 0
@@ -4256,7 +4262,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6525021147740971751, guid: 9b8942ce5409d124d8de17df311ed226, type: 3}
       propertyPath: m_CastShadows
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8280106817438834757, guid: 9b8942ce5409d124d8de17df311ed226, type: 3}
       propertyPath: m_Asset
@@ -4287,6 +4293,50 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_Asset
+      value: 
+      objectReference: {fileID: 8926484042661614526, guid: 25573358d6436f44d89e4542705a3a55, type: 3}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Name
+      value: RingsColor
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.data[0].m_Name
+      value: Texture
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Value.x
+      value: 0.71165484
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Value.y
+      value: 1.6983563
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Value.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.data[0].m_Value
+      value: 
+      objectReference: {fileID: 2800000, guid: f10790244c828d246bc61aee7d1d25c5, type: 3}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1197686928931587333, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
+      propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.data[0].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1387736355100175332, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
       propertyPath: m_Asset
       value: 
@@ -4377,7 +4427,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7603037869457890367, guid: 99af40859ac52fb479157a7497c2d50a, type: 3}
       propertyPath: m_CastShadows
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4572,7 +4622,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2048789513070760831, guid: 5df34fba02e25cd4b9df47af08115b6e, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3055317805975345556, guid: 5df34fba02e25cd4b9df47af08115b6e, type: 3}
       propertyPath: m_Asset
@@ -4648,7 +4698,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4771505045619352025, guid: 5df34fba02e25cd4b9df47af08115b6e, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4771505045619352025, guid: 5df34fba02e25cd4b9df47af08115b6e, type: 3}
       propertyPath: m_CastShadows
@@ -4753,7 +4803,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4186223366370600552, guid: 97e773a5e2f1769469c43eaea1055ec7, type: 3}
       propertyPath: m_CastShadows
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8565548763133990958, guid: 97e773a5e2f1769469c43eaea1055ec7, type: 3}
       propertyPath: m_Name
@@ -4882,7 +4932,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5634790126802285169, guid: aa93abead8a91274b99932aa5852c0dd, type: 3}
       propertyPath: m_CastShadows
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9216019386746129837, guid: aa93abead8a91274b99932aa5852c0dd, type: 3}
       propertyPath: m_Name
