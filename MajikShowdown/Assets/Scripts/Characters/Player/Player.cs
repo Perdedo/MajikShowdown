@@ -58,6 +58,7 @@ public class Player : Character
     public int Money => money;
 
     public InteractableObject currentInteraction;
+    private InteractableObject previousInteraction;
 
     public Animator animator;
     [SerializeField] float speedChangeRate = 10;
@@ -165,6 +166,10 @@ public class Player : Character
                 knockbackTimer.Paused = true;
             }
         }
+        if (isLocalPlayer || !network)
+        {
+            UpdateInteractionVisual();
+        }
         /*if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
         {
             if(Input.GetKeyDown(KeyCode.R))
@@ -177,6 +182,26 @@ public class Player : Character
             Dash(directionInput);
         }*/
         //RotateCamera();
+    }
+
+    private void UpdateInteractionVisual()
+    {
+        if (previousInteraction == currentInteraction)
+        {
+            return;
+        }
+
+        if (previousInteraction != null)
+        {
+            previousInteraction.HideInteractionIndicator();
+        }
+
+        previousInteraction = currentInteraction;
+
+        if (currentInteraction != null)
+        {
+            currentInteraction.ShowInteractionIndicator(this);
+        }
     }
 
     public void OnDeathValueChange(bool oldVal, bool newVal)
@@ -478,6 +503,11 @@ public class Player : Character
 
     private void OnDestroy()
     {
+        if (previousInteraction != null && (isLocalPlayer || !network))
+        {
+            previousInteraction.HideInteractionIndicator();
+        }
+
         GameManager.Instance.RemovePlayer(this);
     }
 
