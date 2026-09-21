@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+
 
 //using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -124,11 +126,7 @@ public class Spell
         }
         coreNode.UpdateNode();
         OnSpellUpdated?.Invoke();
-        /*foreach(SubSpell s in SubSpells)
-        {
-            SpellCooldown += s.CooldownCost;
-            s.UpdateSubSpell();
-        }*/
+        
     }
     /*public void CreateSubSpells()
     {
@@ -149,13 +147,19 @@ public class Spell
     }
     public void UpdateNodeConections()
     {
+        HashSet<SpellNode> visitedNodes = new HashSet<SpellNode>();
         Queue<SpellNode> nodesToUpdate = new Queue<SpellNode>();
         nodesToUpdate.Enqueue(coreNode);
-        for(int i = 0; i < grid.spellNodes.Count; i++)
+        visitedNodes.Add(coreNode);
+        for (int i = 0; i < grid.spellNodes.Count; i++)
         {
             if (grid.spellNodes[i] != null)
             {
                 grid.spellNodes[i].CriticalConections = 0;
+                /*foreach (NodeConection con in grid.spellNodes[i].conections)
+                {
+                    con.UpdateConection();
+                }*/
             }
         }
         while (nodesToUpdate.Count > 0)
@@ -163,19 +167,32 @@ public class Spell
             SpellNode node = nodesToUpdate.Dequeue();
             foreach (NodeConection con in node.Interface.conections)
             {
+                if (con.neighborNode == null) continue;
                 if (con.neighborNode == coreNode || (con.conectionType != NodeConection.Conections.None && con.neighborNode.Interface.CriticalConections > 0))
                 {
                     node.Interface.CriticalConections++;
                     con.neighborNode.Interface.CriticalConections++;
                     con.SetCritical(true);
                 }
-                if (!nodesToUpdate.Contains(con.neighborNode) && con.neighborNode != null)
+                if (!visitedNodes.Contains(con.neighborNode) && con.neighborNode != null)
                 {
+                    visitedNodes.Add(con.neighborNode);
                     nodesToUpdate.Enqueue(con.neighborNode);
                 }
             }
         }
+        /*for (int i = 0; i < grid.spellNodes.Count; i++)
+        {
+            if (grid.spellNodes[i] != null)
+            {
+                foreach (NodeConection con in grid.spellNodes[i].conections)
+                {
+                    con.UpdateConection();
+                }
+            }
+        }*/
     }
+    
 }
 
 

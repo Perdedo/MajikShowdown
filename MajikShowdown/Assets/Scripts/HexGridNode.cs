@@ -60,6 +60,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public void Release(DraggableNode node)
     {
         if (spellNode == null) return;
+        //Spell aux = spellNode.Node.OwnerSpell;
         spellNode.CriticalConections = 0;
         foreach (NodeConection con in spellNode.conections)
         {
@@ -93,6 +94,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
             }
         }
         grid.caster.commander.HexRelease(this, node);
+        //aux.UpdateNodeConections();
 
     }
 
@@ -129,8 +131,9 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public void ConnectNode(SpellNodeInterface node)
     {
         if (node == null) return;
-        MakeNearbyConnections(node);
         grid.AddNodeToGrid(this, node);
+        grid.spell.UpdateNodeConections();
+        MakeNearbyConnections(node);
         spellNode = node;
     }
 

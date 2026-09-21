@@ -211,7 +211,7 @@ public class NodeConection
 
         if (c.conectionType != conectionType)
             return false;
-        if (ownerNode.GetCategory() == NodeCategory.Stat && c.ownerNode.Interface.CriticalConections <= 0)
+        if (ownerNode.GetCategory() == NodeCategory.Stat && c.ownerNode.GetCategory() != NodeCategory.Stat && c.ownerNode.Interface.CriticalConections <= 0)
         {
             return false;
         }
@@ -261,10 +261,19 @@ public class NodeConection
             c.neighborNode = ownerNode;
             conection = c;
             c.conection = this;
-            ownerNode.OwnerSpell.UpdateNodeConections();
             return true;
         }
         return false;
+    }
+    public void UpdateConection()
+    {
+        if (conection != null)
+        {
+            if (!TryConect(conection))
+            {
+                RemoveConection(false);
+            }
+        }
     }
     public void SetCritical(bool critical)
     {
@@ -275,19 +284,25 @@ public class NodeConection
         }
     }
 
-    public void RemoveConection()
+    public void RemoveConection(bool RemoveNeighbor = true)
     {
         NodeConection other = conection;
-
+        SetCritical(false);
         ownerNode.ConectedNodes[index] = null;
-        neighborNode = null;
+        if (RemoveNeighbor)
+        {
+            neighborNode = null;
+        }
         conectedNode = null;
         conection = null;
 
         if (other != null)
         {
             other.ownerNode.ConectedNodes[other.index] = null;
-            other.neighborNode = null;
+            if (RemoveNeighbor)
+            {
+                other.neighborNode = null;
+            }
             other.conectedNode = null;
             other.conection = null;
         }
