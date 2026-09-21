@@ -129,19 +129,23 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             nodeTween.SlideToWorld(savedWorldPosition, () =>
             {
                 transform.SetParent(savedParent, true);
-                transform.SetSiblingIndex(savedListIndex);
                 rectTransform.anchoredPosition = savedPosition;
-                canvasGroup.blocksRaycasts = true;
+
                 inventory.Unfreeze();
+                inventory.ApplyFilter();
+
+                canvasGroup.blocksRaycasts = true;
             });
         }
         else
         {
             transform.SetParent(savedParent, true);
-            transform.SetSiblingIndex(savedListIndex);
             rectTransform.anchoredPosition = savedPosition;
-            canvasGroup.blocksRaycasts = true;
+
             inventory.Unfreeze();
+            inventory.ApplyFilter();
+
+            canvasGroup.blocksRaycasts = true;
         }
     }
 

@@ -14,9 +14,6 @@ using UnityEngine.Rendering.Universal;
 public class PlayerUI : NetworkBehaviour
 {
 
-    [Header("Interaction")]
-    [SerializeField] private TMP_Text interactionText;
-
     [Header("Shop")]
     [SerializeField] private GameObject shopPanel;
     public bool IsShopOpen => shopPanel != null && shopPanel.activeSelf;
@@ -143,10 +140,6 @@ public class PlayerUI : NetworkBehaviour
         {
             shopPanel.SetActive(false);
         }
-        if (interactionText != null)
-        {
-            interactionText.gameObject.SetActive(false);
-        }
         ResolutionDropdown();
         ScreenModeDropdown();
         AntiAliasingDropdown();
@@ -203,30 +196,6 @@ public class PlayerUI : NetworkBehaviour
         //UpdateHealthUI();
         UpdateCooldownFills();
         UpdateCooldownIcon();
-        UpdateInteractionIndicator();
-    }
-
-    private void UpdateInteractionIndicator()
-    {
-        if (interactionText == null)
-        {
-            return;
-        }
-
-        bool shouldShow = inGame &&  myPlayer != null && !myPlayer.dead && myPlayer.currentInteraction != null;
-
-        if (!shouldShow)
-        {
-            interactionText.gameObject.SetActive(false);
-            return;
-        }
-
-        interactionText.text = myPlayer.currentInteraction.InteractionMessage;
-
-        if (!interactionText.gameObject.activeSelf)
-        {
-            interactionText.gameObject.SetActive(true);
-        }
     }
 
     public void OpenPanel(GameObject panel)
@@ -247,6 +216,13 @@ public class PlayerUI : NetworkBehaviour
 
     private void ShowAnimatedPanel(GameObject panel)
     {
+        if (panel == null) return;
+
+        if (panel != shopPanel)
+        {
+            CloseShopIfOpen();
+        }
+
         if (panel.TryGetComponent(out PanelTween panelTween))
         {
             panelTween.Show();
@@ -255,6 +231,13 @@ public class PlayerUI : NetworkBehaviour
         {
             panel.SetActive(true);
         }
+    }
+
+    private void CloseShopIfOpen()
+    {
+        if (shopPanel == null || !shopPanel.activeSelf) return;
+
+        HideAnimatedPanel(shopPanel);
     }
 
     private void HideAnimatedPanel(GameObject panel, Action onComplete = null)
