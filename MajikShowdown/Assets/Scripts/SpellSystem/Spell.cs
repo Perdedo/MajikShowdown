@@ -147,6 +147,35 @@ public class Spell
         callAux = 0;
         triggerCalls.Clear();
     }
+    public void UpdateNodeConections()
+    {
+        Queue<SpellNode> nodesToUpdate = new Queue<SpellNode>();
+        nodesToUpdate.Enqueue(coreNode);
+        for(int i = 0; i < grid.spellNodes.Count; i++)
+        {
+            if (grid.spellNodes[i] != null)
+            {
+                grid.spellNodes[i].CriticalConections = 0;
+            }
+        }
+        while (nodesToUpdate.Count > 0)
+        {
+            SpellNode node = nodesToUpdate.Dequeue();
+            foreach (NodeConection con in node.Interface.conections)
+            {
+                if (con.neighborNode == coreNode || (con.conectionType != NodeConection.Conections.None && con.neighborNode.Interface.CriticalConections > 0))
+                {
+                    node.Interface.CriticalConections++;
+                    con.neighborNode.Interface.CriticalConections++;
+                    con.SetCritical(true);
+                }
+                if (!nodesToUpdate.Contains(con.neighborNode) && con.neighborNode != null)
+                {
+                    nodesToUpdate.Enqueue(con.neighborNode);
+                }
+            }
+        }
+    }
 }
 
 

@@ -23,6 +23,7 @@ public abstract class SpellNode : ScriptableObject
     public int hierarchy = -1;
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
+    //public SpellNode[] NeighborNodes = new SpellNode[6];
     public Spell OwnerSpell;
     [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
     [NonSerialized] public bool IsInUse;
@@ -183,6 +184,7 @@ public class NodeConection
 
     public SpellNode ownerNode;
     public SpellNode conectedNode;
+    public SpellNode neighborNode;
     public bool Critical = false;
 
     public enum Conections
@@ -209,15 +211,15 @@ public class NodeConection
 
         if (c.conectionType != conectionType)
             return false;
-        if(ownerNode.GetCategory() == NodeCategory.Stat && c.ownerNode.Interface.CriticalConections <= 0)
+        if (ownerNode.GetCategory() == NodeCategory.Stat && c.ownerNode.Interface.CriticalConections <= 0)
         {
             return false;
         }
         if (conectionType == Conections.None && ownerNode.GetCategory() != NodeCategory.Stat)
         {
-            if(c.ownerNode.GetCategory() != NodeCategory.Stat)
+            if (c.ownerNode.GetCategory() != NodeCategory.Stat)
             {
-                if(ownerNode.Interface.CriticalConections <= 0|| c.ownerNode.Interface.CriticalConections <= 0)
+                if (ownerNode.Interface.CriticalConections <= 0 || c.ownerNode.Interface.CriticalConections <= 0)
                 {
                     return false;
                 }
@@ -233,19 +235,13 @@ public class NodeConection
         /*if (conectionType == Conections.None && (ownerNode.GetCategory() != NodeCategory.Stat || c.ownerNode.GetCategory() != NodeCategory.Stat) && c.ownerNode.Interface.CriticalConections <= 0)
             return false;*/
 
-        conection = c;
-        c.conection = this;
+
 
         conectedNode = c.ownerNode;
         c.conectedNode = ownerNode;
 
         ownerNode.ConectedNodes[index] = c.ownerNode;
         c.ownerNode.ConectedNodes[c.index] = ownerNode;
-        if (Critical)
-        {
-            ownerNode.Interface.CriticalConections++;
-            c.ownerNode.Interface.CriticalConections++;
-        }
 
         if (conectedNode.hierarchy > ownerNode.hierarchy)
         {
@@ -255,17 +251,28 @@ public class NodeConection
         return true;
     }
 
-    public bool CheckConection(NodeConection c, bool crit)
+    public bool CheckConection(NodeConection c)
     {
         if (c == null)
             return false;
         if (c.conectionType == conectionType)
         {
-            Critical = crit;
-            c.Critical = crit;
+            neighborNode = c.ownerNode;
+            c.neighborNode = ownerNode;
+            conection = c;
+            c.conection = this;
+            ownerNode.OwnerSpell.UpdateNodeConections();
             return true;
         }
         return false;
+    }
+    public void SetCritical(bool critical)
+    {
+        if (conection != null)
+        {
+            Critical = critical;
+            conection.Critical = critical;
+        }
     }
 
     public void RemoveConection()
@@ -273,24 +280,16 @@ public class NodeConection
         NodeConection other = conection;
 
         ownerNode.ConectedNodes[index] = null;
+        neighborNode = null;
         conectedNode = null;
         conection = null;
-        if (Critical)
-        {
-            Critical = false;
-            ownerNode.Interface.CriticalConections--;
-        }
 
         if (other != null)
         {
             other.ownerNode.ConectedNodes[other.index] = null;
+            other.neighborNode = null;
             other.conectedNode = null;
             other.conection = null;
-            if (other.Critical)
-            {
-                other.Critical = false;
-                other.ownerNode.Interface.CriticalConections--;
-            }
         }
     }
 }

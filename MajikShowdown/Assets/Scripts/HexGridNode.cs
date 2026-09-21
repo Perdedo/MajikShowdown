@@ -60,6 +60,11 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public void Release(DraggableNode node)
     {
         if (spellNode == null) return;
+        spellNode.CriticalConections = 0;
+        foreach (NodeConection con in spellNode.conections)
+        {
+            con.SetCritical(false);
+        }
         VerifyNearbyBreakConections(spellNode);
         grid.spellNodes[index] = null;
         spellNode.hexGridNode = null;

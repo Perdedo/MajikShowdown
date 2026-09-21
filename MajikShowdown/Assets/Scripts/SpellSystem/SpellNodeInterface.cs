@@ -121,16 +121,7 @@ public class SpellNodeInterface : MonoBehaviour
         int mirrorIndex = (index + 3) % 6;
         if (index < conections.Length)
         {
-            bool critical = false;
-            if(Node.GetCategory() == NodeCategory.Core || con.Node.GetCategory() == NodeCategory.Core)
-            {
-                critical = true;
-            }
-            else if(conections[index].conectionType != NodeConection.Conections.None && con.CriticalConections > 0)
-            {
-                critical = true;
-            }
-            if (conections[index].CheckConection(con.conections[mirrorIndex],critical))
+            if (conections[index].CheckConection(con.conections[mirrorIndex]))
             {
                 /*if(critical)
                 {
@@ -150,7 +141,7 @@ public class SpellNodeInterface : MonoBehaviour
 
         NodeConection connection = conections[index];
 
-        if (connection != null && connection.conectedNode != null)
+        if (connection != null && (connection.conectedNode != null || connection.neighborNode != null))
         {
             /*if (connection.conectionType != NodeConection.Conections.None)
                 CriticalConections--;
