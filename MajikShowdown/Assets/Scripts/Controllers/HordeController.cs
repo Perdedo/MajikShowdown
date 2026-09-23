@@ -46,6 +46,9 @@ public class HordeController : NetworkBehaviour
     public float lastTime;
     Timer aiCalcTimer = new Timer(false);
     float enemyAIupdateRate = 1f / 10f; // Hz
+
+    [Header("Ground Raycast Options")]
+    [SerializeField] protected LayerMask RayMasks;
     private void Awake()
     {
         clientEnemies = new Enemy[maxEnemyCount];
@@ -137,8 +140,9 @@ public class HordeController : NetworkBehaviour
                         if (UsedEnemies[i] != null)
                         {
                             UsedEnemies[i].MoveDirection = results[i];
-                            UsedEnemies[i].EnemyUpdate();
                             UsedEnemies[i].Reposition();
+                            UsedEnemies[i].ResetKnockbackCooldown();
+                            UsedEnemies[i].EnemyUpdate();
                         }
                     }
                 }
@@ -216,23 +220,12 @@ public class HordeController : NetworkBehaviour
                 };
             }
         }
-        //NativeArray<CellJobData> cellInfo = new NativeArray<CellJobData>(FlowFieldManager.instance.flowField.allCells.Count, Allocator.TempJob);
-        //NativeList<int> EnemyFieldData = new NativeList<int>(Allocator.TempJob);
-        for (int i = 0; i < FlowFieldManager.instance.cellJobDatas.Length; i++)
+        /*for (int i = 0; i < FlowFieldManager.instance.cellJobDatas.Length; i++)
         {
             CellJobData cell = FlowFieldManager.instance.cellJobDatas[i];
-            //cell.firstEnemy = EnemyFieldData.Length;
             cell.Direction = FlowFieldManager.instance.flowField.allCells[i].direction;
-            //cell.EnemiesNum = FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies.Count;
             FlowFieldManager.instance.cellJobDatas[i] = cell;
-
-            /*for (int j = 0; j < cell.EnemiesNum; j++)
-            {
-                EnemyFieldData.Add(FlowFieldManager.instance.flowField.allCells[i].ContainedEnemies[j].ID);
-            }*/
-
-
-        }
+        }*/
         NativeArray<float3> playerPos = new NativeArray<float3>(GameManager.Instance.Players.Count, Allocator.TempJob);
         for(int i =0; i<GameManager.Instance.Players.Count; i++)
         {
@@ -353,16 +346,64 @@ public class HordeController : NetworkBehaviour
         {
             return;
         }
+        RaycastHit[] hit;
+        float[] dot;
+        StartEnemyRaycastJob(out hit, out dot);
         for (int i = 0; i < usedEnemiesByType.Count; i++)
         {
             foreach (Enemy e in usedEnemiesByType[i])
             {
                 if (e != null)
                 {
+                    e.normalDot = dot[e.ActiveID.ID];
+                    e.LastHitInfo = hit[e.ActiveID.ID];
                     e.FixedRBUpdate();
                 }
             }
         }
+    }
+    void StartEnemyRaycastJob(out RaycastHit[] results, out float[] normalDot)
+    {
+        NativeArray<RaycastCommand> commands = new NativeArray<RaycastCommand>(UsedEnemies.Count, Allocator.TempJob);
+        NativeArray<float> nDot = new NativeArray<float>(UsedEnemies.Count, Allocator.TempJob);
+
+        NativeArray<EnemyJobData> enemiesInfo = new NativeArray<EnemyJobData>(UsedEnemies.Count, Allocator.TempJob);
+        NativeArray<RaycastHit> Results = new NativeArray<RaycastHit>(UsedEnemies.Count, Allocator.TempJob);
+        for (int i = 0; i < UsedEnemies.Count; i++)
+        {
+            if (UsedEnemies[i] != null)
+            {
+                enemiesInfo[i] = new EnemyJobData()
+                {
+                    Position = UsedEnemies[i].transform.position,
+                    height = UsedEnemies[i].height,
+                    terrainBuffer = UsedEnemies[i].terrainBuffer
+                };
+            }
+        }
+        EnemyGroundRaycastJob raycastJob = new EnemyGroundRaycastJob()
+        {
+            EnemyData = enemiesInfo,
+            GroundMask = RayMasks,
+            Commands = commands,
+        };
+        JobHandle handle = raycastJob.Schedule(UsedEnemies.Count, 64);
+        JobHandle RaycastHandle = RaycastCommand.ScheduleBatch(raycastJob.Commands, Results, 64, handle);
+        EnemyCalculateDotJob dotJob = new EnemyCalculateDotJob()
+        {
+            Res = Results,
+            NormalDot = nDot
+        };
+        JobHandle dotHandle = dotJob.Schedule(UsedEnemies.Count, 64, RaycastHandle);
+        dotHandle.Complete();
+        results = Results.ToArray();
+        normalDot = dotJob.NormalDot.ToArray();
+
+        enemiesInfo.Dispose();
+        Results.Dispose();
+        nDot.Dispose();
+        commands.Dispose();
+
     }
 
     public void Initialize()

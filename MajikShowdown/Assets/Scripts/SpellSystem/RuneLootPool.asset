@@ -1,0 +1,166 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc8b72238e768d247910b68c7423d0cb, type: 3}
+  m_Name: RuneLootPool
+  m_EditorClassIdentifier: Assembly-CSharp::RuneLootPool
+  RarityChance:
+    Entries:
+    - Weight: 0.65
+      label: Rusty
+      Value: 0
+    - Weight: 0.35
+      label: Forged
+      Value: 1
+    - Weight: 0.05
+      label: FactoryNew
+      Value: 2
+  Rusty:
+    TypeChance:
+      Entries:
+      - Weight: 0.1
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0.2
+        label: Effect
+        Value: 2
+      - Weight: 0.2
+        label: Stat
+        Value: 3
+      - Weight: 0.05
+        label: Trigger
+        Value: 4
+      - Weight: 0.1
+        label: CastPoint
+        Value: 5
+    Core:
+    - {fileID: 11400000, guid: fbc1f1f918bdb3744b82ca58741bc8dc, type: 2}
+    - {fileID: 11400000, guid: 2d62b0e1990d4fe418bf67d579510dc6, type: 2}
+    - {fileID: 11400000, guid: 64bed0574180f81439ae9b6158533312, type: 2}
+    Trajectory:
+    - {fileID: 11400000, guid: e5a7eaef2ea1df8459f01cde7c0a7433, type: 2}
+    - {fileID: 11400000, guid: cb4b72dd4349f734fb53377f3a6e3848, type: 2}
+    - {fileID: 11400000, guid: a0f76ebc750397b469d4f2fb62e528ed, type: 2}
+    - {fileID: 11400000, guid: 0e70df82dedecdc4d87fdcd83b852fdc, type: 2}
+    - {fileID: 11400000, guid: 2adb7ae0f482dfa468fb50d43f48129a, type: 2}
+    - {fileID: 11400000, guid: 86d7b479c33dd234e8bbaf417c65e25c, type: 2}
+    - {fileID: 11400000, guid: 552b98e6749cb1c40b982734824a6bed, type: 2}
+    - {fileID: 11400000, guid: e28da45c00442584cbb52c9ff30912c0, type: 2}
+    - {fileID: 11400000, guid: ba5d8738e35456445b28685f110df77a, type: 2}
+    Effect:
+    - {fileID: 11400000, guid: 305a7e9c70923194ea28c2e6ac0d8fa7, type: 2}
+    - {fileID: 11400000, guid: cfd120551b36856499037f3b7905ff46, type: 2}
+    Stat:
+    - {fileID: 11400000, guid: 6aed3ed64c34e9b42b5bd2c13db52f8d, type: 2}
+    - {fileID: 11400000, guid: d5629279227f93342a01588e1a27cc11, type: 2}
+    - {fileID: 11400000, guid: 00d940a69857b54469ce48eda478de0e, type: 2}
+    - {fileID: 11400000, guid: 571bacd2f0883f047bb86a6f8eddbd7c, type: 2}
+    - {fileID: 11400000, guid: ba641916d12d14549af400a4f8b0a2b3, type: 2}
+    - {fileID: 11400000, guid: 39318fdeb09a3d841bdc8ad4c1e62718, type: 2}
+    - {fileID: 11400000, guid: 76a8d7ce1837fc34393900190e7534b5, type: 2}
+    - {fileID: 11400000, guid: c5a1d60250471834a9935dfc953451a2, type: 2}
+    Trigger:
+    - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
+    CastPoint:
+    - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
+    - {fileID: 11400000, guid: 1c81d13cfb783c543897a613a1ad49f1, type: 2}
+    - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}
+  Forged:
+    TypeChance:
+      Entries:
+      - Weight: 0
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0
+        label: Effect
+        Value: 2
+      - Weight: 0.2
+        label: Stat
+        Value: 3
+      - Weight: 0
+        label: Trigger
+        Value: 4
+      - Weight: 0
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory:
+    - {fileID: 11400000, guid: 02c686d126546bf4ca77b3bba178daff, type: 2}
+    - {fileID: 11400000, guid: cee3db6028e9e7a42952976c46aa08db, type: 2}
+    - {fileID: 11400000, guid: d742b3983109d024eb31b505d34eece4, type: 2}
+    - {fileID: 11400000, guid: 7e76069515a246b41b09bc1277376b11, type: 2}
+    - {fileID: 11400000, guid: 066a41cc9d6fd2e44b2ea8b2d12c6196, type: 2}
+    - {fileID: 11400000, guid: e2ab254cabbb39c418de8e7c40ad03db, type: 2}
+    - {fileID: 11400000, guid: ae4d9412cd42a3745a9fab7a5fa5c453, type: 2}
+    - {fileID: 11400000, guid: 234ab63505d5dea41966027761459329, type: 2}
+    - {fileID: 11400000, guid: fb385dfd0d92f3e4fac9a5c9e836bcb4, type: 2}
+    Effect: []
+    Stat:
+    - {fileID: 11400000, guid: 1d9ff62e904089545b537998732d9784, type: 2}
+    - {fileID: 11400000, guid: 8562eafb3912bc64192b6708d7b97011, type: 2}
+    - {fileID: 11400000, guid: 9e7bffd4ba9921841bb6d7bbe2070a50, type: 2}
+    - {fileID: 11400000, guid: 05fb794fd18b51e49a4e1993686da3ee, type: 2}
+    - {fileID: 11400000, guid: 2f3c00123984dd04892a9db4fdc4286b, type: 2}
+    - {fileID: 11400000, guid: cda9f2213c7450c408ace279fa844b95, type: 2}
+    - {fileID: 11400000, guid: 16b2d9a49d46b684093f88d79bacc505, type: 2}
+    - {fileID: 11400000, guid: eec25f993c0246445b0e1eaa315b9950, type: 2}
+    Trigger: []
+    CastPoint: []
+  FactoryNew:
+    TypeChance:
+      Entries:
+      - Weight: 0
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0
+        label: Effect
+        Value: 2
+      - Weight: 0.2
+        label: Stat
+        Value: 3
+      - Weight: 0
+        label: Trigger
+        Value: 4
+      - Weight: 0
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory:
+    - {fileID: 11400000, guid: 0dbc51ac2645d7c43b33ca63bba3fc59, type: 2}
+    - {fileID: 11400000, guid: a7648e07787147849abe764a5a19b543, type: 2}
+    - {fileID: 11400000, guid: e2d0972c5ac13c942be4f4b641fe4485, type: 2}
+    - {fileID: 11400000, guid: ad071d28ca2a0b74f8f3e6f8cfebd064, type: 2}
+    - {fileID: 11400000, guid: 64fabc9a98947d3429fdd9a1ce94176e, type: 2}
+    - {fileID: 11400000, guid: c65782bbe93b4d3439a4d6de2694e851, type: 2}
+    - {fileID: 11400000, guid: 4572eb763389748438fa35b83fc182e3, type: 2}
+    - {fileID: 11400000, guid: 7fd29b8f3659c414f848fe811c60ac5b, type: 2}
+    - {fileID: 11400000, guid: a5cfb7c5569b70f4dbc60bf13c1f4cd8, type: 2}
+    Effect: []
+    Stat:
+    - {fileID: 11400000, guid: 5101f76e5330d2b4fa2745f4e55ff3e0, type: 2}
+    - {fileID: 11400000, guid: 451188460737c584d88cf633d36cb44f, type: 2}
+    - {fileID: 11400000, guid: e13dae0dea42eee4287825282fe434db, type: 2}
+    - {fileID: 11400000, guid: f922223ab8d8e9745baf803056d65e18, type: 2}
+    - {fileID: 11400000, guid: 31dd8405377cf7b47bf276c5dae9628b, type: 2}
+    - {fileID: 11400000, guid: 6f80c1d2841151f4ca912a70575269b1, type: 2}
+    - {fileID: 11400000, guid: abe9f7572e3fc254881e770b6f4f35e8, type: 2}
+    - {fileID: 11400000, guid: 872cfb04fcb0c134699eb34ca24d36ee, type: 2}
+    Trigger: []
+    CastPoint: []

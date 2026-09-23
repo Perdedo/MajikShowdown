@@ -4,9 +4,10 @@ using UnityEngine;
 public class DeathPlane : NetworkBehaviour
 {
     public Transform spawn;
+    public bool network = true;
     private void OnTriggerEnter(Collider other)
     {
-        if(!isServer)
+        if(!isServer && network)
         {
             return;
         }

@@ -26,7 +26,14 @@ public class PlayerDamageHandler : CharacterDamageHandler
         {
             Die();
         }
-        UpdateUI();
+        if(network)
+        {
+            UpdateUI();
+        }
+        else
+        {
+            GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+        }
     }
 
     [TargetRpc]

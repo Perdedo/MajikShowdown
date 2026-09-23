@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8945007328415893024
 Transform:
@@ -49,7 +49,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &22022725173779055
 Transform:
@@ -63,7 +63,8 @@ Transform:
   m_LocalPosition: {x: -0.27, y: 2.69, z: -3.51}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4702549931672364230}
   m_Father: {fileID: 8945007328415893024}
   m_LocalEulerAnglesHint: {x: -52.705, y: 0, z: 0}
 --- !u!65 &7804012885307507751
@@ -106,8 +107,61 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 5.02, y: 10.64, z: 2.31}
-  m_Center: {x: 0, y: 10.01, z: 0}
+  m_Size: {x: 5.02, y: 8.950353, z: 2.31}
+  m_Center: {x: 0.000028848648, y: 9.165028, z: -0.00007831883}
+--- !u!1 &8335057156584799656
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4702549931672364230}
+  - component: {fileID: 1703793013310091141}
+  m_Layer: 0
+  m_Name: RampBridgeCollider02
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!4 &4702549931672364230
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8335057156584799656}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.29246706, y: -0, z: -0, w: 0.9562756}
+  m_LocalPosition: {x: 0, y: 14.288886, z: 0.021756172}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 22022725173779055}
+  m_LocalEulerAnglesHint: {x: -34.011, y: 0, z: 0}
+--- !u!65 &1703793013310091141
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8335057156584799656}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5.0870767, y: 2.2582676, z: 1.0562487}
+  m_Center: {x: 0.006596327, y: -0.03556335, z: 0.028124569}
 --- !u!1001 &8240644652842042841
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -159,6 +213,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 0cdf296523a42364784e94e03b2d981e, type: 3}
       propertyPath: m_Name
       value: RampBridge02
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0cdf296523a42364784e94e03b2d981e, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

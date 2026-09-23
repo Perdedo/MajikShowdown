@@ -9,15 +9,20 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerUI : NetworkBehaviour
 {
+
     [Header("Shop")]
     [SerializeField] private GameObject shopPanel;
     public bool IsShopOpen => shopPanel != null && shopPanel.activeSelf;
 
     [Header("Currency")]
     [SerializeField] private TMP_Text moneyText;
+
+    [Header("Rune Pickup")]
+    [SerializeField] private RunePickupUI runePickupUI;
 
     [Header("Test Panels")]
     public GameObject spellPanel;
@@ -58,6 +63,7 @@ public class PlayerUI : NetworkBehaviour
     List<Resolution> selectedResList = new List<Resolution>();
     public TMP_Dropdown resDropdown;
     public TMP_Dropdown screenModeDropdown;
+    public TMP_Dropdown antiAliasingDropdown;
 
     [Header("Spell Customization")]
     public SpellVisualDatabase visualDatabase;
@@ -136,6 +142,7 @@ public class PlayerUI : NetworkBehaviour
         }
         ResolutionDropdown();
         ScreenModeDropdown();
+        AntiAliasingDropdown();
         loaded = true;
         data = SaveManager.LoadConfig(ref loaded);
         if (!loaded)
@@ -209,6 +216,13 @@ public class PlayerUI : NetworkBehaviour
 
     private void ShowAnimatedPanel(GameObject panel)
     {
+        if (panel == null) return;
+
+        if (panel != shopPanel)
+        {
+            CloseShopIfOpen();
+        }
+
         if (panel.TryGetComponent(out PanelTween panelTween))
         {
             panelTween.Show();
@@ -217,6 +231,13 @@ public class PlayerUI : NetworkBehaviour
         {
             panel.SetActive(true);
         }
+    }
+
+    private void CloseShopIfOpen()
+    {
+        if (shopPanel == null || !shopPanel.activeSelf) return;
+
+        HideAnimatedPanel(shopPanel);
     }
 
     private void HideAnimatedPanel(GameObject panel, Action onComplete = null)
@@ -259,6 +280,11 @@ public class PlayerUI : NetworkBehaviour
         {
             screenModeDropdown.value = data.screenMode;
         }
+        if (antiAliasingDropdown != null)
+        {
+            antiAliasingDropdown.SetValueWithoutNotify(data.antiAliasing);
+        }
+        ApplyAntiAliasing(data.antiAliasing);
         AudioController.instance.ChangeMasterVol(data.master);
         if (_masterVolumeSlider != null)
         {
@@ -372,6 +398,40 @@ public class PlayerUI : NetworkBehaviour
                 }
             });
         }
+    }
+
+    public void AntiAliasingDropdown()
+    {
+        if (antiAliasingDropdown == null) return;
+
+        List<string> antiAliasingOptions = new List<string> { "No Anti-aliasing", "FXAA", "SMAA", "TAA" };
+        antiAliasingDropdown.ClearOptions();
+        antiAliasingDropdown.AddOptions(antiAliasingOptions);
+        antiAliasingDropdown.onValueChanged.RemoveAllListeners();
+        antiAliasingDropdown.onValueChanged.AddListener(ChangeAntiAliasing);
+    }
+
+    private void ApplyAntiAliasing(int index)
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera == null) return;
+
+        UniversalAdditionalCameraData cameraData = mainCamera.GetUniversalAdditionalCameraData();
+
+        cameraData.antialiasing = index switch
+        {
+            0 => AntialiasingMode.None,
+            1 => AntialiasingMode.FastApproximateAntialiasing,
+            2 => AntialiasingMode.SubpixelMorphologicalAntiAliasing,
+            3 => AntialiasingMode.TemporalAntiAliasing,
+            _ => AntialiasingMode.None
+        };
+    }
+
+    public void ChangeAntiAliasing(int index)
+    {
+        data.antiAliasing = index;
+        ApplyAntiAliasing(index);
     }
 
     void UpdateCooldownIcon()
@@ -1144,5 +1204,13 @@ public class PlayerUI : NetworkBehaviour
         if (moneyText == null) return;
 
         moneyText.text = amount.ToString();
+    }
+
+    public void ShowRunePickup(SpellNode node, Vector3 lootboxWorldPosition)
+    {
+        if (!isLocalPlayer && network) return;
+        if (runePickupUI == null) return;
+
+        runePickupUI.ShowRune(node, lootboxWorldPosition);
     }
 }

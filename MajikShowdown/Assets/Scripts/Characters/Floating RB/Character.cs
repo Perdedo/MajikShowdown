@@ -23,6 +23,9 @@ public class Character : FloatingRigidbody, IGameCharacter
     [Header("Jump Events")]
     [SerializeField] protected UnityEvent Jumped;
     [SerializeField] protected UnityEvent FellOnJump;
+    protected bool canBeKnocked = true;
+    protected float knockbackCooldown = 0.5f;
+    protected Timer knockbackTimer = new Timer(false);
     public enum CharVerticalState { falling, grounded, jumping };
     CharVerticalState cvState; // N�O USE ESTA VARIAVEL use PvState ao inv�s
     public CharacterDamageHandler DamageHandler { get; protected set; }
@@ -58,7 +61,7 @@ public class Character : FloatingRigidbody, IGameCharacter
         {
             DamageHandler = GetComponent<CharacterDamageHandler>();
         }
-        DamageHandler.Initialize(this);
+        DamageHandler.Initialize(this, 1f);
     }
 
     protected override void FixedUpdate()
@@ -186,10 +189,17 @@ public class Character : FloatingRigidbody, IGameCharacter
         }
 
     }
-    public void Knockback(Vector3 direction, float strenght)
+    public virtual void Knockback(Vector3 direction, float strenght)
     {
-        AddExternalVelocity(direction * strenght);
+        if(canBeKnocked)
+        {
+            knockbackTimer.SetTimer(0);
+            canBeKnocked = false;
+            knockbackTimer.Paused = false;
+            AddExternalVelocity(direction * strenght);
+        }
     }
+
     public virtual void Die()
     {
         

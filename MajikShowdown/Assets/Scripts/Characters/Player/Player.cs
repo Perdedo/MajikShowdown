@@ -58,6 +58,7 @@ public class Player : Character
     public int Money => money;
 
     public InteractableObject currentInteraction;
+    private InteractableObject previousInteraction;
 
     public Animator animator;
     [SerializeField] float speedChangeRate = 10;
@@ -89,6 +90,7 @@ public class Player : Character
         HitGround.AddListener(PeformJumpBuffering);
         input = GetComponent<PlayerInput>();
         DamageHandler = GetComponent<PlayerDamageHandler>();
+        canBeKnocked = true;
         //cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }
@@ -155,6 +157,19 @@ public class Player : Character
         }
         animator.SetFloat("InputX", xAux);
         animator.SetFloat("InputY", yAux);
+
+        if(!canBeKnocked)
+        {
+            if(knockbackTimer.timer(knockbackCooldown, Time.deltaTime, false, false))
+            {
+                canBeKnocked = true;
+                knockbackTimer.Paused = true;
+            }
+        }
+        if (isLocalPlayer || !network)
+        {
+            UpdateInteractionVisual();
+        }
         /*if(isLocalPlayer && GameManager.Instance.hordeController.inPause)
         {
             if(Input.GetKeyDown(KeyCode.R))
@@ -167,6 +182,26 @@ public class Player : Character
             Dash(directionInput);
         }*/
         //RotateCamera();
+    }
+
+    private void UpdateInteractionVisual()
+    {
+        if (previousInteraction == currentInteraction)
+        {
+            return;
+        }
+
+        if (previousInteraction != null)
+        {
+            previousInteraction.HideInteractionIndicator();
+        }
+
+        previousInteraction = currentInteraction;
+
+        if (currentInteraction != null)
+        {
+            currentInteraction.ShowInteractionIndicator(this);
+        }
     }
 
     public void OnDeathValueChange(bool oldVal, bool newVal)
@@ -468,6 +503,11 @@ public class Player : Character
 
     private void OnDestroy()
     {
+        if (previousInteraction != null && (isLocalPlayer || !network))
+        {
+            previousInteraction.HideInteractionIndicator();
+        }
+
         GameManager.Instance.RemovePlayer(this);
     }
 
@@ -544,4 +584,28 @@ public class Player : Character
             GameManager.Instance.uiController.playerUI.UpdateMoneyUI(newMoney);
         }
     }
+
+
+    public override void Knockback(Vector3 direction, float strenght)
+    {
+        if (canBeKnocked)
+        {
+            knockbackTimer.SetTimer(0);
+            canBeKnocked = false;
+            knockbackTimer.Paused = false;
+            AddExternalVelocity(direction * strenght);
+
+            if(!isLocalPlayer && isServer)
+            {
+                RPCKnockback(direction, strenght);
+            }
+        }
+    }
+
+    [TargetRpc]
+    public void RPCKnockback(Vector3 direction, float strenght)
+    {
+        AddExternalVelocity(direction * strenght);
+    }
+
 }

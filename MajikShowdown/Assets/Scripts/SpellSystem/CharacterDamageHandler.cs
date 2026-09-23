@@ -5,34 +5,44 @@ using UnityEngine;
 
 public class CharacterDamageHandler : NetworkBehaviour
 {
+    [SyncVar]public float BaseMaxHealth;
     [SyncVar]public float MaxHealth;
     [SyncVar]public float Health;
     public List<Resistance> Resistances;
     public int enemyIndex;
-    public int lootDropPoolInd;
-    public int lootDropChance;
+    //public int lootDropPoolInd;
+    //public int lootDropChance;
     public int moneyDrop;
+
+    [Header("Damage Indicator")]
+    [SerializeField] private bool canHaveDamageIndicator = false;
+    [SerializeField] private DamageIndicator damageIndicatorPrefab;
+
     [Header("Network")]
     public bool network = true;
     public IGameCharacter gameCharacter;
+    public bool canDie = true;
     void Awake()
     {
         Health = MaxHealth;
     }
 
-    public void Initialize(IGameCharacter GC)
+    public void Initialize(IGameCharacter GC, float HealthMultiplier)
     {
+        MaxHealth = BaseMaxHealth * HealthMultiplier;
         Health = MaxHealth;
         gameCharacter = GC;
     }
 
     public virtual void TakeDamage(Damage damage)
     {
-        if(!isServer && network)
+        if (!isServer && network)
         {
             return;
         }
+
         float finalDamage = damage.Value;
+
         for (int i = 0; i < Resistances.Count; i++)
         {
             if (Resistances[i].Element == damage.Element)
@@ -41,8 +51,15 @@ public class CharacterDamageHandler : NetworkBehaviour
                 i = Resistances.Count;
             }
         }
+        if (canHaveDamageIndicator && damageIndicatorPrefab != null)
+        {
+            DamageIndicator indicator = Instantiate(damageIndicatorPrefab);
+            indicator.Initialize(finalDamage, damage.Element, transform);
+        }
+
         Health = MathF.Max(Health - finalDamage, 0);
-        if (Health <= 0)
+
+        if (Health <= 0 && canDie)
         {
             Die();
         }
@@ -60,7 +77,7 @@ public class CharacterDamageHandler : NetworkBehaviour
     public virtual void Die()
     {
         gameCharacter.Die();
-        if(GameManager.Instance.hordeController.enemies.Contains((Enemy)gameCharacter))
+        if(GameManager.Instance.hordeController != null && GameManager.Instance.hordeController.enemies.Contains((Enemy)gameCharacter))
         {
             foreach (Player player in GameManager.Instance.Players)
             {
@@ -76,19 +93,23 @@ public class CharacterDamageHandler : NetworkBehaviour
         if (network)
         {
             //NetworkServer.Destroy(gameObject);
-            if(UnityEngine.Random.Range(0, 100) < lootDropChance)
+            if(UnityEngine.Random.Range(0, 100) < ((Enemy)gameCharacter).DropChance)
             {
-                LootSpawner.Instance.SpawnLootBox(transform.position, lootDropPoolInd);
+                LootSpawner.Instance.SpawnLootBox(transform.position, ((Enemy)gameCharacter).AvailablePools[((Enemy)gameCharacter).PoolProbability.GetRandomEntry()]);
             }
             GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
             GameManager.Instance.hordeController.UsedEnemies.Remove((Enemy)gameCharacter);
             ((Enemy)gameCharacter).UpdateIdWrapper(-1);
-            GameManager.Instance.hordeController.UpdateEnemyActiveID()
-;            RPCDisable();
+            GameManager.Instance.hordeController.UpdateEnemyActiveID();           
+            RPCDisable();
             this.gameObject.SetActive(false);
         }
         else
         {
+            GameManager.Instance.trainingController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
+            GameManager.Instance.trainingController.UsedEnemies.Remove((Enemy)gameCharacter);
+            ((Enemy)gameCharacter).UpdateIdWrapper(-1);
+            GameManager.Instance.trainingController.UpdateEnemyActiveID();
             this.gameObject.SetActive(false);
             //Destroy(gameObject);
         }

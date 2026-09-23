@@ -122,7 +122,7 @@ public class SpellNodeDescription : NetworkBehaviour
     public HexGrid grid;
     Color activeColor = Color.white;
     Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 1f);
-    SpellType currentType;
+    SpellCore currentType;
     SpellTrigger currentTrigger;
     SpellNode currentNode;
     List<Spell> availableSpells = new List<Spell>();
@@ -154,7 +154,7 @@ public class SpellNodeDescription : NetworkBehaviour
 
     void CheckNode(SpellNode node)
     {
-        if (node is SpellType) CoreDesc();
+        if (node is SpellCore) CoreDesc();
         else if (node is SpellTrigger) TriggerDesc();
         else if (node is SpellEffect) EffectDesc();
         else if (node is SpellTrajectory) TrajectoryDesc();
@@ -286,7 +286,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
     void ChangeTextColor(TextMeshProUGUI text, SpellNode node)
     {
         Color color = new Color(1f, 1f, 1f, 1f);
-        if(node is SpellType)
+        if(node is SpellCore)
         {
             color = Color.red;
         }
@@ -391,7 +391,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
 
     void MultiplierDescription(SpellNode node)
     {
-        SpellType typeNode = node as SpellType;
+        SpellCore typeNode = node as SpellCore;
         if (typeNode == null)
         {
             nodeMultipliersContainer.SetActive(false);
@@ -410,7 +410,33 @@ public void HideAll() => ApplyConfig(new SectionConfig());
 
     void CollisionDescription(SpellNode node)
     {
-        currentType = node as SpellType;
+        currentType = node as SpellCore;
+        bool isType = currentType != null;
+        selfToggle.gameObject.SetActive(isType);
+        alliesToggle.gameObject.SetActive(isType);
+        enemiesToggle.gameObject.SetActive(isType);
+        objectsToggle.gameObject.SetActive(isType);
+        if (!isType) return;
+        selfToggle.SetIsOnWithoutNotify(currentType.Collisions.Self);
+        alliesToggle.SetIsOnWithoutNotify(currentType.Collisions.Allies);
+        enemiesToggle.SetIsOnWithoutNotify(currentType.Collisions.Enemies);
+        objectsToggle.SetIsOnWithoutNotify(currentType.Collisions.Objects);
+        selfToggleIcon.sprite = currentType.Collisions.Self ? checkSprite : xSprite;
+        alliesToggleIcon.sprite = currentType.Collisions.Allies ? checkSprite : xSprite;
+        enemiesToggleIcon.sprite = currentType.Collisions.Enemies ? checkSprite : xSprite;
+        objectsToggleIcon.sprite = currentType.Collisions.Objects ? checkSprite : xSprite;
+
+        if(!isServer && network)
+        {
+            CMDCollisionDescription(node.Interface.acquisitionOrder);
+        }
+    }
+
+    [Command]
+    void CMDCollisionDescription(int index)
+    {
+        SpellNode node = caster.commander.interfaces.Find(i => i.acquisitionOrder == index).Node;
+        currentType = node as SpellCore;
         bool isType = currentType != null;
         selfToggle.gameObject.SetActive(isType);
         alliesToggle.gameObject.SetActive(isType);
@@ -435,6 +461,11 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         selfToggleIcon.sprite = value ? checkSprite : xSprite;
         currentType.OwnerSpell?.UpdateSpell();
+
+        if(!isServer && network)
+        {
+            CMDSetSelfCollision(value);
+        }
     }
 
     void SetAlliesCollision(bool value)
@@ -445,6 +476,11 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         alliesToggleIcon.sprite = value ? checkSprite : xSprite;
         currentType.OwnerSpell?.UpdateSpell();
+
+        if (!isServer && network)
+        {
+            CMDSetAlliesCollision(value);
+        }
     }
 
     void SetEnemiesCollision(bool value)
@@ -455,9 +491,63 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         enemiesToggleIcon.sprite = value ? checkSprite : xSprite;
         currentType.OwnerSpell?.UpdateSpell();
+
+        if (!isServer && network)
+        {
+            CMDSetEnemiesCollision(value);
+        }
     }
 
     void SetObjectsCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Objects = value;
+        currentType.Collisions = col;
+        objectsToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+
+        if (!isServer && network)
+        {
+            CMDSetObjectsCollision(value);
+        }
+    }
+
+    [Command]
+    void CMDSetSelfCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Self = value;
+        currentType.Collisions = col;
+        selfToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+    }
+
+    [Command]
+    void CMDSetAlliesCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Allies = value;
+        currentType.Collisions = col;
+        alliesToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+    }
+
+    [Command]
+    void CMDSetEnemiesCollision(bool value)
+    {
+        if (currentType == null) return;
+        var col = currentType.Collisions;
+        col.Enemies = value;
+        currentType.Collisions = col;
+        enemiesToggleIcon.sprite = value ? checkSprite : xSprite;
+        currentType.OwnerSpell?.UpdateSpell();
+    }
+
+    [Command]
+    void CMDSetObjectsCollision(bool value)
     {
         if (currentType == null) return;
         var col = currentType.Collisions;
@@ -647,7 +737,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
 
     void UpdateElementIcon()
     {
-        SpellType typeNode = currentNode as SpellType;
+        SpellCore typeNode = currentNode as SpellCore;
         if (typeNode == null)
         {
             elementIcon.gameObject.SetActive(false);
@@ -706,6 +796,26 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         NodeCoolDownDescription(currentTrigger);
         UpdateTriggeredSpellUI();
         GameManager.Instance.uiController.playerUI.CloseTriggerSpellSelection();
+
+        if(!isServer && network)
+        {
+            CMDSelectTriggerSpell(availableSpells.IndexOf(spell));
+        }
+    }
+
+    [Command]
+    public void CMDSelectTriggerSpell(int index)
+    {
+        if (currentTrigger == null) return;
+        if(index < 0)
+        {
+            Debug.LogWarning("Spell not in available spells");
+        }
+        currentTrigger.TriggeredSpell = availableSpells[index];
+        currentTrigger.UpdateTrigger();
+        NodeCoolDownDescription(currentTrigger);
+        //UpdateTriggeredSpellUI();
+        //GameManager.Instance.uiController.playerUI.CloseTriggerSpellSelection();
     }
 
     public void OpenTriggerSpellSelection()

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8152101463072460882}
   - component: {fileID: 5196157928839395596}
-  - component: {fileID: 7672248040119142811}
   m_Layer: 0
   m_Name: DolmenCollider
   m_TagString: Untagged
@@ -54,22 +53,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2893388, y: 5.553609, z: 4.704537}
   m_Center: {x: 0.03322172, y: 2.5732079, z: -0.17665648}
---- !u!208 &7672248040119142811
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4928920668832527811}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.65, y: 2.75, z: 2.35}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0.03322172, y: 2.5732079, z: -0.17665648}
-  m_TimeToStationary: 0.5
 --- !u!1 &5597344058726088870
 GameObject:
   m_ObjectHideFlags: 0
@@ -79,6 +62,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3570453354042399030}
+  - component: {fileID: 1206802777668655294}
   m_Layer: 0
   m_Name: Dolmen
   m_TagString: Untagged
@@ -103,6 +87,26 @@ Transform:
   - {fileID: 8152101463072460882}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1206802777668655294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5597344058726088870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1001 &7274705397512592513
 PrefabInstance:
   m_ObjectHideFlags: 0

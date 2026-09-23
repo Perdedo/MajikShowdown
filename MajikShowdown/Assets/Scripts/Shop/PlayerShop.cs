@@ -7,36 +7,22 @@ public class PlayerShop : NetworkBehaviour
     [SerializeField] private RuneLootPool lootPool;
     [SerializeField] private int offerCount = 3;
 
-    [Header("Common Price")]
-    [SerializeField] private int commonMinPrice = 350;
-    [SerializeField] private int commonMaxPrice = 500;
-
-    [Header("Uncommon Price")]
-    [SerializeField] private int uncommonMinPrice = 900;
-    [SerializeField] private int uncommonMaxPrice = 1500;
-
-    [Header("Rare Price")]
-    [SerializeField] private int rareMinPrice = 2000;
-    [SerializeField] private int rareMaxPrice = 3500;
-
-    [Header("Epic Price")]
-    [SerializeField] private int epicMinPrice = 5000;
-    [SerializeField] private int epicMaxPrice = 8000;
-
-    [Header("Legendary Price")]
-    [SerializeField] private int legendaryMinPrice = 10000;
-    [SerializeField] private int legendaryMaxPrice = 15000;
+    [Header("Rune Prices")]
+    [SerializeField] private SimpleInt rustyPrice;
+    [SerializeField] private SimpleInt forgedPrice;
+    [SerializeField] private SimpleInt factoryNewPrice;
 
     [Header("Price Settings")]
     [SerializeField] private int priceStep = 25;
 
     [Header("Reroll")]
-    [SerializeField] private int rerollPrice = 500;
+    [SerializeField] private SimpleInt rerollPrice;
 
     private Player player;
     private ShopOffer[] offers;
+    private int currentRerollPrice;
 
-    public int RerollPrice => rerollPrice;
+    public int RerollPrice => currentRerollPrice;
 
     private void Awake()
     {
@@ -48,6 +34,7 @@ public class PlayerShop : NetworkBehaviour
     {
         base.OnStartServer();
 
+        GenerateRerollPrice();
         GenerateOffers();
     }
 
@@ -106,20 +93,29 @@ public class PlayerShop : NetworkBehaviour
         {
             return;
         }
+
         player.caster.AddRune(offer.node);
         offer.purchased = true;
-        TargetGiveRune(connectionToClient, GetNodeRarityIndex(offer.node), GetNodeTypeIndex(offer.node), GetNodeListIndex(offer.node));
+
+        TargetGiveRune(
+            connectionToClient,
+            GetNodeRarityIndex(offer.node),
+            GetNodeTypeIndex(offer.node),
+            GetNodeListIndex(offer.node)
+        );
+
         TargetPurchaseCompleted(connectionToClient, slotIndex);
     }
 
     [Command]
     private void CMDReroll()
     {
-        if (!player.SpendMoney(rerollPrice))
+        if (!player.SpendMoney(currentRerollPrice))
         {
             return;
         }
 
+        GenerateRerollPrice();
         GenerateOffers();
         SendShopToOwner();
     }
@@ -153,6 +149,18 @@ public class PlayerShop : NetworkBehaviour
     }
 
     [Server]
+    private void GenerateRerollPrice()
+    {
+        if (rerollPrice == null)
+        {
+            currentRerollPrice = 0;
+            return;
+        }
+
+        currentRerollPrice = GetSteppedPrice(rerollPrice.GetValue());
+    }
+
+    [Server]
     private void SendShopToOwner()
     {
         for (int i = 0; i < offers.Length; i++)
@@ -176,6 +184,7 @@ public class PlayerShop : NetworkBehaviour
             );
         }
 
+        TargetSetRerollPrice(connectionToClient, currentRerollPrice);
         TargetRefreshShop(connectionToClient);
     }
 
@@ -201,6 +210,12 @@ public class PlayerShop : NetworkBehaviour
             price = price,
             purchased = purchased
         };
+    }
+
+    [TargetRpc]
+    private void TargetSetRerollPrice(NetworkConnection target, int price)
+    {
+        currentRerollPrice = price;
     }
 
     [TargetRpc]
@@ -253,54 +268,53 @@ public class PlayerShop : NetworkBehaviour
 
     private int GetRunePrice(SpellNode node)
     {
-        switch (node.rarity)
+        SimpleInt priceConfig;
+
+        switch (node.quality)
         {
-            case SpellNode.Rarity.Common:
-                return GetRandomPrice(commonMinPrice, commonMaxPrice);
+            case SpellNode.Quality.Rusty:
+                priceConfig = rustyPrice;
+                break;
 
-            case SpellNode.Rarity.Uncommon:
-                return GetRandomPrice(uncommonMinPrice, uncommonMaxPrice);
+            case SpellNode.Quality.Forged:
+                priceConfig = forgedPrice;
+                break;
 
-            case SpellNode.Rarity.Rare:
-                return GetRandomPrice(rareMinPrice, rareMaxPrice);
-
-            case SpellNode.Rarity.Epic:
-                return GetRandomPrice(epicMinPrice, epicMaxPrice);
-
-            case SpellNode.Rarity.Legendary:
-                return GetRandomPrice(legendaryMinPrice, legendaryMaxPrice);
+            case SpellNode.Quality.FactoryNew:
+                priceConfig = factoryNewPrice;
+                break;
 
             default:
-                return commonMinPrice;
+                priceConfig = rustyPrice;
+                break;
         }
+
+        if (priceConfig == null)
+        {
+            return 0;
+        }
+
+        return GetSteppedPrice(priceConfig.GetValue());
     }
 
-    private int GetRandomPrice(int minPrice, int maxPrice)
+    private int GetSteppedPrice(int price)
     {
         if (priceStep <= 0)
         {
-            return Random.Range(minPrice, maxPrice + 1);
+            return price;
         }
 
-        int minStep = Mathf.CeilToInt((float)minPrice / priceStep);
-        int maxStep = Mathf.FloorToInt((float)maxPrice / priceStep);
-
-        if (maxStep < minStep)
-        {
-            return minPrice;
-        }
-
-        return Random.Range(minStep, maxStep + 1) * priceStep;
+        return Mathf.RoundToInt((float)price / priceStep) * priceStep;
     }
 
     private int GetNodeRarityIndex(SpellNode node)
     {
-        return (int)node.rarity;
+        return (int)node.quality;
     }
 
     private int GetNodeTypeIndex(SpellNode node)
     {
-        if (node is SpellType) return 0;
+        if (node is SpellCore) return 0;
         if (node is SpellTrajectory) return 1;
         if (node is SpellEffect) return 2;
         if (node is SpellStat) return 3;
@@ -312,16 +326,16 @@ public class PlayerShop : NetworkBehaviour
 
     private int GetNodeListIndex(SpellNode node)
     {
-        RuneRaretyGroup group = GetRarityGroup(node.rarity);
+        RuneQualityGroup group = GetRarityGroup(node.quality);
 
         if (group == null)
         {
             return -1;
         }
 
-        if (node is SpellType)
+        if (node is SpellCore)
         {
-            return group.Core.IndexOf(node as SpellType);
+            return group.Core.IndexOf(node as SpellCore);
         }
 
         if (node is SpellTrajectory)
@@ -354,7 +368,7 @@ public class PlayerShop : NetworkBehaviour
 
     private SpellNode GetNodeFromIndexes(int rarityIndex, int typeIndex, int listIndex)
     {
-        RuneRaretyGroup group = GetRarityGroup((SpellNode.Rarity)rarityIndex);
+        RuneQualityGroup group = GetRarityGroup((SpellNode.Quality)rarityIndex);
 
         if (group == null)
         {
@@ -397,24 +411,18 @@ public class PlayerShop : NetworkBehaviour
         return null;
     }
 
-    private RuneRaretyGroup GetRarityGroup(SpellNode.Rarity rarity)
+    private RuneQualityGroup GetRarityGroup(SpellNode.Quality rarity)
     {
         switch (rarity)
         {
-            case SpellNode.Rarity.Common:
-                return lootPool.Common;
+            case SpellNode.Quality.Rusty:
+                return lootPool.Rusty;
 
-            case SpellNode.Rarity.Uncommon:
-                return lootPool.Uncommon;
+            case SpellNode.Quality.Forged:
+                return lootPool.Forged;
 
-            case SpellNode.Rarity.Rare:
-                return lootPool.Rare;
-
-            case SpellNode.Rarity.Epic:
-                return lootPool.Epic;
-
-            case SpellNode.Rarity.Legendary:
-                return lootPool.Legendary;
+            case SpellNode.Quality.FactoryNew:
+                return lootPool.FactoryNew;
 
             default:
                 return null;
@@ -422,7 +430,11 @@ public class PlayerShop : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void TargetGiveRune(NetworkConnection target, int rarityIndex, int typeIndex, int listIndex)
+    private void TargetGiveRune(
+        NetworkConnection target,
+        int rarityIndex,
+        int typeIndex,
+        int listIndex)
     {
         if (isServer) return;
 

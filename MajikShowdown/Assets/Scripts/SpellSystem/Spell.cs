@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+
 
 //using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -18,7 +20,7 @@ public class Spell
     public List<SpellNode> spellNodes = new List<SpellNode>();
     public float SpellCooldown = 0;
     public float auxCooldown = 0;
-    public SpellType coreNode;
+    public SpellCore coreNode;
     public List<SpellTrigger> triggers = new List<SpellTrigger>();
     public List<SpellEffect> spellEffects = new List<SpellEffect>();
     public bool validSpell;
@@ -81,23 +83,34 @@ public class Spell
         }
         SpellCooldown = Mathf.Max(SpellCooldown, 0.1f);
         auxCooldown = Mathf.Max(auxCooldown, 0.1f);
+        bool foundCall = false;
         if (updatedCall != null)
         {
-            if(callAux == 0)
+            if (triggerCalls.Contains(updatedCall))
             {
-                Caster.StartCoroutine(ResetCalls());
+                foundCall = true;
             }
-            callAux++;
-            triggerCalls.Add(updatedCall);
-        }
-        foreach (SpellNode n in Caster.runtimeNodes)
-        {
-            if (n is SpellTrigger trigger && !triggerCalls.Contains(trigger) && trigger.TriggeredSpell == this)
+            if (!foundCall)
             {
-                trigger.UpdateTrigger();
+                if (callAux == 0)
+                {
+                    Caster.StartCoroutine(ResetCalls());
+                }
+                callAux++;
+                triggerCalls.Add(updatedCall);
             }
-        }
 
+        }
+        if (!foundCall)
+        {
+            foreach (SpellNode n in Caster.runtimeNodes)
+            {
+                if (n is SpellTrigger trigger && !triggerCalls.Contains(trigger) && trigger.TriggeredSpell == this)
+                {
+                    trigger.UpdateTrigger();
+                }
+            }
+        }
         spellCollisionLayers = 0;
         if (coreNode.Collisions.Objects)
         {
@@ -113,11 +126,7 @@ public class Spell
         }
         coreNode.UpdateNode();
         OnSpellUpdated?.Invoke();
-        /*foreach(SubSpell s in SubSpells)
-        {
-            SpellCooldown += s.CooldownCost;
-            s.UpdateSubSpell();
-        }*/
+        
     }
     /*public void CreateSubSpells()
     {
@@ -136,6 +145,54 @@ public class Spell
         callAux = 0;
         triggerCalls.Clear();
     }
+    public void UpdateNodeConections()
+    {
+        HashSet<SpellNode> visitedNodes = new HashSet<SpellNode>();
+        Queue<SpellNode> nodesToUpdate = new Queue<SpellNode>();
+        nodesToUpdate.Enqueue(coreNode);
+        visitedNodes.Add(coreNode);
+        for (int i = 0; i < grid.spellNodes.Count; i++)
+        {
+            if (grid.spellNodes[i] != null)
+            {
+                grid.spellNodes[i].CriticalConections = 0;
+                /*foreach (NodeConection con in grid.spellNodes[i].conections)
+                {
+                    con.UpdateConection();
+                }*/
+            }
+        }
+        while (nodesToUpdate.Count > 0)
+        {
+            SpellNode node = nodesToUpdate.Dequeue();
+            foreach (NodeConection con in node.Interface.conections)
+            {
+                if (con.neighborNode == null) continue;
+                if (con.neighborNode == coreNode || (con.conectionType != NodeConection.Conections.None && con.neighborNode.Interface.CriticalConections > 0))
+                {
+                    node.Interface.CriticalConections++;
+                    con.neighborNode.Interface.CriticalConections++;
+                    con.SetCritical(true);
+                }
+                if (!visitedNodes.Contains(con.neighborNode) && con.neighborNode != null)
+                {
+                    visitedNodes.Add(con.neighborNode);
+                    nodesToUpdate.Enqueue(con.neighborNode);
+                }
+            }
+        }
+        /*for (int i = 0; i < grid.spellNodes.Count; i++)
+        {
+            if (grid.spellNodes[i] != null)
+            {
+                foreach (NodeConection con in grid.spellNodes[i].conections)
+                {
+                    con.UpdateConection();
+                }
+            }
+        }*/
+    }
+    
 }
 
 

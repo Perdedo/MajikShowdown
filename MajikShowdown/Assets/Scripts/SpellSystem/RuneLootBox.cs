@@ -24,37 +24,37 @@ public class RuneLootBox : InteractableObject
         }
         lootPool = LootSpawner.Instance.lootPools[lootPoolInd];
         loot = GetLoot();
-        int rarityInd = -1;
+        int qualityInd = -1;
         int typeInd = -1;
         int listInd = -1;
-        RuneRaretyGroup aux = null;
-        switch(loot.rarity)
+        RuneQualityGroup aux = null;
+        switch(loot.quality)
         {
-            case SpellNode.Rarity.Common:
-                aux = lootPool.Common;
-                rarityInd = 0;
+            case SpellNode.Quality.Rusty:
+                aux = lootPool.Rusty;
+                qualityInd = 0;
                 break;
-            case SpellNode.Rarity.Uncommon:
-                aux = lootPool.Uncommon;
-                rarityInd = 1;
+            case SpellNode.Quality.Forged:
+                aux = lootPool.Forged;
+                qualityInd = 1;
                 break;
-            case SpellNode.Rarity.Rare:
-                aux = lootPool.Rare;
-                rarityInd = 2;
+            case SpellNode.Quality.FactoryNew:
+                aux = lootPool.FactoryNew;
+                qualityInd = 2;
                 break;
-            case SpellNode.Rarity.Epic:
+            /*case SpellNode.Quality.Epic:
                 aux = lootPool.Epic;
                 rarityInd = 3;
                 break;
-            case SpellNode.Rarity.Legendary:
+            case SpellNode.Quality.Legendary:
                 aux = lootPool.Legendary;
                 rarityInd = 4;
-                break;
+                break;*/
         }
-        if(loot is SpellType)
+        if(loot is SpellCore)
         {
             typeInd = 0;
-            listInd = aux.Core.IndexOf(loot as SpellType);
+            listInd = aux.Core.IndexOf(loot as SpellCore);
         }
         else if(loot is SpellTrajectory)
         {
@@ -82,7 +82,7 @@ public class RuneLootBox : InteractableObject
             listInd = aux.CastPoint.IndexOf(loot as SpellCastPoint);
         }
 
-        RPCGetLoot(rarityInd, typeInd, listInd);
+        RPCGetLoot(qualityInd, typeInd, listInd);
     }
 
     [ClientRpc]
@@ -93,24 +93,24 @@ public class RuneLootBox : InteractableObject
             return;
         }
         lootPool = LootSpawner.Instance.lootPools[lootPoolInd];
-        RuneRaretyGroup aux = null;
+        RuneQualityGroup aux = null;
         switch(rarityInd)
         {
             case 0:
-                aux = lootPool.Common;
+                aux = lootPool.Rusty;
                 break;
             case 1:
-                aux = lootPool.Uncommon;
+                aux = lootPool.Forged;
                 break;
             case 2:
-                aux = lootPool.Rare;
+                aux = lootPool.FactoryNew;
                 break;
-            case 3:
+            /*case 3:
                 aux = lootPool.Epic;
                 break;
             case 4:
                 aux = lootPool.Legendary;
-                break;
+                break;*/
         }
 
         switch(typeInd)
@@ -139,9 +139,14 @@ public class RuneLootBox : InteractableObject
 
     public override void Interact(Player player)
     {
-        //player.caster.AddRune(GetLoot());
         player.caster.AddRune(loot);
-        if(!isServer)
+
+        if (player.isLocalPlayer)
+        {
+            GameManager.Instance.uiController.playerUI.ShowRunePickup(loot, transform.position);
+        }
+
+        if (!isServer)
         {
             CMDInteract(GameManager.Instance.Players.IndexOf(player));
         }

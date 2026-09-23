@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public List<Player> Players = new List<Player>();
     public NetworkAuxiliarControl netCtrl;
     public HordeController hordeController;
+    public TrainingEnemiesController trainingController;
     [Header("Interactable Objects")]
     public float interactionRadius = 2;
     protected List<InteractableObject> interactables = new List<InteractableObject>();

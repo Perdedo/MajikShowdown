@@ -24,15 +24,11 @@ public class SpellTrigger : SpellNode
         }
         OwnerSpell?.UpdateSpell(this);
     }
-    public override List<SpellNode> GetSpellList(List<SpellNode> list)
+    /*public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {
-        /*if(hierarchy > list[0].hierarchy)
-        {
-            list.Add(this);
-        }*/
         list.Add(this);
         return list;
-    }
+    }*/
     public override void RandomizeStats()
     {
         base.RandomizeStats();

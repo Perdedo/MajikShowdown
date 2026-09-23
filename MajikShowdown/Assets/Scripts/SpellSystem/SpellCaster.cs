@@ -92,10 +92,19 @@ public class SpellCaster : NetworkBehaviour
     {
         ownedNodes.Add(nodePrefab);
         InstantiateNode(nodePrefab);
+
         foreach (var inv in inventories)
         {
             inv.SyncFromCaster();
         }
+    }
+
+    private string GetPath(Transform current)
+    {
+        if (current.parent == null)
+            return current.name;
+
+        return GetPath(current.parent) + "/" + current.name;
     }
 
     private void Update()

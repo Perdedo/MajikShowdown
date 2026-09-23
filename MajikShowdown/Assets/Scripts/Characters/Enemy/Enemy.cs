@@ -25,38 +25,38 @@ public class Enemy : CrowdCharacter
     public float EnemyAvoidanceRadius;
     public float TargetStoppingDistance;
     public float SeparationForce = 1;
-    [NonSerialized]public float FlowfieldActivationDistance = 20;
+    [NonSerialized] public float FlowfieldActivationDistance = 20;
     public int priority = 1;
 
     [Header("DropConfig")]
     [Range(0, 100)] public float DropChance;
-    public List<RuneLootPool> AvailablePools;
+    public List<int> AvailablePools;
     public ProbabilitySlider<int> PoolProbability = new ProbabilitySlider<int>();
 
     [HideInInspector] public float size;
     public Player target;
-    HashSet<Enemy> neighbors = new HashSet<Enemy>();
+    protected HashSet<Enemy> neighbors = new HashSet<Enemy>();
     //Collider[] neighborBuffer = new Collider[32];
     //Vector3[] Directions = new Vector3[8];
-    float[] Danger = new float[8];
-    float[] Interest = new float[8];
-    [NonSerialized]public  Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
-    bool detectedObstacle = false, detectedHigherPriority = false;
+    protected float[] Danger = new float[8];
+    protected float[] Interest = new float[8];
+    [NonSerialized] public Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
+    protected bool detectedObstacle = false, detectedHigherPriority = false;
     [NonSerialized] public Vector3 MoveDirection;
     [NonSerialized] public Vector3 interestDirection;
-    Vector3 priorityAvoidDirection;
+    protected Vector3 priorityAvoidDirection;
     public bool canSeeTarget;
     [NonSerialized] public FieldCell currentCell, forwardCell;
     HashSet<FieldCell> OccupiedCells = new HashSet<FieldCell>();
     [NonSerialized] public int occupiedCellNum;
 
-    bool attacked = true, onAttackCooldown = false;
-    Timer attackTimer = new Timer(false), attackCooldownTimer = new Timer(false);
+    protected bool attacked = true, onAttackCooldown = false;
+    protected Timer attackTimer = new Timer(false), attackCooldownTimer = new Timer(false);
     public float attackDuration = 0.3f, attackCooldown = 0.5f;
     public float damage = 1;
     public Elements element = Elements.None;
-    Damage dmgCtrl;
-    [HideInInspector][SyncVar (hook = "ClientInitialize")] public int instanceIndex = -1;
+    protected Damage dmgCtrl;
+    [HideInInspector][SyncVar(hook = "ClientInitialize")] public int instanceIndex = -1;
     [HideInInspector][SyncVar] public IdWrapper ActiveID;
     [Serializable]
     public struct IdWrapper
@@ -64,30 +64,30 @@ public class Enemy : CrowdCharacter
         public int ID;
     }
     public EnemyTransformInfo transformInfo;
-    Player attackedPlayer;
+    protected Player attackedPlayer;
     float timePred;
     Vector3 predTarget;
-    int detectRadius;
+    protected int detectRadius;
     public float maxDistanceFromPlayer = 100, repositionRange = 20;
 
     public Animator animator;
-    bool prevMoving = false, moving = false;
-    public enum EnemyAnimState : byte { None, Attack, Jump, Land };
+    protected bool prevMoving = false, moving = false;
+    public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
 
     public void ClientInitialize(int oldVal, int newVal)
     {
-        if(!isServer)
+        if (!isServer)
         {
             GameManager.Instance.hordeController.clientEnemies[newVal] = this;
         }
     }
 
-    public void Initialize()
+    public virtual void Initialize(float HealthMultiplier)
     {
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
-        DamageHandler.Initialize(this);
+        DamageHandler.Initialize(this, HealthMultiplier);
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
         /*for (int i = 0; i < Directions.Length; i++)
         {
@@ -106,6 +106,7 @@ public class Enemy : CrowdCharacter
         occupiedCellNum = (int)math.ceil(size / FlowFieldManager.instance.CellSize);
         detectRadius = math.max((int)math.ceil(DetectionRadius / FlowFieldManager.instance.CellSize), 1);
         RigidbodySetting();
+        canBeKnocked = true;
         //CheckFieldLocation();
     }
     public void UpdateIdWrapper(int value)
@@ -184,7 +185,7 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    public void EnemyUpdate()
+    public virtual void EnemyUpdate()
     {
         if (FlowFieldManager.instance == null)
         {
@@ -206,7 +207,7 @@ public class Enemy : CrowdCharacter
 
         if (forwardCell != null)
         {
-            CheckForJump(currentCell);
+            CheckForJump();
         }
         if (attackedPlayer != null)
         {
@@ -234,7 +235,7 @@ public class Enemy : CrowdCharacter
         PathToTarget(currentCell);
         prevMoving = moving;
         moving = worldVelocity.sqrMagnitude > 0.01;
-        if(prevMoving != moving)
+        if (prevMoving != moving)
         {
             animator.SetBool("Moving", moving);
         }
@@ -268,22 +269,28 @@ public class Enemy : CrowdCharacter
 
     public void PlayAnimation(EnemyAnimState state)
     {
-        /*switch (state)
+        if(DamageHandler.network && isServer)
         {
-            case EnemyAnimState.Attack:
-                animator.ResetTrigger("Attack");
-                animator.SetTrigger("Attack");
-                break;
-            case EnemyAnimState.Jump:
-                animator.ResetTrigger("Jump");
-                animator.SetTrigger("Jump");
-                break;
-            case EnemyAnimState.Land:
-                animator.ResetTrigger("Land");
-                animator.SetTrigger("Land");
-                break;
-        }*/
-        RPCPlayAnimation(state);
+            RPCPlayAnimation(state);
+        }
+        else
+        {
+            switch (state)
+            {
+                case EnemyAnimState.Attack:
+                    animator.ResetTrigger("Attack");
+                    animator.SetTrigger("Attack");
+                    break;
+                case EnemyAnimState.Jump:
+                    animator.ResetTrigger("Jump");
+                    animator.SetTrigger("Jump");
+                    break;
+                case EnemyAnimState.Land:
+                    animator.ResetTrigger("Land");
+                    animator.SetTrigger("Land");
+                    break;
+            }
+        }
     }
 
     [ClientRpc]
@@ -387,7 +394,7 @@ public class Enemy : CrowdCharacter
 
     public void Reposition()
     {
-        if (!isServer)
+        if (!isServer || target == null)
         {
             target = GetClosestPlayer();
             targetVector = target.transform.position - transform.position;
@@ -406,7 +413,7 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    Vector3 CheckReposition()
+    protected virtual Vector3 CheckReposition()
     {
         FieldCell auxCell = null;
         //RaycastHit hit;
@@ -421,7 +428,7 @@ public class Enemy : CrowdCharacter
             }
         }*/
         auxCell = FlowFieldManager.instance.WorldToGridPosition(repos);
-        if(auxCell != null && auxCell.Neighbors.Count >= 8)
+        if (auxCell != null && auxCell.Neighbors.Count >= 8)
         {
             canReposition = true;
         }
@@ -506,12 +513,12 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    public void CheckForJump(FieldCell currentCell)
+    public void CheckForJump()
     {
         bool needsJump = false;
         foreach (FieldCell.NeighborContext n in forwardCell.Neighbors)
         {
-            if (n.context == FieldCell.NeighborContext.Context.Jumpable && Vector3.Dot(forwardCell.direction, FlowField.CellDistance(forwardCell, n.neighborCell)) > 0.75f)
+            if (n.context == FieldCell.NeighborContext.Context.Jumpable && Vector3.Dot(FlowFieldManager.instance.cellJobDatas[forwardCell.ID].Direction, FlowField.CellDistance(forwardCell, n.neighborCell)) > 0.75f)
             {
                 needsJump = true;
                 break;
@@ -532,10 +539,11 @@ public class Enemy : CrowdCharacter
                 jumpTimer.SetTimer(0);
                 jumpTimer.Paused = false;
                 CvState = CharVerticalState.jumping;
-                if(isServer)
+                /*if (isServer)
                 {
                     PlayAnimation(EnemyAnimState.Jump);
-                }
+                }*/
+                PlayAnimation(EnemyAnimState.Jump);
                 InvokeIfAllowed(Jumped);
                 StartCoroutine(JumpCooldown());
             }
@@ -548,7 +556,7 @@ public class Enemy : CrowdCharacter
 
     protected override void Gravity()
     {
-        RaycastGround();
+        //RaycastGround();
         float groundDistance = LastHitInfo.distance - (height / 2);
 
         if (!gravityPaused)
@@ -573,10 +581,11 @@ public class Enemy : CrowdCharacter
             {
                 vState = VerticalState.grounded;
                 InvokeIfAllowed(HitGround);
-                if(isServer)
+                /*if (isServer)
                 {
                     PlayAnimation(EnemyAnimState.Land);
-                }
+                }*/
+                PlayAnimation(EnemyAnimState.Land);
             }
             else
             {
@@ -598,7 +607,7 @@ public class Enemy : CrowdCharacter
 
     }
 
-    public void PathToTarget(FieldCell currentCell)
+    public virtual void PathToTarget(FieldCell currentCell)
     {
         if (targetVector.magnitude <= TargetStoppingDistance || (MoveDirection == Vector3.zero && canSeeTarget))
         {
@@ -660,7 +669,7 @@ public class Enemy : CrowdCharacter
         }
     }
 
-    void AttackPlayer()
+    protected virtual void AttackPlayer()
     {
         //if (targetVector.magnitude <= TargetStoppingDistance)
         if (attackedTargetVector.magnitude <= TargetStoppingDistance)
@@ -668,7 +677,7 @@ public class Enemy : CrowdCharacter
             attackedPlayer.DamageHandler.TakeDamage(dmgCtrl);
         }
     }
-    public void CalculateDanger()
+    public virtual void CalculateDanger()
     {
         priorityAvoidDirection = Vector3.zero;
         for (int i = 0; i < Danger.Length; i++)
@@ -710,7 +719,7 @@ public class Enemy : CrowdCharacter
             }
         }
     }
-    public void CalculateInterest()
+    public virtual void CalculateInterest()
     {
         if (target != null)
         {
@@ -725,7 +734,7 @@ public class Enemy : CrowdCharacter
             }
         }
     }
-    public Vector3 GetBestDirection()
+    public virtual Vector3 GetBestDirection()
     {
         Vector3 add = Vector3.zero;
 
@@ -736,9 +745,9 @@ public class Enemy : CrowdCharacter
         add.y = 0;
         return add.normalized;
     }
-    Queue<FieldCell> cellsToCheck = new Queue<FieldCell>();
-    HashSet<FieldCell> checkedCells = new HashSet<FieldCell>();
-    public void FindObstacles()
+    protected Queue<FieldCell> cellsToCheck = new Queue<FieldCell>();
+    protected HashSet<FieldCell> checkedCells = new HashSet<FieldCell>();
+    public virtual void FindObstacles()
     {
         neighbors.Clear();
         checkedCells.Clear();
@@ -870,7 +879,7 @@ public class Enemy : CrowdCharacter
         base.Die();
     }
 }
-[BurstCompile]
+//[BurstCompile]
 public unsafe struct EnemyFieldLocation : IJobParallelFor
 {
     //prompted
@@ -880,7 +889,7 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
     public int maxEnemiesPerCell;
     public int maxEnemyOccupiedCells;
     [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
-    
+
     public float3 flowfieldOffset;
     public float CellSize;
     [Unity.Collections.ReadOnly] public NativeArray<int> CellCollumFirst;
@@ -970,7 +979,7 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
         EnemyJobData EJD = EnemyData[index];
         EJD.CurrentCell = currentCell;
         int fC = WorldToGridPosition(EJD.Position + Cells[currentCell].Direction * EJD.Size);
-        if(fC > -1)
+        if (fC > -1)
         {
             EJD.fowardCell = fC;
         }
@@ -1015,7 +1024,7 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
                         enemyNumSlot = -1;
                         calculateSlot = false;
                     }
-                    else if (Interlocked.CompareExchange(ref *counter,current + 1,current) == current)
+                    else if (Interlocked.CompareExchange(ref *counter, current + 1, current) == current)
                     {
                         enemyNumSlot = current;
                         calculateSlot = false;
@@ -1052,6 +1061,11 @@ public unsafe struct EnemyFieldLocation : IJobParallelFor
                         }
                         if (!alreadyChecked)
                         {
+                            if (queueCount >= maxEnemyOccupiedCells)
+                            {
+                                reachedLimit = true;
+                                break;
+                            }
                             OccupiedCellsToCheck[OccupiedCellsOffset + queueCount] = neighborID;
                             queueCount++;
                         }
@@ -1081,7 +1095,7 @@ public struct AvoidanceCalculation : IJobParallelFor
     [Unity.Collections.ReadOnly] public NativeArray<int> CellNeighbors;
     [Unity.Collections.ReadOnly] public NativeArray<FieldCell.NeighborContext.Context> NeighborContexts;
     [Unity.Collections.ReadOnly] public NativeArray<int> enemiesInField;
-    [Unity.Collections.ReadOnly]public NativeArray<int> cellEnemiesNum;
+    [Unity.Collections.ReadOnly] public NativeArray<int> cellEnemiesNum;
 
     //calculated
     [NativeDisableParallelForRestriction] public NativeArray<int> EnemyNeighbors;
@@ -1185,7 +1199,7 @@ public struct AvoidanceCalculation : IJobParallelFor
                 }
                 for (int j = Cells[cInd].firstNeighbor; j <= Cells[cInd].lastNeighbor; j++)
                 {
-                    if(NeighborContexts[j] != FieldCell.NeighborContext.Context.None)
+                    if (NeighborContexts[j] != FieldCell.NeighborContext.Context.None)
                     {
                         continue;
                     }
@@ -1358,6 +1372,30 @@ public struct AvoidanceCalculation : IJobParallelFor
         return math.normalize(add);
     }*/
 }
+
+public struct EnemyGroundRaycastJob : IJobParallelFor
+{
+    [Unity.Collections.ReadOnly] public NativeArray<EnemyJobData> EnemyData;
+    [WriteOnly]
+    public NativeArray<RaycastCommand> Commands;
+
+    public LayerMask GroundMask;
+
+    public void Execute(int index)
+    {
+        QueryParameters queryParams = new QueryParameters(GroundMask, false, QueryTriggerInteraction.Ignore, false);
+        Commands[index] = new RaycastCommand(EnemyData[index].Position, Vector3.down, queryParams, EnemyData[index].height / 2 + EnemyData[index].terrainBuffer);
+    }
+}
+public struct EnemyCalculateDotJob : IJobParallelFor
+{
+    public NativeArray<RaycastHit> Res;
+    public NativeArray<float> NormalDot;
+    public void Execute(int index)
+    {
+        NormalDot[index] = math.dot(Res[index].normal, Vector3.up);
+    }
+}
 public struct EnemyJobData
 {
     //Imutable
@@ -1368,6 +1406,9 @@ public struct EnemyJobData
     public float DetectionRadius;
     public int occupiedCellDepth;
     public float activationDistance;
+
+    public float height;
+    public float terrainBuffer;
     //public float TargetStoppingDistance;
 
     //Prompted
@@ -1391,6 +1432,7 @@ public struct CellJobData
     public int generation;
     public float bestCost;
     public float baseCost;
+    public int TargetID;
     //public int ID;
 }
 

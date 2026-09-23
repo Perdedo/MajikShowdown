@@ -10,13 +10,13 @@ public class CrowdRB : NetworkBehaviour
     [Header("Terrain Options")]
     //[SerializeField] protected float floatingHeight;
     [SerializeField] protected float gravityMultiplier;
-    [SerializeField] protected float terrainBuffer;
+    [SerializeField] public float terrainBuffer;
     [SerializeField] protected float BaseFriction = 0.5f;
 
     [NonSerialized] public Vector3 localVelocity, worldVelocity, parentVelocity, externalVelocity, lastHorizontalDirection, hDir, acceleration, verticalVelocity;
     public Vector3 HolrizontalDirection { get { return hDir; } }
     [System.NonSerialized] public Rigidbody rb;
-    protected float height;
+    [NonSerialized]public float height;
     public enum HorizontalState { moving, idle, none };
     [NonSerialized] public HorizontalState movingState;
     public enum VerticalState { falling, grounded, none };
@@ -53,14 +53,9 @@ public class CrowdRB : NetworkBehaviour
         UpdateVelocity();
     }
     //IMovingGround movingGround;
-    protected RaycastHit LastHitInfo;
+    [NonSerialized]public RaycastHit LastHitInfo;
     protected void RaycastGround()
     {
-        /*if(raycastTimer.timer(0.05f, Time.captureDeltaTime, false, false))
-        {
-            Physics.Raycast(rb.position, Vector3.down, out LastHitInfo, terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
-            raycastTimer.ResetTimer();
-        }*/
         Physics.Raycast(rb.position, Vector3.down, out LastHitInfo, terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
         normalDot = Vector3.Dot(LastHitInfo.normal, Vector3.up);
     }

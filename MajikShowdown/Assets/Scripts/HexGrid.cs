@@ -9,7 +9,7 @@ using Mirror;
 public class HexGrid : MonoBehaviour
 {
     public List<HexGridNode> hexGridNodes = new List<HexGridNode>();
-    public List<SpellNodeInterface> spellNodes;
+    public List<SpellNodeInterface> spellNodes = new List<SpellNodeInterface>();
     public RectTransform hexPrefab;
     public int hexGridRadius;
     private float hexNodeSize;
@@ -146,10 +146,11 @@ public class HexGrid : MonoBehaviour
             }
         }
     }
-    
+
     public void ConfigurateSpell()
     {
         spell.spellNodes.Clear();
+
         foreach (var node in spellNodes)
         {
             if (node != null)
@@ -157,9 +158,9 @@ public class HexGrid : MonoBehaviour
                 node.Node.hierarchy = node.hexGridNode.Layer;
                 spell.spellNodes.Add(node.Node);
             }
-
         }
-        if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellType t)
+
+        if (hexGridNodes[0].spellNode != null && hexGridNodes[0].spellNode.Node is SpellCore t)
         {
             spell.validSpell = true;
             spell.coreNode = t;
@@ -171,6 +172,7 @@ public class HexGrid : MonoBehaviour
         }
 
         spell.UpdateSpell();
+        UpdateNodeVisuals();
         caster.commander.ConfigurateSpell(this);
     }
 
@@ -244,4 +246,52 @@ public class HexGrid : MonoBehaviour
         }
         return found;
     }
+
+    private void UpdateNodeVisuals()
+    {
+        foreach (var node in spellNodes)
+        {
+            if (node == null) continue;
+
+            bool isConnectedToSpell = spell.spellNodes.Contains(node.Node);
+
+            if (isConnectedToSpell)
+            {
+                node.SetGridValidVisual();
+            }
+            else
+            {
+                node.SetGridInvalidVisual();
+            }
+        }
+    }
+    /*public void UpdateNodeConections()
+    {
+        Queue<SpellNode> nodesToUpdate = new Queue<SpellNode>();
+        nodesToUpdate.Enqueue(spell.coreNode);
+        for(int i = 0; i < spellNodes.Count; i++)
+        {
+            if (spellNodes[i] != null)
+            {
+                spellNodes[i].CriticalConections = 0;
+            }
+        }
+        while (nodesToUpdate.Count > 0)
+        {
+            SpellNode node = nodesToUpdate.Dequeue();
+            foreach (NodeConection con in node.Interface.conections)
+            {
+                if (con.neighborNode == spell.coreNode || (con.conectionType != NodeConection.Conections.None && con.neighborNode.Interface.CriticalConections > 0))
+                {
+                    node.Interface.CriticalConections++;
+                    con.neighborNode.Interface.CriticalConections++;
+                    con.SetCritical(true);
+                }
+                if (!nodesToUpdate.Contains(con.neighborNode) && con.neighborNode != null)
+                {
+                    nodesToUpdate.Enqueue(con.neighborNode);
+                }
+            }
+        }
+    }*/
 }

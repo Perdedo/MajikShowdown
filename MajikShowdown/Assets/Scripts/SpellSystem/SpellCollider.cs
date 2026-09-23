@@ -295,20 +295,21 @@ public class SpellCollider : NetworkBehaviour
         if (LayerMaskUtility.BelongsInMask(col.gameObject.layer, OwnerSpell.Caster.EnemyLayer))
         {
             if (HitOnCooldown) return;
+
             OnHit.Invoke();
             CollideCreature(col);
         }
         else if (LayerMaskUtility.BelongsInMask(col.gameObject.layer, OwnerSpell.Caster.PlayerLayer))
         {
             if (HitOnCooldown) return;
+
             OnHit.Invoke();
-            CollideCreature(col,true);
+            CollideCreature(col, true);
         }
         else
         {
             OnHit.Invoke();
             CollideObject(col);
-            //Debug.Log("Collided " + Time.time);
         }
     }
     /*void OnDrawGizmos()
@@ -323,7 +324,7 @@ public class SpellCollider : NetworkBehaviour
             float scaleTime;
             switch (OwnerSpell.coreNode.Type)
             {
-                case SpellType.SpellTypes.Explosion:
+                case SpellCore.SpellTypes.Explosion:
                     scaleTime = stats.Duration;
                     break;
                 default:

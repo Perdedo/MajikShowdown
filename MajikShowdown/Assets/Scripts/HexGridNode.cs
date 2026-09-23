@@ -60,6 +60,12 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public void Release(DraggableNode node)
     {
         if (spellNode == null) return;
+        //Spell aux = spellNode.Node.OwnerSpell;
+        spellNode.CriticalConections = 0;
+        foreach (NodeConection con in spellNode.conections)
+        {
+            con.SetCritical(false);
+        }
         VerifyNearbyBreakConections(spellNode);
         grid.spellNodes[index] = null;
         spellNode.hexGridNode = null;
@@ -88,6 +94,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
             }
         }
         grid.caster.commander.HexRelease(this, node);
+        //aux.UpdateNodeConections();
 
     }
 
@@ -115,7 +122,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     bool CanConnect(SpellNodeInterface node)
     {
         bool isRoot = this == grid.hexGridNodes[0];
-        bool isSpellType = node.Node is SpellType;
+        bool isSpellType = node.Node is SpellCore;
         if (isRoot != isSpellType) return false;
         if (!VerifyNearbyConnections(node)) return false;
         return true;
@@ -124,8 +131,9 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
     public void ConnectNode(SpellNodeInterface node)
     {
         if (node == null) return;
-        MakeNearbyConnections(node);
         grid.AddNodeToGrid(this, node);
+        grid.spell.UpdateNodeConections();
+        MakeNearbyConnections(node);
         spellNode = node;
     }
 

@@ -56,6 +56,7 @@ public class FlowFieldManager : MonoBehaviour
     [HideInInspector] public NativeArray<int> CellCollumCount;
     [HideInInspector] public NativeArray<FieldCell.NeighborContext.Context> neighborContexts;
     [HideInInspector] public NativeArray<float3> CellNeighborDir;
+    [HideInInspector] public NativeArray<byte> cellNeighborDiagonal;
     void Awake()
     {
         instance = this;
@@ -71,7 +72,7 @@ public class FlowFieldManager : MonoBehaviour
             lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
             p.TargetCellID = lastTargetsPos[lastTargetsPos.Count - 1].ID;
         }
-        flowField.GenerateFlowField(lastTargetsPos);
+        GenerateFlowField(lastTargetsPos);
         //StartCoroutine(FlowFieldGenerator());
     }
 
@@ -90,7 +91,7 @@ public class FlowFieldManager : MonoBehaviour
         }
         if (moved)
         {
-            flowField.GenerateFlowField(lastTargetsPos);
+            GenerateFlowField(lastTargetsPos);
         }
     }
     IEnumerator FlowFieldGenerator()
@@ -127,7 +128,7 @@ public class FlowFieldManager : MonoBehaviour
                 p.TargetCellID = lastTargetsPos[lastTargetsPos.Count - 1].ID;
             }
         }
-        flowField.GenerateFlowField(lastTargetsPos);
+        GenerateFlowField(lastTargetsPos);
     }
 
     bool integrated = false;
@@ -178,6 +179,15 @@ public class FlowFieldManager : MonoBehaviour
                 {
                     if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                     {
+
+                        /*if (cellJobDatas[cell.ID].bestCost == float.MaxValue)
+                        {
+                            Gizmos.color = Color.red;
+                        }
+                        else
+                        {
+                            Gizmos.color = Color.green;
+                        }*/
                         Gizmos.color = Color.green;
                         Gizmos.DrawCube(cell.position, Vector3.one * CellSize * 0.9f);
                     }
@@ -202,7 +212,7 @@ public class FlowFieldManager : MonoBehaviour
                         if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                         {
                             Gizmos.color = Color.blue;
-                            Gizmos.DrawRay(cell.position, cell.direction * CellSize * 0.5f);
+                            Gizmos.DrawRay(cell.position, cellJobDatas[cell.ID].Direction * CellSize * 0.5f);
                         }
                     }
                 }
@@ -281,11 +291,18 @@ public class FlowFieldManager : MonoBehaviour
         cellJobDatas = new NativeArray<CellJobData>(flowField.allCells.Count, Allocator.Persistent);
         for (int i = 0; i < cellJobDatas.Length; i++)
         {
+            int neighborCount = flowField.allCells[i].lastNeighbor - flowField.allCells[i].firstNeighbor + 1;
+            float baseC = 1;
+            if (neighborCount < 8)
+            {
+                baseC = BorderCellWeight;
+            }
             cellJobDatas[i] = new CellJobData()
             {
                 firstNeighbor = flowField.allCells[i].firstNeighbor,
                 lastNeighbor = flowField.allCells[i].lastNeighbor,
-                Position = flowField.allCells[i].position
+                Position = flowField.allCells[i].position,
+                baseCost = baseC
             };
         }
 
@@ -316,6 +333,10 @@ public class FlowFieldManager : MonoBehaviour
         {
             CellNeighborDir.Dispose();
         }
+        if (cellNeighborDiagonal.IsCreated)
+        {
+            cellNeighborDiagonal.Dispose();
+        }
     }
 
     [ContextMenu("GenerateGrid")]
@@ -330,6 +351,61 @@ public class FlowFieldManager : MonoBehaviour
     {
         flowField.GenerateFlowField(WorldToGridPosition(Target.position));
     }
+    public void GenerateFlowField(List<FieldCell> targets)
+    {
+        flowField.CurrentGeneration++;
+        flowField.DestinationCells = targets;
+        if (flowField.DestinationCells.Count <= 0) return;
+        NativeArray<int> tCells = new NativeArray<int>(targets.Count, Allocator.TempJob);
+        NativeParallelHashSet<int> HashTCells = new NativeParallelHashSet<int>(targets.Count, Allocator.TempJob);
+        for(int i = 0; i< targets.Count; i++)
+        {
+            tCells[i] = targets[i].ID;
+            HashTCells.Add(targets[i].ID);
+        }
+        GenerateIntegrationJob integration = new GenerateIntegrationJob()
+        {
+            targetCells = tCells,
+            Cells = cellJobDatas,
+            cellNeighbors = CellNeighborID,
+            NeighborContext = neighborContexts,
+            CellNeighborDiagonal = cellNeighborDiagonal,
+            currentGeneration = flowField.CurrentGeneration,
+            borderCellWeight = BorderCellWeight,
+            diagonalWeight = DiagonalWeight
+        };
+        JobHandle integrationHandle = integration.Schedule();
+        GenerateDirectionJob direction = new GenerateDirectionJob()
+        {
+            Cells = cellJobDatas,
+            cellNeighbors = CellNeighborID,
+            NeighborContext = neighborContexts,
+            cellNeighborsDir = CellNeighborDir,
+            targetCells = HashTCells,
+            DirectionsOutput = new NativeArray<float3>(cellJobDatas.Length, Allocator.TempJob),
+            NeighborSumDirectionStrenght = NeighborSumDirectionStrenght,
+            BestDirectionStrenght = BestDirectionStrenght,
+            TargetDirectionStrenght = TargetDirectionStrenght
+        };
+        JobHandle directionHandle = direction.Schedule(flowField.allCells.Count, 64, integrationHandle);
+        UpdateCellsJob updateCells = new UpdateCellsJob()
+        {
+            Cells = cellJobDatas,
+            DirOutput = direction.DirectionsOutput
+        };
+        JobHandle updateHandle = updateCells.Schedule(flowField.allCells.Count, 64, directionHandle);
+        updateHandle.Complete();
+        tCells.Dispose();
+        /*for(int i =0; i< direction.Cells.Length; i++)
+        {
+            CellJobData c = cellJobDatas[i];
+            c.Direction = direction.DirectionsOutput[i];
+            flowField.allCells[i].direction = direction.DirectionsOutput[i];
+            cellJobDatas[i] = c;
+        }*/
+        HashTCells.Dispose();
+        direction.DirectionsOutput.Dispose();
+    }
 }
 [BurstCompile]
 public struct GenerateIntegrationJob : IJob
@@ -338,6 +414,7 @@ public struct GenerateIntegrationJob : IJob
     public NativeArray<CellJobData> Cells;
     public NativeArray<int> cellNeighbors;
     public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
+    public NativeArray<byte> CellNeighborDiagonal;
     public int currentGeneration;
     public float borderCellWeight;
     public float diagonalWeight;
@@ -353,25 +430,27 @@ public struct GenerateIntegrationJob : IJob
             CellJobData c = Cells[index];
             c.bestCost = 0;
             c.generation = currentGeneration;
+            c.TargetID = index;
             Cells[index] = c;
             cellsToProcess.Enqueue(index);
         }
         while (cellsToProcess.Count > 0)
         {
             CellJobData currentCell = Cells[cellsToProcess.Dequeue()];
-            int neighborCount = currentCell.lastNeighbor -currentCell.firstNeighbor + 1;
+            //int neighborCount = currentCell.lastNeighbor - currentCell.firstNeighbor + 1;
             for (int i = currentCell.firstNeighbor; i <= currentCell.lastNeighbor; i++)
             {
                 int neighborID = cellNeighbors[i];
                 CellJobData neighborCell = Cells[neighborID];
-                if (neighborCount < 8)
+                /*if (neighborCount < 8)
                 {
                     neighborCell.baseCost = borderCellWeight;
-                }
+                }*/
                 if (neighborCell.generation != currentGeneration)
                 {
                     neighborCell.generation = currentGeneration;
                     neighborCell.bestCost = float.MaxValue;
+                    neighborCell.TargetID = -1;
                 }
                 if (NeighborContext[i] == FieldCell.NeighborContext.Context.Lower)
                 {
@@ -381,12 +460,12 @@ public struct GenerateIntegrationJob : IJob
                 if (neighborCell.bestCost > currentCell.bestCost + neighborCell.baseCost)
                 {
                     float mult = 1;
-                    float2 dir = new float2(neighborCell.Position.x - currentCell.Position.x, neighborCell.Position.z - currentCell.Position.z);
-                    if (dir.x != 0 && dir.y != 0)
+                    if (CellNeighborDiagonal[i] == 1)
                     {
                         mult = diagonalWeight;
                     }
                     neighborCell.bestCost = currentCell.bestCost + neighborCell.baseCost * mult;
+                    neighborCell.TargetID = currentCell.TargetID;
 
                     cellsToProcess.Enqueue(neighborID);
                 }
@@ -400,11 +479,11 @@ public struct GenerateIntegrationJob : IJob
 [BurstCompile]
 public struct GenerateDirectionJob : IJobParallelFor
 {
-    [Unity.Collections.ReadOnly]public NativeArray<CellJobData> Cells;
-    [Unity.Collections.ReadOnly]public NativeArray<int> cellNeighbors;
-    [Unity.Collections.ReadOnly]public NativeArray<float3> cellNeighborsDir;
-    [Unity.Collections.ReadOnly]public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
-    [Unity.Collections.ReadOnly]public NativeParallelHashSet<int> targetCells;
+    [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
+    [Unity.Collections.ReadOnly] public NativeArray<int> cellNeighbors;
+    [Unity.Collections.ReadOnly] public NativeArray<float3> cellNeighborsDir;
+    [Unity.Collections.ReadOnly] public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
+    [Unity.Collections.ReadOnly] public NativeParallelHashSet<int> targetCells;
     [WriteOnly]
     public NativeArray<float3> DirectionsOutput;
     public float NeighborSumDirectionStrenght, BestDirectionStrenght, TargetDirectionStrenght;
@@ -415,23 +494,25 @@ public struct GenerateDirectionJob : IJobParallelFor
     float3 GenerateDirections(int index)
     {
         CellJobData c = Cells[index];
-        if (targetCells.Contains(index))
+        if (targetCells.Contains(index) || c.TargetID == -1)
         {
             return float3.zero;
         }
         int lowest = -1;
-        float3 dirToDestiny = GetDistanceToClosestDestinationCell(index);
+        float3 lowestDir = float3.zero;
+        float3 dirToDestiny = Cells[c.TargetID].Position - c.Position;
+        dirToDestiny.y = 0;
         dirToDestiny *= 1f / (math.abs(dirToDestiny.x) + math.abs(dirToDestiny.z) + 0.0001f);
         float bestDot = float.MinValue;
         float3 dirSum = float3.zero;
         for (int i = c.firstNeighbor; i <= c.lastNeighbor; i++)
         {
             CellJobData neighborCell = Cells[cellNeighbors[i]];
-            if(NeighborContext[i]== FieldCell.NeighborContext.Context.Upper)
+            if (NeighborContext[i] == FieldCell.NeighborContext.Context.Upper)
             {
                 continue;
             }
-            if(neighborCell.bestCost > c.bestCost)
+            if (neighborCell.bestCost > c.bestCost)
             {
                 continue;
             }
@@ -439,6 +520,7 @@ public struct GenerateDirectionJob : IJobParallelFor
             if (lowest == -1 || neighborCell.bestCost < Cells[lowest].bestCost)
             {
                 lowest = cellNeighbors[i];
+                lowestDir = cellNeighborsDir[i];
                 bestDot = math.dot(dirToDestiny, cellNeighborsDir[i]);
             }
             else if (neighborCell.bestCost == Cells[lowest].bestCost)
@@ -447,6 +529,7 @@ public struct GenerateDirectionJob : IJobParallelFor
                 if (dot > bestDot)
                 {
                     lowest = cellNeighbors[i];
+                    lowestDir = cellNeighborsDir[i];
                     bestDot = dot;
                 }
             }
@@ -455,11 +538,11 @@ public struct GenerateDirectionJob : IJobParallelFor
         {
             return float3.zero;
         }
-        float3 dir = math.normalize(CellDistance(index, lowest));
-        return math.normalize(dirSum * NeighborSumDirectionStrenght + dir * BestDirectionStrenght + dirToDestiny * TargetDirectionStrenght);
+        //float3 dir = math.normalize(CellDistance(index, lowest));
+        return math.normalizesafe(dirSum * NeighborSumDirectionStrenght + lowestDir * BestDirectionStrenght + dirToDestiny * TargetDirectionStrenght);
 
     }
-    public float3 GetDistanceToClosestDestinationCell(int cellIndex)
+    /*public float3 GetDistanceToClosestDestinationCell(int cellIndex)
     {
         float3 dir = float3.zero, aux;
         float sqrMag = float.MaxValue;
@@ -478,5 +561,17 @@ public struct GenerateDirectionJob : IJobParallelFor
     public float3 CellDistance(int from, int to)
     {
         return new float3(Cells[to].Position.x - Cells[from].Position.x, 0, Cells[to].Position.z - Cells[from].Position.z);
+    }*/
+}
+[BurstCompile]
+public struct UpdateCellsJob : IJobParallelFor
+{
+    public NativeArray<CellJobData> Cells;
+    public NativeArray<float3> DirOutput;
+    public void Execute(int index)
+    {
+        CellJobData c = Cells[index];
+        c.Direction = DirOutput[index];
+        Cells[index] = c;
     }
 }
