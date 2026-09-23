@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum VfxElement
 {
-    Fire, Ice, Poison, Darkness, Earth, Radiance
+    Fire, Ice, Poison, Darkness, Earth, Radiance, Lighting
 }
 public enum VfxType
 {
@@ -23,17 +23,6 @@ public class BuffersControl : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }
-    }
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Equals))
-        {
-            SpawnEffect(VfxElement.Poison,VfxType.Area, buffers[5].transform, 1);
-        }
-        if (Input.GetKeyDown(KeyCode.Minus))
-        {
-            UnspawnEffect(VfxElement.Ice, VfxType.Projectile, 0);
         }
     }
     public int SpawnEffect(VfxElement element, VfxType type, Transform place, float size)
