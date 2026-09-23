@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bdc7ccb5a4c652946a8f5504996e5c8c, type: 3}
-  m_Name: HealEffect
+  m_Name: HealEffectFactory
   m_EditorClassIdentifier: Assembly-CSharp::HealEffect
-  rarity: 0
+  quality: 2
+  RandomizeOnStart: 1
   statRandomizer:
     Cooldown:
       type: 1
       value: 0
-      min: 3
-      max: 5
+      min: 5
+      max: 7
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -163,8 +164,8 @@ MonoBehaviour:
     Randomizer:
       type: 1
       value: 0
-      min: 10
-      max: 20
+      min: 12
+      max: 18
       curve:
         serializedVersion: 2
         m_Curve: []

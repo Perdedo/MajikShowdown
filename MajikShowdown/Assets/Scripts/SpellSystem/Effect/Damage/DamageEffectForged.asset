@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ebada4b227f663a4d9d204be5a95d0e4, type: 3}
-  m_Name: Damage Effect
+  m_Name: DamageEffectForged
   m_EditorClassIdentifier: Assembly-CSharp::DamageEffect
+  quality: 1
+  RandomizeOnStart: 1
   statRandomizer:
     Cooldown:
       type: 1
       value: 3
-      min: 0.2
-      max: 0.5
+      min: 0.4
+      max: 0.8
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -68,8 +70,8 @@ MonoBehaviour:
     Damage:
       type: 1
       value: 0
-      min: 5
-      max: 10
+      min: 7
+      max: 14
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -141,6 +143,8 @@ MonoBehaviour:
   - {fileID: 0}
   OwnerSpell:
     spellName: 
+    colorIndex: 0
+    symbolIndex: 0
     spellNodes: []
     SpellCooldown: 0
     auxCooldown: 0
@@ -150,6 +154,7 @@ MonoBehaviour:
     validSpell: 0
     grid: {fileID: 0}
     instanceIndex: 0
+    onCooldown: 0
   ConectionPorts: 020000000200000002000000020000000200000002000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 21300000, guid: 58b2eaedcdb75d142875dec809da79ee, type: 3}

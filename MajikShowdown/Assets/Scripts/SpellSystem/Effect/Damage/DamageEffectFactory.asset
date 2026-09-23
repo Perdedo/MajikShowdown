@@ -9,17 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30c8f43e557dc914caf160dbd96537f7, type: 3}
-  m_Name: DamageRuneForged
-  m_EditorClassIdentifier: Assembly-CSharp::SpellStat
-  quality: 1
+  m_Script: {fileID: 11500000, guid: ebada4b227f663a4d9d204be5a95d0e4, type: 3}
+  m_Name: DamageEffectFactory
+  m_EditorClassIdentifier: Assembly-CSharp::DamageEffect
+  quality: 2
   RandomizeOnStart: 1
   statRandomizer:
     Cooldown:
-      type: 0
-      value: 0.4
-      min: 0
-      max: 0
+      type: 1
+      value: 3
+      min: 0.6
+      max: 1.2
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -57,8 +57,8 @@ MonoBehaviour:
     Size:
       type: 0
       value: 0
-      min: 0.5
-      max: 2
+      min: 0
+      max: 0
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -70,8 +70,8 @@ MonoBehaviour:
     Damage:
       type: 1
       value: 0
-      min: 4
-      max: 7
+      min: 9
+      max: 18
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -96,8 +96,8 @@ MonoBehaviour:
     Bounce:
       type: 0
       value: 0
-      min: 1
-      max: 4
+      min: 0
+      max: 0
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -119,16 +119,16 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Add Damage
+  runeName: Damage
   runeType: 
-  runeDescription: Grants additional Damage stat to attached spell
-  color: {r: 1, g: 1, b: 1, a: 1}
+  runeDescription: Adds a damaging effect to the attached spell.
+  color: {r: 1, g: 0.86453676, b: 0, a: 1}
   Cooldown: 0
   BaseStats:
     Speed: 0
     Duration: 0
     Size: 0
-    Damage: 0
+    Damage: 10
     Piercing: 0
     Bounce: 0
     Knockback: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
     grid: {fileID: 0}
     instanceIndex: 0
     onCooldown: 0
-  ConectionPorts: 000000000000000000000000000000000000000000000000
+  ConectionPorts: 020000000200000002000000020000000200000002000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 21300000, guid: 7563161a5fb9ee5478891efb8ac36e52, type: 3}
+  nodeSymbolSprite: {fileID: 21300000, guid: 58b2eaedcdb75d142875dec809da79ee, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}
