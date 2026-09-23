@@ -47,13 +47,18 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
 
     public void Receive(DraggableNode node)
     {
+        Receive(node, false);
+    }
+
+    public void Receive(DraggableNode node, bool returningToOriginalPosition)
+    {
         var spell = node.GetComponent<SpellNodeInterface>();
         if (spell == null) return;
 
         node.transform.SetParent(transform, false);
         node.transform.localPosition = Vector3.zero;
         node.SetOriginZone(this);
-        ConnectNode(spell);
+        ConnectNode(spell, returningToOriginalPosition);
         grid.caster.commander.HexReceive(node,this);
     }
 
@@ -128,13 +133,18 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         return true;
     }
 
-    public void ConnectNode(SpellNodeInterface node)
+    public void ConnectNode(SpellNodeInterface node, bool returningToOriginalPosition = false)
     {
         if (node == null) return;
         grid.AddNodeToGrid(this, node);
-        grid.spell.UpdateNodeConections();
+        if (!returningToOriginalPosition)
+        {
+            //grid.spell.UpdateCriticalConections();
+            grid.spell.UpdateNodeConections();
+        }
         MakeNearbyConnections(node);
         spellNode = node;
+        grid.spell.UpdateNodeConections();
     }
 
     public bool VerifyNearbyConnections(SpellNodeInterface spell)

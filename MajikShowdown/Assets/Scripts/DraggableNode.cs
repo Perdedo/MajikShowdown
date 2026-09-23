@@ -300,7 +300,14 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             {
                 transform.SetParent(savedParent, true);
                 rectTransform.anchoredPosition = savedPosition;
-                OriginZone?.Receive(this);
+                if (OriginZone is HexGridNode originHex)
+                {
+                    originHex.Receive(this, true);
+                }
+                else
+                {
+                    OriginZone?.Receive(this);
+                }
             }
         }
 

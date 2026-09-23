@@ -134,7 +134,7 @@ public class SpellNodeInterface : MonoBehaviour
         }
         return false;
     }
-    public void BreakConection(int index)
+    public void BreakConection(int index, bool RemoveNeighbor = true)
     {
         if (index < 0 || index >= conections.Length)
             return;
@@ -146,7 +146,7 @@ public class SpellNodeInterface : MonoBehaviour
             /*if (connection.conectionType != NodeConection.Conections.None)
                 CriticalConections--;
                 connection.conectedNode.Interface.CriticalConections--;*/
-            connection.RemoveConection();
+            connection.RemoveConection(RemoveNeighbor);
 
             UpdateConected();
 
