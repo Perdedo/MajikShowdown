@@ -9,12 +9,13 @@ public class BufferTests : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            TesteElement(VfxElement.Lighting, points);
+            BuffersControl.Instance.SpawnEffect(VfxElement.Darkness, VfxType.Explosion, points[1].transform, 2);
+            //TesteElement(VfxElement.Lighting, points);
 
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
-            TesteType(VfxType.Area,points);
+            TesteType(VfxType.Explosion,points);
         }
     }
     public void TesteElement(VfxElement ele, List<GameObject> points)
