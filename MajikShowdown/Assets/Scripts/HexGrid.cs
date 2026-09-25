@@ -9,7 +9,7 @@ using Mirror;
 public class HexGrid : MonoBehaviour
 {
     public List<HexGridNode> hexGridNodes = new List<HexGridNode>();
-    public List<SpellNodeInterface> spellNodes;
+    public List<SpellNodeInterface> spellNodes = new List<SpellNodeInterface>();
     public RectTransform hexPrefab;
     public int hexGridRadius;
     private float hexNodeSize;
@@ -265,4 +265,33 @@ public class HexGrid : MonoBehaviour
             }
         }
     }
+    /*public void UpdateNodeConections()
+    {
+        Queue<SpellNode> nodesToUpdate = new Queue<SpellNode>();
+        nodesToUpdate.Enqueue(spell.coreNode);
+        for(int i = 0; i < spellNodes.Count; i++)
+        {
+            if (spellNodes[i] != null)
+            {
+                spellNodes[i].CriticalConections = 0;
+            }
+        }
+        while (nodesToUpdate.Count > 0)
+        {
+            SpellNode node = nodesToUpdate.Dequeue();
+            foreach (NodeConection con in node.Interface.conections)
+            {
+                if (con.neighborNode == spell.coreNode || (con.conectionType != NodeConection.Conections.None && con.neighborNode.Interface.CriticalConections > 0))
+                {
+                    node.Interface.CriticalConections++;
+                    con.neighborNode.Interface.CriticalConections++;
+                    con.SetCritical(true);
+                }
+                if (!nodesToUpdate.Contains(con.neighborNode) && con.neighborNode != null)
+                {
+                    nodesToUpdate.Enqueue(con.neighborNode);
+                }
+            }
+        }
+    }*/
 }

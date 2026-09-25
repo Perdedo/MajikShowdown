@@ -137,19 +137,23 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             nodeTween.SlideToWorld(savedWorldPosition, () =>
             {
                 transform.SetParent(savedParent, true);
-                transform.SetSiblingIndex(savedListIndex);
                 rectTransform.anchoredPosition = savedPosition;
-                canvasGroup.blocksRaycasts = true;
+
                 inventory.Unfreeze();
+                inventory.ApplyFilter();
+
+                canvasGroup.blocksRaycasts = true;
             });
         }
         else
         {
             transform.SetParent(savedParent, true);
-            transform.SetSiblingIndex(savedListIndex);
             rectTransform.anchoredPosition = savedPosition;
-            canvasGroup.blocksRaycasts = true;
+
             inventory.Unfreeze();
+            inventory.ApplyFilter();
+
+            canvasGroup.blocksRaycasts = true;
         }
     }
 
@@ -304,7 +308,14 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             {
                 transform.SetParent(savedParent, true);
                 rectTransform.anchoredPosition = savedPosition;
-                OriginZone?.Receive(this);
+                if (OriginZone is HexGridNode originHex)
+                {
+                    originHex.Receive(this, true);
+                }
+                else
+                {
+                    OriginZone?.Receive(this);
+                }
             }
         }
 

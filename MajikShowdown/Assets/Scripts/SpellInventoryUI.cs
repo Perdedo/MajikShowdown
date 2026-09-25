@@ -34,9 +34,9 @@ public class SpellInventoryUI : NetworkBehaviour
             newGrid.instanceIndex = caster.spells.Count;
             caster.commander.grids.Add(newGrid);
             newGrid.SetSpell(newSpell);
+            newSpell.grid = newGrid;
             newGrid.Initialize();
             newGrid.gameObject.SetActive(false);
-            newSpell.grid = newGrid;
             caster.spells.Add(newSpell);
             CreateSpellCard(newSpell);
             GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
@@ -71,9 +71,9 @@ public class SpellInventoryUI : NetworkBehaviour
         newGrid.instanceIndex = caster.spells.Count;
         caster.commander.grids.Add(newGrid);
         newGrid.SetSpell(newSpell);
+        newSpell.grid = newGrid;
         newGrid.Initialize();
         newGrid.gameObject.SetActive(false);
-        newSpell.grid = newGrid;
         caster.spells.Add(newSpell);
         CreateSpellCard(newSpell);
         GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();

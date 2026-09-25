@@ -30,7 +30,7 @@ public class SpellNodeInfos : ScriptableObject
     {
         switch (category)
         {
-            case NodeCategory.Type:
+            case NodeCategory.Core:
                 return core;
 
             case NodeCategory.Effect:

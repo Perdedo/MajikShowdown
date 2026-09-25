@@ -13,6 +13,11 @@ public class CharacterDamageHandler : NetworkBehaviour
     //public int lootDropPoolInd;
     //public int lootDropChance;
     public int moneyDrop;
+
+    [Header("Damage Indicator")]
+    [SerializeField] private bool canHaveDamageIndicator = false;
+    [SerializeField] private DamageIndicator damageIndicatorPrefab;
+
     [Header("Network")]
     public bool network = true;
     public IGameCharacter gameCharacter;
@@ -31,11 +36,13 @@ public class CharacterDamageHandler : NetworkBehaviour
 
     public virtual void TakeDamage(Damage damage)
     {
-        if(!isServer && network)
+        if (!isServer && network)
         {
             return;
         }
+
         float finalDamage = damage.Value;
+
         for (int i = 0; i < Resistances.Count; i++)
         {
             if (Resistances[i].Element == damage.Element)
@@ -44,7 +51,14 @@ public class CharacterDamageHandler : NetworkBehaviour
                 i = Resistances.Count;
             }
         }
+        if (canHaveDamageIndicator && damageIndicatorPrefab != null)
+        {
+            DamageIndicator indicator = Instantiate(damageIndicatorPrefab);
+            indicator.Initialize(finalDamage, damage.Element, transform);
+        }
+
         Health = MathF.Max(Health - finalDamage, 0);
+
         if (Health <= 0 && canDie)
         {
             Die();

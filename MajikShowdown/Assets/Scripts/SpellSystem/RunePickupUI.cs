@@ -145,7 +145,7 @@ public class RunePickupUI : MonoBehaviour
 
         switch (node.GetCategory())
         {
-            case NodeCategory.Type:
+            case NodeCategory.Core:
                 borderImage.sprite = info.core.borderSprite;
                 break;
 

@@ -1244,6 +1244,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   interactionMessage: '[F] Spawn Joust'
+  interactionIndicator: {fileID: 0}
   enemyPrefab: {fileID: 1083197047355929555, guid: cb2aaaffc15ee7b4ea2731dc2af01e8c, type: 3}
   spawnPos: {fileID: 1214421654}
   spawnCount: 1
@@ -2232,6 +2233,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   interactionMessage: '[F] Spawn Clobber'
+  interactionIndicator: {fileID: 0}
   enemyPrefab: {fileID: 1083197047355929555, guid: e1a2ae55f209c9741aa98d333fd350d6, type: 3}
   spawnPos: {fileID: 1039359720}
   spawnCount: 1
@@ -3022,6 +3024,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   interactionMessage: '[F] Spawn Breaker'
+  interactionIndicator: {fileID: 0}
   enemyPrefab: {fileID: 1083197047355929555, guid: 08926eb496b8c4e4487f6ec0e7cd144f, type: 3}
   spawnPos: {fileID: 2102670954}
   spawnCount: 1
@@ -3250,6 +3253,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   interactionMessage: '[F] Spawn Vindicator'
+  interactionIndicator: {fileID: 0}
   enemyPrefab: {fileID: 1272920518353865679, guid: 5bdf4f10eadf25f4abde614bf22ad172, type: 3}
   spawnPos: {fileID: 582223801}
   spawnCount: 1
@@ -4068,7 +4072,8 @@ GameObject:
   - component: {fileID: 1599764128}
   - component: {fileID: 1599764127}
   - component: {fileID: 1599764133}
-  m_Layer: 0
+  - component: {fileID: 1599764134}
+  m_Layer: 7
   m_Name: Dummy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4090,13 +4095,14 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  BaseMaxHealth: 0
   MaxHealth: 9999999
   Health: 9999999
   Resistances: []
   enemyIndex: 0
-  lootDropPoolInd: 0
-  lootDropChance: 0
   moneyDrop: 0
+  canHaveDamageIndicator: 1
+  damageIndicatorPrefab: {fileID: 8017101120225449366, guid: 56fd7e239ce1c0b46ab407e9c02cf26b, type: 3}
   network: 0
   canDie: 0
 --- !u!114 &1599764128
@@ -4213,6 +4219,18 @@ CapsuleCollider:
   m_Height: 1.4709095
   m_Direction: 1
   m_Center: {x: 0, y: 0.7305761, z: 0.019220375}
+--- !u!114 &1599764134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1599764126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24176c9267e29b8448046e1f876b5f6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrainingDummy
 --- !u!1 &1662226188
 GameObject:
   m_ObjectHideFlags: 0
@@ -5293,6 +5311,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   interactionMessage: '[F] Spawn Cataphract'
+  interactionIndicator: {fileID: 0}
   enemyPrefab: {fileID: 1272920518353865679, guid: e818ca847295dd3488e850c4587733e6, type: 3}
   spawnPos: {fileID: 1576688134}
   spawnCount: 1

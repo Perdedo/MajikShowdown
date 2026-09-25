@@ -5,6 +5,7 @@ public abstract class InteractableObject : NetworkBehaviour
 {
     [Header("Interaction")]
     [SerializeField] private string interactionMessage = "[F] Interact";
+    [SerializeField] private WorldInteractionIndicator interactionIndicator;
 
     public string InteractionMessage => interactionMessage;
 
@@ -18,6 +19,25 @@ public abstract class InteractableObject : NetworkBehaviour
     public virtual void OnDisable()
     {
         GameManager.Instance.RemoveInteractable(this);
+
+        if (interactionIndicator != null)
+        {
+            interactionIndicator.Hide();
+        }
+    }
+
+    public void ShowInteractionIndicator(Player player)
+    {
+        if (interactionIndicator == null) return;
+
+        interactionIndicator.Show(interactionMessage, player);
+    }
+
+    public void HideInteractionIndicator()
+    {
+        if (interactionIndicator == null) return;
+
+        interactionIndicator.Hide();
     }
 
     public virtual void CheckForPlayer()

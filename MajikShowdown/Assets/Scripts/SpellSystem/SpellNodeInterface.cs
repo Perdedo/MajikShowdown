@@ -20,6 +20,7 @@ public class SpellNodeInterface : MonoBehaviour
     public Image borderImg;
     [HideInInspector] public int acquisitionOrder;
     [HideInInspector] public SpellNodeDescription linkedDescription;
+    public int CriticalConections = 0;
 
     void Awake()
     {
@@ -122,22 +123,30 @@ public class SpellNodeInterface : MonoBehaviour
         {
             if (conections[index].CheckConection(con.conections[mirrorIndex]))
             {
+                /*if(critical)
+                {
+                    CriticalConections++;
+                    con.CriticalConections++;
+                }*/
                 return true;
             }
 
         }
         return false;
     }
-    public void BreakConection(int index)
+    public void BreakConection(int index, bool RemoveNeighbor = true)
     {
         if (index < 0 || index >= conections.Length)
             return;
 
         NodeConection connection = conections[index];
 
-        if (connection != null && connection.conectedNode != null)
+        if (connection != null && (connection.conectedNode != null || connection.neighborNode != null))
         {
-            connection.RemoveConection();
+            /*if (connection.conectionType != NodeConection.Conections.None)
+                CriticalConections--;
+                connection.conectedNode.Interface.CriticalConections--;*/
+            connection.RemoveConection(RemoveNeighbor);
 
             UpdateConected();
 
@@ -220,7 +229,7 @@ public class SpellNodeInterface : MonoBehaviour
     {
         switch (GetCategory())
         {
-            case NodeCategory.Type:
+            case NodeCategory.Core:
                 img.sprite = info.core.borderSprite;
                 break;
 

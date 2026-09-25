@@ -47,19 +47,30 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
 
     public void Receive(DraggableNode node)
     {
+        Receive(node, false);
+    }
+
+    public void Receive(DraggableNode node, bool returningToOriginalPosition)
+    {
         var spell = node.GetComponent<SpellNodeInterface>();
         if (spell == null) return;
 
         node.transform.SetParent(transform, false);
         node.transform.localPosition = Vector3.zero;
         node.SetOriginZone(this);
-        ConnectNode(spell);
+        ConnectNode(spell, returningToOriginalPosition);
         grid.caster.commander.HexReceive(node,this);
     }
 
     public void Release(DraggableNode node)
     {
         if (spellNode == null) return;
+        //Spell aux = spellNode.Node.OwnerSpell;
+        spellNode.CriticalConections = 0;
+        foreach (NodeConection con in spellNode.conections)
+        {
+            con.SetCritical(false);
+        }
         VerifyNearbyBreakConections(spellNode);
         grid.spellNodes[index] = null;
         spellNode.hexGridNode = null;
@@ -88,6 +99,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
             }
         }
         grid.caster.commander.HexRelease(this, node);
+        //aux.UpdateNodeConections();
 
     }
 
@@ -121,12 +133,18 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         return true;
     }
 
-    public void ConnectNode(SpellNodeInterface node)
+    public void ConnectNode(SpellNodeInterface node, bool returningToOriginalPosition = false)
     {
         if (node == null) return;
-        MakeNearbyConnections(node);
         grid.AddNodeToGrid(this, node);
+        if (!returningToOriginalPosition)
+        {
+            //grid.spell.UpdateCriticalConections();
+            grid.spell.UpdateNodeConections();
+        }
+        MakeNearbyConnections(node);
         spellNode = node;
+        grid.spell.UpdateNodeConections();
     }
 
     public bool VerifyNearbyConnections(SpellNodeInterface spell)

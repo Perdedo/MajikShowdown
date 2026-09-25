@@ -1,7 +1,7 @@
 public enum NodeCategory
 {
     All,
-    Type,
+    Core,
     Trajectory,
     Effect,
     CastingPoint,
