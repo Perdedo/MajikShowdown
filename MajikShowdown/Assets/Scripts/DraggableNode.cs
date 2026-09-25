@@ -88,8 +88,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         canvasGroup.alpha = 0.6f;
         canvasGroup.blocksRaycasts = false;
-
-        GameManager.Instance.uiController.playerUI.caster.commander.HexOnBeginDrag(this);
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -127,8 +125,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             nodeTween?.SlideFrom(releasedWorldPosition);
         }
-
-        GameManager.Instance.uiController.playerUI.caster.commander.HexOnEndDrag(this);
     }
 
     public void ReturnToInventory(NodeInventory inventory)
