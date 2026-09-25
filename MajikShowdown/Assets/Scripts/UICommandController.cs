@@ -103,16 +103,21 @@ public class UICommandController : NetworkBehaviour
 
         if (shouldReturnToInventory)
         {
+            Debug.Log("Failed if 1");
+            Debug.Log(node.pendingDropZone);
+            Debug.Log(droppedOnSameInventory);
             node.ReturnToInventory(inventory);
             return;
         }
 
         if (startedFromGrid && node.pendingDropZone is NodeInventory targetInventory && node.inventoryClone != null)
         {
+            Debug.Log("Failed if 2");
             node.ReturnFromGridToInventory(targetInventory);
             return;
         }
 
+        Debug.Log("Resolved");
         node.ResolveDrop(inventory);
         inventory?.Unfreeze();
 
@@ -144,7 +149,10 @@ public class UICommandController : NetworkBehaviour
 
     public void CMDSetDragOriginZoneAsHex(int dragInd, int gridInd, int hexInd)
     {
-        drags[dragInd].OriginZone = grids[gridInd].hexGridNodes[hexInd];
+        HexGrid grid = grids.Find(g => g.instanceIndex == gridInd);
+        HexGridNode hex = grid.hexGridNodes.Find(h => h.index == hexInd);
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.OriginZone = hex;
     }
 
     public void SetDragOriginZoneAsInventory(DraggableNode drag, NodeInventory inv)
@@ -166,7 +174,8 @@ public class UICommandController : NetworkBehaviour
 
     public void CMDSetDragOriginZoneAsInventory(int dragInd, int playerInd, int invInd)
     {
-        drags[dragInd].OriginZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.OriginZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
     }
 
 
@@ -190,7 +199,10 @@ public class UICommandController : NetworkBehaviour
 
     public void CMDSetDragPendingDropZoneAsHex(int dragInd, int gridInd, int hexInd)
     {
-        drags[dragInd].pendingDropZone = grids[gridInd].hexGridNodes[hexInd];
+        HexGrid grid = grids.Find(g => g.instanceIndex == gridInd);
+        HexGridNode hex = grid.hexGridNodes.Find(h => h.index == hexInd);
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.pendingDropZone = hex;
     }
 
     public void SetDragPendingDropZoneAsInventory(DraggableNode drag, NodeInventory inv)
@@ -212,7 +224,8 @@ public class UICommandController : NetworkBehaviour
 
     public void CMDSetDragPendingDropZoneAsInventory(int dragInd, int playerInd, int invInd)
     {
-        drags[dragInd].pendingDropZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.pendingDropZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
     }
 
     public void SetDragPendingDropZoneAsNull(DraggableNode drag)
@@ -234,7 +247,8 @@ public class UICommandController : NetworkBehaviour
 
     public void CMDSetDragPendingDropZoneAsNull(int dragInd)
     {
-        drags[dragInd].pendingDropZone = null;
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.pendingDropZone = null;
     }
 
     public void ConfigurateSpell(HexGrid grid)
