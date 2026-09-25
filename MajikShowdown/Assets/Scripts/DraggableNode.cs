@@ -23,7 +23,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void Awake()
     {
-        canvas = GetComponentInParent<Canvas>();
+        canvas = GetComponentInParent<Canvas>(true);
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         nodeTween = GetComponent<NodeTween>();
@@ -31,7 +31,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void Initialize()
     {
-        canvas = GetComponentInParent<Canvas>();
+        canvas = GetComponentInParent<Canvas>(true);
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         nodeTween = GetComponent<NodeTween>();
@@ -76,11 +76,10 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!CanDrag()) return;
-        GameManager.Instance.uiController.playerUI.caster.commander.HexOnBeginDrag(this);
         nodeTween?.Stop();
         //pendingDropZone = null;
         RegisterDrop(null);
-        canvas = GetComponentInParent<Canvas>();
+        canvas = GetComponentInParent<Canvas>(true);
         savedPosition = rectTransform.anchoredPosition;
         savedWorldPosition = rectTransform.position;
         savedParent = transform.parent;
@@ -90,6 +89,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         NodeInventory inventory = OriginZone as NodeInventory;
 
+        GameManager.Instance.uiController.playerUI.caster.commander.HexOnBeginDrag(this);
         if (inventory != null && nodeInterface != null)
         {
             savedListIndex = inventory.GetNodeIndex(nodeInterface);
@@ -114,7 +114,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!CanDrag()) return;
-        GameManager.Instance.uiController.playerUI.caster.commander.HexOnEndDrag(this);
         bool startedFromGrid = OriginZone is HexGridNode;
         Vector3 releasedWorldPosition = rectTransform.position;
 
@@ -125,6 +124,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         bool droppedOnSameInventory = pendingDropZone != null && ReferenceEquals(pendingDropZone, inventory);
         bool shouldReturnToInventory = inventory != null && !isClone && (pendingDropZone == null || droppedOnSameInventory);
 
+        GameManager.Instance.uiController.playerUI.caster.commander.HexOnEndDrag(this);
         if (shouldReturnToInventory)
         {
             ReturnToInventory(inventory);

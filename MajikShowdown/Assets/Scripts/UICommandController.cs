@@ -39,12 +39,12 @@ public class UICommandController : NetworkBehaviour
 
         node.nodeTween?.Stop();
         node.RegisterDrop(null);
-        node.canvas = GetComponentInParent<Canvas>();
+        node.canvas = node.GetComponentInParent<Canvas>(true);
         node.savedPosition = node.rectTransform.anchoredPosition;
         node.savedWorldPosition = node.rectTransform.position;
-        node.savedParent = transform.parent;
+        node.savedParent = node.transform.parent;
 
-        SpellNodeInterface nodeInterface = GetComponent<SpellNodeInterface>();
+        SpellNodeInterface nodeInterface = node.GetComponent<SpellNodeInterface>();
         nodeInterface?.SelectOnly();
 
         NodeInventory inventory = node.OriginZone as NodeInventory;
@@ -63,8 +63,8 @@ public class UICommandController : NetworkBehaviour
             node.OriginZone?.Release(node);
         }
 
-        transform.SetParent(node.canvas.transform, true);
-        transform.SetAsLastSibling();
+        node.transform.SetParent(node.canvas.transform, true);
+        node.transform.SetAsLastSibling();
 
         node.canvasGroup.alpha = 0.6f;
         node.canvasGroup.blocksRaycasts = false;
