@@ -14,7 +14,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public Transform savedParent;
     public NodeTween nodeTween;
 
-    public IDropZone OriginZone { get; private set; }
+    public IDropZone OriginZone { get; set; }
     public IDropZone pendingDropZone;
 
     public bool isClone = false;
@@ -40,11 +40,31 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void SetOriginZone(IDropZone zone)
     {
         OriginZone = zone;
+        if(zone is NodeInventory)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragOriginZoneAsInventory(this, zone as NodeInventory);
+        }
+        else if(zone is HexGridNode)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragOriginZoneAsHex(this, zone as HexGridNode);
+        }
     }
 
     public void RegisterDrop(IDropZone dropZone)
     {
         pendingDropZone = dropZone;
+        if(dropZone == null)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragPendingDropZoneAsNull(this);
+        }
+        else if (dropZone is NodeInventory)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragPendingDropZoneAsInventory(this, dropZone as NodeInventory);
+        }
+        else if (dropZone is HexGridNode)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragPendingDropZoneAsHex(this, dropZone as HexGridNode);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -56,9 +76,10 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!CanDrag()) return;
-
+        GameManager.Instance.uiController.playerUI.caster.commander.HexOnBeginDrag(this);
         nodeTween?.Stop();
-        pendingDropZone = null;
+        //pendingDropZone = null;
+        RegisterDrop(null);
         canvas = GetComponentInParent<Canvas>();
         savedPosition = rectTransform.anchoredPosition;
         savedWorldPosition = rectTransform.position;
@@ -93,7 +114,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!CanDrag()) return;
-
+        GameManager.Instance.uiController.playerUI.caster.commander.HexOnEndDrag(this);
         bool startedFromGrid = OriginZone is HexGridNode;
         Vector3 releasedWorldPosition = rectTransform.position;
 
@@ -129,7 +150,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void ReturnToInventory(NodeInventory inventory)
     {
-        pendingDropZone = null;
+        //pendingDropZone = null;
+        RegisterDrop(null);
         canvasGroup.blocksRaycasts = false;
 
         if (nodeTween != null)
@@ -165,7 +187,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Vector3 targetWorldPosition = inventoryClone.rectTransform.position;
         DraggableNode savedClone = inventoryClone;
 
-        pendingDropZone = null;
+        //pendingDropZone = null;
+        RegisterDrop(null);
         canvasGroup.blocksRaycasts = false;
 
         if (nodeTween != null)
@@ -319,7 +342,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             }
         }
 
-        pendingDropZone = null;
+        //pendingDropZone = null;
+        RegisterDrop(null);
     }
 
     public bool CanDrag()

@@ -16,6 +16,226 @@ public class UICommandController : NetworkBehaviour
     public List<SpellNodeInterface> interfaces = new List<SpellNodeInterface>();
     public bool network = true;
 
+    public void HexOnBeginDrag(DraggableNode drag)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitHexOnBeginDrag(drag));
+        }
+    }
+    IEnumerator WaitHexOnBeginDrag(DraggableNode drag)
+    {
+        //yield return new WaitUntil(() => grids.Contains(grid));
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDOnBeginDrag(drag.acquisitionOrder);
+    }
+    [Command]
+    public void CMDOnBeginDrag(int ind)
+    {
+        DraggableNode node = drags.Find(d => d.acquisitionOrder == ind);
+        if (node.isClone) return;
+
+        node.nodeTween?.Stop();
+        node.RegisterDrop(null);
+        node.canvas = GetComponentInParent<Canvas>();
+        node.savedPosition = node.rectTransform.anchoredPosition;
+        node.savedWorldPosition = node.rectTransform.position;
+        node.savedParent = transform.parent;
+
+        SpellNodeInterface nodeInterface = GetComponent<SpellNodeInterface>();
+        nodeInterface?.SelectOnly();
+
+        NodeInventory inventory = node.OriginZone as NodeInventory;
+
+        if (inventory != null && nodeInterface != null)
+        {
+            node.savedListIndex = inventory.GetNodeIndex(nodeInterface);
+        }
+
+        if (inventory != null && !node.isClone)
+        {
+            inventory.Freeze();
+        }
+        else
+        {
+            node.OriginZone?.Release(node);
+        }
+
+        transform.SetParent(node.canvas.transform, true);
+        transform.SetAsLastSibling();
+
+        node.canvasGroup.alpha = 0.6f;
+        node.canvasGroup.blocksRaycasts = false;
+    }
+    public void HexOnEndDrag(DraggableNode drag)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitHexOnEndDrag(drag));
+        }
+    }
+    IEnumerator WaitHexOnEndDrag(DraggableNode drag)
+    {
+        //yield return new WaitUntil(() => grids.Contains(grid));
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDOnEndDrag(drag.acquisitionOrder);
+    }
+
+    [Command]
+    public void CMDOnEndDrag(int ind)
+    {
+        DraggableNode node = drags.Find(d => d.acquisitionOrder == ind);
+        if (node.isClone) return;
+
+        bool startedFromGrid = node.OriginZone is HexGridNode;
+        Vector3 releasedWorldPosition = node.rectTransform.position;
+
+        node.canvasGroup.alpha = 1f;
+        node.canvasGroup.blocksRaycasts = true;
+
+        NodeInventory inventory = node.OriginZone as NodeInventory;
+        bool droppedOnSameInventory = node.pendingDropZone != null && ReferenceEquals(node.pendingDropZone, inventory);
+        bool shouldReturnToInventory = inventory != null && !node.isClone && (node.pendingDropZone == null || droppedOnSameInventory);
+
+        if (shouldReturnToInventory)
+        {
+            node.ReturnToInventory(inventory);
+            return;
+        }
+
+        if (startedFromGrid && node.pendingDropZone is NodeInventory targetInventory && node.inventoryClone != null)
+        {
+            node.ReturnFromGridToInventory(targetInventory);
+            return;
+        }
+
+        node.ResolveDrop(inventory);
+        inventory?.Unfreeze();
+
+        bool endedInGrid = node.OriginZone is HexGridNode;
+
+        if (startedFromGrid || endedInGrid)
+        {
+            node.nodeTween?.SlideFrom(releasedWorldPosition);
+        }
+    }
+
+    public void SetDragOriginZoneAsHex(DraggableNode drag, HexGridNode hex)
+    {
+        if(!network) return;
+        if(isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragOriginZoneAsHex(drag, hex.grid, hex.index));
+        }
+    }
+
+    IEnumerator WaitSetDragOriginZoneAsHex(DraggableNode drag, HexGrid grid, int hexInd)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSetDragOriginZoneAsHex(drag.acquisitionOrder, grid.instanceIndex, hexInd);
+        //CMDConfigurateSpell(grids.IndexOf(grid));
+    }
+
+    public void CMDSetDragOriginZoneAsHex(int dragInd, int gridInd, int hexInd)
+    {
+        drags[dragInd].OriginZone = grids[gridInd].hexGridNodes[hexInd];
+    }
+
+    public void SetDragOriginZoneAsInventory(DraggableNode drag, NodeInventory inv)
+    {
+        if(!network) return;
+        if(isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragOriginZoneAsInventory(drag, inv.caster.player, inv.caster.inventories.IndexOf(inv)));
+        }
+    }
+
+    IEnumerator WaitSetDragOriginZoneAsInventory(DraggableNode drag, Player player, int invInd)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSetDragOriginZoneAsInventory(drag.acquisitionOrder, GameManager.Instance.Players.IndexOf(player), invInd);
+        //CMDConfigurateSpell(grids.IndexOf(grid));
+    }
+
+    public void CMDSetDragOriginZoneAsInventory(int dragInd, int playerInd, int invInd)
+    {
+        drags[dragInd].OriginZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
+    }
+
+
+    public void SetDragPendingDropZoneAsHex(DraggableNode drag, HexGridNode hex)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragPendingDropZoneAsHex(drag, hex.grid, hex.index));
+        }
+    }
+
+    IEnumerator WaitSetDragPendingDropZoneAsHex(DraggableNode drag, HexGrid grid, int hexInd)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSetDragPendingDropZoneAsHex(drag.acquisitionOrder, grid.instanceIndex, hexInd);
+        //CMDConfigurateSpell(grids.IndexOf(grid));
+    }
+
+    public void CMDSetDragPendingDropZoneAsHex(int dragInd, int gridInd, int hexInd)
+    {
+        drags[dragInd].pendingDropZone = grids[gridInd].hexGridNodes[hexInd];
+    }
+
+    public void SetDragPendingDropZoneAsInventory(DraggableNode drag, NodeInventory inv)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragPendingDropZoneAsInventory(drag, inv.caster.player, inv.caster.inventories.IndexOf(inv)));
+        }
+    }
+
+    IEnumerator WaitSetDragPendingDropZoneAsInventory(DraggableNode drag, Player player, int invInd)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSetDragPendingDropZoneAsInventory(drag.acquisitionOrder, GameManager.Instance.Players.IndexOf(player), invInd);
+        //CMDConfigurateSpell(grids.IndexOf(grid));
+    }
+
+    public void CMDSetDragPendingDropZoneAsInventory(int dragInd, int playerInd, int invInd)
+    {
+        drags[dragInd].pendingDropZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
+    }
+
+    public void SetDragPendingDropZoneAsNull(DraggableNode drag)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragPendingDropZoneAsNull(drag));
+        }
+    }
+
+    IEnumerator WaitSetDragPendingDropZoneAsNull(DraggableNode drag)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSetDragPendingDropZoneAsNull(drag.acquisitionOrder);
+        //CMDConfigurateSpell(grids.IndexOf(grid));
+    }
+
+    public void CMDSetDragPendingDropZoneAsNull(int dragInd)
+    {
+        drags[dragInd].pendingDropZone = null;
+    }
 
     public void ConfigurateSpell(HexGrid grid)
     {
