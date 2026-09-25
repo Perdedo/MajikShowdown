@@ -2,14 +2,6 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public enum VfxElement
-{
-    Fire, Ice, Poison, Darkness, Earth, Radiance, Lighting
-}
-public enum VfxType
-{
-    Projectile, Explosion, Area
-}
 public class BuffersControl : MonoBehaviour
 {    
     public static BuffersControl Instance;
@@ -25,7 +17,7 @@ public class BuffersControl : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    public int SpawnEffect(VfxElement element, VfxType type, Transform place, float size)
+    public int SpawnEffect(Elements element, SpellTypes type, Transform place, float size)
     {
         int index = -1;
         for(int i = 0; i < buffers.Count; i++)
@@ -43,7 +35,7 @@ public class BuffersControl : MonoBehaviour
         }
         return index;
     }
-    public void UnspawnEffect(VfxElement element, VfxType type, int index)
+    public void UnspawnEffect(Elements element, SpellTypes type, int index)
     {
         for(int i = 0; i < buffers.Count; i++)
         {

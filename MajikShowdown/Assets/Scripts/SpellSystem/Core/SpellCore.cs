@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
 [CreateAssetMenu(fileName = "Core Node", menuName = "Spell Nodes/CoreNode")]
 public class SpellCore : SpellNode
 {
-    public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
+    
     [Header("Core Config")]
     public SpellTypes Type;
     public CollisionOptions Collisions;
