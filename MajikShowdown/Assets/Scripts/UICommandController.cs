@@ -38,7 +38,8 @@ public class UICommandController : NetworkBehaviour
         if (node.isClone) return;
 
         node.nodeTween?.Stop();
-        node.RegisterDrop(null);
+        node.pendingDropZone = null;
+        //node.RegisterDrop(null);
         node.canvas = node.GetComponentInParent<Canvas>(true);
         node.savedPosition = node.rectTransform.anchoredPosition;
         node.savedWorldPosition = node.rectTransform.position;
@@ -106,7 +107,6 @@ public class UICommandController : NetworkBehaviour
             node.ReturnToInventory(inventory);
             return;
         }
-
         if (startedFromGrid && node.pendingDropZone is NodeInventory targetInventory && node.inventoryClone != null)
         {
             node.ReturnFromGridToInventory(targetInventory);
