@@ -33,6 +33,7 @@ public class SpellCollider : NetworkBehaviour
     [NonSerialized] public Transform SpawnTransform;
     [NonSerialized] public Vector3 SpawnPoint;
     public int VFXIndex = -1;
+    public bool SeeMesh;
     public struct TrajectoryInfo
     {
         public Vector3 Forward;
@@ -166,7 +167,11 @@ public class SpellCollider : NetworkBehaviour
         {
             transform.rotation = Quaternion.LookRotation(velocityDir);
         }
-        mesh.transform.localScale = Vector3.one * currentSize;
+        if (SeeMesh)
+        {
+            mesh.transform.localScale = Vector3.one * currentSize;
+        }
+        
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
         if (MarkedToDie)
         {
