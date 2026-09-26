@@ -1,22 +1,36 @@
 using System.Collections.Generic;
 using System.Drawing;
+using NUnit.Framework.Internal;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BufferTests : MonoBehaviour
 {
     [SerializeField]private List<GameObject> points = new List<GameObject>();
+    public int index = 1;
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            BuffersControl.Instance.SpawnEffect(Elements.Darkness, SpellTypes.Explosion, points[1].transform, 2);
-            //TesteElement(VfxElement.Lighting, points);
-
+            TestBufferSpawn();
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
-            TesteType(SpellTypes.Explosion,points);
+            TestBufferRemove(index);
+            index++;
         }
+    }
+    public void TestBufferSpawn()
+    {
+        BuffersControl.Instance.SpawnEffect(Elements.Fire,SpellTypes.Projectile, points[0].transform, 1);
+        BuffersControl.Instance.SpawnEffect(Elements.Fire,SpellTypes.Projectile, points[1].transform, 1);
+        BuffersControl.Instance.SpawnEffect(Elements.Fire,SpellTypes.Projectile, points[2].transform, 1);
+        BuffersControl.Instance.SpawnEffect(Elements.Fire,SpellTypes.Projectile, points[4].transform, 1);
+        BuffersControl.Instance.SpawnEffect(Elements.Fire,SpellTypes.Projectile, points[5].transform, 1);
+    }
+    public void TestBufferRemove(int index)
+    {
+        BuffersControl.Instance.UnspawnEffect(Elements.Fire, SpellTypes.Projectile, index);
     }
     public void TesteElement(Elements ele, List<GameObject> points)
     {

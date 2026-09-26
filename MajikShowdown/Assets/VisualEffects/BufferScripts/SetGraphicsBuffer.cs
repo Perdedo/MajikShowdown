@@ -15,6 +15,8 @@ public class SetGraphicsBuffer : MonoBehaviour
     [SerializeField] private ExposedProperty bufferPoints = "SpawnPoints";
     [SerializeField] private ExposedProperty bufferCount = "PointsCount";
     [SerializeField] private List<Transform> instances = new List<Transform>();
+    [SerializeField] private Queue<int> nullIndex = new Queue<int>();
+
 
     
     void Start()
@@ -23,29 +25,35 @@ public class SetGraphicsBuffer : MonoBehaviour
     }
     public int AddEffect(Transform place, float size)
     {
-        instances.Add(place);
-        spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
-        return instances.Count - 1;
-    }
-    public void RemoveEffect(int index)
-    {
-        if(instances.Count > index)
+        int index = instances.Count;
+        if(nullIndex.Count == 0)
         {
-            instances.RemoveAt(index);
-            spawnPoints.RemoveAt(index);
+            instances.Add(place);
+            spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
         }
         else
         {
-            Debug.LogError("Vfx is not spawned");
+            index = nullIndex.Dequeue();
+            instances[index] = place;
+            spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
         }
+        
 
+        return index;
+    }
+    public void RemoveEffect(int index)
+    {
+        instances[index] = null;
+        nullIndex.Enqueue(index);    
     }
     void LateUpdate()
     {
         UpdatePoints();
         EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
-        gBuffer.SetData(spawnPoints);
-        visualEffect.SetInt(bufferCount, spawnPoints.Count);
+        
+        List<Vector4> points = GetBufferPoints();
+        gBuffer.SetData(points);
+        visualEffect.SetInt(bufferCount, points.Count);
     }
     
     void OnDisable()
@@ -66,14 +74,31 @@ public class SetGraphicsBuffer : MonoBehaviour
         
 
     }
+
+    private List<Vector4> GetBufferPoints()
+    {
+        List<Vector4> bPoints = new List<Vector4>();
+        for(int i = 0; i< spawnPoints.Count; i++)
+        {
+            if (!nullIndex.Contains(i))
+            {
+                bPoints.Add(spawnPoints[i]);
+            }
+        }
+        return bPoints;
+    }
     private void UpdatePoints()
     {
         if(spawnPoints.Count > 0 && instances.Count > 0)
         {
             for(int i = 0; i< spawnPoints.Count; i++)
             {
-                Vector4 newpos = new Vector4(instances[i].position.x,instances[i].position.y,instances[i].position.z,spawnPoints[i].w);
-                spawnPoints[i] = newpos;
+                if(instances[i] != null)
+                {
+                    Vector4 newpos = new Vector4(instances[i].position.x,instances[i].position.y,instances[i].position.z,spawnPoints[i].w);
+                    spawnPoints[i] = newpos;
+                }
+  
             }
         }
         
