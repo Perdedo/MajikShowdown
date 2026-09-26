@@ -20,13 +20,14 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public bool isClone = false;
     public DraggableNode inventorySource;
     public DraggableNode inventoryClone;
-
+    public bool canProcessDrop = true;
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>(true);
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         nodeTween = GetComponent<NodeTween>();
+        canProcessDrop = true;
     }
 
     public void Initialize()
@@ -35,6 +36,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         nodeTween = GetComponent<NodeTween>();
+        canProcessDrop = true;
     }
 
     public void SetOriginZone(IDropZone zone)

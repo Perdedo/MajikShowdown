@@ -82,6 +82,7 @@ public class UICommandController : NetworkBehaviour
         //yield return new WaitUntil(() => grids.Contains(grid));
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => drag.canProcessDrop);
         CMDOnEndDrag(drag.acquisitionOrder);
     }
 
@@ -121,12 +122,12 @@ public class UICommandController : NetworkBehaviour
         node.ResolveDrop(inventory);
         inventory?.Unfreeze();
 
-        bool endedInGrid = node.OriginZone is HexGridNode;
+        //bool endedInGrid = node.OriginZone is HexGridNode;
 
-        if (startedFromGrid || endedInGrid)
+        /*if (startedFromGrid || endedInGrid)
         {
             node.nodeTween?.SlideFrom(releasedWorldPosition);
-        }
+        }*/
     }
 
     public void SetDragOriginZoneAsHex(DraggableNode drag, HexGridNode hex)
@@ -147,6 +148,7 @@ public class UICommandController : NetworkBehaviour
         //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
+    [Command]
     public void CMDSetDragOriginZoneAsHex(int dragInd, int gridInd, int hexInd)
     {
         HexGrid grid = grids.Find(g => g.instanceIndex == gridInd);
@@ -172,6 +174,7 @@ public class UICommandController : NetworkBehaviour
         //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
+    [Command]
     public void CMDSetDragOriginZoneAsInventory(int dragInd, int playerInd, int invInd)
     {
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
@@ -197,12 +200,15 @@ public class UICommandController : NetworkBehaviour
         //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
+    [Command]
     public void CMDSetDragPendingDropZoneAsHex(int dragInd, int gridInd, int hexInd)
     {
         HexGrid grid = grids.Find(g => g.instanceIndex == gridInd);
         HexGridNode hex = grid.hexGridNodes.Find(h => h.index == hexInd);
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.pendingDropZone = hex;
+        RPCSetDragPendingDropZone(drag.GetComponentInParent<NetworkIdentity>(true).connectionToClient, dragInd);
+        Debug.LogWarning(drag.pendingDropZone);
     }
 
     public void SetDragPendingDropZoneAsInventory(DraggableNode drag, NodeInventory inv)
@@ -222,10 +228,20 @@ public class UICommandController : NetworkBehaviour
         //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
+    [Command]
     public void CMDSetDragPendingDropZoneAsInventory(int dragInd, int playerInd, int invInd)
     {
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.pendingDropZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
+        RPCSetDragPendingDropZone(drag.GetComponentInParent<NetworkIdentity>(true).connectionToClient, dragInd);
+        Debug.LogWarning(drag.pendingDropZone);
+    }
+
+    [TargetRpc]
+    public void RPCSetDragPendingDropZone(NetworkConnectionToClient target, int dragInd)
+    {
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.canProcessDrop = true;
     }
 
     public void SetDragPendingDropZoneAsNull(DraggableNode drag)
@@ -245,10 +261,12 @@ public class UICommandController : NetworkBehaviour
         //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
+    [Command]
     public void CMDSetDragPendingDropZoneAsNull(int dragInd)
     {
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.pendingDropZone = null;
+        Debug.LogWarning(drag.pendingDropZone);
     }
 
     public void ConfigurateSpell(HexGrid grid)
