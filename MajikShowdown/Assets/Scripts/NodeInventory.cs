@@ -184,20 +184,20 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         {
             return;
         }
-
         SpellNodeInterface instance = Instantiate(caster.genericNodePrefab, transform);
         instance.Setup(nodeData);
         instance.inventory = this;
         instance.acquisitionOrder = activeNodes.Count;
         instance.linkedDescription = nodeDescription;
-
+        DraggableNode dragInst = instance.GetComponent<DraggableNode>();
+        dragInst.Initialize();
         RectTransform rect = instance.GetComponent<RectTransform>();
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
 
         nodeMap[nodeData] = instance;
         activeNodes.Add(instance);
-        commander.drags.Add(instance.GetComponent<DraggableNode>());
+        commander.drags.Add(dragInst);
         commander.interfaces.Add(instance);
 
         var draggable = instance.GetComponent<DraggableNode>();
