@@ -629,39 +629,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
---- !u!114 &115335593 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2457700893881666825, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
-  m_PrefabInstance: {fileID: 5686694404474342991}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4574008b2bfc6d34f91b3a5802f2c4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ElementBuffers
---- !u!114 &130290246 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1064728431524866166, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
-  m_PrefabInstance: {fileID: 5686694404474342991}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4574008b2bfc6d34f91b3a5802f2c4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ElementBuffers
---- !u!114 &138573405 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5188492983785302547, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
-  m_PrefabInstance: {fileID: 5686694404474342991}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4574008b2bfc6d34f91b3a5802f2c4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ElementBuffers
 --- !u!1 &175867962
 GameObject:
   m_ObjectHideFlags: 0
@@ -750,34 +717,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 246565040}
-  - component: {fileID: 246565039}
+  - component: {fileID: 246565041}
   m_Layer: 0
-  m_Name: BufferControl
+  m_Name: BufferTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &246565039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 246565038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df0fa99cb15c1e949b0d78e4051f95c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BufferControl
-  buffers:
-  - {fileID: 1134325449}
-  - {fileID: 138573405}
-  - {fileID: 115335593}
-  - {fileID: 1302558613}
-  - {fileID: 364988012}
-  - {fileID: 130290246}
-  - {fileID: 4861672813633290825}
 --- !u!4 &246565040
 Transform:
   m_ObjectHideFlags: 0
@@ -793,6 +740,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &246565041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246565038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3d9dbc1e36ea7a43bf834bac3bb3714, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BufferTests
+  points:
+  - {fileID: 1062431672}
+  - {fileID: 1307274618}
+  - {fileID: 1169888454}
+  - {fileID: 451764262}
+  - {fileID: 1799002412}
+  - {fileID: 372394959}
+  - {fileID: 1664311901}
+  index: 1
 --- !u!1 &265899415
 GameObject:
   m_ObjectHideFlags: 0
@@ -905,17 +873,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &364988012 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3126051432683398256, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
-  m_PrefabInstance: {fileID: 5686694404474342991}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4574008b2bfc6d34f91b3a5802f2c4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ElementBuffers
 --- !u!1 &370151432
 GameObject:
   m_ObjectHideFlags: 0
@@ -1157,6 +1114,11 @@ MonoBehaviour:
   FellOnJump:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &372394959 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9062053181626625782, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+  m_PrefabInstance: {fileID: 5686694404474342991}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &409704875
 GameObject:
   m_ObjectHideFlags: 0
@@ -1381,6 +1343,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &451764262 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9142826841928722470, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+  m_PrefabInstance: {fileID: 5686694404474342991}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &460988637
 GameObject:
   m_ObjectHideFlags: 0
@@ -2294,17 +2261,16 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 398792914025255036, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
   m_PrefabInstance: {fileID: 73520384}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1134325449 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2450840913863921070, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+--- !u!1 &1062431672 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3880402765864838926, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
   m_PrefabInstance: {fileID: 5686694404474342991}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4574008b2bfc6d34f91b3a5802f2c4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ElementBuffers
+--- !u!1 &1169888454 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8290308481029582013, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+  m_PrefabInstance: {fileID: 5686694404474342991}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1216061059
 GameObject:
   m_ObjectHideFlags: 0
@@ -2360,7 +2326,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1227513403
 Transform:
   m_ObjectHideFlags: 0
@@ -2384,7 +2350,7 @@ VFXRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1227513402}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -2592,17 +2558,11 @@ Transform:
   - {fileID: 900011477}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1302558613 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5413163002956388993, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+--- !u!1 &1307274618 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7075439838472298795, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
   m_PrefabInstance: {fileID: 5686694404474342991}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4574008b2bfc6d34f91b3a5802f2c4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ElementBuffers
 --- !u!1 &1390727847
 GameObject:
   m_ObjectHideFlags: 0
@@ -2620,7 +2580,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1390727848
 Transform:
   m_ObjectHideFlags: 0
@@ -2644,7 +2604,7 @@ VFXRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1390727847}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -3439,6 +3399,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1664311901 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 804380857853789935, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+  m_PrefabInstance: {fileID: 5686694404474342991}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1742111912
 GameObject:
   m_ObjectHideFlags: 0
@@ -3551,6 +3516,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1799002412 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7258598500937642447, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+  m_PrefabInstance: {fileID: 5686694404474342991}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1866681108
 GameObject:
   m_ObjectHideFlags: 0
@@ -4546,17 +4516,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90062ac18eaa795429e3132159484390, type: 3}
---- !u!114 &4861672813633290825 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5726077513963439512, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
-  m_PrefabInstance: {fileID: 5686694404474342991}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4574008b2bfc6d34f91b3a5802f2c4f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ElementBuffers
 --- !u!1001 &5686694404474342991
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4605,9 +4564,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3942376842087497190, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: instances.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6689734942567695830, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
       propertyPath: m_Name
-      value: BufferTest
+      value: BufferControl
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
