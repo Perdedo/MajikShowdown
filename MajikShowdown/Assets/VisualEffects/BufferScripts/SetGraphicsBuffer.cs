@@ -7,7 +7,7 @@ using System;
 public class SetGraphicsBuffer : MonoBehaviour
 {
     private const  int STRIDE = 16;
-    public VfxType myType;
+    public SpellTypes myType;
     public List<Vector4> spawnPoints = new List<Vector4>();
     private GraphicsBuffer gBuffer;
     [SerializeField] private int bufferCapacity = 8;    

@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class ElementBuffers : MonoBehaviour
 {
-    public VfxElement myElement;
+    public Elements myElement;
     [SerializeField] private List<SetGraphicsBuffer> mybuffers;
 
-    public int CallBuffer(VfxType type, Transform place, float size)
+    public int CallBuffer(SpellTypes type, Transform place, float size)
     {
         int index = -1;
         for(int i = 0; i < mybuffers.Count; i++)
@@ -24,7 +24,7 @@ public class ElementBuffers : MonoBehaviour
         }
         return index;
     }
-    public void UnspawnVfx( VfxType type, int index)
+    public void UnspawnVfx(SpellTypes type, int index)
     {
         for(int i = 0; i < mybuffers.Count; i++)
         {
