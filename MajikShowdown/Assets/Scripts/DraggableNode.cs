@@ -44,7 +44,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void SetOriginZone(IDropZone zone)
     {
-        Debug.LogWarning(zone);
         OriginZone = zone;
         if(zone is NodeInventory)
         {
@@ -230,9 +229,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void ResolveDrop(NodeInventory inventory)
     {
-        Debug.LogWarning(pendingDropZone);
-        Debug.LogWarning(inventory);
-        Debug.LogWarning(isClone);
         if (pendingDropZone != null && inventory != null && !isClone && pendingDropZone is HexGridNode)
         {
             GameObject cloneGO = Instantiate(gameObject, canvas.transform);

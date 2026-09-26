@@ -90,7 +90,6 @@ public class UICommandController : NetworkBehaviour
         DraggableNode node = drags.Find(d => d.acquisitionOrder == ind);
         if (node.isClone) return;
 
-        Debug.LogWarning(node.OriginZone);
         bool startedFromGrid = node.OriginZone is HexGridNode;
         //Vector3 releasedWorldPosition = node.rectTransform.position;
 
@@ -155,7 +154,6 @@ public class UICommandController : NetworkBehaviour
         HexGridNode hex = grid.hexGridNodes.Find(h => h.index == hexInd);
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.OriginZone = hex;
-        Debug.LogWarning(drag.OriginZone);
     }
 
     public void SetDragOriginZoneAsInventory(DraggableNode drag, NodeInventory inv)
@@ -180,7 +178,6 @@ public class UICommandController : NetworkBehaviour
     {
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.OriginZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
-        Debug.LogWarning(drag.OriginZone);
     }
 
 
@@ -210,7 +207,6 @@ public class UICommandController : NetworkBehaviour
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.pendingDropZone = hex;
         RPCSetDragPendingDropZone(drag.GetComponentInParent<NetworkIdentity>(true).connectionToClient, dragInd);
-        Debug.LogWarning(drag.pendingDropZone);
     }
 
     public void SetDragPendingDropZoneAsInventory(DraggableNode drag, NodeInventory inv)
@@ -235,7 +231,6 @@ public class UICommandController : NetworkBehaviour
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.pendingDropZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
         RPCSetDragPendingDropZone(drag.GetComponentInParent<NetworkIdentity>(true).connectionToClient, dragInd);
-        Debug.LogWarning(drag.pendingDropZone);
     }
 
     [TargetRpc]
@@ -266,7 +261,6 @@ public class UICommandController : NetworkBehaviour
     {
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.pendingDropZone = null;
-        Debug.LogWarning(drag.pendingDropZone);
     }
 
     public void ConfigurateSpell(HexGrid grid)
@@ -652,7 +646,7 @@ public class UICommandController : NetworkBehaviour
         }
         scui.boundSpell.Caster.spells.Remove(scui.boundSpell);
         scui.boundSpell.OnSpellUpdated -= scui.RefreshUI;
-        Destroy(gameObject);
+        Destroy(scui.gameObject);
         scui.boundSpell = null;
     }
 
