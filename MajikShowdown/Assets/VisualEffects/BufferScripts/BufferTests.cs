@@ -7,17 +7,21 @@ using UnityEngine;
 public class BufferTests : MonoBehaviour
 {
     [SerializeField]private List<GameObject> points = new List<GameObject>();
-    public int index = 1;
+    public int index = 2;
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            TestBufferSpawn();
+            TestBufferNulls();
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
             TestBufferRemove(index);
             index++;
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            index = TestBufferNulls();
         }
     }
     public void TestBufferSpawn()
@@ -27,6 +31,10 @@ public class BufferTests : MonoBehaviour
         BuffersControl.Instance.SpawnEffect(Elements.Fire,SpellTypes.Projectile, points[2].transform, 1);
         BuffersControl.Instance.SpawnEffect(Elements.Fire,SpellTypes.Projectile, points[4].transform, 1);
         BuffersControl.Instance.SpawnEffect(Elements.Fire,SpellTypes.Projectile, points[5].transform, 1);
+    }
+    public int TestBufferNulls()
+    {
+        return BuffersControl.Instance.SpawnEffect(Elements.Lightning,SpellTypes.Explosion, points[1].transform, 1);
     }
     public void TestBufferRemove(int index)
     {
