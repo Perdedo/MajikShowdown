@@ -32,6 +32,7 @@ public class SpellCollider : NetworkBehaviour
     [HideInInspector] public bool UseAcceleration = false;
     [NonSerialized] public Transform SpawnTransform;
     [NonSerialized] public Vector3 SpawnPoint;
+    public int VFXIndex = -1;
     public struct TrajectoryInfo
     {
         public Vector3 Forward;
@@ -87,6 +88,8 @@ public class SpellCollider : NetworkBehaviour
         {
             mesh.gameObject.SetActive(true);
         }
+        VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, stats.Size);
+        //Debug.Log( VFXIndex);
         //spellCol = GetComponent<Collider>();
 
     }
@@ -167,6 +170,7 @@ public class SpellCollider : NetworkBehaviour
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
         if (MarkedToDie)
         {
+            BuffersControl.Instance.UnspawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, VFXIndex);
             Die();
         }
 
@@ -600,6 +604,7 @@ public class SpellCollider : NetworkBehaviour
     }
     public void ResetCollider()
     {
+        VFXIndex = -1;
         OwnerSpell = null;
         pierceCount = 0;
         bounceCount = 0;
