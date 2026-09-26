@@ -21,6 +21,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public DraggableNode inventorySource;
     public DraggableNode inventoryClone;
     public bool canProcessDrop = true;
+    public bool canProcessOrigin = true;
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>(true);
@@ -28,6 +29,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         canvasGroup = GetComponent<CanvasGroup>();
         nodeTween = GetComponent<NodeTween>();
         canProcessDrop = true;
+        canProcessOrigin = true;
     }
 
     public void Initialize()
@@ -37,10 +39,12 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         canvasGroup = GetComponent<CanvasGroup>();
         nodeTween = GetComponent<NodeTween>();
         canProcessDrop = true;
+        canProcessOrigin = true;
     }
 
     public void SetOriginZone(IDropZone zone)
     {
+        Debug.LogWarning(zone);
         OriginZone = zone;
         if(zone is NodeInventory)
         {
@@ -226,6 +230,9 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void ResolveDrop(NodeInventory inventory)
     {
+        Debug.LogWarning(pendingDropZone);
+        Debug.LogWarning(inventory);
+        Debug.LogWarning(isClone);
         if (pendingDropZone != null && inventory != null && !isClone && pendingDropZone is HexGridNode)
         {
             GameObject cloneGO = Instantiate(gameObject, canvas.transform);

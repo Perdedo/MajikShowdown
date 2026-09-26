@@ -109,6 +109,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
         if (node == null) return;
         if (!CanReceive(node)) return;
         node.canProcessDrop = false;
+        node.canProcessOrigin = false;
         node.RegisterDrop(this);
     }
 

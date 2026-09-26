@@ -10,6 +10,7 @@ public class InventoryDropArea : MonoBehaviour, IDropHandler
         var node = eventData.pointerDrag?.GetComponent<DraggableNode>();
         if (node == null) return;
         node.canProcessDrop = false;
+        node.canProcessOrigin = false;
         node.RegisterDrop(inventory);
     }
 }

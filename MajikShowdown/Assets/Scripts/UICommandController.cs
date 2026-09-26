@@ -26,7 +26,6 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitHexOnBeginDrag(DraggableNode drag)
     {
-        //yield return new WaitUntil(() => grids.Contains(grid));
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
         CMDOnBeginDrag(drag.acquisitionOrder);
@@ -79,7 +78,6 @@ public class UICommandController : NetworkBehaviour
     }
     IEnumerator WaitHexOnEndDrag(DraggableNode drag)
     {
-        //yield return new WaitUntil(() => grids.Contains(grid));
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
         yield return new WaitUntil(() => drag.canProcessDrop);
@@ -92,8 +90,9 @@ public class UICommandController : NetworkBehaviour
         DraggableNode node = drags.Find(d => d.acquisitionOrder == ind);
         if (node.isClone) return;
 
+        Debug.LogWarning(node.OriginZone);
         bool startedFromGrid = node.OriginZone is HexGridNode;
-        Vector3 releasedWorldPosition = node.rectTransform.position;
+        //Vector3 releasedWorldPosition = node.rectTransform.position;
 
         node.canvasGroup.alpha = 1f;
         node.canvasGroup.blocksRaycasts = true;
@@ -104,24 +103,19 @@ public class UICommandController : NetworkBehaviour
 
         if (shouldReturnToInventory)
         {
-            Debug.Log("Failed if 1");
-            Debug.Log(node.pendingDropZone);
-            Debug.Log(droppedOnSameInventory);
             node.ReturnToInventory(inventory);
             return;
         }
 
         if (startedFromGrid && node.pendingDropZone is NodeInventory targetInventory && node.inventoryClone != null)
         {
-            Debug.Log("Failed if 2");
             node.ReturnFromGridToInventory(targetInventory);
             return;
         }
 
-        Debug.Log("Resolved");
         node.ResolveDrop(inventory);
         inventory?.Unfreeze();
-
+        RPCSetDragOriginZone(node.GetComponentInParent<NetworkIdentity>(true).connectionToClient, ind);
         //bool endedInGrid = node.OriginZone is HexGridNode;
 
         /*if (startedFromGrid || endedInGrid)
@@ -130,6 +124,12 @@ public class UICommandController : NetworkBehaviour
         }*/
     }
 
+    [TargetRpc]
+    public void RPCSetDragOriginZone(NetworkConnectionToClient target, int dragInd)
+    {
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.canProcessOrigin = true;
+    }
     public void SetDragOriginZoneAsHex(DraggableNode drag, HexGridNode hex)
     {
         if(!network) return;
@@ -144,8 +144,8 @@ public class UICommandController : NetworkBehaviour
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
         yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => drag.canProcessOrigin);
         CMDSetDragOriginZoneAsHex(drag.acquisitionOrder, grid.instanceIndex, hexInd);
-        //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
     [Command]
@@ -155,6 +155,7 @@ public class UICommandController : NetworkBehaviour
         HexGridNode hex = grid.hexGridNodes.Find(h => h.index == hexInd);
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.OriginZone = hex;
+        Debug.LogWarning(drag.OriginZone);
     }
 
     public void SetDragOriginZoneAsInventory(DraggableNode drag, NodeInventory inv)
@@ -170,8 +171,8 @@ public class UICommandController : NetworkBehaviour
     {
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => drag.canProcessOrigin);
         CMDSetDragOriginZoneAsInventory(drag.acquisitionOrder, GameManager.Instance.Players.IndexOf(player), invInd);
-        //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
     [Command]
@@ -179,7 +180,9 @@ public class UICommandController : NetworkBehaviour
     {
         DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
         drag.OriginZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
+        Debug.LogWarning(drag.OriginZone);
     }
+
 
 
     public void SetDragPendingDropZoneAsHex(DraggableNode drag, HexGridNode hex)
@@ -197,7 +200,6 @@ public class UICommandController : NetworkBehaviour
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
         yield return new WaitUntil(() => NetworkClient.ready);
         CMDSetDragPendingDropZoneAsHex(drag.acquisitionOrder, grid.instanceIndex, hexInd);
-        //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
     [Command]
@@ -225,7 +227,6 @@ public class UICommandController : NetworkBehaviour
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
         CMDSetDragPendingDropZoneAsInventory(drag.acquisitionOrder, GameManager.Instance.Players.IndexOf(player), invInd);
-        //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
     [Command]
@@ -258,7 +259,6 @@ public class UICommandController : NetworkBehaviour
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
         yield return new WaitUntil(() => NetworkClient.ready);
         CMDSetDragPendingDropZoneAsNull(drag.acquisitionOrder);
-        //CMDConfigurateSpell(grids.IndexOf(grid));
     }
 
     [Command]
@@ -801,7 +801,7 @@ public class UICommandController : NetworkBehaviour
 
         node.transform.SetParent(hex.transform, false);
         node.transform.localPosition = Vector3.zero;
-        node.SetOriginZone(hex);
+        //node.SetOriginZone(hex);
         hex.ConnectNode(spell);
     }
 
