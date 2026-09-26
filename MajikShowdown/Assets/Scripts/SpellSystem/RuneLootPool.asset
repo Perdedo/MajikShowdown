@@ -38,7 +38,7 @@ MonoBehaviour:
       - Weight: 0.2
         label: Stat
         Value: 3
-      - Weight: 0.05
+      - Weight: 0
         label: Trigger
         Value: 4
       - Weight: 0.1
@@ -70,22 +70,19 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 39318fdeb09a3d841bdc8ad4c1e62718, type: 2}
     - {fileID: 11400000, guid: 76a8d7ce1837fc34393900190e7534b5, type: 2}
     - {fileID: 11400000, guid: c5a1d60250471834a9935dfc953451a2, type: 2}
-    Trigger:
-    - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
+    Trigger: []
     CastPoint:
-    - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
     - {fileID: 11400000, guid: 1c81d13cfb783c543897a613a1ad49f1, type: 2}
-    - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}
   Forged:
     TypeChance:
       Entries:
-      - Weight: 0
+      - Weight: 0.08
         label: Core
         Value: 0
       - Weight: 0.2
         label: Trajectory
         Value: 1
-      - Weight: 0
+      - Weight: 0.1
         label: Effect
         Value: 2
       - Weight: 0.2
@@ -94,10 +91,13 @@ MonoBehaviour:
       - Weight: 0
         label: Trigger
         Value: 4
-      - Weight: 0
+      - Weight: 0.1
         label: CastPoint
         Value: 5
-    Core: []
+    Core:
+    - {fileID: 11400000, guid: f91b9a6e7405d0545925f7f767d3728d, type: 2}
+    - {fileID: 11400000, guid: be8fd24032057ca4ca00309e70d32f93, type: 2}
+    - {fileID: 11400000, guid: 741dda3e9771dee4198651b3bd50838a, type: 2}
     Trajectory:
     - {fileID: 11400000, guid: 02c686d126546bf4ca77b3bba178daff, type: 2}
     - {fileID: 11400000, guid: cee3db6028e9e7a42952976c46aa08db, type: 2}
@@ -108,7 +108,9 @@ MonoBehaviour:
     - {fileID: 11400000, guid: ae4d9412cd42a3745a9fab7a5fa5c453, type: 2}
     - {fileID: 11400000, guid: 234ab63505d5dea41966027761459329, type: 2}
     - {fileID: 11400000, guid: fb385dfd0d92f3e4fac9a5c9e836bcb4, type: 2}
-    Effect: []
+    Effect:
+    - {fileID: 11400000, guid: 6e073f9018bceff4cb508284fc1d2706, type: 2}
+    - {fileID: 11400000, guid: af479bf0f0d09ab42a44de81c34af52b, type: 2}
     Stat:
     - {fileID: 11400000, guid: 1d9ff62e904089545b537998732d9784, type: 2}
     - {fileID: 11400000, guid: 8562eafb3912bc64192b6708d7b97011, type: 2}
@@ -119,29 +121,33 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 16b2d9a49d46b684093f88d79bacc505, type: 2}
     - {fileID: 11400000, guid: eec25f993c0246445b0e1eaa315b9950, type: 2}
     Trigger: []
-    CastPoint: []
+    CastPoint:
+    - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
   FactoryNew:
     TypeChance:
       Entries:
-      - Weight: 0
+      - Weight: 0.06
         label: Core
         Value: 0
       - Weight: 0.2
         label: Trajectory
         Value: 1
-      - Weight: 0
+      - Weight: 0.05
         label: Effect
         Value: 2
       - Weight: 0.2
         label: Stat
         Value: 3
-      - Weight: 0
+      - Weight: 0.1
         label: Trigger
         Value: 4
-      - Weight: 0
+      - Weight: 0.1
         label: CastPoint
         Value: 5
-    Core: []
+    Core:
+    - {fileID: 11400000, guid: 2399f2ee075eeee4b801efc12503be73, type: 2}
+    - {fileID: 11400000, guid: f490409d6f25baa48a48924ecc0b619a, type: 2}
+    - {fileID: 11400000, guid: fd251213ccc8ae2479775da86623f2fb, type: 2}
     Trajectory:
     - {fileID: 11400000, guid: 0dbc51ac2645d7c43b33ca63bba3fc59, type: 2}
     - {fileID: 11400000, guid: a7648e07787147849abe764a5a19b543, type: 2}
@@ -152,7 +158,9 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 4572eb763389748438fa35b83fc182e3, type: 2}
     - {fileID: 11400000, guid: 7fd29b8f3659c414f848fe811c60ac5b, type: 2}
     - {fileID: 11400000, guid: a5cfb7c5569b70f4dbc60bf13c1f4cd8, type: 2}
-    Effect: []
+    Effect:
+    - {fileID: 11400000, guid: 61c0a0ffbbb029241be43ba0c9f42c3c, type: 2}
+    - {fileID: 11400000, guid: ab2c6e6aa3cacc2449142dcebeef1e21, type: 2}
     Stat:
     - {fileID: 11400000, guid: 5101f76e5330d2b4fa2745f4e55ff3e0, type: 2}
     - {fileID: 11400000, guid: 451188460737c584d88cf633d36cb44f, type: 2}
@@ -162,5 +170,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 6f80c1d2841151f4ca912a70575269b1, type: 2}
     - {fileID: 11400000, guid: abe9f7572e3fc254881e770b6f4f35e8, type: 2}
     - {fileID: 11400000, guid: 872cfb04fcb0c134699eb34ca24d36ee, type: 2}
-    Trigger: []
-    CastPoint: []
+    Trigger:
+    - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
+    CastPoint:
+    - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}

@@ -1,9 +1,10 @@
 using Mirror;
 using Mirror.BouncyCastle.Utilities.Encoders;
 using System;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static NodeConection;
 
@@ -15,6 +16,252 @@ public class UICommandController : NetworkBehaviour
     public List<SpellNodeInterface> interfaces = new List<SpellNodeInterface>();
     public bool network = true;
 
+    public void HexOnBeginDrag(DraggableNode drag)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitHexOnBeginDrag(drag));
+        }
+    }
+    IEnumerator WaitHexOnBeginDrag(DraggableNode drag)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDOnBeginDrag(drag.acquisitionOrder);
+    }
+    [Command]
+    public void CMDOnBeginDrag(int ind)
+    {
+        DraggableNode node = drags.Find(d => d.acquisitionOrder == ind);
+        if (node.isClone) return;
+
+        node.nodeTween?.Stop();
+        node.RegisterDrop(null);
+        node.canvas = node.GetComponentInParent<Canvas>(true);
+        node.savedPosition = node.rectTransform.anchoredPosition;
+        node.savedWorldPosition = node.rectTransform.position;
+        node.savedParent = node.transform.parent;
+
+        SpellNodeInterface nodeInterface = node.GetComponent<SpellNodeInterface>();
+        nodeInterface?.SelectOnly();
+
+        NodeInventory inventory = node.OriginZone as NodeInventory;
+
+        if (inventory != null && nodeInterface != null)
+        {
+            node.savedListIndex = inventory.GetNodeIndex(nodeInterface);
+        }
+
+        if (inventory != null && !node.isClone)
+        {
+            inventory.Freeze();
+        }
+        else
+        {
+            node.OriginZone?.Release(node);
+        }
+
+        node.transform.SetParent(node.canvas.transform, true);
+        node.transform.SetAsLastSibling();
+
+        node.canvasGroup.alpha = 0.6f;
+        node.canvasGroup.blocksRaycasts = false;
+    }
+    public void HexOnEndDrag(DraggableNode drag)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitHexOnEndDrag(drag));
+        }
+    }
+    IEnumerator WaitHexOnEndDrag(DraggableNode drag)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => drag.canProcessDrop);
+        CMDOnEndDrag(drag.acquisitionOrder);
+    }
+
+    [Command]
+    public void CMDOnEndDrag(int ind)
+    {
+        DraggableNode node = drags.Find(d => d.acquisitionOrder == ind);
+        if (node.isClone) return;
+
+        bool startedFromGrid = node.OriginZone is HexGridNode;
+        //Vector3 releasedWorldPosition = node.rectTransform.position;
+
+        node.canvasGroup.alpha = 1f;
+        node.canvasGroup.blocksRaycasts = true;
+
+        NodeInventory inventory = node.OriginZone as NodeInventory;
+        bool droppedOnSameInventory = node.pendingDropZone != null && ReferenceEquals(node.pendingDropZone, inventory);
+        bool shouldReturnToInventory = inventory != null && !node.isClone && (node.pendingDropZone == null || droppedOnSameInventory);
+
+        if (shouldReturnToInventory)
+        {
+            node.ReturnToInventory(inventory);
+            return;
+        }
+
+        if (startedFromGrid && node.pendingDropZone is NodeInventory targetInventory && node.inventoryClone != null)
+        {
+            node.ReturnFromGridToInventory(targetInventory);
+            return;
+        }
+
+        node.ResolveDrop(inventory);
+        inventory?.Unfreeze();
+        RPCSetDragOriginZone(node.GetComponentInParent<NetworkIdentity>(true).connectionToClient, ind);
+        //bool endedInGrid = node.OriginZone is HexGridNode;
+
+        /*if (startedFromGrid || endedInGrid)
+        {
+            node.nodeTween?.SlideFrom(releasedWorldPosition);
+        }*/
+    }
+
+    [TargetRpc]
+    public void RPCSetDragOriginZone(NetworkConnectionToClient target, int dragInd)
+    {
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.canProcessOrigin = true;
+    }
+    public void SetDragOriginZoneAsHex(DraggableNode drag, HexGridNode hex)
+    {
+        if(!network) return;
+        if(isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragOriginZoneAsHex(drag, hex.grid, hex.index));
+        }
+    }
+
+    IEnumerator WaitSetDragOriginZoneAsHex(DraggableNode drag, HexGrid grid, int hexInd)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => drag.canProcessOrigin);
+        CMDSetDragOriginZoneAsHex(drag.acquisitionOrder, grid.instanceIndex, hexInd);
+    }
+
+    [Command]
+    public void CMDSetDragOriginZoneAsHex(int dragInd, int gridInd, int hexInd)
+    {
+        HexGrid grid = grids.Find(g => g.instanceIndex == gridInd);
+        HexGridNode hex = grid.hexGridNodes.Find(h => h.index == hexInd);
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.OriginZone = hex;
+    }
+
+    public void SetDragOriginZoneAsInventory(DraggableNode drag, NodeInventory inv)
+    {
+        if(!network) return;
+        if(isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragOriginZoneAsInventory(drag, inv.caster.player, inv.caster.inventories.IndexOf(inv)));
+        }
+    }
+
+    IEnumerator WaitSetDragOriginZoneAsInventory(DraggableNode drag, Player player, int invInd)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => drag.canProcessOrigin);
+        CMDSetDragOriginZoneAsInventory(drag.acquisitionOrder, GameManager.Instance.Players.IndexOf(player), invInd);
+    }
+
+    [Command]
+    public void CMDSetDragOriginZoneAsInventory(int dragInd, int playerInd, int invInd)
+    {
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.OriginZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
+    }
+
+
+
+    public void SetDragPendingDropZoneAsHex(DraggableNode drag, HexGridNode hex)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragPendingDropZoneAsHex(drag, hex.grid, hex.index));
+        }
+    }
+
+    IEnumerator WaitSetDragPendingDropZoneAsHex(DraggableNode drag, HexGrid grid, int hexInd)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSetDragPendingDropZoneAsHex(drag.acquisitionOrder, grid.instanceIndex, hexInd);
+    }
+
+    [Command]
+    public void CMDSetDragPendingDropZoneAsHex(int dragInd, int gridInd, int hexInd)
+    {
+        HexGrid grid = grids.Find(g => g.instanceIndex == gridInd);
+        HexGridNode hex = grid.hexGridNodes.Find(h => h.index == hexInd);
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.pendingDropZone = hex;
+        RPCSetDragPendingDropZone(drag.GetComponentInParent<NetworkIdentity>(true).connectionToClient, dragInd);
+    }
+
+    public void SetDragPendingDropZoneAsInventory(DraggableNode drag, NodeInventory inv)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragPendingDropZoneAsInventory(drag, inv.caster.player, inv.caster.inventories.IndexOf(inv)));
+        }
+    }
+
+    IEnumerator WaitSetDragPendingDropZoneAsInventory(DraggableNode drag, Player player, int invInd)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSetDragPendingDropZoneAsInventory(drag.acquisitionOrder, GameManager.Instance.Players.IndexOf(player), invInd);
+    }
+
+    [Command]
+    public void CMDSetDragPendingDropZoneAsInventory(int dragInd, int playerInd, int invInd)
+    {
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.pendingDropZone = GameManager.Instance.Players[playerInd].caster.inventories[invInd];
+        RPCSetDragPendingDropZone(drag.GetComponentInParent<NetworkIdentity>(true).connectionToClient, dragInd);
+    }
+
+    [TargetRpc]
+    public void RPCSetDragPendingDropZone(NetworkConnectionToClient target, int dragInd)
+    {
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.canProcessDrop = true;
+    }
+
+    public void SetDragPendingDropZoneAsNull(DraggableNode drag)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetDragPendingDropZoneAsNull(drag));
+        }
+    }
+
+    IEnumerator WaitSetDragPendingDropZoneAsNull(DraggableNode drag)
+    {
+        yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDSetDragPendingDropZoneAsNull(drag.acquisitionOrder);
+    }
+
+    [Command]
+    public void CMDSetDragPendingDropZoneAsNull(int dragInd)
+    {
+        DraggableNode drag = drags.Find(d => d.acquisitionOrder == dragInd);
+        drag.pendingDropZone = null;
+    }
 
     public void ConfigurateSpell(HexGrid grid)
     {
@@ -399,7 +646,7 @@ public class UICommandController : NetworkBehaviour
         }
         scui.boundSpell.Caster.spells.Remove(scui.boundSpell);
         scui.boundSpell.OnSpellUpdated -= scui.RefreshUI;
-        Destroy(gameObject);
+        Destroy(scui.gameObject);
         scui.boundSpell = null;
     }
 
@@ -548,7 +795,7 @@ public class UICommandController : NetworkBehaviour
 
         node.transform.SetParent(hex.transform, false);
         node.transform.localPosition = Vector3.zero;
-        node.SetOriginZone(hex);
+        //node.SetOriginZone(hex);
         hex.ConnectNode(spell);
     }
 

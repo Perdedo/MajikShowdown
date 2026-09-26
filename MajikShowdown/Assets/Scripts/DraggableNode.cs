@@ -8,35 +8,68 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [HideInInspector] public CanvasGroup canvasGroup;
     [HideInInspector] public int acquisitionOrder;
 
-    private int savedListIndex;
-    private Vector2 savedPosition;
-    private Vector3 savedWorldPosition;
-    private Transform savedParent;
-    private NodeTween nodeTween;
+    public int savedListIndex;
+    public Vector2 savedPosition;
+    public Vector3 savedWorldPosition;
+    public Transform savedParent;
+    public NodeTween nodeTween;
 
-    public IDropZone OriginZone { get; private set; }
-    private IDropZone pendingDropZone;
+    public IDropZone OriginZone { get; set; }
+    public IDropZone pendingDropZone;
 
     public bool isClone = false;
     public DraggableNode inventorySource;
     public DraggableNode inventoryClone;
-
+    public bool canProcessDrop = true;
+    public bool canProcessOrigin = true;
     private void Awake()
     {
-        canvas = GetComponentInParent<Canvas>();
+        canvas = GetComponentInParent<Canvas>(true);
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
         nodeTween = GetComponent<NodeTween>();
+        canProcessDrop = true;
+        canProcessOrigin = true;
+    }
+
+    public void Initialize()
+    {
+        canvas = GetComponentInParent<Canvas>(true);
+        rectTransform = GetComponent<RectTransform>();
+        canvasGroup = GetComponent<CanvasGroup>();
+        nodeTween = GetComponent<NodeTween>();
+        canProcessDrop = true;
+        canProcessOrigin = true;
     }
 
     public void SetOriginZone(IDropZone zone)
     {
         OriginZone = zone;
+        if(zone is NodeInventory)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragOriginZoneAsInventory(this, zone as NodeInventory);
+        }
+        else if(zone is HexGridNode)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragOriginZoneAsHex(this, zone as HexGridNode);
+        }
     }
 
     public void RegisterDrop(IDropZone dropZone)
     {
         pendingDropZone = dropZone;
+        if(dropZone == null)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragPendingDropZoneAsNull(this);
+        }
+        else if (dropZone is NodeInventory)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragPendingDropZoneAsInventory(this, dropZone as NodeInventory);
+        }
+        else if (dropZone is HexGridNode)
+        {
+            GameManager.Instance.uiController.playerUI.caster.commander.SetDragPendingDropZoneAsHex(this, dropZone as HexGridNode);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -48,10 +81,10 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!CanDrag()) return;
-
         nodeTween?.Stop();
-        pendingDropZone = null;
-        canvas = GetComponentInParent<Canvas>();
+        //pendingDropZone = null;
+        RegisterDrop(null);
+        canvas = GetComponentInParent<Canvas>(true);
         savedPosition = rectTransform.anchoredPosition;
         savedWorldPosition = rectTransform.position;
         savedParent = transform.parent;
@@ -61,6 +94,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         NodeInventory inventory = OriginZone as NodeInventory;
 
+        GameManager.Instance.uiController.playerUI.caster.commander.HexOnBeginDrag(this);
         if (inventory != null && nodeInterface != null)
         {
             savedListIndex = inventory.GetNodeIndex(nodeInterface);
@@ -85,7 +119,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!CanDrag()) return;
-
         bool startedFromGrid = OriginZone is HexGridNode;
         Vector3 releasedWorldPosition = rectTransform.position;
 
@@ -96,6 +129,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         bool droppedOnSameInventory = pendingDropZone != null && ReferenceEquals(pendingDropZone, inventory);
         bool shouldReturnToInventory = inventory != null && !isClone && (pendingDropZone == null || droppedOnSameInventory);
 
+        GameManager.Instance.uiController.playerUI.caster.commander.HexOnEndDrag(this);
         if (shouldReturnToInventory)
         {
             ReturnToInventory(inventory);
@@ -119,9 +153,10 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
-    private void ReturnToInventory(NodeInventory inventory)
+    public void ReturnToInventory(NodeInventory inventory)
     {
-        pendingDropZone = null;
+        //pendingDropZone = null;
+        RegisterDrop(null);
         canvasGroup.blocksRaycasts = false;
 
         if (nodeTween != null)
@@ -149,7 +184,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
-    private void ReturnFromGridToInventory(NodeInventory targetInventory)
+    public void ReturnFromGridToInventory(NodeInventory targetInventory)
     {
         SpellNodeInterface nodeInterface = GetComponent<SpellNodeInterface>();
         SpellNodeInterface cloneInterface = inventoryClone.GetComponent<SpellNodeInterface>();
@@ -157,7 +192,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Vector3 targetWorldPosition = inventoryClone.rectTransform.position;
         DraggableNode savedClone = inventoryClone;
 
-        pendingDropZone = null;
+        //pendingDropZone = null;
+        RegisterDrop(null);
         canvasGroup.blocksRaycasts = false;
 
         if (nodeTween != null)
@@ -173,7 +209,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
-    private void CompleteGridToInventoryReturn(NodeInventory targetInventory, SpellNodeInterface nodeInterface, SpellNodeInterface cloneInterface, DraggableNode savedClone, int cloneIndex)
+    public void CompleteGridToInventoryReturn(NodeInventory targetInventory, SpellNodeInterface nodeInterface, SpellNodeInterface cloneInterface, DraggableNode savedClone, int cloneIndex)
     {
         targetInventory.RemoveNodeFromInventory(cloneInterface);
         savedClone.gameObject.SetActive(false);
@@ -191,7 +227,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         canvasGroup.blocksRaycasts = true;
     }
 
-    private void ResolveDrop(NodeInventory inventory)
+    public void ResolveDrop(NodeInventory inventory)
     {
         if (pendingDropZone != null && inventory != null && !isClone && pendingDropZone is HexGridNode)
         {
@@ -300,14 +336,22 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             {
                 transform.SetParent(savedParent, true);
                 rectTransform.anchoredPosition = savedPosition;
-                OriginZone?.Receive(this);
+                if (OriginZone is HexGridNode originHex)
+                {
+                    originHex.Receive(this, true);
+                }
+                else
+                {
+                    OriginZone?.Receive(this);
+                }
             }
         }
 
-        pendingDropZone = null;
+        //pendingDropZone = null;
+        RegisterDrop(null);
     }
 
-    private bool CanDrag()
+    public bool CanDrag()
     {
         if (!GameManager.Instance.uiController.playerUI.editSpellPanel.activeInHierarchy) return false;
         if (isClone) return false;

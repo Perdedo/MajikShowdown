@@ -147,41 +147,57 @@ public class Spell
     }
     public void UpdateNodeConections()
     {
-        HashSet<SpellNode> visitedNodes = new HashSet<SpellNode>();
-        Queue<SpellNode> nodesToUpdate = new Queue<SpellNode>();
-        nodesToUpdate.Enqueue(coreNode);
-        visitedNodes.Add(coreNode);
         for (int i = 0; i < grid.spellNodes.Count; i++)
         {
             if (grid.spellNodes[i] != null)
             {
                 grid.spellNodes[i].CriticalConections = 0;
-                /*foreach (NodeConection con in grid.spellNodes[i].conections)
+                foreach (NodeConection con in grid.spellNodes[i].conections)
                 {
-                    con.UpdateConection();
-                }*/
+                    con.SetCritical(false);
+                }
             }
         }
+        if(coreNode == null)
+        {
+            return;
+        }
+        HashSet<SpellNode> visitedNodes = new HashSet<SpellNode>();
+        Queue<SpellNode> nodesToUpdate = new Queue<SpellNode>();
+        nodesToUpdate.Enqueue(coreNode);
+        visitedNodes.Add(coreNode);
         while (nodesToUpdate.Count > 0)
         {
             SpellNode node = nodesToUpdate.Dequeue();
+            //Debug.Log($"Updating node {node.name} critical connections");
             foreach (NodeConection con in node.Interface.conections)
             {
                 if (con.neighborNode == null) continue;
-                if (con.neighborNode == coreNode || (con.conectionType != NodeConection.Conections.None && con.neighborNode.Interface.CriticalConections > 0))
+                if (node == coreNode || (!con.Critical && con.conectionType != NodeConection.Conections.None && node.Interface.CriticalConections > 0))
                 {
                     node.Interface.CriticalConections++;
                     con.neighborNode.Interface.CriticalConections++;
                     con.SetCritical(true);
+                    //Debug.Log(node.Interface.CriticalConections);
                 }
                 if (!visitedNodes.Contains(con.neighborNode) && con.neighborNode != null)
                 {
                     visitedNodes.Add(con.neighborNode);
                     nodesToUpdate.Enqueue(con.neighborNode);
                 }
+                //con.UpdateConection();
             }
+            /*if(node.runeType != NodeCategory.Stat.ToString() && node.Interface.CriticalConections <= 0)
+            {
+                //Debug.Log(node.Interface.CriticalConections);
+                foreach (NodeConection con in node.Interface.conections)
+                {
+                    //node.Interface.BreakConection(con.index);
+                    con.UpdateConection();
+                }
+            }*/
         }
-        /*for (int i = 0; i < grid.spellNodes.Count; i++)
+        for (int i = 0; i < grid.spellNodes.Count; i++)
         {
             if (grid.spellNodes[i] != null)
             {
@@ -190,7 +206,8 @@ public class Spell
                     con.UpdateConection();
                 }
             }
-        }*/
+        }
+        
     }
     
 }

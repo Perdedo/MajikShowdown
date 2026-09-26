@@ -9,17 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d812af3cd8d7e3447bf529f073acadd0, type: 3}
-  m_Name: Aim Point
-  m_EditorClassIdentifier: Assembly-CSharp::SpellCastPoint
-  quality: 2
+  m_Script: {fileID: 11500000, guid: bdc7ccb5a4c652946a8f5504996e5c8c, type: 3}
+  m_Name: HealEffectForged
+  m_EditorClassIdentifier: Assembly-CSharp::HealEffect
+  quality: 1
   RandomizeOnStart: 1
   statRandomizer:
     Cooldown:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 4
+      max: 6
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -119,10 +119,10 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Aim Point
+  runeName: Heal
   runeType: 
-  runeDescription: The spell is cast where the caster is aiming
-  color: {r: 1, g: 1, b: 1, a: 1}
+  runeDescription: Adds a healing effect to the attached spell.
+  color: {r: 0.62892425, g: 0.9528302, b: 0.27416337, a: 1}
   Cooldown: 0
   BaseStats:
     Speed: 0
@@ -155,8 +155,23 @@ MonoBehaviour:
     grid: {fileID: 0}
     instanceIndex: 0
     onCooldown: 0
-  ConectionPorts: 000000000000000000000000000000000000000000000000
+  ConectionPorts: 020000000200000002000000020000000200000002000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 2119404006, guid: 23746cfa407ef3747a40944b561a4416, type: 3}
+  nodeSymbolSprite: {fileID: 21300000, guid: cac9763e97879c04fabca725f68e8b6c, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}
-  castPoint: 1
+  HealAmount:
+    Value: 0
+    Randomizer:
+      type: 1
+      value: 0
+      min: 10
+      max: 15
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Icon: {fileID: 21300000, guid: cac9763e97879c04fabca725f68e8b6c, type: 3}

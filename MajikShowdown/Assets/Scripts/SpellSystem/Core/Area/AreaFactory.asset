@@ -9,17 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d812af3cd8d7e3447bf529f073acadd0, type: 3}
-  m_Name: Aim Point
-  m_EditorClassIdentifier: Assembly-CSharp::SpellCastPoint
+  m_Script: {fileID: 11500000, guid: e873651b2d0183c4ca51f62a95ca85eb, type: 3}
+  m_Name: AreaFactory
+  m_EditorClassIdentifier: Assembly-CSharp::SpellType
   quality: 2
   RandomizeOnStart: 1
   statRandomizer:
     Cooldown:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
+      type: 1
+      value: 2
+      min: 2
+      max: 2.5
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -42,10 +42,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Duration:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 6
+      max: 8
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -55,10 +55,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Size:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 6
+      max: 9
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -81,7 +81,7 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Piercing:
-      type: 0
+      type: 2
       value: 0
       min: 0
       max: 0
@@ -107,10 +107,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Knockback:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
+      type: 1
+      value: 100
+      min: 10
+      max: 20
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -119,17 +119,17 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Aim Point
+  runeName: Area
   runeType: 
-  runeDescription: The spell is cast where the caster is aiming
-  color: {r: 1, g: 1, b: 1, a: 1}
+  runeDescription: Defines the spell as an area of effect.
+  color: {r: 0, g: 0.8848131, b: 1, a: 1}
   Cooldown: 0
   BaseStats:
     Speed: 0
-    Duration: 0
-    Size: 0
+    Duration: 5
+    Size: 10
     Damage: 0
-    Piercing: 0
+    Piercing: 1e+38
     Bounce: 0
     Knockback: 0
   Interface: {fileID: 0}
@@ -155,8 +155,35 @@ MonoBehaviour:
     grid: {fileID: 0}
     instanceIndex: 0
     onCooldown: 0
-  ConectionPorts: 000000000000000000000000000000000000000000000000
+  ConectionPorts: 010000000300000002000000030000000400000003000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 2119404006, guid: 23746cfa407ef3747a40944b561a4416, type: 3}
+  nodeSymbolSprite: {fileID: 21300000, guid: e0441d32ff38f5a4f95f8313f5ee2bd1, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}
-  castPoint: 1
+  Type: 1
+  Collisions:
+    Allies: 0
+    Self: 0
+    Enemies: 1
+    Objects: 1
+  StatMultipliers:
+    Speed: 1
+    Duration: 1.8
+    Size: 1.5
+    Damage: 0.6
+    Piercing: 1
+    Bounce: 0
+    Knockback: 0.1
+  HitOnStay: 1
+  HitCooldown: 0.2
+  SpawnTriggeredSpellCooldown: 0.5
+  DieOnObjectCollide: 0
+  Element: 0
+  FinalStats:
+    Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  StatBuffs: []
