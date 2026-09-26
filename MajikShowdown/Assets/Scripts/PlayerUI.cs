@@ -1,3 +1,7 @@
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 using Mirror;
 using System;
 using System.Collections;
@@ -1212,5 +1216,88 @@ public class PlayerUI : NetworkBehaviour
         if (runePickupUI == null) return;
 
         runePickupUI.ShowRune(node, lootboxWorldPosition);
+    }
+
+    public void SaveSpell()
+    {
+#if UNITY_EDITOR
+        if (activeSpell == null)
+        {
+            Debug.LogWarning("[SaveSpell] No active spell.");
+            return;
+        }
+
+        if (activeGrid == null)
+        {
+            Debug.LogWarning("[SaveSpell] No active grid.");
+            return;
+        }
+
+        if (!activeSpell.validSpell)
+        {
+            Debug.LogWarning("[SaveSpell] Spell is not valid.");
+            return;
+        }
+
+        string folderPath = "Assets/Scripts/SpellSystem/SavedSpells";
+
+        if (!AssetDatabase.IsValidFolder(folderPath))
+        {
+            AssetDatabase.CreateFolder("Assets/Scripts/SpellSystem", "SavedSpells");
+        }
+
+        SavedSpellAsset savedSpell = ScriptableObject.CreateInstance<SavedSpellAsset>();
+
+        savedSpell.spellName = activeSpell.spellName;
+        savedSpell.colorIndex = activeSpell.colorIndex;
+        savedSpell.symbolIndex = activeSpell.symbolIndex;
+
+        string safeName = string.IsNullOrWhiteSpace(activeSpell.spellName) ? "UnnamedSpell" : activeSpell.spellName;
+        string assetPath = AssetDatabase.GenerateUniqueAssetPath($"{folderPath}/{safeName}.asset");
+
+        AssetDatabase.CreateAsset(savedSpell, assetPath);
+
+        for (int i = 0; i < activeGrid.spellNodes.Count; i++)
+        {
+            SpellNodeInterface nodeInterface = activeGrid.spellNodes[i];
+
+            if (nodeInterface == null || nodeInterface.Node == null)
+                continue;
+
+            SpellNode savedNode = Instantiate(nodeInterface.Node);
+
+            savedNode.name = nodeInterface.Node.name;
+            savedNode.RandomizeOnStart = false;
+            savedNode.Interface = null;
+            savedNode.OwnerSpell = null;
+            savedNode.IsInUse = false;
+
+            for (int j = 0; j < savedNode.ConectedNodes.Length; j++)
+            {
+                savedNode.ConectedNodes[j] = null;
+            }
+
+            AssetDatabase.AddObjectToAsset(savedNode, savedSpell);
+
+            SavedSpellNode savedNodeData = new SavedSpellNode
+            {
+                node = savedNode,
+                gridIndex = i
+            };
+
+            savedSpell.nodes.Add(savedNodeData);
+        }
+
+        EditorUtility.SetDirty(savedSpell);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        Selection.activeObject = savedSpell;
+        EditorGUIUtility.PingObject(savedSpell);
+
+        Debug.Log($"[SaveSpell] Spell saved successfully: {assetPath}");
+#else
+    Debug.LogWarning("[SaveSpell] Saving spell assets is only available in the Unity Editor.");
+#endif
     }
 }
