@@ -158,7 +158,7 @@ public class SpellNodeInterface : MonoBehaviour
             }
         }
 
-        GameManager.Instance.uiController.playerUI.caster.commander.BreakSNIConnection(this, index);
+        GameManager.Instance.uiController.playerUI.caster.commander.BreakSNIConnection(this, index, RemoveNeighbor);
     }
     public void UpdateConected()
     {

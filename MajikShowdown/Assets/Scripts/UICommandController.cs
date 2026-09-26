@@ -3,6 +3,7 @@ using Mirror.BouncyCastle.Utilities.Encoders;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -496,19 +497,11 @@ public class UICommandController : NetworkBehaviour
             sni.hexGridNode.grid.ConfigurateSpell();
         }
     }
-    public void BreakSNIConnection(SpellNodeInterface sni, int Index)
+    /*public void BreakSNIConnection(SpellNodeInterface sni, int Index)
     {
         if (isLocalPlayer && !isServer)
         {
             if(!network) return;
-            /*if (NetworkClient.ready)
-            {
-                CMDBreakSNIConnection(interfaces.IndexOf(sni), Index);
-            }
-            else
-            {
-                StartCoroutine(WaitBreakSNIConnection(sni, Index));
-            }*/
             StartCoroutine(WaitBreakSNIConnection(sni, Index));
         }
     }
@@ -539,6 +532,50 @@ public class UICommandController : NetworkBehaviour
             aux.Interface.UpdateConected();
             sni.UpdateConected();
             var spell = sni.Node.OwnerSpell;
+            if (spell != null)
+            {
+                spell.UpdateSpell();
+            }
+        }
+    }*/
+
+    public void BreakSNIConnection(SpellNodeInterface sni, int Index, bool RemoveNeighbor)
+    {
+        if (isLocalPlayer && !isServer)
+        {
+            if (!network) return;
+            StartCoroutine(WaitBreakSNIConnection(sni, Index, RemoveNeighbor));
+        }
+    }
+    IEnumerator WaitBreakSNIConnection(SpellNodeInterface sni, int Index, bool RemoveNeighbor)
+    {
+        //yield return new WaitUntil(() => interfaces.Contains(sni));
+        yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == sni.acquisitionOrder));
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDBreakSNIConnection(sni.acquisitionOrder, Index, RemoveNeighbor);
+        //CMDBreakSNIConnection(interfaces.IndexOf(sni), Index);
+    }
+
+    [Command]
+    public void CMDBreakSNIConnection(int nodeInd, int index, bool RemoveNeighbor)
+    {
+        SpellNodeInterface sni = interfaces.Find(i => i.acquisitionOrder == nodeInd);
+        if (index < 0 || index >= sni.conections.Length)
+            return;
+
+        NodeConection connection = sni.conections[index];
+
+        if (connection != null && (connection.conectedNode != null || connection.neighborNode != null))
+        {
+            /*if (connection.conectionType != NodeConection.Conections.None)
+                CriticalConections--;
+                connection.conectedNode.Interface.CriticalConections--;*/
+            connection.RemoveConection(RemoveNeighbor);
+
+            sni.UpdateConected();
+
+            var spell = sni.Node.OwnerSpell;
+
             if (spell != null)
             {
                 spell.UpdateSpell();
