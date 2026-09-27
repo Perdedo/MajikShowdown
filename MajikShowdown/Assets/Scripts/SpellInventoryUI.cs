@@ -8,6 +8,7 @@ public class SpellInventoryUI : NetworkBehaviour
 {
     [Header("Data")]
     public SpellCaster caster;
+    public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
 
     [Header("Grid")]
     public HexGrid gridPrefab;
@@ -20,6 +21,26 @@ public class SpellInventoryUI : NetworkBehaviour
 
     [Header("Network")]
     public bool network = true;
+
+    public override void OnStartLocalPlayer()
+    {
+        foreach(SavedSpellAsset ssa in startingSpells)
+        {
+            CreateStartingSpell(ssa);
+        }
+        if (!isServer && network)
+        {
+            if (NetworkClient.ready)
+            {
+                CMDCreateStartingSpells();
+            }
+            else
+            {
+                StartCoroutine(WaitCreateStartingSpells());
+            }
+        }
+    }
+
     public void CreateNewSpell()
     {
         if(isLocalPlayer || !network)
@@ -78,6 +99,52 @@ public class SpellInventoryUI : NetworkBehaviour
         CreateSpellCard(newSpell);
         GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
     }
+
+    public void CreateStartingSpell(SavedSpellAsset ssa)
+    {
+        if (isLocalPlayer || !network)
+        {
+            Spell newSpell = new Spell(caster);
+            newSpell.spellName = ssa.spellName;
+            newSpell.instanceIndex = caster.spells.Count;
+            HexGrid newGrid = Instantiate(gridPrefab, gridParent);
+            newGrid.caster = caster;
+            newGrid.instanceIndex = caster.spells.Count;
+            caster.commander.grids.Add(newGrid);
+            newGrid.SetSpell(newSpell);
+            newSpell.grid = newGrid;
+            newGrid.Initialize();
+            newGrid.gameObject.SetActive(false);
+            caster.spells.Add(newSpell);
+            newSpell.colorIndex = ssa.colorIndex;
+            newSpell.symbolIndex = ssa.symbolIndex;
+            CreateSpellCard(newSpell);
+            foreach(SavedSpellNode ssn in ssa.nodes)
+            {
+                ssn.node.OwnerSpell = newSpell;
+                ssn.node.startingGridInd = ssn.gridIndex;
+                ssn.node.startingNode = true;
+                caster.AddRune(ssn.node);
+            }
+            //GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
+        }
+    }
+
+    IEnumerator WaitCreateStartingSpells()
+    {
+        yield return new WaitUntil(() => NetworkClient.ready);
+        CMDCreateStartingSpells();
+    }
+
+    [Command]
+    public void CMDCreateStartingSpells()
+    {
+        foreach(SavedSpellAsset ssa in startingSpells)
+        {
+            CreateStartingSpell(ssa);
+        }
+    }
+
 
     string GenerateSpellName()
     {

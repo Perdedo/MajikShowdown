@@ -25,6 +25,8 @@ public abstract class SpellNode : ScriptableObject
     public SpellNode[] ConectedNodes = new SpellNode[6];
     //public SpellNode[] NeighborNodes = new SpellNode[6];
     public Spell OwnerSpell;
+    public int startingGridInd = -1;
+    public bool startingNode = false;
     [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
     [NonSerialized] public bool IsInUse;
     public SpellNodeInfos spellInfos;

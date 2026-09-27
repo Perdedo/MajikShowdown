@@ -46,6 +46,10 @@ public class SpellNodeInterface : MonoBehaviour
         SetupBorder();
         SetupBackground();
         SetupUsedState();
+        if(Node.startingNode)
+        {
+            Node.OwnerSpell.grid.hexGridNodes[Node.startingGridInd].Receive(this.GetComponent<DraggableNode>());
+        }
     }
     private void SetupMainVisual()
     {
