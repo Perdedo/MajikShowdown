@@ -11,6 +11,8 @@ using static NodeConection;
 
 public class UICommandController : NetworkBehaviour
 {
+    public int gridIndexRef = 0;
+    public int cardIndexRef = 0;
     public List<HexGrid> grids = new List<HexGrid>();
     public List<SpellCardUI> cards = new List<SpellCardUI>();
     public List<DraggableNode> drags = new List<DraggableNode>();
