@@ -91,7 +91,9 @@ public class SpellInventoryUI : NetworkBehaviour
         newSpell.instanceIndex = caster.spells.Count;
         HexGrid newGrid = Instantiate(gridPrefab, gridParent);
         newGrid.caster = caster;
-        newGrid.instanceIndex = caster.spells.Count;
+        //newGrid.instanceIndex = caster.spells.Count;
+        newGrid.instanceIndex = caster.commander.gridIndexRef;
+        caster.commander.gridIndexRef++;
         caster.commander.grids.Add(newGrid);
         newGrid.SetSpell(newSpell);
         newSpell.grid = newGrid;
@@ -111,7 +113,9 @@ public class SpellInventoryUI : NetworkBehaviour
             newSpell.instanceIndex = caster.spells.Count;
             HexGrid newGrid = Instantiate(gridPrefab, gridParent);
             newGrid.caster = caster;
-            newGrid.instanceIndex = caster.spells.Count;
+            newGrid.instanceIndex = caster.commander.gridIndexRef;
+            caster.commander.gridIndexRef++;
+            //newGrid.instanceIndex = caster.spells.Count;
             caster.commander.grids.Add(newGrid);
             newGrid.SetSpell(newSpell);
             newSpell.grid = newGrid;
