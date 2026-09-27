@@ -34,7 +34,7 @@ public class BufferTests : MonoBehaviour
     }
     public int TestBufferNulls()
     {
-        return BuffersControl.Instance.SpawnEffect(Elements.Lightning,SpellTypes.Explosion, points[1].transform, 1);
+        return BuffersControl.Instance.SpawnEffect(Elements.Lightning,SpellTypes.Projectile, points[1].transform, 1);
     }
     public void TestBufferRemove(int index)
     {
