@@ -82,19 +82,23 @@ public class WorldInteractionIndicator : MonoBehaviour
 
     private void UpdateOrbitPosition()
     {
-        if (targetPlayer == null || orbitCenter == null) return;
+        if (orbitCenter == null) return;
 
-        Vector3 direction = targetPlayer.transform.position - orbitCenter.position;
+        if (targetCamera == null)
+        {
+            targetCamera = Camera.main;
+        }
+
+        if (targetCamera == null) return;
+
+        Vector3 direction = targetCamera.transform.position - orbitCenter.position;
         direction.y = 0f;
 
         if (direction.sqrMagnitude <= 0.001f) return;
 
         direction.Normalize();
 
-        transform.position =
-            orbitCenter.position +
-            direction * orbitRadius +
-            Vector3.up * orbitHeight;
+        transform.position = orbitCenter.position + direction * orbitRadius + Vector3.up * orbitHeight;
     }
 
     private void UpdateBillboard()
