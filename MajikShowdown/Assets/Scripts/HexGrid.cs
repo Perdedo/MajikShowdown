@@ -19,7 +19,6 @@ public class HexGrid : MonoBehaviour
     public Transform hexContainer;
     public Transform nodeContainer;
     public int instanceIndex;
-    public bool canProcessInit = false;
 
     Vector2Int[] directions =
     {
