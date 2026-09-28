@@ -287,6 +287,7 @@ public class UICommandController : NetworkBehaviour
         //yield return new WaitUntil(() => grids.Contains(grid));
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
         yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => grid.canProcessInit);
         CMDConfigurateSpell(grid.instanceIndex);
         //CMDConfigurateSpell(grids.IndexOf(grid));
     }
