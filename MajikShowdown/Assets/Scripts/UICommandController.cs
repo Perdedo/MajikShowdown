@@ -782,6 +782,7 @@ public class UICommandController : NetworkBehaviour
         //yield return new WaitUntil(() => grids.Contains(hex.grid));
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == hex.grid.instanceIndex) && hex.grid.hexGridNodes.Exists(h => h.index == hex.index));
         yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => hex.grid.canProcessInit);
         CMDInitializeHex(hex.index, hex.grid.instanceIndex);
         //CMDInitializeHex(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
@@ -789,6 +790,8 @@ public class UICommandController : NetworkBehaviour
     [Command]
     public void CMDInitializeHex(int hexInd, int gridInd)
     {
+        Debug.LogWarning(grids.Find(g => g.instanceIndex == gridInd));
+        Debug.LogWarning(grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd));
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
         //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         hex.rect = GetComponent<RectTransform>();
