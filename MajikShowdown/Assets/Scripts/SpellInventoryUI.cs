@@ -22,9 +22,28 @@ public class SpellInventoryUI : NetworkBehaviour
     [Header("Network")]
     public bool network = true;
 
-    public override void OnStartLocalPlayer()
+    /*public override void OnStartLocalPlayer()
     {
         foreach(SavedSpellAsset ssa in startingSpells)
+        {
+            CreateStartingSpell(ssa);
+        }
+        if (!isServer && network)
+        {
+            if (NetworkClient.ready)
+            {
+                CMDCreateStartingSpells();
+            }
+            else
+            {
+                StartCoroutine(WaitCreateStartingSpells());
+            }
+        }
+    }*/
+
+    public void Initialize()
+    {
+        foreach (SavedSpellAsset ssa in startingSpells)
         {
             CreateStartingSpell(ssa);
         }

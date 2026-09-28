@@ -939,6 +939,7 @@ public class PlayerUI : NetworkBehaviour
         }
     }
 
+    bool firstTime = true;
     public void OpenSpellPanelInput(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network) return;
@@ -963,6 +964,11 @@ public class PlayerUI : NetworkBehaviour
             if (GameManager.Instance.uiController.sharedUI != null)
             {
                 GameManager.Instance.uiController.sharedUI.SetActive(false);
+            }
+            if(firstTime)
+            {
+                firstTime = false;
+                this.gameObject.GetComponent<SpellInventoryUI>().Initialize();
             }
             ShowAnimatedPanel(spellPanel);
             ActivateSpellsInventoryPage();
