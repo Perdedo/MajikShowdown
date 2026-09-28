@@ -17,7 +17,8 @@ public class HordeController : NetworkBehaviour
     public List<DifficultySetting> difficulties;
     public int difficulty;
     public AnimationCurve spawnerFrequencyCurve;
-    public float minSpawnRadius, maxSpawnRadius, radiusStepIncrease = 2, radiusLimit = 100, maxEnemySpawnRadius = 3, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
+    public AnimationCurve enemyHPMultiplierCurve;
+    public float minSpawnRadius, maxSpawnRadius, radiusStepIncrease = 2, radiusLimit = 100, maxEnemySpawnRadius = 3, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2, enemyHPMultiplier = 1;
     float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime, randEnemy;
     public GameObject spawner;
     GameObject aux;
@@ -437,6 +438,7 @@ public class HordeController : NetworkBehaviour
         hordeStartTime = Time.time;
         hordeEndTime = hordeStartTime + hordeDuration;
         spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, spawnerFrequencyCurve.Evaluate(0));
+        enemyHPMultiplier = enemyHPMultiplierCurve.Evaluate(0);
         inHorde = true;
         inHordeTime = true;
         usedSpawners.Clear();
@@ -550,6 +552,7 @@ public class HordeController : NetworkBehaviour
         if (inHordeTime)
         {
             yield return new WaitForSeconds(spawnTime);
+            enemyHPMultiplier = enemyHPMultiplierCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDuration, 0, 1));
             spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, spawnerFrequencyCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDuration, 0, 1)));
             StartCoroutine(SpawnSpawner());
         }
