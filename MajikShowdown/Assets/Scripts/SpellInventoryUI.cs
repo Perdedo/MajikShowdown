@@ -115,10 +115,6 @@ public class SpellInventoryUI : NetworkBehaviour
         caster.commander.gridIndexRef++;
         //newGrid.instanceIndex = caster.spells.Count;
         caster.commander.grids.Add(newGrid);
-        /*if(isServer)
-        {
-            RPCReadyGrid(this.GetComponentInParent<NetworkIdentity>(true).connectionToClient, newGrid.instanceIndex);
-        }*/
         newGrid.SetSpell(newSpell);
         newSpell.grid = newGrid;
         newGrid.Initialize();
@@ -151,13 +147,6 @@ public class SpellInventoryUI : NetworkBehaviour
         {
             CreateStartingSpell(ssa);
         }
-    }
-
-    [TargetRpc]
-    public void RPCReadyGrid(NetworkConnectionToClient target, int gridInd)
-    {
-        HexGrid grid = caster.commander.grids.Find(g => g.instanceIndex == gridInd);
-        grid.canProcessInit = true;
     }
 
 
