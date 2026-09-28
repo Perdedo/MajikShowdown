@@ -7,11 +7,6 @@ public class PlayerShop : NetworkBehaviour
     [SerializeField] private RuneLootPool lootPool;
     [SerializeField] private int offerCount = 3;
 
-    [Header("Rune Prices")]
-    [SerializeField] private SimpleInt rustyPrice;
-    [SerializeField] private SimpleInt forgedPrice;
-    [SerializeField] private SimpleInt factoryNewPrice;
-
     [Header("Price Settings")]
     [SerializeField] private int priceStep = 25;
 
@@ -33,7 +28,6 @@ public class PlayerShop : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-
         GenerateRerollPrice();
         GenerateOffers();
     }
@@ -41,31 +35,24 @@ public class PlayerShop : NetworkBehaviour
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
-
         CMDRequestShop();
     }
 
     public ShopOffer GetOffer(int index)
     {
-        if (index < 0 || index >= offers.Length)
-        {
-            return null;
-        }
-
+        if (index < 0 || index >= offers.Length) return null;
         return offers[index];
     }
 
     public void TryBuy(int slotIndex)
     {
         if (!isOwned) return;
-
         CMDBuy(slotIndex);
     }
 
     public void TryReroll()
     {
         if (!isOwned) return;
-
         CMDReroll();
     }
 
@@ -78,42 +65,23 @@ public class PlayerShop : NetworkBehaviour
     [Command]
     private void CMDBuy(int slotIndex)
     {
-        if (slotIndex < 0 || slotIndex >= offers.Length)
-        {
-            return;
-        }
+        if (slotIndex < 0 || slotIndex >= offers.Length) return;
 
         ShopOffer offer = offers[slotIndex];
-
-        if (offer == null) return;
-        if (offer.node == null) return;
-        if (offer.purchased) return;
-
-        if (!player.SpendMoney(offer.price))
-        {
-            return;
-        }
+        if (offer == null || offer.node == null || offer.purchased) return;
+        if (!player.SpendMoney(offer.price)) return;
 
         player.caster.AddRune(offer.node);
         offer.purchased = true;
 
-        TargetGiveRune(
-            connectionToClient,
-            GetNodeRarityIndex(offer.node),
-            GetNodeTypeIndex(offer.node),
-            GetNodeListIndex(offer.node)
-        );
-
+        TargetGiveRune(connectionToClient, GetNodeRarityIndex(offer.node), GetNodeTypeIndex(offer.node), GetNodeListIndex(offer.node));
         TargetPurchaseCompleted(connectionToClient, slotIndex);
     }
 
     [Command]
     private void CMDReroll()
     {
-        if (!player.SpendMoney(currentRerollPrice))
-        {
-            return;
-        }
+        if (!player.SpendMoney(currentRerollPrice)) return;
 
         GenerateRerollPrice();
         GenerateOffers();
@@ -173,15 +141,7 @@ public class PlayerShop : NetworkBehaviour
                 continue;
             }
 
-            TargetSetOffer(
-                connectionToClient,
-                i,
-                GetNodeRarityIndex(offer.node),
-                GetNodeTypeIndex(offer.node),
-                GetNodeListIndex(offer.node),
-                offer.price,
-                offer.purchased
-            );
+            TargetSetOffer(connectionToClient, i, GetNodeRarityIndex(offer.node), GetNodeTypeIndex(offer.node), GetNodeListIndex(offer.node), offer.price, offer.purchased);
         }
 
         TargetSetRerollPrice(connectionToClient, currentRerollPrice);
@@ -189,20 +149,9 @@ public class PlayerShop : NetworkBehaviour
     }
 
     [TargetRpc]
-    private void TargetSetOffer(
-        NetworkConnection target,
-        int slotIndex,
-        int rarityIndex,
-        int typeIndex,
-        int listIndex,
-        int price,
-        bool purchased)
+    private void TargetSetOffer(NetworkConnection target, int slotIndex, int rarityIndex, int typeIndex, int listIndex, int price, bool purchased)
     {
-        SpellNode node = GetNodeFromIndexes(
-            rarityIndex,
-            typeIndex,
-            listIndex
-        );
+        SpellNode node = GetNodeFromIndexes(rarityIndex, typeIndex, listIndex);
 
         offers[slotIndex] = new ShopOffer
         {
@@ -221,27 +170,15 @@ public class PlayerShop : NetworkBehaviour
     [TargetRpc]
     private void TargetClearOffer(NetworkConnection target, int slotIndex)
     {
-        if (slotIndex < 0 || slotIndex >= offers.Length)
-        {
-            return;
-        }
-
+        if (slotIndex < 0 || slotIndex >= offers.Length) return;
         offers[slotIndex] = null;
     }
 
     [TargetRpc]
     private void TargetPurchaseCompleted(NetworkConnection target, int slotIndex)
     {
-        if (slotIndex < 0 || slotIndex >= offers.Length)
-        {
-            return;
-        }
-
-        if (offers[slotIndex] != null)
-        {
-            offers[slotIndex].purchased = true;
-        }
-
+        if (slotIndex < 0 || slotIndex >= offers.Length) return;
+        if (offers[slotIndex] != null) offers[slotIndex].purchased = true;
         RefreshLocalShop();
     }
 
@@ -253,57 +190,21 @@ public class PlayerShop : NetworkBehaviour
 
     private void RefreshLocalShop()
     {
-        if (GameManager.Instance == null) return;
-        if (GameManager.Instance.uiController == null) return;
-        if (GameManager.Instance.uiController.playerUI == null) return;
+        if (GameManager.Instance == null || GameManager.Instance.uiController == null || GameManager.Instance.uiController.playerUI == null) return;
 
-        ShopManager shopManager =
-            GameManager.Instance.uiController.playerUI.GetComponentInChildren<ShopManager>(true);
-
-        if (shopManager != null)
-        {
-            shopManager.RefreshShop();
-        }
+        ShopManager shopManager = GameManager.Instance.uiController.playerUI.GetComponentInChildren<ShopManager>(true);
+        if (shopManager != null) shopManager.RefreshShop();
     }
 
     private int GetRunePrice(SpellNode node)
     {
-        SimpleInt priceConfig;
-
-        switch (node.quality)
-        {
-            case SpellNode.Quality.Rusty:
-                priceConfig = rustyPrice;
-                break;
-
-            case SpellNode.Quality.Forged:
-                priceConfig = forgedPrice;
-                break;
-
-            case SpellNode.Quality.FactoryNew:
-                priceConfig = factoryNewPrice;
-                break;
-
-            default:
-                priceConfig = rustyPrice;
-                break;
-        }
-
-        if (priceConfig == null)
-        {
-            return 0;
-        }
-
-        return GetSteppedPrice(priceConfig.GetValue());
+        if (node == null || node.price == null) return 0;
+        return GetSteppedPrice(node.price.GetValue());
     }
 
     private int GetSteppedPrice(int price)
     {
-        if (priceStep <= 0)
-        {
-            return price;
-        }
-
+        if (priceStep <= 0) return price;
         return Mathf.RoundToInt((float)price / priceStep) * priceStep;
     }
 
@@ -320,48 +221,20 @@ public class PlayerShop : NetworkBehaviour
         if (node is SpellStat) return 3;
         if (node is SpellTrigger) return 4;
         if (node is SpellCastPoint) return 5;
-
         return -1;
     }
 
     private int GetNodeListIndex(SpellNode node)
     {
         RuneQualityGroup group = GetRarityGroup(node.quality);
+        if (group == null) return -1;
 
-        if (group == null)
-        {
-            return -1;
-        }
-
-        if (node is SpellCore)
-        {
-            return group.Core.IndexOf(node as SpellCore);
-        }
-
-        if (node is SpellTrajectory)
-        {
-            return group.Trajectory.IndexOf(node as SpellTrajectory);
-        }
-
-        if (node is SpellEffect)
-        {
-            return group.Effect.IndexOf(node as SpellEffect);
-        }
-
-        if (node is SpellStat)
-        {
-            return group.Stat.IndexOf(node as SpellStat);
-        }
-
-        if (node is SpellTrigger)
-        {
-            return group.Trigger.IndexOf(node as SpellTrigger);
-        }
-
-        if (node is SpellCastPoint)
-        {
-            return group.CastPoint.IndexOf(node as SpellCastPoint);
-        }
+        if (node is SpellCore) return group.Core.IndexOf(node as SpellCore);
+        if (node is SpellTrajectory) return group.Trajectory.IndexOf(node as SpellTrajectory);
+        if (node is SpellEffect) return group.Effect.IndexOf(node as SpellEffect);
+        if (node is SpellStat) return group.Stat.IndexOf(node as SpellStat);
+        if (node is SpellTrigger) return group.Trigger.IndexOf(node as SpellTrigger);
+        if (node is SpellCastPoint) return group.CastPoint.IndexOf(node as SpellCastPoint);
 
         return -1;
     }
@@ -369,42 +242,27 @@ public class PlayerShop : NetworkBehaviour
     private SpellNode GetNodeFromIndexes(int rarityIndex, int typeIndex, int listIndex)
     {
         RuneQualityGroup group = GetRarityGroup((SpellNode.Quality)rarityIndex);
-
-        if (group == null)
-        {
-            return null;
-        }
+        if (group == null) return null;
 
         switch (typeIndex)
         {
             case 0:
-                if (listIndex >= 0 && listIndex < group.Core.Count)
-                    return group.Core[listIndex];
+                if (listIndex >= 0 && listIndex < group.Core.Count) return group.Core[listIndex];
                 break;
-
             case 1:
-                if (listIndex >= 0 && listIndex < group.Trajectory.Count)
-                    return group.Trajectory[listIndex];
+                if (listIndex >= 0 && listIndex < group.Trajectory.Count) return group.Trajectory[listIndex];
                 break;
-
             case 2:
-                if (listIndex >= 0 && listIndex < group.Effect.Count)
-                    return group.Effect[listIndex];
+                if (listIndex >= 0 && listIndex < group.Effect.Count) return group.Effect[listIndex];
                 break;
-
             case 3:
-                if (listIndex >= 0 && listIndex < group.Stat.Count)
-                    return group.Stat[listIndex];
+                if (listIndex >= 0 && listIndex < group.Stat.Count) return group.Stat[listIndex];
                 break;
-
             case 4:
-                if (listIndex >= 0 && listIndex < group.Trigger.Count)
-                    return group.Trigger[listIndex];
+                if (listIndex >= 0 && listIndex < group.Trigger.Count) return group.Trigger[listIndex];
                 break;
-
             case 5:
-                if (listIndex >= 0 && listIndex < group.CastPoint.Count)
-                    return group.CastPoint[listIndex];
+                if (listIndex >= 0 && listIndex < group.CastPoint.Count) return group.CastPoint[listIndex];
                 break;
         }
 
@@ -415,34 +273,20 @@ public class PlayerShop : NetworkBehaviour
     {
         switch (rarity)
         {
-            case SpellNode.Quality.Rusty:
-                return lootPool.Rusty;
-
-            case SpellNode.Quality.Forged:
-                return lootPool.Forged;
-
-            case SpellNode.Quality.FactoryNew:
-                return lootPool.FactoryNew;
-
-            default:
-                return null;
+            case SpellNode.Quality.Rusty: return lootPool.Rusty;
+            case SpellNode.Quality.Forged: return lootPool.Forged;
+            case SpellNode.Quality.FactoryNew: return lootPool.FactoryNew;
+            default: return null;
         }
     }
 
     [TargetRpc]
-    private void TargetGiveRune(
-        NetworkConnection target,
-        int rarityIndex,
-        int typeIndex,
-        int listIndex)
+    private void TargetGiveRune(NetworkConnection target, int rarityIndex, int typeIndex, int listIndex)
     {
         if (isServer) return;
 
         SpellNode node = GetNodeFromIndexes(rarityIndex, typeIndex, listIndex);
-
-        if (node == null) return;
-        if (player == null) return;
-        if (player.caster == null) return;
+        if (node == null || player == null || player.caster == null) return;
 
         player.caster.AddRune(node);
     }

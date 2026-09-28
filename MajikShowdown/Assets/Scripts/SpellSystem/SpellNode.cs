@@ -7,6 +7,10 @@ public abstract class SpellNode : ScriptableObject
 {
     public enum Quality { Rusty, Forged, FactoryNew }
     public Quality quality;
+
+    [Header("Shop")]
+    public SimpleInt price;
+
     [Header("Define Stat Randomization")]
     public bool RandomizeOnStart = true;
     public StatRandomizer statRandomizer;
