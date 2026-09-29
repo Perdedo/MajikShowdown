@@ -275,7 +275,7 @@ public class PlayerShop : NetworkBehaviour
         {
             case SpellNode.Quality.Rusty: return lootPool.Rusty;
             case SpellNode.Quality.Forged: return lootPool.Forged;
-            case SpellNode.Quality.FactoryNew: return lootPool.FactoryNew;
+            case SpellNode.Quality.Refined: return lootPool.Refined;
             default: return null;
         }
     }

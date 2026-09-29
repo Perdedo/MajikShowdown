@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b2ab1ed0c378944f8357d7513ab20be, type: 3}
-  m_Name: FollowEnemyFactory
-  m_EditorClassIdentifier: Assembly-CSharp::SpellTrajectory
+  m_Script: {fileID: 11500000, guid: 30c8f43e557dc914caf160dbd96537f7, type: 3}
+  m_Name: DurationRuneRefined
+  m_EditorClassIdentifier: Assembly-CSharp::SpellStat
   quality: 2
   price:
     type: 1
@@ -30,7 +30,7 @@ MonoBehaviour:
   statRandomizer:
     Cooldown:
       type: 0
-      value: 1
+      value: 3
       min: 0
       max: 0
       curve:
@@ -42,10 +42,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Speed:
-      type: 1
-      value: 10
-      min: 20
-      max: 30
+      type: 0
+      value: 0
+      min: 0
+      max: 0
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -55,10 +55,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Duration:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 5
+      max: 7
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -94,10 +94,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Piercing:
-      type: 1
+      type: 0
       value: 0
-      min: 10
-      max: 15
+      min: 0
+      max: 0
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -109,8 +109,8 @@ MonoBehaviour:
     Bounce:
       type: 0
       value: 0
-      min: 0
-      max: 0
+      min: 1
+      max: 4
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -132,10 +132,10 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Follow Enemy
+  runeName: Refined Add Duration
   runeType: 
-  runeDescription: The spell leans into nearby enemies.
-  color: {r: 0.15098791, g: 0.8207547, b: 0.52272063, a: 1}
+  runeDescription: Grants additional Duration stat to attached spell
+  color: {r: 1, g: 1, b: 1, a: 1}
   Cooldown: 0
   BaseStats:
     Speed: 0
@@ -172,7 +172,5 @@ MonoBehaviour:
   startingNode: 0
   ConectionPorts: 000000000000000000000000000000000000000000000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 21300000, guid: 1105234bd7f9e5e4a92f9f66d7c3b0f9, type: 3}
+  nodeSymbolSprite: {fileID: 21300000, guid: 1366210819a149e49b97261369761a07, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}
-  trajectoryType: 4
-  HommingRange: 10

@@ -36,7 +36,7 @@ public static class SetNodePrices
                     forgedCount++;
                     break;
 
-                case SpellNode.Quality.FactoryNew:
+                case SpellNode.Quality.Refined:
                     SetRandomPrice(node.price, 2000, 3500);
                     factoryNewCount++;
                     break;

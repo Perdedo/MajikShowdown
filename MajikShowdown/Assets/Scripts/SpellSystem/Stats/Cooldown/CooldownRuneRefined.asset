@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b2ab1ed0c378944f8357d7513ab20be, type: 3}
-  m_Name: ForwardFactory
-  m_EditorClassIdentifier: Assembly-CSharp::SpellTrajectory
+  m_Script: {fileID: 11500000, guid: 30c8f43e557dc914caf160dbd96537f7, type: 3}
+  m_Name: CooldownRuneRefined
+  m_EditorClassIdentifier: Assembly-CSharp::SpellStat
   quality: 2
   price:
     type: 1
@@ -29,10 +29,10 @@ MonoBehaviour:
   RandomizeOnStart: 1
   statRandomizer:
     Cooldown:
-      type: 0
-      value: 0.5
-      min: 0
-      max: 0
+      type: 1
+      value: 0
+      min: -1.5
+      max: -0.9
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -42,10 +42,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Speed:
-      type: 1
+      type: 0
       value: 0
-      min: 20
-      max: 30
+      min: 0
+      max: 0
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -109,8 +109,8 @@ MonoBehaviour:
     Bounce:
       type: 0
       value: 0
-      min: 0
-      max: 3.5
+      min: 1
+      max: 4
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -132,13 +132,13 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Forward
+  runeName: Refined Reduce Cooldown
   runeType: 
-  runeDescription: The spell moves foward.
-  color: {r: 0, g: 0.112580776, b: 1, a: 1}
+  runeDescription: Reduces cooldown of attached spell
+  color: {r: 1, g: 1, b: 1, a: 1}
   Cooldown: 0
   BaseStats:
-    Speed: 20
+    Speed: 0
     Duration: 0
     Size: 0
     Damage: 0
@@ -146,7 +146,7 @@ MonoBehaviour:
     Bounce: 0
     Knockback: 0
   Interface: {fileID: 0}
-  hierarchy: 2147483647
+  hierarchy: -1
   ConectedNodes:
   - {fileID: 0}
   - {fileID: 0}
@@ -170,9 +170,7 @@ MonoBehaviour:
     onCooldown: 0
   startingGridInd: -1
   startingNode: 0
-  ConectionPorts: 000000000000000000000000010000000000000000000000
+  ConectionPorts: 000000000000000000000000000000000000000000000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 21300000, guid: c41c409defb715043b75e0c572342db8, type: 3}
+  nodeSymbolSprite: {fileID: 21300000, guid: 58a7e7d35c02d79448e306ae3bf6a7e0, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}
-  trajectoryType: 0
-  HommingRange: 10

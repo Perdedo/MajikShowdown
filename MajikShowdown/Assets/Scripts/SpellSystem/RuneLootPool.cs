@@ -9,13 +9,13 @@ public class RuneLootPool : ScriptableObject
     {
         ("Rusty", 0.6f, SpellNode.Quality.Rusty),
         ("Forged", 0.3f, SpellNode.Quality.Forged),
-        ("FactoryNew", 0.1f, SpellNode.Quality.FactoryNew)/*,
+        ("Refined", 0.1f, SpellNode.Quality.Refined)/*,
         ("Epic", 0.04f, SpellNode.Quality.Epic),
         ("Legendary", 0.01f, SpellNode.Quality.Legendary)*/
     });
     public RuneQualityGroup Rusty = new RuneQualityGroup();
     public RuneQualityGroup Forged = new RuneQualityGroup();
-    public RuneQualityGroup FactoryNew = new RuneQualityGroup();
+    public RuneQualityGroup Refined = new RuneQualityGroup();
     //public RuneQualityGroup Epic = new RuneQualityGroup();
     //public RuneQualityGroup Legendary = new RuneQualityGroup();
 
@@ -38,8 +38,8 @@ public class RuneLootPool : ScriptableObject
             case SpellNode.Quality.Forged:
                 node = Forged.GetRandomNode();
                 break;
-            case SpellNode.Quality.FactoryNew:
-                node = FactoryNew.GetRandomNode();
+            case SpellNode.Quality.Refined:
+                node = Refined.GetRandomNode();
                 break;
             /*case SpellNode.Quality.Epic:
                 node = Epic.GetRandomNode();

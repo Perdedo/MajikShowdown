@@ -5,7 +5,7 @@ using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
 {
-    public enum Quality { Rusty, Forged, FactoryNew }
+    public enum Quality { Rusty, Forged, Refined }
     public Quality quality;
 
     [Header("Shop")]

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30c8f43e557dc914caf160dbd96537f7, type: 3}
-  m_Name: BounceRuneFactory
+  m_Name: SpeedRuneRefined
   m_EditorClassIdentifier: Assembly-CSharp::SpellStat
   quality: 2
   price:
@@ -30,7 +30,7 @@ MonoBehaviour:
   statRandomizer:
     Cooldown:
       type: 0
-      value: 0.4
+      value: 0.5
       min: 0
       max: 0
       curve:
@@ -42,10 +42,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Speed:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 10
+      max: 18
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -107,10 +107,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Bounce:
-      type: 1
+      type: 0
       value: 0
-      min: 7
-      max: 10
+      min: 1
+      max: 4
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -132,9 +132,9 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Add Bounce
+  runeName: Refined Add Speed
   runeType: 
-  runeDescription: Grants additional Bounce stat to attached spell
+  runeDescription: Grants additional Speed stat to attached spell
   color: {r: 1, g: 1, b: 1, a: 1}
   Cooldown: 0
   BaseStats:
@@ -172,5 +172,5 @@ MonoBehaviour:
   startingNode: 0
   ConectionPorts: 000000000000000000000000000000000000000000000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: -9994613, guid: eb91187521303d1498718b3397d7df3e, type: 3}
+  nodeSymbolSprite: {fileID: 21300000, guid: ea0c512db7136e8418bec6c3aaf2bf31, type: 3}
   symbolColor: {r: 0, g: 0, b: 0, a: 0}
