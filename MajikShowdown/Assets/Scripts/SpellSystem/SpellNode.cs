@@ -395,6 +395,19 @@ public struct StatTypes
         Bounce = randomizer.Bounce.GetValue();
         Knockback = randomizer.Knockback.GetValue();
     }
+    public static StatTypes ClampToZero(StatTypes s)
+    {
+        return new StatTypes()
+        {
+            Speed = Mathf.Max(0, s.Speed),
+            Duration = Mathf.Max(0, s.Duration),
+            Size = Mathf.Max(0, s.Size),
+            Damage = Mathf.Max(0, s.Damage),
+            Piercing = Mathf.Max(0, s.Piercing),
+            Bounce = Mathf.Max(0, s.Bounce),
+            Knockback = Mathf.Max(0, s.Knockback)
+        };
+    }
 }
 [Serializable]
 public struct StatRandomizer

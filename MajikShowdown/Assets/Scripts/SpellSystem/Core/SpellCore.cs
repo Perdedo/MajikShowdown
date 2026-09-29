@@ -49,6 +49,7 @@ public class SpellCore : SpellNode
             FinalStats += s;
         }
         FinalStats *= StatMultipliers;
+        FinalStats = StatTypes.ClampToZero(FinalStats);
     }
     public void AddBuff(StatTypes s)
     {
