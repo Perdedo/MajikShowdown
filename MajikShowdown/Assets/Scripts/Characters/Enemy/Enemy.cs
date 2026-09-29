@@ -19,13 +19,13 @@ public class Enemy : CrowdCharacter
     public float rotationSpeed = 1;
     [Header("Target Avoidance Options")]
     public LayerMask ObstacleMask;
-    public LayerMask EnemyMask;
+    //public LayerMask EnemyMask;
     public LayerMask CanSeeTargetThrough;
     public float DetectionRadius;
     public float EnemyAvoidanceRadius;
     public float TargetStoppingDistance;
     public float SeparationForce = 1;
-    [NonSerialized] public float FlowfieldActivationDistance = 20;
+    [NonSerialized] public float FlowfieldActivationDistance = 2;
     public int priority = 1;
 
     [Header("DropConfig")]
@@ -35,11 +35,11 @@ public class Enemy : CrowdCharacter
 
     [HideInInspector] public float size;
     public Player target;
-    protected HashSet<Enemy> neighbors = new HashSet<Enemy>();
+    //protected HashSet<Enemy> neighbors = new HashSet<Enemy>();
     //Collider[] neighborBuffer = new Collider[32];
     //Vector3[] Directions = new Vector3[8];
-    protected float[] Danger = new float[8];
-    protected float[] Interest = new float[8];
+    //protected float[] Danger = new float[8];
+    //protected float[] Interest = new float[8];
     [NonSerialized] public Vector3 targetVector, attackedTargetVector/*, targetLastSeen*/;
     protected bool detectedObstacle = false, detectedHigherPriority = false;
     [NonSerialized] public Vector3 MoveDirection;
@@ -269,7 +269,7 @@ public class Enemy : CrowdCharacter
 
     public void PlayAnimation(EnemyAnimState state)
     {
-        if(DamageHandler.network && isServer)
+        if (DamageHandler.network && isServer)
         {
             RPCPlayAnimation(state);
         }
@@ -324,29 +324,13 @@ public class Enemy : CrowdCharacter
         GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
     }
 
-    public void AICalculation()
+    /*public void AICalculation()
     {
         target = GetClosestPlayer();
         if (target != null)
         {
             targetVector = target.transform.position - transform.position;
 
-            /*if (targetVector.sqrMagnitude > 2500)
-            {
-                updateRate = 1f / 15f;
-            }
-            else if (targetVector.sqrMagnitude > 625)
-            {
-                updateRate = 1f / 20f;
-            }
-            else if (targetVector.sqrMagnitude > 225)
-            {
-                updateRate = 1f / 25f;
-            }
-            else
-            {
-                updateRate = 1f / 30f;
-            }*/
             if (targetVector.sqrMagnitude > maxDistanceFromPlayer * maxDistanceFromPlayer)
             {
                 Vector3 reposition = CheckReposition();
@@ -375,7 +359,7 @@ public class Enemy : CrowdCharacter
             if (currentCell != null)
             {
                 forwardCell = FlowFieldManager.instance.WorldToGridPosition(transform.position + currentCell.direction * size);
-                if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance /*&& Vector3.Dot(targetVector.normalized, currentCell.direction.normalized) > 0.5*/)
+                if (canSeeTarget && targetVector.magnitude < FlowfieldActivationDistance )
                 {
                     interestDirection = targetVector.normalized;
                 }
@@ -384,13 +368,13 @@ public class Enemy : CrowdCharacter
                     interestDirection = currentCell.direction;
                 }
 
-                /*FindObstacles();
+                FindObstacles();
                 CalculateDanger();
                 CalculateInterest();
-                MoveDirection = GetBestDirection();*/
+                MoveDirection = GetBestDirection();
             }
         }
-    }
+    }*/
 
     public void Reposition()
     {
@@ -442,7 +426,7 @@ public class Enemy : CrowdCharacter
             return Vector3.zero;
         }
     }
-    Queue<FieldCell> ocupiedQueue = new Queue<FieldCell>();
+    /*Queue<FieldCell> ocupiedQueue = new Queue<FieldCell>();
     public void CheckFieldLocation()
     {
         FieldCell temp = FlowFieldManager.instance.WorldToGridPosition(transform.position);
@@ -478,19 +462,19 @@ public class Enemy : CrowdCharacter
                 aux++;
             }
         }
-        /*for (int i = 1; i < occupiedCellNum; i++)
-        {
-            HashSet<FieldCell> tempCells = new HashSet<FieldCell>(OccupiedCells);
-            foreach (FieldCell c in tempCells)
-            {
-                foreach (FieldCell.NeighborContext n in c.Neighbors)
-                {
-                    OccupiedCells.Add(n.neighborCell);
-                    n.neighborCell.ContainedEnemies.Add(GameID);
-                }
-            }
-        }*/
-    }
+        //for (int i = 1; i < occupiedCellNum; i++)
+        //{
+        //    HashSet<FieldCell> tempCells = new HashSet<FieldCell>(OccupiedCells);
+        //    foreach (FieldCell c in tempCells)
+        //    {
+        //        foreach (FieldCell.NeighborContext n in c.Neighbors)
+        //        {
+        //            OccupiedCells.Add(n.neighborCell);
+        //            n.neighborCell.ContainedEnemies.Add(GameID);
+        //        }
+        //    }
+        //}
+    }*/
 
     public Vector3 GetNavMeshDir(FieldCell c)
     {
@@ -677,7 +661,7 @@ public class Enemy : CrowdCharacter
             attackedPlayer.DamageHandler.TakeDamage(dmgCtrl);
         }
     }
-    public virtual void CalculateDanger()
+    /*public virtual void CalculateDanger()
     {
         priorityAvoidDirection = Vector3.zero;
         for (int i = 0; i < Danger.Length; i++)
@@ -786,53 +770,53 @@ public class Enemy : CrowdCharacter
                 aux++;
             }
         }
-        /*for (int i = 0; i < detectRadius; i++)
-        {
-            HashSet<FieldCell> tempCells = new HashSet<FieldCell>(cellsToCheck);
-            foreach (FieldCell c in tempCells)
-            {
-                foreach (FieldCell.NeighborContext n in c.Neighbors)
-                {
-                    cellsToCheck.Add(n.neighborCell);
-                }
-            }
-        }
-
-        foreach (FieldCell c in cellsToCheck)
-        {
-            foreach (int eID in c.ContainedEnemies)
-            {
-                Enemy e = GameManager.Instance.hordeController.GameEnemies[eID];
-                if (e != this && e.priority >= priority)
-                {
-                    if (e.priority > priority)
-                    {
-                        detectedHigherPriority = true;
-                    }
-                    neighbors.Add(e);
-                }
-            }
-        }*/
-        /*int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRadius, neighborBuffer, ObstacleMask | EnemyMask);
-        for (int i = 0; i < count; i++)
-        {
-            if (neighborBuffer[i].TryGetComponent(out Enemy e))
-            {
-                if (e != this && e.priority >= priority)
-                {
-                    if (e.priority > priority)
-                    {
-                        detectedHigherPriority = true;
-                    }
-                    neighbors.Add(e);
-                }
-            }
-            else if (((1 << neighborBuffer[i].gameObject.layer) & ObstacleMask) != 0)
-            {
-                detectedObstacle = true;
-            }
-        }*/
-    }
+        //for (int i = 0; i < detectRadius; i++)
+        //{
+        //    HashSet<FieldCell> tempCells = new HashSet<FieldCell>(cellsToCheck);
+        //    foreach (FieldCell c in tempCells)
+        //    {
+        //        foreach (FieldCell.NeighborContext n in c.Neighbors)
+        //        {
+        //            cellsToCheck.Add(n.neighborCell);
+        //        }
+        //    }
+        //}
+        //
+        //foreach (FieldCell c in cellsToCheck)
+        //{
+        //    foreach (int eID in c.ContainedEnemies)
+        //    {
+        //        Enemy e = GameManager.Instance.hordeController.GameEnemies[eID];
+        //        if (e != this && e.priority >= priority)
+        //        {
+        //            if (e.priority > priority)
+        //            {
+        //                detectedHigherPriority = true;
+        //            }
+        //            neighbors.Add(e);
+        //        }
+        //    }
+        //}
+        //int count = Physics.OverlapSphereNonAlloc(transform.position, DetectionRadius, neighborBuffer, ObstacleMask | EnemyMask);
+        //for (int i = 0; i < count; i++)
+        //{
+        //    if (neighborBuffer[i].TryGetComponent(out Enemy e))
+        //    {
+        //        if (e != this && e.priority >= priority)
+        //        {
+        //            if (e.priority > priority)
+        //            {
+        //                detectedHigherPriority = true;
+        //            }
+        //            neighbors.Add(e);
+        //        }
+        //    }
+        //    else if (((1 << neighborBuffer[i].gameObject.layer) & ObstacleMask) != 0)
+        //    {
+        //        detectedObstacle = true;
+        //    }
+        //}
+    }*/
     public Player GetClosestPlayer()
     {
         Player closest = null;
@@ -879,7 +863,7 @@ public class Enemy : CrowdCharacter
         base.Die();
     }
 }
-//[BurstCompile]
+[BurstCompile]
 public unsafe struct EnemyFieldLocation : IJobParallelFor
 {
     //prompted

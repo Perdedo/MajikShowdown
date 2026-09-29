@@ -105,7 +105,7 @@ public class TrainingExplosiveEnemy : ExplosiveEnemy
         }
     }
 
-    public override void CalculateDanger()
+    /*public override void CalculateDanger()
     {
         priorityAvoidDirection = Vector3.zero;
         for (int i = 0; i < Danger.Length; i++)
@@ -213,5 +213,5 @@ public class TrainingExplosiveEnemy : ExplosiveEnemy
                 aux++;
             }
         }
-    }
+    }*/
 }
