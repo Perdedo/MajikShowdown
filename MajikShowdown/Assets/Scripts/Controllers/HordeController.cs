@@ -10,16 +10,16 @@ using Unity.Mathematics;
 
 public class HordeController : NetworkBehaviour
 {
-    public List<EnemySelection> enemyChances;
+    public List<EnemySelection> baseEnemyChances;
     [NonSerialized]public float3[] Directions = new float3[8];
     NativeArray<float3> JobDirectionData;
     List<EnemySelection> selections = new List<EnemySelection>();
-    public List<DifficultySetting> difficulties;
-    public int difficulty;
-    public AnimationCurve spawnerFrequencyCurve;
-    public AnimationCurve enemyHPMultiplierCurve;
-    public float minSpawnRadius, maxSpawnRadius, radiusStepIncrease = 2, radiusLimit = 100, maxEnemySpawnRadius = 3, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2, enemyHPMultiplier = 1;
-    float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime, randEnemy;
+    public List<HordeSettings> hordes;
+    public int hordeIndex;
+    //public AnimationCurve spawnerFrequencyCurve;
+    //public AnimationCurve enemyHPMultiplierCurve;
+    public float minSpawnRadius, maxSpawnRadius, radiusStepIncrease = 2, radiusLimit = 100, maxEnemySpawnRadius = 3, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
+    float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime;
     public GameObject spawner;
     GameObject aux;
     Vector3 spawnPos;
@@ -52,6 +52,7 @@ public class HordeController : NetworkBehaviour
     [SerializeField] protected LayerMask RayMasks;
     private void Awake()
     {
+        hordeIndex = 0;
         clientEnemies = new Enemy[maxEnemyCount];
         GameManager.Instance.hordeController = this;
         for (int i = 0; i < Directions.Length; i++)
@@ -65,7 +66,7 @@ public class HordeController : NetworkBehaviour
         spawners.Clear();
         enemiesByType.Clear();
         usedEnemiesByType.Clear();
-        for (int i = 0; i < enemyChances.Count; i++)
+        for (int i = 0; i < baseEnemyChances.Count; i++)
         {
             enemiesByType.Add(new List<Enemy>());
             usedEnemiesByType.Add(new HashSet<Enemy>());
@@ -437,8 +438,7 @@ public class HordeController : NetworkBehaviour
         hordeCount++;
         hordeStartTime = Time.time;
         hordeEndTime = hordeStartTime + hordeDuration;
-        spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, spawnerFrequencyCurve.Evaluate(0));
-        enemyHPMultiplier = enemyHPMultiplierCurve.Evaluate(0);
+        spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, hordes[hordeIndex].spawnerFrequencyCurve.Evaluate(0));
         inHorde = true;
         inHordeTime = true;
         usedSpawners.Clear();
@@ -545,15 +545,14 @@ public class HordeController : NetworkBehaviour
                 {
                     selections.Add(enemyChances[i]);
                 }*/
-                aux.GetComponent<EnemySpawner>().Initialize(enemyChances, difficulties[difficulty].baseSpawnTime, difficulties[difficulty].minSpawnTime, Mathf.Min(difficulties[difficulty].maxLifeTime, hordeEndTime - Time.time), difficulties[difficulty].baseDifficultyMult, difficulties[difficulty].maxDifficultyMult, difficulties[difficulty].baseElemental, difficulties[difficulty].maxElemental, hordeStartTime, hordeDuration, maxEnemySpawnRadius);
+                aux.GetComponent<EnemySpawner>().Initialize(hordes[hordeIndex].enemyChances, hordes[hordeIndex].baseSpawnTime, hordes[hordeIndex].minSpawnTime, Mathf.Min(hordes[hordeIndex].maxLifeTime, hordeEndTime - Time.time), hordes[hordeIndex].baseElemental, hordes[hordeIndex].maxElemental, hordeStartTime, hordeDuration, maxEnemySpawnRadius);
                 usedSpawners.Add(aux);
             }
         }
         if (inHordeTime)
         {
             yield return new WaitForSeconds(spawnTime);
-            enemyHPMultiplier = enemyHPMultiplierCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDuration, 0, 1));
-            spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, spawnerFrequencyCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDuration, 0, 1)));
+            spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, hordes[hordeIndex].spawnerFrequencyCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDuration, 0, 1)));
             StartCoroutine(SpawnSpawner());
         }
     }
@@ -655,7 +654,7 @@ public class HordeController : NetworkBehaviour
             inHorde = false;
             if (hordeCount < hordesToWin)
             {
-                difficulty++;
+                hordeIndex++;
                 StartPause();
             }
             else
@@ -763,11 +762,16 @@ public class HordeController : NetworkBehaviour
 }
 
 [Serializable]
-public class DifficultySetting
+public class HordeSettings
 {
-    public string difficulty;
-    public List<int> indexes;
-    public float baseSpawnTime, minSpawnTime, maxLifeTime, baseDifficultyMult, maxDifficultyMult, baseElemental, maxElemental;
+    //public string difficulty;
+    //public List<int> indexes;
+    public List<EnemySelection> enemyChances;
+    public AnimationCurve spawnerFrequencyCurve;
+    public AnimationCurve baseHPMultiplierCurve;
+    public AnimationCurve enemySpawnRateCurve;
+    public AnimationCurve elementalCurve;
+    public float baseSpawnTime, minSpawnTime, maxLifeTime, baseElemental, maxElemental;
 }
 
 public struct EnemyTransformInfo
