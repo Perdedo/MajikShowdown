@@ -9484,11 +9484,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   SlopeThreshold: 0.4
-  DiagonalWeight: 1
+  JumpWeightPerHight: 3
+  MaxJumpHeight: 5
   BestDirectionStrenght: 10
   TargetDirectionStrenght: 6
   NeighborSumDirectionStrenght: 2
-  BorderCellWeight: 3
+  BorderCellWeight: 1
   DiagonalNeighbors: 1
   TargetRecalculationOffset: 2
   Target: {fileID: 0}
@@ -9498,7 +9499,6 @@ MonoBehaviour:
   ShowFieldArea: 0
   ShowDirections: 0
   ShowTargetPos: 0
-  cellCountAux: 0
   maxSqrRenderDistance: 2500
 --- !u!4 &1318178715
 Transform:

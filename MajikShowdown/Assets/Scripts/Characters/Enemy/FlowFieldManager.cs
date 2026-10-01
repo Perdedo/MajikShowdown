@@ -26,7 +26,9 @@ public class FlowFieldManager : MonoBehaviour
     public LayerMask ObstructionLayer;
     public LayerMask ObstacleMask;
     public float SlopeThreshold = 0.5f;
-    [Range(1, 2)] public float DiagonalWeight = 1;
+    [NonSerialized][Range(1, 2)] public float DiagonalWeight = 1;
+    public float JumpWeightPerHight = 1;
+    public float MaxJumpHeight = 5f;
     [Tooltip("How much the directions point to the lowest cost cells")]
     [Range(0, 20)] public float BestDirectionStrenght = 10;
     [Tooltip("How much the directions point directly to the target")]
@@ -94,7 +96,7 @@ public class FlowFieldManager : MonoBehaviour
             GenerateFlowField(lastTargetsPos);
         }
     }
-    IEnumerator FlowFieldGenerator()
+    /*IEnumerator FlowFieldGenerator()
     {
         moved = false;
         for (int i = 0; i < Targets.Count; i++)
@@ -113,7 +115,7 @@ public class FlowFieldManager : MonoBehaviour
         }
         yield return new WaitForSeconds(flowFieldDelay);
         StartCoroutine(FlowFieldGenerator());
-    }
+    }*/
 
     public void UpdateFlowField()
     {
@@ -131,7 +133,7 @@ public class FlowFieldManager : MonoBehaviour
         GenerateFlowField(lastTargetsPos);
     }
 
-    bool integrated = false;
+    /*bool integrated = false;
     public void GenerateFlowFieldIntegrations()
     {
         integrated = false;
@@ -146,8 +148,8 @@ public class FlowFieldManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
             StartCoroutine(GenerateFFIntegrations());
         }
-    }
-    bool directed = false;
+    }*/
+    /*bool directed = false;
     public int cellCountAux;
     public void GenerateFlowFieldDirections()
     {
@@ -164,7 +166,7 @@ public class FlowFieldManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
             StartCoroutine(GenerateFFDirections());
         }
-    }
+    }*/
 
     public float maxSqrRenderDistance = 10000;
 
@@ -372,7 +374,8 @@ public class FlowFieldManager : MonoBehaviour
             CellNeighborDiagonal = cellNeighborDiagonal,
             currentGeneration = flowField.CurrentGeneration,
             borderCellWeight = BorderCellWeight,
-            diagonalWeight = DiagonalWeight
+            diagonalWeight = DiagonalWeight,
+            jumpWeightPerHight = JumpWeightPerHight
         };
         JobHandle integrationHandle = integration.Schedule();
         GenerateDirectionJob direction = new GenerateDirectionJob()
@@ -418,6 +421,7 @@ public struct GenerateIntegrationJob : IJob
     public int currentGeneration;
     public float borderCellWeight;
     public float diagonalWeight;
+    public float jumpWeightPerHight;
     public void Execute()
     {
         GenerateIntegration();
@@ -463,6 +467,11 @@ public struct GenerateIntegrationJob : IJob
                     if (CellNeighborDiagonal[i] == 1)
                     {
                         mult = diagonalWeight;
+                    }
+                    if(NeighborContext[i] == FieldCell.NeighborContext.Context.Jumpable)
+                    {
+                        float yDiff = currentCell.Position.y - neighborCell.Position.y;
+                        mult = jumpWeightPerHight*(yDiff + 1);
                     }
                     neighborCell.bestCost = currentCell.bestCost + neighborCell.baseCost * mult;
                     neighborCell.TargetID = currentCell.TargetID;
