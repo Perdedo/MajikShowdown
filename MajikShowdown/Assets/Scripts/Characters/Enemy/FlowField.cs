@@ -306,14 +306,14 @@ public class FlowField
         GenerateDirections();
     }
 
-    Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
+    /*Queue<FieldCell> cellsToProcess = new Queue<FieldCell>();
     List<FieldCell> processedCells = new List<FieldCell>();
     int cellsPerDelayInt = 10000;
     int cellsPerDelayDir = 10000;
     int cellCount = 0;
     //float maxSqrDistance = 10000;
 
-    /*public void GenerateFlowFieldOld(List<FieldCell> targets)
+    public void GenerateFlowFieldOld(List<FieldCell> targets)
     {
         CurrentGeneration++;
         cellsToProcess.Clear();
@@ -329,7 +329,7 @@ public class FlowField
             destinationSet.Add(cell);
         }
         manager.GenerateFlowFieldIntegrations();
-    }*/
+    }
     
 
     void GenerateIntegration(Vector2Int targetCellPos, int targetCellLayer)
@@ -372,7 +372,7 @@ public class FlowField
 
             }
         }
-    }
+    }*/
     void GenerateIntegration(FieldCell target)
     {
         DestinationCell = target;
