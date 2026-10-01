@@ -51,6 +51,7 @@ public class FlowFieldManager : MonoBehaviour
     public bool ShowFieldArea = true;
     public bool ShowDirections = true;
     public bool ShowTargetPos = true;
+    public bool ShowIntegration = false;
 
     [HideInInspector] public NativeArray<CellJobData> cellJobDatas;
     [HideInInspector] public NativeArray<int> CellNeighborID;
@@ -197,6 +198,21 @@ public class FlowFieldManager : MonoBehaviour
                 }
             }
         }
+        if (flowField != null && ShowIntegration)
+        {
+            foreach (var v in flowField.field)
+            {
+                foreach (FieldCell cell in v.Value.Layers)
+                {
+                    if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance/10)
+                    {
+
+                        Gizmos.color = Color.Lerp(Color.red, Color.green, 1 - (cellJobDatas[cell.ID].bestCost / 100));
+                        Handles.Label(cell.position, cellJobDatas[cell.ID].bestCost.ToString("F1"));
+                    }
+                }
+            }
+        }
         if (ShowFieldArea)
         {
             Gizmos.color = Color.yellow;
@@ -239,6 +255,12 @@ public class FlowFieldManager : MonoBehaviour
                                 break;
                             case FieldCell.NeighborContext.Context.Upper:
                                 Gizmos.color = Color.red;
+                                break;
+                            case FieldCell.NeighborContext.Context.Lower:
+                                Gizmos.color = Color.purple;
+                                break;
+                            case FieldCell.NeighborContext.Context.ABitLower:
+                                Gizmos.color = Color.cyan;
                                 break;
                             default:
                                 Gizmos.color = Color.blue;
@@ -482,7 +504,7 @@ public struct GenerateIntegrationJob : IJob
                 {
                     transitionCost *= diagonalWeight;
                 }
-                if (NeighborContext[i] == FieldCell.NeighborContext.Context.Jumpable)
+                if ( NeighborContext[i] == FieldCell.NeighborContext.Context.ABitLower)
                 {
 
                     float yDiff = math.abs(neighborCell.Position.y - currentCell.Position.y);
@@ -549,13 +571,13 @@ public struct GenerateDirectionJob : IJobParallelFor
                 continue;
             }
 
-            float neighborTrueCost = neighborCell.bestCost - neighborCell.baseCost;
+            float transitionCost = neighborCell.baseCost;
             float mult = 1;
             if (CellNeighborDiagonal[i] == 1)
             {
                 mult *= diagonalWeight;
             }
-            if (neighborContext == FieldCell.NeighborContext.Context.Jumpable)
+            if ( neighborContext == FieldCell.NeighborContext.Context.Jumpable)
             {
 
                 float yDiff = math.abs(neighborCell.Position.y - c.Position.y);
@@ -563,7 +585,8 @@ public struct GenerateDirectionJob : IJobParallelFor
                 mult *= jumpWeightPerHeight * (yDiff + 1);
                 mult = math.max(mult, 1);
             }
-            neighborTrueCost += neighborCell.baseCost * mult;
+            transitionCost *= mult;
+            float neighborTrueCost = neighborCell.bestCost + transitionCost;
 
             if (neighborTrueCost > c.bestCost)
             {
