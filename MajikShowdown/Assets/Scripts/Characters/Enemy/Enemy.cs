@@ -1356,7 +1356,7 @@ public struct AvoidanceCalculation : IJobParallelFor
         return math.normalize(add);
     }*/
 }
-
+[BurstCompile]
 public struct EnemyGroundRaycastJob : IJobParallelFor
 {
     [Unity.Collections.ReadOnly] public NativeArray<EnemyJobData> EnemyData;
@@ -1371,6 +1371,7 @@ public struct EnemyGroundRaycastJob : IJobParallelFor
         Commands[index] = new RaycastCommand(EnemyData[index].Position, Vector3.down, queryParams, EnemyData[index].height / 2 + EnemyData[index].terrainBuffer);
     }
 }
+[BurstCompile]
 public struct EnemyCalculateDotJob : IJobParallelFor
 {
     public NativeArray<RaycastHit> Res;
