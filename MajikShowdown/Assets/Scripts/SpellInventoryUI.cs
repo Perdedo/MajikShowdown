@@ -8,7 +8,7 @@ public class SpellInventoryUI : NetworkBehaviour
 {
     [Header("Data")]
     public SpellCaster caster;
-    public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
+    //public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
 
     [Header("Grid")]
     public HexGrid gridPrefab;
@@ -24,7 +24,7 @@ public class SpellInventoryUI : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
-        foreach(SavedSpellAsset ssa in startingSpells)
+        foreach (SavedSpellAsset ssa in caster.startingSpells)
         {
             CreateStartingSpell(ssa);
         }
@@ -142,8 +142,7 @@ public class SpellInventoryUI : NetworkBehaviour
     [Command]
     public void CMDCreateStartingSpells()
     {
-        Debug.Log("CMD");
-        foreach(SavedSpellAsset ssa in startingSpells)
+        foreach (SavedSpellAsset ssa in caster.startingSpells)
         {
             CreateStartingSpell(ssa);
         }

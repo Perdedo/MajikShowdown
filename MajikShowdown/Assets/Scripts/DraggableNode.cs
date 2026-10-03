@@ -1,3 +1,4 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -22,6 +23,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public DraggableNode inventoryClone;
     public bool canProcessDrop = true;
     public bool canProcessOrigin = true;
+
+    SpellNodeInterface sni;
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>(true);
@@ -30,6 +33,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         nodeTween = GetComponent<NodeTween>();
         canProcessDrop = true;
         canProcessOrigin = true;
+        sni = this.GetComponent<SpellNodeInterface>();
     }
 
     public void Initialize()
@@ -40,6 +44,16 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         nodeTween = GetComponent<NodeTween>();
         canProcessDrop = true;
         canProcessOrigin = true;
+        sni = this.GetComponent<SpellNodeInterface>();
+        if(sni != null && sni.Node.startingNode)
+        {
+            canProcessDrop = false;
+            canProcessOrigin = false;
+            SetOriginZone(sni.inventory);
+            BeginDrag();
+            RegisterDrop(sni.Node.OwnerSpell.grid.hexGridNodes[sni.Node.startingGridInd]);
+            EndDrag();
+        }
     }
 
     public void SetOriginZone(IDropZone zone)
@@ -80,6 +94,45 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        BeginDrag();
+        /*if (!CanDrag()) return;
+        nodeTween?.Stop();
+        pendingDropZone = null;
+        //RegisterDrop(null);
+        canvas = GetComponentInParent<Canvas>(true);
+        savedPosition = rectTransform.anchoredPosition;
+        savedWorldPosition = rectTransform.position;
+        savedParent = transform.parent;
+
+        SpellNodeInterface nodeInterface = GetComponent<SpellNodeInterface>();
+        nodeInterface?.SelectOnly();
+
+        NodeInventory inventory = OriginZone as NodeInventory;
+
+        GameManager.Instance.uiController.playerUI.caster.commander.HexOnBeginDrag(this);
+        if (inventory != null && nodeInterface != null)
+        {
+            savedListIndex = inventory.GetNodeIndex(nodeInterface);
+        }
+
+        if (inventory != null && !isClone)
+        {
+            inventory.Freeze();
+        }
+        else
+        {
+            OriginZone?.Release(this);
+        }
+
+        transform.SetParent(canvas.transform, true);
+        transform.SetAsLastSibling();
+
+        canvasGroup.alpha = 0.6f;
+        canvasGroup.blocksRaycasts = false;*/
+    }
+
+    public void BeginDrag()
+    {
         if (!CanDrag()) return;
         nodeTween?.Stop();
         pendingDropZone = null;
@@ -117,6 +170,44 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
 
     public void OnEndDrag(PointerEventData eventData)
+    {
+        EndDrag();
+        /*if (!CanDrag()) return;
+        bool startedFromGrid = OriginZone is HexGridNode;
+        Vector3 releasedWorldPosition = rectTransform.position;
+
+        canvasGroup.alpha = 1f;
+        canvasGroup.blocksRaycasts = true;
+
+        NodeInventory inventory = OriginZone as NodeInventory;
+        bool droppedOnSameInventory = pendingDropZone != null && ReferenceEquals(pendingDropZone, inventory);
+        bool shouldReturnToInventory = inventory != null && !isClone && (pendingDropZone == null || droppedOnSameInventory);
+
+        GameManager.Instance.uiController.playerUI.caster.commander.HexOnEndDrag(this);
+        if (shouldReturnToInventory)
+        {
+            ReturnToInventory(inventory);
+            return;
+        }
+
+        if (startedFromGrid && pendingDropZone is NodeInventory targetInventory && inventoryClone != null)
+        {
+            ReturnFromGridToInventory(targetInventory);
+            return;
+        }
+
+        ResolveDrop(inventory);
+        inventory?.Unfreeze();
+
+        bool endedInGrid = OriginZone is HexGridNode;
+
+        if (startedFromGrid || endedInGrid)
+        {
+            nodeTween?.SlideFrom(releasedWorldPosition);
+        }*/
+    }
+
+    public void EndDrag()
     {
         if (!CanDrag()) return;
         bool startedFromGrid = OriginZone is HexGridNode;

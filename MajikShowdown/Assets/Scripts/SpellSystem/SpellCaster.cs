@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 
 public class SpellCaster : NetworkBehaviour
 {
+    public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
     //public CharacterDamageHandler DamageHandler { get; private set; }
     public AimController AimController;
     [Header("Generic Node")]

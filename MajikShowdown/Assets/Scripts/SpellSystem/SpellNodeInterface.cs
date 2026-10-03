@@ -7,7 +7,7 @@ public class SpellNodeInterface : MonoBehaviour
 {
     //COLOCAR CONECXÕES NESSE SCRIPT
     [HideInInspector] public RectTransform rect;
-    [HideInInspector] public HexGridNode hexGridNode;
+    public HexGridNode hexGridNode;
     //public SpellNode PrefabNode;
     public SpellNode Node;
     //public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
@@ -46,10 +46,10 @@ public class SpellNodeInterface : MonoBehaviour
         SetupBorder();
         SetupBackground();
         SetupUsedState();
-        if(Node.startingNode)
+        /*if(Node.startingNode)
         {
             Node.OwnerSpell.grid.hexGridNodes[Node.startingGridInd].Receive(this.GetComponent<DraggableNode>());
-        }
+        }*/
     }
     private void SetupMainVisual()
     {

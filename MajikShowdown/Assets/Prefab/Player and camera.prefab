@@ -38255,6 +38255,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  startingSpells:
+  - {fileID: 11400000, guid: 7adfc160948623d4087efb883d5d0282, type: 2}
   AimController: {fileID: 6982475888199955597}
   genericNodePrefab: {fileID: 4987073506986097210, guid: 90062ac18eaa795429e3132159484390, type: 3}
   ownedNodes:
@@ -45126,8 +45128,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   caster: {fileID: 1701926122361929969}
-  startingSpells:
-  - {fileID: 11400000, guid: 7adfc160948623d4087efb883d5d0282, type: 2}
   gridPrefab: {fileID: 6584108632056666729, guid: 14835c110065a754f8f1675b217de9c1, type: 3}
   gridParent: {fileID: 1687055863835437759}
   content: {fileID: 2472678668191509851}
@@ -66483,6 +66483,8 @@ MonoBehaviour:
   BaseMaxHealth: 500
   MaxHealth: 500
   Health: 0
+  minHealthMultiplier: 1
+  maxHealthMultiplier: 1.5
   Resistances: []
   enemyIndex: 0
   moneyDrop: 0
@@ -66508,45 +66510,6 @@ MonoBehaviour:
   syncInterval: 0
   lootPool: {fileID: 11400000, guid: 62d1e129c61e0194c918cc296770808b, type: 2}
   offerCount: 3
-  rustyPrice:
-    type: 1
-    value: 0
-    min: 350
-    max: 500
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    curveMultiplier: 1
-    curveTimeMax: 1
-  forgedPrice:
-    type: 1
-    value: 0
-    min: 900
-    max: 1500
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    curveMultiplier: 1
-    curveTimeMax: 1
-  factoryNewPrice:
-    type: 1
-    value: 0
-    min: 2000
-    max: 3500
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    curveMultiplier: 1
-    curveTimeMax: 1
   priceStep: 25
   rerollPrice:
     type: 0
