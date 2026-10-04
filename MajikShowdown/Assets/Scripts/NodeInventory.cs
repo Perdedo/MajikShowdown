@@ -77,6 +77,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
             }
         }
     }
+
     IEnumerator WaitInitialize()
     {
         yield return new WaitUntil(() => NetworkClient.ready);
@@ -114,6 +115,17 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         hideUsedToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         reverseSortToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         ApplyFilter();
+    }
+
+    public SpellNodeInterface EnsureNode(SpellNode nodeData)
+    {
+        if (nodeMap.TryGetValue(nodeData, out SpellNodeInterface existing))
+            return existing;
+
+        ShowNode(nodeData);
+
+        nodeMap.TryGetValue(nodeData, out SpellNodeInterface created);
+        return created;
     }
 
     public bool CanReceive(DraggableNode node) => true;

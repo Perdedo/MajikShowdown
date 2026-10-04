@@ -44,28 +44,61 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         nodeTween = GetComponent<NodeTween>();
         canProcessDrop = true;
         canProcessOrigin = true;
-        sni = this.GetComponent<SpellNodeInterface>();
-        if(sni != null && sni.Node.startingNode)
+        sni = GetComponent<SpellNodeInterface>();
+        if (sni != null && sni.Node.startingNode)
         {
-            canProcessDrop = false;
-            canProcessOrigin = false;
-            SetOriginZone(sni.inventory);
-            BeginDrag();
-            RegisterDrop(sni.Node.OwnerSpell.grid.hexGridNodes[sni.Node.startingGridInd]);
-            EndDrag();
+            LoadStartingNode();
         }
+    }
+
+    private void LoadStartingNode()
+    {
+        if (sni.inventory == null) return;
+        if (sni.Node.OwnerSpell == null) return;
+        if (sni.Node.OwnerSpell.grid == null) return;
+
+        int gridIndex = sni.Node.startingGridInd;
+
+        if (gridIndex < 0 || gridIndex >= sni.Node.OwnerSpell.grid.hexGridNodes.Count)
+            return;
+
+        HexGridNode targetHex = sni.Node.OwnerSpell.grid.hexGridNodes[gridIndex];
+        OriginZone = sni.inventory;
+
+        savedPosition = rectTransform.anchoredPosition;
+        savedWorldPosition = rectTransform.position;
+        savedParent = transform.parent;
+        savedListIndex = sni.inventory.GetNodeIndex(sni);
+
+        pendingDropZone = targetHex;
+
+        ResolveDrop(sni.inventory);
+
+        sni.Node.startingNode = false;
     }
 
     public void SetOriginZone(IDropZone zone)
     {
         OriginZone = zone;
-        if(zone is NodeInventory)
+
+        if (GameManager.Instance == null ||
+            GameManager.Instance.uiController == null ||
+            GameManager.Instance.uiController.playerUI == null ||
+            GameManager.Instance.uiController.playerUI.caster == null ||
+            GameManager.Instance.uiController.playerUI.caster.commander == null)
         {
-            GameManager.Instance.uiController.playerUI.caster.commander.SetDragOriginZoneAsInventory(this, zone as NodeInventory);
+            return;
         }
-        else if(zone is HexGridNode)
+
+        var commander = GameManager.Instance.uiController.playerUI.caster.commander;
+
+        if (zone is NodeInventory inventory)
         {
-            GameManager.Instance.uiController.playerUI.caster.commander.SetDragOriginZoneAsHex(this, zone as HexGridNode);
+            commander.SetDragOriginZoneAsInventory(this, inventory);
+        }
+        else if (zone is HexGridNode hex)
+        {
+            commander.SetDragOriginZoneAsHex(this, hex);
         }
     }
 

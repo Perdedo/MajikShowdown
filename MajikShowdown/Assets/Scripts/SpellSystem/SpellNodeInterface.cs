@@ -2,6 +2,7 @@ using Mirror.BouncyCastle.Asn1.Mozilla;
 using Mirror.BouncyCastle.Math.Field;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class SpellNodeInterface : MonoBehaviour
 {
@@ -16,11 +17,13 @@ public class SpellNodeInterface : MonoBehaviour
     public NodeInventory inventory;
     [SerializeField] private Image mainImage;
     [SerializeField] private Image nodeSymbol;
+    [SerializeField] private Image selectedOutline;
     public GameObject usedNodeImg;
     public Image borderImg;
     [HideInInspector] public int acquisitionOrder;
     [HideInInspector] public SpellNodeDescription linkedDescription;
     public int CriticalConections = 0;
+    private Tween selectionTween;
 
     void Awake()
     {
@@ -41,16 +44,24 @@ public class SpellNodeInterface : MonoBehaviour
         rect = GetComponent<RectTransform>();
         Node = nodeData;
         Node.Interface = this;
+
         InitializeConections();
         SetupMainVisual();
         SetupBorder();
+        SetupSelectionOutline();
         SetupBackground();
         SetupUsedState();
-        /*if(Node.startingNode)
-        {
-            Node.OwnerSpell.grid.hexGridNodes[Node.startingGridInd].Receive(this.GetComponent<DraggableNode>());
-        }*/
     }
+
+    private void SetupSelectionOutline()
+    {
+        if (selectedOutline == null) return;
+
+        selectedOutline.sprite = borderImg.sprite;
+        selectedOutline.color = Color.white;
+        selectedOutline.gameObject.SetActive(false);
+    }
+
     private void SetupMainVisual()
     {
         mainImage.color = Node.color;
@@ -170,21 +181,28 @@ public class SpellNodeInterface : MonoBehaviour
         {
             if (conections[i] != null)
             {
-                //Debug.Log(conections[i].GetNode());
                 Node.ConectedNodes[i] = conections[i].conectedNode;
             }
             else
             {
-                //Debug.Log("else");
                 Node.ConectedNodes[i] = null;
             }
         }
 
-        if(hexGridNode != null)
+        if (hexGridNode != null)
         {
             hexGridNode.grid.ConfigurateSpell();
         }
-        //inventory.commander.UpdateSNIConnected(this);
+
+        if (GameManager.Instance == null ||
+            GameManager.Instance.uiController == null ||
+            GameManager.Instance.uiController.playerUI == null ||
+            GameManager.Instance.uiController.playerUI.caster == null ||
+            GameManager.Instance.uiController.playerUI.caster.commander == null)
+        {
+            return;
+        }
+
         GameManager.Instance.uiController.playerUI.caster.commander.UpdateSNIConnected(this);
     }
     public void UpdateConectionPorts()
@@ -207,14 +225,21 @@ public class SpellNodeInterface : MonoBehaviour
 
         if (ui.selectedNode == this)
         {
+            SetSelectedVisual(false);
+
             description.HideAll();
-            //ui.spellNodeDescription.HideDescription();
             ui.selectedNode = null;
         }
         else
         {
+            if (ui.selectedNode != null)
+            {
+                ui.selectedNode.SetSelectedVisual(false);
+            }
+
             ui.selectedNode = this;
-            //ui.spellNodeDescription.ShowDescription(Node);
+            SetSelectedVisual(true);
+
             description.ShowDescription(Node);
         }
     }
@@ -222,11 +247,23 @@ public class SpellNodeInterface : MonoBehaviour
     public void SelectOnly()
     {
         var ui = GameManager.Instance.uiController.playerUI;
-        if (ui.selectedNode == this) return;
+
+        if (ui.selectedNode == this)
+        {
+            SetSelectedVisual(true);
+            return;
+        }
+
+        if (ui.selectedNode != null)
+        {
+            ui.selectedNode.SetSelectedVisual(false);
+        }
+
         ui.selectedNode = this;
+        SetSelectedVisual(true);
+
         var description = linkedDescription ?? ui.spellNodeDescription;
         description.ShowDescription(Node);
-        //ui.spellNodeDescription.ShowDescription(Node);
     }
 
     public void SetNodeBorder(Image img)
@@ -266,8 +303,23 @@ public class SpellNodeInterface : MonoBehaviour
     {
         Node.IsInUse = used;
         ApplyUsedVisual(used);
-        GameManager.Instance.uiController.playerUI.caster.commander.SetUsedSNI(this, used);
-        GameManager.Instance.uiController.playerUI.caster.SetNodeInUse(Node, used);
+
+        if (GameManager.Instance == null ||
+            GameManager.Instance.uiController == null ||
+            GameManager.Instance.uiController.playerUI == null ||
+            GameManager.Instance.uiController.playerUI.caster == null)
+        {
+            return;
+        }
+
+        var caster = GameManager.Instance.uiController.playerUI.caster;
+
+        if (caster.commander != null)
+        {
+            caster.commander.SetUsedSNI(this, used);
+        }
+
+        caster.SetNodeInUse(Node, used);
     }
 
     public void ApplyUsedVisual(bool used)
@@ -309,5 +361,27 @@ public class SpellNodeInterface : MonoBehaviour
     public void SetGridInvalidVisual()
     {
         SetSymbolAlpha(35);
+    }
+
+    public void SetSelectedVisual(bool selected)
+    {
+        if (selectedOutline == null) return;
+
+        selectionTween?.Kill();
+        selectionTween = null;
+        if (!selected)
+        {
+            selectedOutline.gameObject.SetActive(false);
+            return;
+        }
+        selectedOutline.gameObject.SetActive(true);
+        selectedOutline.color = Color.white;
+        selectionTween = selectedOutline.DOColor(new Color32(75, 75, 75, 255), 0.25f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+        //selectedOutline.transform.DOScale(1.05f, 0.25f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void OnDestroy()
+    {
+        selectionTween?.Kill();
     }
 }
