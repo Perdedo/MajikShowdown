@@ -206,9 +206,6 @@ MonoBehaviour:
   ObstacleMask:
     serializedVersion: 2
     m_Bits: 2112
-  EnemyMask:
-    serializedVersion: 2
-    m_Bits: 128
   CanSeeTargetThrough:
     serializedVersion: 2
     m_Bits: 384
@@ -347,9 +344,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  BaseMaxHealth: 75
-  MaxHealth: 75
-  Health: 75
+  BaseMaxHealth: 50
+  MaxHealth: 50
+  Health: 50
+  minHealthMultiplier: 1
+  maxHealthMultiplier: 1.4
   Resistances: []
   enemyIndex: 0
   moneyDrop: 100

@@ -26,7 +26,9 @@ public class FlowFieldManager : MonoBehaviour
     public LayerMask ObstructionLayer;
     public LayerMask ObstacleMask;
     public float SlopeThreshold = 0.5f;
-    [Range(1, 2)] public float DiagonalWeight = 1;
+    [NonSerialized][Range(1, 2)] public float DiagonalWeight = 1;
+    public float JumpWeightPerHeight = 1;
+    public float MaxJumpHeight = 5f;
     [Tooltip("How much the directions point to the lowest cost cells")]
     [Range(0, 20)] public float BestDirectionStrenght = 10;
     [Tooltip("How much the directions point directly to the target")]
@@ -49,6 +51,7 @@ public class FlowFieldManager : MonoBehaviour
     public bool ShowFieldArea = true;
     public bool ShowDirections = true;
     public bool ShowTargetPos = true;
+    public bool ShowIntegration = false;
 
     [HideInInspector] public NativeArray<CellJobData> cellJobDatas;
     [HideInInspector] public NativeArray<int> CellNeighborID;
@@ -94,7 +97,7 @@ public class FlowFieldManager : MonoBehaviour
             GenerateFlowField(lastTargetsPos);
         }
     }
-    IEnumerator FlowFieldGenerator()
+    /*IEnumerator FlowFieldGenerator()
     {
         moved = false;
         for (int i = 0; i < Targets.Count; i++)
@@ -113,7 +116,7 @@ public class FlowFieldManager : MonoBehaviour
         }
         yield return new WaitForSeconds(flowFieldDelay);
         StartCoroutine(FlowFieldGenerator());
-    }
+    }*/
 
     public void UpdateFlowField()
     {
@@ -131,7 +134,7 @@ public class FlowFieldManager : MonoBehaviour
         GenerateFlowField(lastTargetsPos);
     }
 
-    bool integrated = false;
+    /*bool integrated = false;
     public void GenerateFlowFieldIntegrations()
     {
         integrated = false;
@@ -146,8 +149,8 @@ public class FlowFieldManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
             StartCoroutine(GenerateFFIntegrations());
         }
-    }
-    bool directed = false;
+    }*/
+    /*bool directed = false;
     public int cellCountAux;
     public void GenerateFlowFieldDirections()
     {
@@ -164,7 +167,7 @@ public class FlowFieldManager : MonoBehaviour
             yield return new WaitForEndOfFrame();
             StartCoroutine(GenerateFFDirections());
         }
-    }
+    }*/
 
     public float maxSqrRenderDistance = 10000;
 
@@ -180,9 +183,10 @@ public class FlowFieldManager : MonoBehaviour
                     if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance)
                     {
 
-                        /*if (cellJobDatas[cell.ID].bestCost == float.MaxValue)
+                        /*if (math.all(cellJobDatas[cell.ID].Direction == float3.zero) && cellJobDatas[cell.ID].bestCost != 0)
                         {
                             Gizmos.color = Color.red;
+                            //Debug.Log(cell.BestCost);
                         }
                         else
                         {
@@ -190,6 +194,21 @@ public class FlowFieldManager : MonoBehaviour
                         }*/
                         Gizmos.color = Color.green;
                         Gizmos.DrawCube(cell.position, Vector3.one * CellSize * 0.9f);
+                    }
+                }
+            }
+        }
+        if (flowField != null && ShowIntegration)
+        {
+            foreach (var v in flowField.field)
+            {
+                foreach (FieldCell cell in v.Value.Layers)
+                {
+                    if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance/10)
+                    {
+
+                        Gizmos.color = Color.Lerp(Color.red, Color.green, 1 - (cellJobDatas[cell.ID].bestCost / 100));
+                        Handles.Label(cell.position, cellJobDatas[cell.ID].bestCost.ToString("F1"));
                     }
                 }
             }
@@ -236,6 +255,12 @@ public class FlowFieldManager : MonoBehaviour
                                 break;
                             case FieldCell.NeighborContext.Context.Upper:
                                 Gizmos.color = Color.red;
+                                break;
+                            case FieldCell.NeighborContext.Context.Lower:
+                                Gizmos.color = Color.purple;
+                                break;
+                            case FieldCell.NeighborContext.Context.ABitLower:
+                                Gizmos.color = Color.cyan;
                                 break;
                             default:
                                 Gizmos.color = Color.blue;
@@ -302,7 +327,10 @@ public class FlowFieldManager : MonoBehaviour
                 firstNeighbor = flowField.allCells[i].firstNeighbor,
                 lastNeighbor = flowField.allCells[i].lastNeighbor,
                 Position = flowField.allCells[i].position,
-                baseCost = baseC
+                baseCost = baseC,
+                bestCost = float.MaxValue,
+                TargetID = -1,
+                generation = 0
             };
         }
 
@@ -358,7 +386,7 @@ public class FlowFieldManager : MonoBehaviour
         if (flowField.DestinationCells.Count <= 0) return;
         NativeArray<int> tCells = new NativeArray<int>(targets.Count, Allocator.TempJob);
         NativeParallelHashSet<int> HashTCells = new NativeParallelHashSet<int>(targets.Count, Allocator.TempJob);
-        for(int i = 0; i< targets.Count; i++)
+        for (int i = 0; i < targets.Count; i++)
         {
             tCells[i] = targets[i].ID;
             HashTCells.Add(targets[i].ID);
@@ -369,10 +397,11 @@ public class FlowFieldManager : MonoBehaviour
             Cells = cellJobDatas,
             cellNeighbors = CellNeighborID,
             NeighborContext = neighborContexts,
-            CellNeighborDiagonal = cellNeighborDiagonal,
             currentGeneration = flowField.CurrentGeneration,
             borderCellWeight = BorderCellWeight,
-            diagonalWeight = DiagonalWeight
+            diagonalWeight = DiagonalWeight,
+            jumpWeightPerHeight = JumpWeightPerHeight,
+            CellNeighborDiagonal = cellNeighborDiagonal
         };
         JobHandle integrationHandle = integration.Schedule();
         GenerateDirectionJob direction = new GenerateDirectionJob()
@@ -382,10 +411,13 @@ public class FlowFieldManager : MonoBehaviour
             NeighborContext = neighborContexts,
             cellNeighborsDir = CellNeighborDir,
             targetCells = HashTCells,
+            CellNeighborDiagonal = cellNeighborDiagonal,
             DirectionsOutput = new NativeArray<float3>(cellJobDatas.Length, Allocator.TempJob),
             NeighborSumDirectionStrenght = NeighborSumDirectionStrenght,
             BestDirectionStrenght = BestDirectionStrenght,
-            TargetDirectionStrenght = TargetDirectionStrenght
+            TargetDirectionStrenght = TargetDirectionStrenght,
+            diagonalWeight = DiagonalWeight,
+            jumpWeightPerHeight = JumpWeightPerHeight
         };
         JobHandle directionHandle = direction.Schedule(flowField.allCells.Count, 64, integrationHandle);
         UpdateCellsJob updateCells = new UpdateCellsJob()
@@ -405,6 +437,13 @@ public class FlowFieldManager : MonoBehaviour
         }*/
         HashTCells.Dispose();
         direction.DirectionsOutput.Dispose();
+        /*foreach (CellJobData c in cellJobDatas)
+        {
+            if(c.bestCost == 0)
+            {
+                Debug.Log("Target Cell: " + c.Position);
+            }
+        }*/
     }
 }
 [BurstCompile]
@@ -413,11 +452,12 @@ public struct GenerateIntegrationJob : IJob
     public NativeArray<int> targetCells;
     public NativeArray<CellJobData> Cells;
     public NativeArray<int> cellNeighbors;
-    public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
+    [ReadOnly] public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
     public NativeArray<byte> CellNeighborDiagonal;
     public int currentGeneration;
     public float borderCellWeight;
     public float diagonalWeight;
+    public float jumpWeightPerHeight;
     public void Execute()
     {
         GenerateIntegration();
@@ -431,6 +471,7 @@ public struct GenerateIntegrationJob : IJob
             c.bestCost = 0;
             c.generation = currentGeneration;
             c.TargetID = index;
+            //c.baseCost = 1;
             Cells[index] = c;
             cellsToProcess.Enqueue(index);
         }
@@ -451,20 +492,31 @@ public struct GenerateIntegrationJob : IJob
                     neighborCell.generation = currentGeneration;
                     neighborCell.bestCost = float.MaxValue;
                     neighborCell.TargetID = -1;
+                    //neighborCell.baseCost = 1;
                 }
                 if (NeighborContext[i] == FieldCell.NeighborContext.Context.Lower)
                 {
                     Cells[neighborID] = neighborCell;
                     continue;
                 }
-                if (neighborCell.bestCost > currentCell.bestCost + neighborCell.baseCost)
+                float transitionCost = neighborCell.baseCost;
+                if (CellNeighborDiagonal[i] == 1)
                 {
-                    float mult = 1;
-                    if (CellNeighborDiagonal[i] == 1)
-                    {
-                        mult = diagonalWeight;
-                    }
-                    neighborCell.bestCost = currentCell.bestCost + neighborCell.baseCost * mult;
+                    transitionCost *= diagonalWeight;
+                }
+                if ( NeighborContext[i] == FieldCell.NeighborContext.Context.ABitLower)
+                {
+
+                    float yDiff = math.abs(neighborCell.Position.y - currentCell.Position.y);
+                    //mult = jumpWeightPerHeight * math.pow(yDiff + 1, 2);
+                    transitionCost *= jumpWeightPerHeight * (yDiff + 1);
+                    //mult = math.max(mult, 1);
+                }
+
+                if (neighborCell.bestCost > currentCell.bestCost + transitionCost)
+                {
+
+                    neighborCell.bestCost = currentCell.bestCost + transitionCost;
                     neighborCell.TargetID = currentCell.TargetID;
 
                     cellsToProcess.Enqueue(neighborID);
@@ -482,8 +534,12 @@ public struct GenerateDirectionJob : IJobParallelFor
     [Unity.Collections.ReadOnly] public NativeArray<CellJobData> Cells;
     [Unity.Collections.ReadOnly] public NativeArray<int> cellNeighbors;
     [Unity.Collections.ReadOnly] public NativeArray<float3> cellNeighborsDir;
-    [Unity.Collections.ReadOnly] public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
+    [ReadOnly, NativeDisableParallelForRestriction] public NativeArray<FieldCell.NeighborContext.Context> NeighborContext;
     [Unity.Collections.ReadOnly] public NativeParallelHashSet<int> targetCells;
+    [ReadOnly, NativeDisableParallelForRestriction] public NativeArray<byte> CellNeighborDiagonal;
+    //public float borderCellWeight;
+    [ReadOnly] public float diagonalWeight;
+    public float jumpWeightPerHeight;
     [WriteOnly]
     public NativeArray<float3> DirectionsOutput;
     public float NeighborSumDirectionStrenght, BestDirectionStrenght, TargetDirectionStrenght;
@@ -500,6 +556,7 @@ public struct GenerateDirectionJob : IJobParallelFor
         }
         int lowest = -1;
         float3 lowestDir = float3.zero;
+        float lowestCost = float.MaxValue;
         float3 dirToDestiny = Cells[c.TargetID].Position - c.Position;
         dirToDestiny.y = 0;
         dirToDestiny *= 1f / (math.abs(dirToDestiny.x) + math.abs(dirToDestiny.z) + 0.0001f);
@@ -508,22 +565,42 @@ public struct GenerateDirectionJob : IJobParallelFor
         for (int i = c.firstNeighbor; i <= c.lastNeighbor; i++)
         {
             CellJobData neighborCell = Cells[cellNeighbors[i]];
-            if (NeighborContext[i] == FieldCell.NeighborContext.Context.Upper)
+            FieldCell.NeighborContext.Context neighborContext = NeighborContext[i];
+            if (neighborContext == FieldCell.NeighborContext.Context.Upper)
             {
                 continue;
             }
-            if (neighborCell.bestCost > c.bestCost)
+
+            float transitionCost = neighborCell.baseCost;
+            float mult = 1;
+            if (CellNeighborDiagonal[i] == 1)
+            {
+                mult *= diagonalWeight;
+            }
+            if ( neighborContext == FieldCell.NeighborContext.Context.Jumpable)
+            {
+
+                float yDiff = math.abs(neighborCell.Position.y - c.Position.y);
+                //mult = jumpWeightPerHeight * math.pow(yDiff + 1, 2);
+                mult *= jumpWeightPerHeight * (yDiff + 1);
+                mult = math.max(mult, 1);
+            }
+            transitionCost *= mult;
+            float neighborTrueCost = neighborCell.bestCost + transitionCost;
+
+            if (neighborTrueCost > c.bestCost)
             {
                 continue;
             }
-            dirSum += cellNeighborsDir[i] * (1 + c.bestCost - neighborCell.bestCost);
-            if (lowest == -1 || neighborCell.bestCost < Cells[lowest].bestCost)
+            dirSum += cellNeighborsDir[i] * (1 + c.bestCost - neighborTrueCost);
+            if (lowest == -1 || neighborTrueCost < lowestCost)
             {
                 lowest = cellNeighbors[i];
                 lowestDir = cellNeighborsDir[i];
                 bestDot = math.dot(dirToDestiny, cellNeighborsDir[i]);
+                lowestCost = neighborTrueCost;
             }
-            else if (neighborCell.bestCost == Cells[lowest].bestCost)
+            else if (neighborTrueCost == lowestCost)
             {
                 float dot = math.dot(dirToDestiny, cellNeighborsDir[i]);
                 if (dot > bestDot)
@@ -531,6 +608,7 @@ public struct GenerateDirectionJob : IJobParallelFor
                     lowest = cellNeighbors[i];
                     lowestDir = cellNeighborsDir[i];
                     bestDot = dot;
+                    lowestCost = neighborTrueCost;
                 }
             }
         }

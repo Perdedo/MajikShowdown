@@ -11,6 +11,8 @@ using static NodeConection;
 
 public class UICommandController : NetworkBehaviour
 {
+    public int gridIndexRef = 0;
+    public int cardIndexRef = 0;
     public List<HexGrid> grids = new List<HexGrid>();
     public List<SpellCardUI> cards = new List<SpellCardUI>();
     public List<DraggableNode> drags = new List<DraggableNode>();
@@ -787,6 +789,8 @@ public class UICommandController : NetworkBehaviour
     [Command]
     public void CMDInitializeHex(int hexInd, int gridInd)
     {
+        Debug.LogWarning(grids.Find(g => g.instanceIndex == gridInd));
+        Debug.LogWarning(grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd));
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
         //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
         hex.rect = GetComponent<RectTransform>();

@@ -8,6 +8,7 @@ public class CharacterDamageHandler : NetworkBehaviour
     [SyncVar]public float BaseMaxHealth;
     [SyncVar]public float MaxHealth;
     [SyncVar]public float Health;
+    public float minHealthMultiplier = 1, maxHealthMultiplier = 1.5f;
     public List<Resistance> Resistances;
     public int enemyIndex;
     //public int lootDropPoolInd;

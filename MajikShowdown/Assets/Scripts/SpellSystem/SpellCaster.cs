@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 
 public class SpellCaster : NetworkBehaviour
 {
+    public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
     //public CharacterDamageHandler DamageHandler { get; private set; }
     public AimController AimController;
     [Header("Generic Node")]
@@ -81,22 +82,28 @@ public class SpellCaster : NetworkBehaviour
             InstantiateNode(nodeData);
         }
     }
-    void InstantiateNode(SpellNode nodePrefab)
+    SpellNode InstantiateNode(SpellNode nodePrefab)
     {
         SpellNode runtimeNode = Instantiate(nodePrefab);
         runtimeNode.Initialize();
         runtimeNodes.Add(runtimeNode);
+        return runtimeNode;
     }
 
-    public void AddRune(SpellNode nodePrefab)
+    public SpellNode AddRune(SpellNode nodePrefab, bool syncInventory = true)
     {
         ownedNodes.Add(nodePrefab);
-        InstantiateNode(nodePrefab);
+        SpellNode runtimeNode = InstantiateNode(nodePrefab);
 
-        foreach (var inv in inventories)
+        if (syncInventory)
         {
-            inv.SyncFromCaster();
+            foreach (var inv in inventories)
+            {
+                inv.SyncFromCaster();
+            }
         }
+
+        return runtimeNode;
     }
 
     private string GetPath(Transform current)

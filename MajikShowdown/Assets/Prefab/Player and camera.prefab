@@ -10856,10 +10856,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2472678668191509851}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 162.5, y: -200}
-  m_SizeDelta: {x: 275, y: 350}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4135030817875097433
 CanvasRenderer:
@@ -15739,7 +15739,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8528224682757806586
 RectTransform:
   m_ObjectHideFlags: 0
@@ -33947,7 +33947,7 @@ RectTransform:
   m_Father: {fileID: 3441968430112808647}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -35079,7 +35079,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 150, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9052984026457395390
 CanvasRenderer:
@@ -38255,6 +38255,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  startingSpells:
+  - {fileID: 11400000, guid: 7adfc160948623d4087efb883d5d0282, type: 2}
   AimController: {fileID: 6982475888199955597}
   genericNodePrefab: {fileID: 4987073506986097210, guid: 90062ac18eaa795429e3132159484390, type: 3}
   ownedNodes:
@@ -38336,6 +38338,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c5a1d60250471834a9935dfc953451a2, type: 2}
   - {fileID: 11400000, guid: cda9f2213c7450c408ace279fa844b95, type: 2}
   - {fileID: 11400000, guid: 872cfb04fcb0c134699eb34ca24d36ee, type: 2}
+  - {fileID: 11400000, guid: 62182c047a6f5924a8aabecb0b26d8b5, type: 2}
+  - {fileID: 11400000, guid: da0dc13f573a2fd448031c938846d4ed, type: 2}
+  - {fileID: 11400000, guid: a33b9a4d405bdfb4a8fadda4282e08fd, type: 2}
+  - {fileID: 11400000, guid: ddde59ddcfc885d49abba7c0b0d8cfe9, type: 2}
+  - {fileID: 11400000, guid: 02f5b983dd1eb754c9481c04f9441d48, type: 2}
+  - {fileID: 11400000, guid: 689ffe85e56419b48bc7f6bf59303608, type: 2}
   runtimeNodes: []
   inventories:
   - {fileID: 6150298183587537734}
@@ -38600,7 +38608,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0.0005508759}
-  m_SizeDelta: {x: 0, y: 400}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &4602415906032893341
 MonoBehaviour:
@@ -45120,8 +45128,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   caster: {fileID: 1701926122361929969}
-  startingSpells:
-  - {fileID: 11400000, guid: 7adfc160948623d4087efb883d5d0282, type: 2}
   gridPrefab: {fileID: 6584108632056666729, guid: 14835c110065a754f8f1675b217de9c1, type: 3}
   gridParent: {fileID: 1687055863835437759}
   content: {fileID: 2472678668191509851}
@@ -45307,6 +45313,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  gridIndexRef: 0
+  cardIndexRef: 0
   grids: []
   cards: []
   drags: []
@@ -50366,7 +50374,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 150, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6579034944919130779
 CanvasRenderer:
@@ -53754,7 +53762,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 150, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3357360696224885435
 CanvasRenderer:
@@ -61801,7 +61809,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 150, y: 0}
-  m_SizeDelta: {x: 50, y: 50}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &290546958615643478
 CanvasRenderer:
@@ -66475,6 +66483,8 @@ MonoBehaviour:
   BaseMaxHealth: 500
   MaxHealth: 500
   Health: 0
+  minHealthMultiplier: 1
+  maxHealthMultiplier: 1.5
   Resistances: []
   enemyIndex: 0
   moneyDrop: 0
@@ -66500,45 +66510,6 @@ MonoBehaviour:
   syncInterval: 0
   lootPool: {fileID: 11400000, guid: 62d1e129c61e0194c918cc296770808b, type: 2}
   offerCount: 3
-  rustyPrice:
-    type: 1
-    value: 0
-    min: 350
-    max: 500
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    curveMultiplier: 1
-    curveTimeMax: 1
-  forgedPrice:
-    type: 1
-    value: 0
-    min: 900
-    max: 1500
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    curveMultiplier: 1
-    curveTimeMax: 1
-  factoryNewPrice:
-    type: 1
-    value: 0
-    min: 2000
-    max: 3500
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    curveMultiplier: 1
-    curveTimeMax: 1
   priceStep: 25
   rerollPrice:
     type: 0

@@ -8,7 +8,7 @@ public class SpellInventoryUI : NetworkBehaviour
 {
     [Header("Data")]
     public SpellCaster caster;
-    public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
+    //public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
 
     [Header("Grid")]
     public HexGrid gridPrefab;
@@ -24,7 +24,7 @@ public class SpellInventoryUI : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
-        foreach(SavedSpellAsset ssa in startingSpells)
+        foreach (SavedSpellAsset ssa in caster.startingSpells)
         {
             CreateStartingSpell(ssa);
         }
@@ -52,7 +52,9 @@ public class SpellInventoryUI : NetworkBehaviour
             newSpell.instanceIndex = caster.spells.Count;
             HexGrid newGrid = Instantiate(gridPrefab, gridParent);
             newGrid.caster = caster;
-            newGrid.instanceIndex = caster.spells.Count;
+            newGrid.instanceIndex = caster.commander.gridIndexRef;
+            caster.commander.gridIndexRef++;
+            //newGrid.instanceIndex = caster.spells.Count;
             caster.commander.grids.Add(newGrid);
             newGrid.SetSpell(newSpell);
             newSpell.grid = newGrid;
@@ -89,7 +91,9 @@ public class SpellInventoryUI : NetworkBehaviour
         newSpell.instanceIndex = caster.spells.Count;
         HexGrid newGrid = Instantiate(gridPrefab, gridParent);
         newGrid.caster = caster;
-        newGrid.instanceIndex = caster.spells.Count;
+        //newGrid.instanceIndex = caster.spells.Count;
+        newGrid.instanceIndex = caster.commander.gridIndexRef;
+        caster.commander.gridIndexRef++;
         caster.commander.grids.Add(newGrid);
         newGrid.SetSpell(newSpell);
         newSpell.grid = newGrid;
@@ -102,31 +106,48 @@ public class SpellInventoryUI : NetworkBehaviour
 
     public void CreateStartingSpell(SavedSpellAsset ssa)
     {
-        if (isLocalPlayer || !network)
+        Spell newSpell = new Spell(caster);
+        newSpell.spellName = ssa.spellName;
+        newSpell.instanceIndex = caster.spells.Count;
+
+        HexGrid newGrid = Instantiate(gridPrefab, gridParent);
+        newGrid.caster = caster;
+        newGrid.instanceIndex = caster.commander.gridIndexRef;
+        caster.commander.gridIndexRef++;
+        caster.commander.grids.Add(newGrid);
+
+        newGrid.SetSpell(newSpell);
+        newSpell.grid = newGrid;
+
+        newGrid.Initialize();
+        newGrid.gameObject.SetActive(false);
+
+        caster.spells.Add(newSpell);
+
+        newSpell.colorIndex = ssa.colorIndex;
+        newSpell.symbolIndex = ssa.symbolIndex;
+
+        CreateSpellCard(newSpell);
+
+        List<SpellNode> startingRuntimeNodes = new List<SpellNode>();
+
+        foreach (SavedSpellNode ssn in ssa.nodes)
         {
-            Spell newSpell = new Spell(caster);
-            newSpell.spellName = ssa.spellName;
-            newSpell.instanceIndex = caster.spells.Count;
-            HexGrid newGrid = Instantiate(gridPrefab, gridParent);
-            newGrid.caster = caster;
-            newGrid.instanceIndex = caster.spells.Count;
-            caster.commander.grids.Add(newGrid);
-            newGrid.SetSpell(newSpell);
-            newSpell.grid = newGrid;
-            newGrid.Initialize();
-            newGrid.gameObject.SetActive(false);
-            caster.spells.Add(newSpell);
-            newSpell.colorIndex = ssa.colorIndex;
-            newSpell.symbolIndex = ssa.symbolIndex;
-            CreateSpellCard(newSpell);
-            foreach(SavedSpellNode ssn in ssa.nodes)
+            SpellNode runtimeNode = caster.AddRune(ssn.node, false);
+
+            runtimeNode.OwnerSpell = newSpell;
+            runtimeNode.startingGridInd = ssn.gridIndex;
+            runtimeNode.startingNode = true;
+
+            startingRuntimeNodes.Add(runtimeNode);
+        }
+
+        foreach (SpellNode runtimeNode in startingRuntimeNodes)
+        {
+            foreach (NodeInventory inventory in caster.inventories)
             {
-                ssn.node.OwnerSpell = newSpell;
-                ssn.node.startingGridInd = ssn.gridIndex;
-                ssn.node.startingNode = true;
-                caster.AddRune(ssn.node);
+                inventory.EnsureNode(runtimeNode);
             }
-            //GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
         }
     }
 
@@ -139,7 +160,7 @@ public class SpellInventoryUI : NetworkBehaviour
     [Command]
     public void CMDCreateStartingSpells()
     {
-        foreach(SavedSpellAsset ssa in startingSpells)
+        foreach (SavedSpellAsset ssa in caster.startingSpells)
         {
             CreateStartingSpell(ssa);
         }
@@ -158,7 +179,9 @@ public class SpellInventoryUI : NetworkBehaviour
         SpellCardUI cardUI = cardObj.GetComponent<SpellCardUI>();
         cardUI.spellInventory = this;
         cardUI.Setup(spell);
-        cardUI.instanceIndex = caster.commander.cards.Count;
+        cardUI.instanceIndex = caster.commander.cardIndexRef;
+        caster.commander.cardIndexRef++;
+        //cardUI.instanceIndex = caster.commander.cards.Count;
         caster.commander.cards.Add(cardUI);
         createSpellCard.SetAsLastSibling();
     }

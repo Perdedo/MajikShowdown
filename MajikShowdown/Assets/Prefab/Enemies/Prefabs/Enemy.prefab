@@ -146,9 +146,6 @@ MonoBehaviour:
   ObstacleMask:
     serializedVersion: 2
     m_Bits: 2112
-  EnemyMask:
-    serializedVersion: 2
-    m_Bits: 128
   CanSeeTargetThrough:
     serializedVersion: 2
     m_Bits: 384
@@ -280,9 +277,13 @@ MonoBehaviour:
   BaseMaxHealth: 5
   MaxHealth: 5
   Health: 5
+  minHealthMultiplier: 1
+  maxHealthMultiplier: 3
   Resistances: []
   enemyIndex: 0
   moneyDrop: 10
+  canHaveDamageIndicator: 0
+  damageIndicatorPrefab: {fileID: 0}
   network: 1
   canDie: 1
 --- !u!1 &2002080844044921225

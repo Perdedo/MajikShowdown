@@ -5,8 +5,12 @@ using UnityEngine;
 
 public abstract class SpellNode : ScriptableObject
 {
-    public enum Quality { Rusty, Forged, FactoryNew }
+    public enum Quality { Rusty, Forged, Refined }
     public Quality quality;
+
+    [Header("Shop")]
+    public SimpleInt price;
+
     [Header("Define Stat Randomization")]
     public bool RandomizeOnStart = true;
     public StatRandomizer statRandomizer;
@@ -390,6 +394,19 @@ public struct StatTypes
         Piercing = randomizer.Piercing.GetValue();
         Bounce = randomizer.Bounce.GetValue();
         Knockback = randomizer.Knockback.GetValue();
+    }
+    public static StatTypes ClampToZero(StatTypes s)
+    {
+        return new StatTypes()
+        {
+            Speed = Mathf.Max(0, s.Speed),
+            Duration = Mathf.Max(0, s.Duration),
+            Size = Mathf.Max(0, s.Size),
+            Damage = Mathf.Max(0, s.Damage),
+            Piercing = Mathf.Max(0, s.Piercing),
+            Bounce = Mathf.Max(0, s.Bounce),
+            Knockback = Mathf.Max(0, s.Knockback)
+        };
     }
 }
 [Serializable]

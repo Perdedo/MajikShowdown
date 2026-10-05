@@ -38,8 +38,8 @@ public class RuneLootBox : InteractableObject
                 aux = lootPool.Forged;
                 qualityInd = 1;
                 break;
-            case SpellNode.Quality.FactoryNew:
-                aux = lootPool.FactoryNew;
+            case SpellNode.Quality.Refined:
+                aux = lootPool.Refined;
                 qualityInd = 2;
                 break;
             /*case SpellNode.Quality.Epic:
@@ -103,7 +103,7 @@ public class RuneLootBox : InteractableObject
                 aux = lootPool.Forged;
                 break;
             case 2:
-                aux = lootPool.FactoryNew;
+                aux = lootPool.Refined;
                 break;
             /*case 3:
                 aux = lootPool.Epic;
