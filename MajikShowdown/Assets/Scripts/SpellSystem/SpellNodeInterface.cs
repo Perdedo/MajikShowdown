@@ -46,6 +46,10 @@ public class SpellNodeInterface : MonoBehaviour
         SetupBorder();
         SetupBackground();
         SetupUsedState();
+        if(Node.startingNode)
+        {
+            Node.OwnerSpell.grid.hexGridNodes[Node.startingGridInd].Receive(this.GetComponent<DraggableNode>());
+        }
     }
     private void SetupMainVisual()
     {
@@ -158,7 +162,7 @@ public class SpellNodeInterface : MonoBehaviour
             }
         }
 
-        GameManager.Instance.uiController.playerUI.caster.commander.BreakSNIConnection(this, index);
+        GameManager.Instance.uiController.playerUI.caster.commander.BreakSNIConnection(this, index, RemoveNeighbor);
     }
     public void UpdateConected()
     {

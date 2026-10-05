@@ -82,8 +82,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         if (!CanDrag()) return;
         nodeTween?.Stop();
-        //pendingDropZone = null;
-        RegisterDrop(null);
+        pendingDropZone = null;
+        //RegisterDrop(null);
         canvas = GetComponentInParent<Canvas>(true);
         savedPosition = rectTransform.anchoredPosition;
         savedWorldPosition = rectTransform.position;
@@ -155,8 +155,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void ReturnToInventory(NodeInventory inventory)
     {
-        //pendingDropZone = null;
-        RegisterDrop(null);
+        pendingDropZone = null;
+        //RegisterDrop(null);
         canvasGroup.blocksRaycasts = false;
 
         if (nodeTween != null)
@@ -192,8 +192,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Vector3 targetWorldPosition = inventoryClone.rectTransform.position;
         DraggableNode savedClone = inventoryClone;
 
-        //pendingDropZone = null;
-        RegisterDrop(null);
+        pendingDropZone = null;
+        //RegisterDrop(null);
         canvasGroup.blocksRaycasts = false;
 
         if (nodeTween != null)
@@ -347,8 +347,8 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             }
         }
 
-        //pendingDropZone = null;
-        RegisterDrop(null);
+        pendingDropZone = null;
+        //RegisterDrop(null);
     }
 
     public bool CanDrag()
