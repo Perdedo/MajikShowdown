@@ -2,14 +2,13 @@ public enum NodeSortMode
 {
     AcquisitionOrder,
     Category
-    //Rarity
 }
 
 public class NodeFilter
 {
     public NodeCategory category;
+    public int quality = -1;
     public bool hideUsed;
-
     public NodeSortMode sortMode;
     public bool reverseSort;
 }
