@@ -21,8 +21,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Shader Graphs_LightingMat
-  m_Shader: {fileID: -6465566751694194690, guid: c17c6ed1f0abd77489c79970f642cfdd, type: 3}
-  m_Parent: {fileID: 0}
+  m_Shader: {fileID: -6465566751694194690, guid: a749ea80c26091d4aa570ce19f6331ef, type: 3}
+  m_Parent: {fileID: -876546973899608171, guid: a749ea80c26091d4aa570ce19f6331ef, type: 3}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -36,28 +36,17 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs:
-    - unity_Lightmaps:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - unity_LightmapsInd:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - unity_ShadowMasks:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+    m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _FresnelSize: 3.5
+    - _AlphaClip: 0
+    - _FrenelPower: 1.94
     - _Opacity: 1
     - _QueueControl: 0
-    - _QueueOffset: 0
     - _Width: 0.3
     m_Colors:
     - _Color: {r: 0, g: 0.21601449, b: 3.2943807, a: 1}
+    - _SmokeColor: {r: 0, g: 1.9371445, b: 17.504229, a: 1}
     - _SphereSize: {r: 0.2, g: 0.2, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

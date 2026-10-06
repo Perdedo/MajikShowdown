@@ -19,7 +19,35 @@ public class BuffersControl : MonoBehaviour
     }
     public int SpawnEffect(Elements element, SpellTypes type, Transform place, float size)
     {
+        if(type != SpellTypes.Explosion)
+        {
+            int index = -1;
+            for(int i = 0; i < buffers.Count; i++)
+            {
+                if(buffers[i].myElement == element)
+                {
+                    index = buffers[i].CallBuffer(type, place, size);
+                    i = buffers.Count;
+
+                }
+                else if(i == buffers.Count - 1)
+                {
+                    Debug.LogError("VFX element don't exist");
+                }
+            }
+            return index;
+        }
+        else
+        {
+            Debug.LogError("Wrong function for explosion");
+            return 0;
+        }
+       
+    }
+    public int SpawnEffect(Elements element, SpellTypes type, Transform place, float size, float time)
+    {
         int index = -1;
+        size = size + (time/100);
         for(int i = 0; i < buffers.Count; i++)
         {
             if(buffers[i].myElement == element)

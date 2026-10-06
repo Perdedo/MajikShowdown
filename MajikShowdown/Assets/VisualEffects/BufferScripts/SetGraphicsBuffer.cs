@@ -3,6 +3,7 @@ using UnityEngine.VFX;
 using UnityEngine.VFX.Utility;
 using System.Collections.Generic;
 using System;
+using Steamworks;
 
 public class SetGraphicsBuffer : MonoBehaviour
 {
@@ -16,8 +17,8 @@ public class SetGraphicsBuffer : MonoBehaviour
     [SerializeField] private ExposedProperty bufferCount = "PointsCount";
     [SerializeField] private List<Transform> instances = new List<Transform>();
     [SerializeField] private Queue<int> nullIndex = new Queue<int>();
-
-
+    static readonly ExposedProperty newEvent = "OnNewExplosion";
+    bool newCall = false;
     
     void Start()
     {
@@ -25,21 +26,41 @@ public class SetGraphicsBuffer : MonoBehaviour
     }
     public int AddEffect(Transform place, float size)
     {
-        int index = instances.Count;
-        if(nullIndex.Count == 0)
+        if(myType != SpellTypes.Explosion)
         {
-            instances.Add(place);
-            spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+            int index = instances.Count;
+            if(nullIndex.Count == 0)
+            {
+                instances.Add(place);
+                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+            }
+            else
+            {
+                index = nullIndex.Dequeue();
+                instances[index] = place;
+                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+            }
+            return index;
         }
         else
         {
-            index = nullIndex.Dequeue();
-            instances[index] = place;
-            spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+            int index = instances.Count;
+            if(nullIndex.Count == 0)
+            {
+                instances.Add(place);
+                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                newCall = true;
+            }
+            else
+            {
+                index = nullIndex.Dequeue();
+                instances[index] = place;
+                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+                newCall = true;
+            }
+            return index;
         }
         
-
-        return index;
     }
     public void RemoveEffect(int index)
     {
@@ -54,6 +75,11 @@ public class SetGraphicsBuffer : MonoBehaviour
         List<Vector4> points = GetBufferPoints();
         gBuffer.SetData(points);
         visualEffect.SetInt(bufferCount, points.Count);
+        if (newCall)
+        {
+            visualEffect.SendEvent(newEvent);
+            newCall = false;
+        }
     }
     
     void OnDisable()
