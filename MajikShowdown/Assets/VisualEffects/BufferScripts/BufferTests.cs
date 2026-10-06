@@ -17,9 +17,7 @@ public class BufferTests : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            TesteElement(Elements.Fire, points);
-            Invoke("UnspawnTest", 1.5f);
-            Invoke("UnspawnTest2", 5.5f);
+            TesteType(SpellTypes.Explosion,points);
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
@@ -55,32 +53,35 @@ public class BufferTests : MonoBehaviour
         
         BuffersControl.Instance.SpawnEffect(ele,SpellTypes.Projectile, points[0].transform, 1);
         BuffersControl.Instance.SpawnEffect(ele,SpellTypes.Projectile, points[1].transform, 2);
-        i2 =BuffersControl.Instance.SpawnEffect(ele,SpellTypes.Explosion, points[2].transform, 1.515f);
-        i = BuffersControl.Instance.SpawnEffect(ele,SpellTypes.Explosion, points[3].transform, 2.555f);
+        i2 =BuffersControl.Instance.SpawnEffect(ele,SpellTypes.Explosion, points[2].transform, 1.5f, 1.5f);
+        i = BuffersControl.Instance.SpawnEffect(ele,SpellTypes.Explosion, points[3].transform, 2.5f, 5.5f);
         BuffersControl.Instance.SpawnEffect(ele,SpellTypes.Area, points[4].transform, 1);
         BuffersControl.Instance.SpawnEffect(ele,SpellTypes.Area, points[5].transform, 2);
         
     }
     public void TesteType(SpellTypes type, List<GameObject> points)
     {
-
-        BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1);
-        BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1);
-        BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 1);
-        BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1);
-        BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 1);
-        BuffersControl.Instance.SpawnEffect(Elements.Poison,type, points[5].transform, 1);
+        if(type != SpellTypes.Explosion)
+        {
+            BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1);
+            BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1);
+            BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 1);
+            BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1);
+            BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 1);
+            BuffersControl.Instance.SpawnEffect(Elements.Poison,type, points[5].transform, 1);
+        }
+        else
+        {
+            BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1, 1.25f);
+            BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1, 1.5f);
+            BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 1, 2f);
+            BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1, 2.25f);
+            BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 1, 2.5f);
+            BuffersControl.Instance.SpawnEffect(Elements.Poison,type, points[5].transform, 1, 3f);
+        }
+        
         
     }
-    void UnspawnTest()
-    {
-        TestBufferRemove(i2, Elements.Fire, SpellTypes.Explosion);
-    }
-    void UnspawnTest2()
-    {
-        TestBufferRemove(i, Elements.Fire, SpellTypes.Explosion);
-    }
-
     Vector2 testefUNC(float dec)
     {
         float x = Mathf.Floor(dec * 10);
