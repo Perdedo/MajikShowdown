@@ -89,7 +89,15 @@ public class SpellCollider : NetworkBehaviour
         {
             mesh.gameObject.SetActive(true);
         }
-        VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, stats.Size);
+        if(OwnerSpell.coreNode.Type == SpellTypes.Explosion)
+        {
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, stats.Size, stats.Duration);
+        }
+        else
+        {
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, stats.Size);
+        }
+        
         //Debug.Log( VFXIndex);
         //spellCol = GetComponent<Collider>();
 
