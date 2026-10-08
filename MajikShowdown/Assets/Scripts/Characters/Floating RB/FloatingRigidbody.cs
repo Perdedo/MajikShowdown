@@ -239,8 +239,16 @@ public class FloatingRigidbody : NetworkBehaviour
         if (sloping)
         {
             Vector3 acrossSlope = Vector3.Cross(Vector3.up, groundHit.normal);
-
-            SlopeVelocity = Vector3.Cross(acrossSlope, groundHit.normal).normalized*SlopeStrenght;
+            Vector3 slopeDir =Vector3.Cross(acrossSlope, groundHit.normal).normalized;
+            float dot = Vector3.Dot(slopeDir, hDir);
+            Vector3 counterForce = Vector3.zero;
+            float velMag = localVelocity.magnitude;
+            if(dot < 0)
+            {
+                counterForce = -slopeDir * dot * velMag*0.5f;
+            }
+            
+            SlopeVelocity = (slopeDir * SlopeStrenght) + counterForce;
         }
         else
         {
@@ -250,7 +258,7 @@ public class FloatingRigidbody : NetworkBehaviour
             }
             else
             {
-                SlopeVelocity -= Vector3.ClampMagnitude(SlopeVelocity, SlopeStrenght * Time.fixedDeltaTime*3);
+                SlopeVelocity -= Vector3.ClampMagnitude(SlopeVelocity, SlopeStrenght * Time.fixedDeltaTime*4);
             }
         }
         Vector3 velocityChange = worldVelocity - rb.linearVelocity + externalVelocity + SlopeVelocity;
