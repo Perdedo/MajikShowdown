@@ -44,6 +44,7 @@ public class FloatingRigidbody : NetworkBehaviour
         lastHorizontalDirection = transform.forward;
         externalVelocity = Vector3.zero;
         hits = new RaycastHit[raycastNumber + 1];
+        hitConfirm = new bool[raycastNumber + 1];
     }
     protected virtual void FixedUpdate()
     {
@@ -51,6 +52,7 @@ public class FloatingRigidbody : NetworkBehaviour
         UpdateVelocity();
     }
     RaycastHit[] hits;
+    bool[] hitConfirm;
     IMovingGround movingGround;
     protected RaycastHit RaycastGround()
     {
@@ -69,10 +71,10 @@ public class FloatingRigidbody : NetworkBehaviour
                 var v = raypoint - rb.position;
                 v = rot * v;
                 raypoint = rb.position + v;
-                Physics.Raycast(raypoint, Vector3.down, out hits[i], floatingHeight + terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
+                hitConfirm[i] = Physics.Raycast(raypoint, Vector3.down, out hits[i], floatingHeight + terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
                 //Debug.DrawRay(raypoint, Vector3.down * (floatingHeight + terrainBuffer + height / 2), Color.red, Time.fixedDeltaTime);
             }
-            Physics.Raycast(rb.position, Vector3.down, out hits[raycastNumber], floatingHeight + terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
+            hitConfirm[raycastNumber] = Physics.Raycast(rb.position, Vector3.down, out hits[raycastNumber], floatingHeight + terrainBuffer + height / 2, RayMasks, RayTriggerInteraction);
             int shorter = 0;
             for (int i = 1; i < hits.Length; i++)
             {
@@ -106,7 +108,7 @@ public class FloatingRigidbody : NetworkBehaviour
     protected void Float()
     {
         groundHit = RaycastGround();
-        if (Vector3.Angle(groundHit.normal, Vector3.up) > SlopeAngle)
+        if (Vector3.Angle(groundHit.normal, Vector3.up) > SlopeAngle && (!hitConfirm[raycastNumber] || Vector3.Angle(hits[raycastNumber].normal, Vector3.up) > SlopeAngle))
         {
             sloping = true;
         }
