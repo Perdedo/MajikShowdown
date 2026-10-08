@@ -845,14 +845,28 @@ public class Enemy : CrowdCharacter
         //transform.Rotate(Vector3.up, Vector3.SignedAngle(transform.forward, new Vector3(interestDirection.x, 0, interestDirection.z), Vector3.up) * Time.fixedDeltaTime * rotationSpeed);
         if (Time.frameCount % 2 == 0)
         {
-            Vector3 dir = interestDirection;
-            dir.y = 0;
+            if(targetVector.magnitude > TargetStoppingDistance)
+            {
+                Vector3 dir = interestDirection;
+                dir.y = 0;
 
-            if (dir.sqrMagnitude < 0.001f)
-                return;
+                if (dir.sqrMagnitude < 0.001f)
+                    return;
 
-            Quaternion targetRot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime);
+                Quaternion targetRot = Quaternion.LookRotation(dir);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime);
+            }
+            else
+            {
+                Vector3 dir = targetVector;
+                dir.y = 0;
+
+                if (dir.sqrMagnitude < 0.001f)
+                    return;
+
+                Quaternion targetRot = Quaternion.LookRotation(dir);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.fixedDeltaTime);
+            }
         }
 
     }
