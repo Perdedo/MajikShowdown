@@ -6,6 +6,7 @@ using UnityEngine;
 public class FieldCell
 {
     public Vector3 position;
+    public Vector3 Normal;
     public FieldPos fieldPos;
     public float BaseCost = 1;
     public float BestCost = float.MaxValue;
@@ -19,9 +20,10 @@ public class FieldCell
     public List<Enemy.IdWrapper> ContainedEnemies = new List<Enemy.IdWrapper>();
 
     //public float angle;
-    public FieldCell(Vector3 position, Vector2Int gridPosition, int layerIndex, int id/*, float angle*/)
+    public FieldCell(Vector3 position, Vector3 normal, Vector2Int gridPosition, int layerIndex, int id/*, float angle*/)
     {
         this.position = position;
+        this.Normal = normal;
         fieldPos.gridPosition = gridPosition;
         fieldPos.layerIndex = layerIndex;
         this.ID = id;
@@ -31,6 +33,7 @@ public class FieldCell
     public FieldCell(Vector3 position, FieldPos pos, int id/*, float angle*/)
     {
         this.position = position;
+        this.Normal = Vector3.up; // Default normal
         fieldPos = pos;
         this.ID = id;
         ContainedEnemies = new List<Enemy.IdWrapper>();

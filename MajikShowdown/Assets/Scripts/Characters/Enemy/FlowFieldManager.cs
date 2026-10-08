@@ -204,7 +204,7 @@ public class FlowFieldManager : MonoBehaviour
             {
                 foreach (FieldCell cell in v.Value.Layers)
                 {
-                    if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance/10)
+                    if (cell != null && (cell.position - Camera.current.transform.position).sqrMagnitude < maxSqrRenderDistance / 10)
                     {
 
                         Gizmos.color = Color.Lerp(Color.red, Color.green, 1 - (cellJobDatas[cell.ID].bestCost / 100));
@@ -321,6 +321,17 @@ public class FlowFieldManager : MonoBehaviour
             if (neighborCount < 8)
             {
                 baseC = BorderCellWeight;
+            }
+            else
+            {
+                foreach (FieldCell.NeighborContext n in flowField.allCells[i].Neighbors)
+                {
+                    if (n.context == FieldCell.NeighborContext.Context.Lower || n.context == FieldCell.NeighborContext.Context.ABitLower)
+                    {
+                        baseC = BorderCellWeight;
+                        break;
+                    }
+                }
             }
             cellJobDatas[i] = new CellJobData()
             {
@@ -504,7 +515,7 @@ public struct GenerateIntegrationJob : IJob
                 {
                     transitionCost *= diagonalWeight;
                 }
-                if ( NeighborContext[i] == FieldCell.NeighborContext.Context.ABitLower)
+                if (NeighborContext[i] == FieldCell.NeighborContext.Context.ABitLower)
                 {
 
                     float yDiff = math.abs(neighborCell.Position.y - currentCell.Position.y);
@@ -577,7 +588,7 @@ public struct GenerateDirectionJob : IJobParallelFor
             {
                 mult *= diagonalWeight;
             }
-            if ( neighborContext == FieldCell.NeighborContext.Context.Jumpable)
+            if (neighborContext == FieldCell.NeighborContext.Context.Jumpable)
             {
 
                 float yDiff = math.abs(neighborCell.Position.y - c.Position.y);

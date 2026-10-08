@@ -60,7 +60,13 @@ public class FlowField
                             //if (Physics.OverlapCapsule(hit.position + Vector3.up * ((manager.ObstructionHeight / 2) + 0.1f), hit.position + Vector3.up * manager.ObstructionHeight, cellSize / 3, manager.ObstructionLayer).Length == 0)
                             if (!Physics.CheckCapsule(hit.position + Vector3.up * ((manager.ObstructionHeight / 2) + 0.1f), hit.position + Vector3.up * manager.ObstructionHeight, cellSize / 3, manager.ObstructionLayer))
                             {
-                                FieldCell newCell = new FieldCell(hit.position, gridPos, column.Layers.Count, allCells.Count);
+                                RaycastHit hitInfo;
+                                if (!Physics.Raycast(hit.position + Vector3.up * 0.1f, Vector3.down, out hitInfo, 1f))
+                                {
+                                    Debug.LogError("failed to find ground normal for cell at position: " + hit.position);
+                                }
+                                //Debug.Log(hitInfo.normal);
+                                FieldCell newCell = new FieldCell(hit.position, hitInfo.normal, gridPos, column.Layers.Count, allCells.Count);
                                 column.Layers.Add(newCell);
                                 allCells.Add(newCell);
                             }
@@ -101,18 +107,18 @@ public class FlowField
         {
             field.Add(ffd.key, ffd.column);
         }
-        FlowFieldManager.instance.CellCollumCount = new Unity.Collections.NativeArray<int>(FlowFieldManager.instance.width*FlowFieldManager.instance.depth, Unity.Collections.Allocator.Persistent);
-        FlowFieldManager.instance.CellCollumFirst = new Unity.Collections.NativeArray<int>(FlowFieldManager.instance.width*FlowFieldManager.instance.depth, Unity.Collections.Allocator.Persistent);
+        FlowFieldManager.instance.CellCollumCount = new Unity.Collections.NativeArray<int>(FlowFieldManager.instance.width * FlowFieldManager.instance.depth, Unity.Collections.Allocator.Persistent);
+        FlowFieldManager.instance.CellCollumFirst = new Unity.Collections.NativeArray<int>(FlowFieldManager.instance.width * FlowFieldManager.instance.depth, Unity.Collections.Allocator.Persistent);
         foreach (var v in field)
         {
             FlowFieldManager.instance.CellCollumCount[v.Value.ID] = v.Value.Layers.Count;
-            for(int i = 0; i<v.Value.Layers.Count; i++)
+            for (int i = 0; i < v.Value.Layers.Count; i++)
             {
                 FieldCell cell = v.Value.Layers[i];
                 cell.ContainedEnemies.Clear();
                 cell.Neighbors = GetNeighbors(cell);
                 cell.closeToObstacle = CheckForObstacles(cell);
-                if(i == 0)
+                if (i == 0)
                 {
                     FlowFieldManager.instance.CellCollumFirst[v.Value.ID] = allCells.Count;
                 }
@@ -133,10 +139,10 @@ public class FlowField
         FlowFieldManager.instance.CellNeighborDir = new Unity.Collections.NativeArray<float3>(neighborsID.Count, Unity.Collections.Allocator.Persistent);
         FlowFieldManager.instance.CellNeighborDir.CopyFrom(neighborsDir.ToArray());
         FlowFieldManager.instance.cellNeighborDiagonal = new Unity.Collections.NativeArray<byte>(neighborsID.Count, Unity.Collections.Allocator.Persistent);
-        for(int i = 0; i< neighborsDir.Count; i++)
+        for (int i = 0; i < neighborsDir.Count; i++)
         {
             Vector3 dir = neighborsDir[i];
-            if(math.abs(dir.x) > 0 && math.abs(dir.z) > 0)
+            if (math.abs(dir.x) > 0 && math.abs(dir.z) > 0)
             {
                 FlowFieldManager.instance.cellNeighborDiagonal[i] = 1;
             }
@@ -216,56 +222,73 @@ public class FlowField
                     {
                         continue;
                     }
-                    if (c.position.y < cell.position.y + maxStepOffset) //checa se o vizinho é menor que o step Offset
+                    Vector3 Cpos = c.position;
+                    Vector3 Cellpos = cell.position;
+                    //Debug.Log(Vector3.Dot(c.Normal, cell.Normal));
+                    float dotC = Vector3.Dot(c.Normal, Vector3.up);
+                    float dotCell = Vector3.Dot(cell.Normal, Vector3.up);
+                    if ((dotC > 0.7f && dotC < 0.9f) || (dotCell > 0.7f && dotCell < 0.9f))
                     {
-                        if (Mathf.Abs(c.position.y - cell.position.y) < Mathf.Abs(closestY - cell.position.y)) //checa se o vizinho é o mais perto no y na sua coluna
+                        //Debug.Log("Neighbor Cell: " + c.position + " Normal: " + c.Normal + " Cell: " + cell.position + " Normal: " + cell.Normal);
+                        //Debug.DrawLine(c.position, cell.position, Color.green, float.MaxValue);
+                        Vector3 dir1 = (c.position - cell.position).normalized;
+                        Vector3 dir2 = (cell.position - c.position).normalized;
+                        Cpos = c.position + (dir2 * (cellSize / 2));
+                        Cellpos = cell.position + (dir1 * (cellSize / 2));
+                        //heightDiff = Mathf.Abs(Cpos.y - Cellpos.y);
+                    }
+                    if (Cpos.y < Cellpos.y + maxStepOffset) //checa se o vizinho é menor que o step Offset
+                    {
+                        if (Mathf.Abs(Cpos.y - Cellpos.y) < Mathf.Abs(closestY - Cellpos.y)) //checa se o vizinho é o mais perto no y na sua coluna
                         {
-                            closestY = c.position.y;
+                            closestY = Cpos.y;
                         }
-                        if (c.position.y >= closestY) //checa se o vizinho é mais alto que o y mais proximo em sua coluna
+                        if (Cpos.y >= closestY) //checa se o vizinho é mais alto que o y mais proximo em sua coluna
                         {
-                            if (c.position.y < cell.position.y - maxStepOffset)
+                            //float heightDiff = Mathf.Abs(Cpos.y - Cellpos.y);
+
+                            if (Cpos.y < Cellpos.y - maxStepOffset)
                             {
-                                if (c.position.y < cell.position.y - manager.MaxJumpHeight)
+                                if (Cpos.y < Cellpos.y - manager.MaxJumpHeight)
                                 {
                                     Vector3 Ndir = CellDistance(cell, c).normalized;
-                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.Lower,Ndir);
+                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.Lower, Ndir);
                                     neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.Lower));
                                 }
                                 else
                                 {
                                     Vector3 Ndir = CellDistance(cell, c).normalized;
-                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.ABitLower,Ndir);
+                                    AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.ABitLower, Ndir);
                                     neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.ABitLower));
                                 }
                             }
                             else
                             {
                                 Vector3 Ndir = CellDistance(cell, c).normalized;
-                                AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.None,Ndir);
+                                AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.None, Ndir);
                                 neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.None));
                             }
                         }
                     }
                     else
                     {
-                        float yDiff = c.position.y - cell.position.y;
+                        float yDiff = Cpos.y - Cellpos.y;
                         FieldCell AboveCell = GetCell(pos, cell.fieldPos.layerIndex + 1);
                         bool isObstructed = Physics.Raycast(cell.position + Vector3.up * 0.1f, Vector3.up, yDiff + 0.2f, manager.ObstructionLayer) || (AboveCell != null && Mathf.Abs(AboveCell.position.y - c.position.y) < yDiff);
                         if (isObstructed)
                         {
                             continue;
                         }
-                        if (c.position.y < cell.position.y + manager.MaxJumpHeight)
+                        if (Cpos.y < Cellpos.y + manager.MaxJumpHeight)
                         {
                             Vector3 Ndir = CellDistance(cell, c).normalized;
-                            AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Jumpable,Ndir);
+                            AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.Jumpable, Ndir);
                             neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.Jumpable));
                         }
                         else
                         {
                             Vector3 Ndir = CellDistance(cell, c).normalized;
-                            AddNeighborID(cell, c.ID, neighbors.Count,FieldCell.NeighborContext.Context.Upper,Ndir);
+                            AddNeighborID(cell, c.ID, neighbors.Count, FieldCell.NeighborContext.Context.Upper, Ndir);
                             neighbors.Add(new FieldCell.NeighborContext(c, Ndir, FieldCell.NeighborContext.Context.Upper));
                         }
                     }
