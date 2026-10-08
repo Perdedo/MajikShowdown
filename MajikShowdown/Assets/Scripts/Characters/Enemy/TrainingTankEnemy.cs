@@ -27,6 +27,9 @@ public class TrainingTankEnemy : TankEnemy
         detectRadius = math.max((int)math.ceil(DetectionRadius / FlowFieldManager.instance.CellSize), 1);
         //RigidbodySetting();
         canBeKnocked = true;
+        onAttackCooldown = false;
+        attacked = true;
+        jumpOnCooldown = false;
         //CheckFieldLocation();
     }
     public override void EnemyUpdate()

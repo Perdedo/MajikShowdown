@@ -8,7 +8,7 @@ public class Explosion : NetworkBehaviour
     public bool network = true;
     private void Start()
     {
-        if(!isServer)
+        if(!isServer && network)
         {
             return;
         }
@@ -19,7 +19,7 @@ public class Explosion : NetworkBehaviour
 
     private void Update()
     {
-        if(!isServer)
+        if(!isServer && network)
         {
             return;
         }
