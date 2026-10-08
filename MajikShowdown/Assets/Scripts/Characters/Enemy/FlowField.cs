@@ -231,8 +231,14 @@ public class FlowField
                     {
                         //Debug.Log("Neighbor Cell: " + c.position + " Normal: " + c.Normal + " Cell: " + cell.position + " Normal: " + cell.Normal);
                         //Debug.DrawLine(c.position, cell.position, Color.green, float.MaxValue);
-                        Vector3 dir1 = (c.position - cell.position).normalized;
-                        Vector3 dir2 = (cell.position - c.position).normalized;
+                        Vector3 dir1 = c.position - cell.position;
+                        Vector3 dir2 = cell.position - c.position;
+                        dir1.y = 0;
+                        dir2.y = 0;
+                        dir1.Normalize();
+                        dir2.Normalize();
+                        dir1 = Vector3.ProjectOnPlane(dir1, cell.Normal);
+                        dir2 = Vector3.ProjectOnPlane(dir2, c.Normal);
                         Cpos = c.position + (dir2 * (cellSize / 2));
                         Cellpos = cell.position + (dir1 * (cellSize / 2));
                         //heightDiff = Mathf.Abs(Cpos.y - Cellpos.y);
