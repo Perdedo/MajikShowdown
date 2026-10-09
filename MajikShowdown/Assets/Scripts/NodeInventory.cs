@@ -148,15 +148,15 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         ApplyFilter();
         if(!isServer && network)
         {
-            /*if(NetworkClient.ready)
+            if(NetworkClient.ready && commander.drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder))
             {
-                CMDReceive(commander.drags.IndexOf(node));
+                CMDReceive(node.acquisitionOrder);
             }
             else
             {
                 StartCoroutine(WaitReceive(node));
-            }*/
-            StartCoroutine(WaitReceive(node));
+            }
+           //StartCoroutine(WaitReceive(node));
         }
     }
 
@@ -309,7 +309,14 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         if (!isServer && network)
         {
-            StartCoroutine(WaitAddNodeToInventory(node));
+            if (NetworkClient.ready && commander.interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder))
+            {
+                CMDAddNodeToInventory(node.acquisitionOrder);
+            }
+            else
+            {
+                StartCoroutine(WaitAddNodeToInventory(node));
+            }
         }
     }
 
@@ -341,15 +348,15 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         {
             if(!isServer && network)
             {
-                /*if(NetworkClient.ready)
+                if(NetworkClient.ready && commander.interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder))
                 {
-                    CMDRemoveNodeFromInventory(activeNodes.IndexOf(node));
+                    CMDRemoveNodeFromInventory(node.acquisitionOrder);
                 }
                 else
                 {
                     StartCoroutine(WaitRemoveNodeFromInventory(node));
-                }*/
-                StartCoroutine(WaitRemoveNodeFromInventory(node));
+                }
+                //StartCoroutine(WaitRemoveNodeFromInventory(node));
             }
             activeNodes.Remove(node);
         }
@@ -458,7 +465,14 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         if (!isServer && network)
         {
-            StartCoroutine(WaitSetNodeInUse(node, inUse));
+            if (NetworkClient.ready && commander.drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder))
+            {
+                CMDSetNodeInUse(node.acquisitionOrder, inUse);
+            }
+            else
+            {
+                StartCoroutine(WaitSetNodeInUse(node, inUse));
+            }
         }
     }
 
@@ -513,15 +527,15 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         ApplyFilter();
         if(!isServer && network)
         {
-            /*if(NetworkClient.ready)
+            if(NetworkClient.ready && commander.interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder))
             {
-                CMDInsertNodeAt(commander.interfaces.IndexOf(node), index);
+                CMDInsertNodeAt(node.acquisitionOrder, index);
             }
             else
             {
                 StartCoroutine(WaitInsertNodeAt(node,index));
-            }*/
-            StartCoroutine(WaitInsertNodeAt(node,index));
+            }
+            //StartCoroutine(WaitInsertNodeAt(node,index));
         }
     }
     IEnumerator WaitInsertNodeAt(SpellNodeInterface node, int index)
