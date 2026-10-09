@@ -390,7 +390,7 @@ public class UICommandController : NetworkBehaviour
     {
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex) && hex.grid.hexGridNodes.Exists(h => h.index == hex.index));
         yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDAddNodeToGrid(hex.index, node.acquisitionOrder, grid.instanceIndex);
         //CMDAddNodeToGrid(grid.hexGridNodes.IndexOf(hex), node.acquisitionOrder, grids.IndexOf(grid));
     }
@@ -819,7 +819,7 @@ public class UICommandController : NetworkBehaviour
         //yield return new WaitUntil(() => drags.Contains(node));
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == hex.grid.instanceIndex) && hex.grid.hexGridNodes.Exists(h => h.index == hex.index));
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDHexReceive(node.acquisitionOrder, hex.index, hex.grid.instanceIndex);
         //CMDHexReceive(drags.IndexOf(node), hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
