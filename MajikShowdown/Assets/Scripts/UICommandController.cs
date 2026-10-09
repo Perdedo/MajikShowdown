@@ -30,7 +30,7 @@ public class UICommandController : NetworkBehaviour
     IEnumerator WaitHexOnBeginDrag(DraggableNode drag)
     {
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDOnBeginDrag(drag.acquisitionOrder);
     }
     [Command]
@@ -83,7 +83,7 @@ public class UICommandController : NetworkBehaviour
     IEnumerator WaitHexOnEndDrag(DraggableNode drag)
     {
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         yield return new WaitUntil(() => drag.canProcessDrop);
         CMDOnEndDrag(drag.acquisitionOrder);
     }
@@ -145,7 +145,7 @@ public class UICommandController : NetworkBehaviour
     {
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         yield return new WaitUntil(() => drag.canProcessOrigin);
         CMDSetDragOriginZoneAsHex(drag.acquisitionOrder, grid.instanceIndex, hexInd);
     }
@@ -171,7 +171,7 @@ public class UICommandController : NetworkBehaviour
     IEnumerator WaitSetDragOriginZoneAsInventory(DraggableNode drag, Player player, int invInd)
     {
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         yield return new WaitUntil(() => drag.canProcessOrigin);
         CMDSetDragOriginZoneAsInventory(drag.acquisitionOrder, GameManager.Instance.Players.IndexOf(player), invInd);
     }
@@ -198,7 +198,7 @@ public class UICommandController : NetworkBehaviour
     {
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDSetDragPendingDropZoneAsHex(drag.acquisitionOrder, grid.instanceIndex, hexInd);
     }
 
@@ -224,7 +224,7 @@ public class UICommandController : NetworkBehaviour
     IEnumerator WaitSetDragPendingDropZoneAsInventory(DraggableNode drag, Player player, int invInd)
     {
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDSetDragPendingDropZoneAsInventory(drag.acquisitionOrder, GameManager.Instance.Players.IndexOf(player), invInd);
     }
 
@@ -255,7 +255,7 @@ public class UICommandController : NetworkBehaviour
     IEnumerator WaitSetDragPendingDropZoneAsNull(DraggableNode drag)
     {
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == drag.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDSetDragPendingDropZoneAsNull(drag.acquisitionOrder);
     }
 
@@ -286,7 +286,7 @@ public class UICommandController : NetworkBehaviour
     {
         //yield return new WaitUntil(() => grids.Contains(grid));
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDConfigurateSpell(grid.instanceIndex);
         //CMDConfigurateSpell(grids.IndexOf(grid));
     }
@@ -339,7 +339,7 @@ public class UICommandController : NetworkBehaviour
     IEnumerator WaitReturnAllNodesToInventory(HexGrid grid)
     {
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == grid.instanceIndex));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDReturnAllNodesToInventory(grid.instanceIndex);
     }
 
@@ -475,7 +475,7 @@ public class UICommandController : NetworkBehaviour
     {
         //yield return new WaitUntil(() => interfaces.Contains(sni));
         yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == sni.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDUpdateSNIConnected(sni.acquisitionOrder);
     }
 
@@ -553,7 +553,7 @@ public class UICommandController : NetworkBehaviour
     {
         //yield return new WaitUntil(() => interfaces.Contains(sni));
         yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == sni.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDBreakSNIConnection(sni.acquisitionOrder, Index, RemoveNeighbor);
         //CMDBreakSNIConnection(interfaces.IndexOf(sni), Index);
     }
@@ -625,7 +625,7 @@ public class UICommandController : NetworkBehaviour
     {
         //yield return new WaitUntil(() => interfaces.Contains(sni));
         yield return new WaitUntil(() => interfaces.Exists(i => i.acquisitionOrder == sni.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDSetUsedSNI(sni.acquisitionOrder, used);
         //CMDSetUsedSNI(interfaces.IndexOf(sni), used);
     }
@@ -659,7 +659,7 @@ public class UICommandController : NetworkBehaviour
     {
         //yield return new WaitUntil(() => cards.Contains(scui));
         yield return new WaitUntil(() => cards.Exists(c => c.instanceIndex == scui.instanceIndex));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDDeleteSCUI(scui.instanceIndex);
         //CMDDeleteSCUI(cards.IndexOf(scui));
     }
@@ -709,7 +709,7 @@ public class UICommandController : NetworkBehaviour
     {
         //yield return new WaitUntil(() => cards.Contains(scui));
         yield return new WaitUntil(() => cards.Exists(c => c.instanceIndex == scui.instanceIndex));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDSelectSCUI(scui.instanceIndex);
         //CMDSelectSCUI(cards.IndexOf(scui));
     }
@@ -741,7 +741,7 @@ public class UICommandController : NetworkBehaviour
     {
         //yield return new WaitUntil(() => cards.Contains(scui));
         yield return new WaitUntil(() => cards.Exists(c => c.instanceIndex == scui.instanceIndex));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDDeselectSCUI(scui.instanceIndex);
         //CMDSelectSCUI(cards.IndexOf(scui));
     }
@@ -781,7 +781,7 @@ public class UICommandController : NetworkBehaviour
     {
         //yield return new WaitUntil(() => grids.Contains(hex.grid));
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == hex.grid.instanceIndex) && hex.grid.hexGridNodes.Exists(h => h.index == hex.index));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         CMDInitializeHex(hex.index, hex.grid.instanceIndex);
         //CMDInitializeHex(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid));
     }
@@ -861,7 +861,7 @@ public class UICommandController : NetworkBehaviour
         //yield return new WaitUntil(() => drags.Contains(node));
         yield return new WaitUntil(() => grids.Exists(g => g.instanceIndex == hex.grid.instanceIndex) && hex.grid.hexGridNodes.Exists(h => h.index == hex.index));
         yield return new WaitUntil(() => drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder));
-        yield return new WaitUntil(() => NetworkClient.ready);
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         //CMDHexRelease(hex.grid.hexGridNodes.IndexOf(hex), grids.IndexOf(hex.grid), drags.IndexOf(node));
         CMDHexRelease(hex.index, hex.grid.instanceIndex, node.acquisitionOrder);
     }
