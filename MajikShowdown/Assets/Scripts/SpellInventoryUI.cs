@@ -160,10 +160,8 @@ public class SpellInventoryUI : NetworkBehaviour
     [Command]
     public void CMDCreateStartingSpells()
     {
-        Debug.Log("A");
         foreach (SavedSpellAsset ssa in caster.startingSpells)
         {
-            Debug.Log("B");
             CreateStartingSpell(ssa);
         }
     }
