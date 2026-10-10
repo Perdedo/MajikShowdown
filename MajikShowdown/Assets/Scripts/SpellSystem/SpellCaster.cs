@@ -33,6 +33,8 @@ public class SpellCaster : NetworkBehaviour
     [HideInInspector] public bool canCast = true;
     Timer castPoseTimer = new Timer(false);
 
+    public bool startingSpellsReady = false;
+
     [Header("Network")]
     public bool network = true;
 

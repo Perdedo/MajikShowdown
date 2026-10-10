@@ -11,6 +11,8 @@ using static NodeConection;
 
 public class UICommandController : NetworkBehaviour
 {
+    public SpellCaster caster;
+
     public int gridIndexRef = 0;
     public int cardIndexRef = 0;
     public List<HexGrid> grids = new List<HexGrid>();
@@ -22,7 +24,7 @@ public class UICommandController : NetworkBehaviour
     public void HexOnBeginDrag(DraggableNode drag)
     {
         if (!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             StartCoroutine(WaitHexOnBeginDrag(drag));
         }
@@ -75,7 +77,7 @@ public class UICommandController : NetworkBehaviour
     public void HexOnEndDrag(DraggableNode drag)
     {
         if (!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             StartCoroutine(WaitHexOnEndDrag(drag));
         }
@@ -135,7 +137,7 @@ public class UICommandController : NetworkBehaviour
     public void SetDragOriginZoneAsHex(DraggableNode drag, HexGridNode hex)
     {
         if(!network) return;
-        if(isLocalPlayer && !isServer)
+        if(isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             StartCoroutine(WaitSetDragOriginZoneAsHex(drag, hex.grid, hex.index));
         }
@@ -162,7 +164,7 @@ public class UICommandController : NetworkBehaviour
     public void SetDragOriginZoneAsInventory(DraggableNode drag, NodeInventory inv)
     {
         if(!network) return;
-        if(isLocalPlayer && !isServer)
+        if(isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             StartCoroutine(WaitSetDragOriginZoneAsInventory(drag, inv.caster.player, inv.caster.inventories.IndexOf(inv)));
         }
@@ -188,7 +190,7 @@ public class UICommandController : NetworkBehaviour
     public void SetDragPendingDropZoneAsHex(DraggableNode drag, HexGridNode hex)
     {
         if (!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             StartCoroutine(WaitSetDragPendingDropZoneAsHex(drag, hex.grid, hex.index));
         }
@@ -215,7 +217,7 @@ public class UICommandController : NetworkBehaviour
     public void SetDragPendingDropZoneAsInventory(DraggableNode drag, NodeInventory inv)
     {
         if (!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             StartCoroutine(WaitSetDragPendingDropZoneAsInventory(drag, inv.caster.player, inv.caster.inventories.IndexOf(inv)));
         }
@@ -246,7 +248,7 @@ public class UICommandController : NetworkBehaviour
     public void SetDragPendingDropZoneAsNull(DraggableNode drag)
     {
         if (!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             StartCoroutine(WaitSetDragPendingDropZoneAsNull(drag));
         }
@@ -269,7 +271,7 @@ public class UICommandController : NetworkBehaviour
     public void ConfigurateSpell(HexGrid grid)
     {
         if(!network) return;
-        if(isLocalPlayer && !isServer)
+        if(isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             /*if(NetworkClient.ready)
             {
@@ -322,7 +324,7 @@ public class UICommandController : NetworkBehaviour
     public void ReturnAllNodesToInventory(HexGrid grid)
     {
         if(!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             /*if(NetworkClient.ready)
             {
@@ -373,7 +375,7 @@ public class UICommandController : NetworkBehaviour
     public void AddNodeToGrid(HexGridNode hex, SpellNodeInterface node, HexGrid grid)
     {
         if(!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             /*if (NetworkClient.ready)
             {
@@ -457,7 +459,7 @@ public class UICommandController : NetworkBehaviour
 
     public void UpdateSNIConnected(SpellNodeInterface sni)
     {
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             if(!network) return;
             /*if (NetworkClient.ready)
@@ -543,7 +545,7 @@ public class UICommandController : NetworkBehaviour
 
     public void BreakSNIConnection(SpellNodeInterface sni, int Index, bool RemoveNeighbor)
     {
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             if (!network) return;
             StartCoroutine(WaitBreakSNIConnection(sni, Index, RemoveNeighbor));
@@ -608,7 +610,7 @@ public class UICommandController : NetworkBehaviour
     public void SetUsedSNI(SpellNodeInterface sni, bool used)
     {
         if(!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             /*if (NetworkClient.ready)
             {
@@ -642,7 +644,7 @@ public class UICommandController : NetworkBehaviour
     public void DeleteSCUI(SpellCardUI scui)
     {
         if(!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             /*if (NetworkClient.ready)
             {
@@ -692,7 +694,7 @@ public class UICommandController : NetworkBehaviour
     public void SelectSCUI(SpellCardUI scui)
     {
         if(!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             /*if (NetworkClient.ready)
             {
@@ -732,7 +734,7 @@ public class UICommandController : NetworkBehaviour
     public void DeselectSCUI(SpellCardUI scui)
     {
         if(!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             StartCoroutine(WaitDeselectSCUI(scui));
         }
@@ -764,7 +766,7 @@ public class UICommandController : NetworkBehaviour
     public void InitializeHex(HexGridNode hex)
     {
         if(!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             /*if (NetworkClient.ready)
             {
@@ -799,7 +801,7 @@ public class UICommandController : NetworkBehaviour
     public void HexReceive(DraggableNode node, HexGridNode hex)
     {
         if(!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             /*if (NetworkClient.ready)
             {
@@ -841,7 +843,7 @@ public class UICommandController : NetworkBehaviour
     public void HexRelease(HexGridNode hex, DraggableNode node)
     {
         if(!network) return;
-        if (isLocalPlayer && !isServer)
+        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
         {
             /*if (NetworkClient.ready)
             {

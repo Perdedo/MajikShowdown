@@ -1,7 +1,6 @@
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class SpellInventoryUI : NetworkBehaviour
@@ -28,6 +27,7 @@ public class SpellInventoryUI : NetworkBehaviour
         {
             CreateStartingSpell(ssa);
         }
+        caster.startingSpellsReady = true;
         if (!isServer && network)
         {
             if (NetworkClient.ready)
@@ -160,8 +160,10 @@ public class SpellInventoryUI : NetworkBehaviour
     [Command]
     public void CMDCreateStartingSpells()
     {
+        Debug.Log("A");
         foreach (SavedSpellAsset ssa in caster.startingSpells)
         {
+            Debug.Log("B");
             CreateStartingSpell(ssa);
         }
     }

@@ -146,7 +146,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         var spellNode = node.GetComponent<SpellNodeInterface>();
         if (spellNode != null) AddNodeToInventory(spellNode);
         ApplyFilter();
-        if(!isServer && network)
+        if(!isServer && network && caster.startingSpellsReady)
         {
             if(NetworkClient.ready && commander.drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder))
             {
@@ -206,15 +206,15 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         }
         SpellNodeInterface instance = Instantiate(caster.genericNodePrefab, transform);
         instance.inventory = this;
-        instance.Setup(nodeData);
         instance.acquisitionOrder = activeNodes.Count;
         instance.linkedDescription = nodeDescription;
         nodeMap[nodeData] = instance;
         activeNodes.Add(instance);
         commander.interfaces.Add(instance);
+        instance.Setup(nodeData);
         DraggableNode dragInst = instance.GetComponent<DraggableNode>();
-        dragInst.Initialize();
         commander.drags.Add(dragInst);
+        dragInst.Initialize();
         RectTransform rect = instance.GetComponent<RectTransform>();
         rect.localScale = Vector3.one;
         rect.localRotation = Quaternion.identity;
@@ -346,7 +346,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     {
         if (activeNodes.Contains(node))
         {
-            if(!isServer && network)
+            if(!isServer && network && caster.startingSpellsReady)
             {
                 if(NetworkClient.ready && commander.interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder))
                 {
@@ -525,7 +525,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         index = Mathf.Clamp(index, 0, activeNodes.Count);
         activeNodes.Insert(index, node);
         ApplyFilter();
-        if(!isServer && network)
+        if(!isServer && network && caster.startingSpellsReady)
         {
             if(NetworkClient.ready && commander.interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder))
             {
