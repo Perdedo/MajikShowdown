@@ -70,7 +70,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         hideUsedToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         reverseSortToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         ApplyFilter();
-        if(!isServer && network)
+        if(!isServer && network && caster.startingSpellsReady)
         {
             if(NetworkClient.ready)
             {
@@ -307,7 +307,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         node.SetInventoryVisual();
 
-        if (!isServer && network)
+        if (!isServer && network && caster.startingSpellsReady)
         {
             if (NetworkClient.ready && commander.interfaces.Exists(i => i.acquisitionOrder == node.acquisitionOrder))
             {
@@ -384,7 +384,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         currentFilter.sortMode = (NodeSortMode)sortDropdown.value;
         currentFilter.reverseSort = reverseSortToggle.isOn;
         ApplyFilter();
-        if (!isServer && network)
+        if (!isServer && network && caster.startingSpellsReady)
         {
             if (NetworkClient.ready) CMDOnFilterChanged(_);
             else StartCoroutine(WaitOnFilterChanged(_));
@@ -463,7 +463,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         ApplyFilter();
 
-        if (!isServer && network)
+        if (!isServer && network && caster.startingSpellsReady)
         {
             if (NetworkClient.ready && commander.drags.Exists(d => d.acquisitionOrder == node.acquisitionOrder))
             {
