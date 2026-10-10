@@ -789,12 +789,10 @@ public class UICommandController : NetworkBehaviour
     [Command]
     public void CMDInitializeHex(int hexInd, int gridInd)
     {
-        Debug.LogWarning(grids.Find(g => g.instanceIndex == gridInd));
-        Debug.LogWarning(grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd));
         HexGridNode hex = grids.Find(g => g.instanceIndex == gridInd).hexGridNodes.Find(h => h.index == hexInd);
         //HexGridNode hex = grids[gridInd].hexGridNodes[hexInd];
-        hex.rect = GetComponent<RectTransform>();
-        hex.button = GetComponent<Button>();
+        hex.rect = hex.GetComponent<RectTransform>();
+        hex.button = hex.GetComponent<Button>();
         hex.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
     }
 

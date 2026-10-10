@@ -3199,6 +3199,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2693384560482220527}
   - component: {fileID: 3665451783351053803}
+  - component: {fileID: 4366072604718926134}
   m_Layer: 0
   m_Name: Player and camera
   m_TagString: Untagged
@@ -3243,6 +3244,28 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &4366072604718926134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 398792914025255036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d589fe0bf85424745bfbad193bbed338, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICommandController
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  gridIndexRef: 0
+  cardIndexRef: 0
+  grids: []
+  cards: []
+  drags: []
+  interfaces: []
+  network: 1
 --- !u!1 &405567932725066036
 GameObject:
   m_ObjectHideFlags: 0
@@ -24339,7 +24362,7 @@ MonoBehaviour:
   activeNodes: []
   contentSizeFitter: {fileID: 6440072283187109600}
   layoutGroup: {fileID: 6513425668837857634}
-  commander: {fileID: 338260379660625902}
+  commander: {fileID: 4366072604718926134}
   nodeDescription: {fileID: 8741527678291227972}
   typeDropdown: {fileID: 1978380933906961581}
   rarityDropdown: {fileID: 5922806681377824650}
@@ -25998,7 +26021,7 @@ MonoBehaviour:
   activeNodes: []
   contentSizeFitter: {fileID: 7356081987337762196}
   layoutGroup: {fileID: 7602644464807898147}
-  commander: {fileID: 338260379660625902}
+  commander: {fileID: 4366072604718926134}
   nodeDescription: {fileID: 6723739018361911861}
   typeDropdown: {fileID: 1283144666194481771}
   rarityDropdown: {fileID: 4494450431617405717}
@@ -40394,7 +40417,7 @@ MonoBehaviour:
   equippedSpells: []
   inventory: {fileID: 6150298183587537734}
   CastingPoint: {fileID: 7322676972798157240}
-  commander: {fileID: 338260379660625902}
+  commander: {fileID: 4366072604718926134}
   EnemyLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -40648,7 +40671,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000990563}
+  m_AnchoredPosition: {x: 0, y: 0.00002400688}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &4602415906032893341
@@ -47056,7 +47079,6 @@ GameObject:
   - component: {fileID: 4900418447913272582}
   - component: {fileID: 2826145939144236601}
   - component: {fileID: 6932264981861579884}
-  - component: {fileID: 338260379660625902}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -47339,28 +47361,6 @@ MonoBehaviour:
   crosshair: {fileID: 8676178650859047072}
   inGame: 0
   popupManager: {fileID: 2341417383682408203}
-  network: 1
---- !u!114 &338260379660625902
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6189749992182630067}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d589fe0bf85424745bfbad193bbed338, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UICommandController
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  gridIndexRef: 0
-  cardIndexRef: 0
-  grids: []
-  cards: []
-  drags: []
-  interfaces: []
   network: 1
 --- !u!1 &6198566908362020940
 GameObject:
