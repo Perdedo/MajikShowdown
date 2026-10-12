@@ -17,7 +17,6 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerUI : NetworkBehaviour
 {
-
     [Header("Shop")]
     [SerializeField] private GameObject shopPanel;
     public bool IsShopOpen => shopPanel != null && shopPanel.activeSelf;
@@ -624,7 +623,7 @@ public class PlayerUI : NetworkBehaviour
         {
             equipSlotTexts[i].text = caster.IsSlotValid(i)
                 ? caster.equippedSpells[i].spellName
-                : "Spell Slot " + (i + 1);
+                : "Slot " + (i + 1);
         }
     }
 
@@ -674,21 +673,18 @@ public class PlayerUI : NetworkBehaviour
 
     public void CloseEditSpellHUD()
     {
-        if (!isLocalPlayer && network)
-        {
-            return;
-        }
+        if (!isLocalPlayer && network) return;
         CloseCustomizationPanel();
+        if (selectedNode != null)
+        {
+            selectedNode.SetSelectedVisual(false);
+            selectedNode = null;
+        }
         editSpellPanel.gameObject.SetActive(false);
         spellNameInput.onValueChanged.RemoveAllListeners();
         spellNodeDescription.HideAll();
-
-        if (activeSpell != null)
-            activeSpell.OnSpellUpdated -= RefreshSpellInfo;
-
+        if (activeSpell != null) activeSpell.OnSpellUpdated -= RefreshSpellInfo;
         activeSpell = null;
-        selectedNode = null;
-
         createSpellPanel.gameObject.SetActive(true);
         UpdateAllEquippedSlots();
     }
@@ -720,7 +716,7 @@ public class PlayerUI : NetworkBehaviour
             if (caster.equippedSpells[i] == spell)
             {
                 caster.equippedSpells[i] = null;
-                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                equipSlotTexts[i].text = "Slot " + (i + 1);
                 UpdateEquipSlotIcons();
             }
         }
@@ -750,7 +746,7 @@ public class PlayerUI : NetworkBehaviour
             if (caster.equippedSpells[i] == spellToEquip)
             {
                 caster.equippedSpells[i] = null;
-                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                equipSlotTexts[i].text = "Slot " + (i + 1);
             }
         }
 
@@ -784,7 +780,7 @@ public class PlayerUI : NetworkBehaviour
             if (caster.equippedSpells[i] == spellToEquip)
             {
                 caster.equippedSpells[i] = null;
-                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                equipSlotTexts[i].text = "Slot " + (i + 1);
             }
         }
 

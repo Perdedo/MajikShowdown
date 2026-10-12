@@ -335,19 +335,19 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void CompleteGridToInventoryReturn(NodeInventory targetInventory, SpellNodeInterface nodeInterface, SpellNodeInterface cloneInterface, DraggableNode savedClone, int cloneIndex)
     {
+        if (nodeInterface != null && nodeInterface.Node is SpellTrigger trigger)
+        {
+            trigger.TriggeredSpell = null;
+            trigger.Cooldown = 0;
+            nodeInterface.linkedDescription?.RefreshTriggerDescription(trigger);
+        }
+
         targetInventory.RemoveNodeFromInventory(cloneInterface);
         savedClone.gameObject.SetActive(false);
         Destroy(savedClone.gameObject);
-
         inventoryClone = null;
-
         targetInventory.Receive(this);
-
-        if (nodeInterface != null)
-        {
-            targetInventory.InsertNodeAt(nodeInterface, cloneIndex);
-        }
-
+        if (nodeInterface != null) targetInventory.InsertNodeAt(nodeInterface, cloneIndex);
         canvasGroup.blocksRaycasts = true;
     }
 

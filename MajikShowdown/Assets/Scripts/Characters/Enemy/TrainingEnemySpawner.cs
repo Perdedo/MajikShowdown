@@ -2,39 +2,45 @@ using UnityEngine;
 
 public class TrainingEnemySpawner : InteractableObject
 {
+    [SerializeField] private Collider interactionArea;
+
     public GameObject enemyPrefab;
     public Transform spawnPos;
     public int spawnCount;
     public Vector3 distanceBetweenSpawns;
-    public float interactRadius = 5;
+
     public override void Interact(Player player)
     {
-        GameManager.Instance.trainingController.SpawnEnemy(this, enemyPrefab, spawnPos.position, spawnCount, distanceBetweenSpawns);
+        if (player == null) return;
+
+        GameManager.Instance.trainingController.SpawnEnemy(
+            this,
+            enemyPrefab,
+            spawnPos.position,
+            spawnCount,
+            distanceBetweenSpawns
+        );
     }
 
     public override void CheckForPlayer()
     {
-        foreach (Player p in GameManager.Instance.Players)
-        {
-            float dist = Vector3.Distance(
-                p.transform.position,
-                transform.position
-            );
+        if (interactionArea == null) return;
 
-            if (dist <= interactRadius)
+        foreach (Player player in GameManager.Instance.Players)
+        {
+            Vector3 closestPoint = interactionArea.ClosestPoint(player.transform.position);
+            float distance = Vector3.Distance(player.transform.position, closestPoint);
+
+            if (distance <= GameManager.Instance.interactionRadius)
             {
-                if (p.currentInteraction == null ||
-                    dist < Vector3.Distance(
-                        p.transform.position,
-                        p.currentInteraction.transform.position
-                    ))
+                if (player.currentInteraction == null)
                 {
-                    p.currentInteraction = this;
+                    player.currentInteraction = this;
                 }
             }
-            else if (p.currentInteraction == this)
+            else if (player.currentInteraction == this)
             {
-                p.currentInteraction = null;
+                player.currentInteraction = null;
             }
         }
     }

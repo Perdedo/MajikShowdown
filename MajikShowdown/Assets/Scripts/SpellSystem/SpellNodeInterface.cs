@@ -18,6 +18,9 @@ public class SpellNodeInterface : MonoBehaviour
     [SerializeField] private Image mainImage;
     [SerializeField] private Image nodeSymbol;
     [SerializeField] private Image selectedOutline;
+    [SerializeField] private Canvas nodeCanvas;
+    [SerializeField] private int selectedSortOrder = 100;
+    private int defaultSortOrder;
     public GameObject usedNodeImg;
     public Image borderImg;
     [HideInInspector] public int acquisitionOrder;
@@ -28,6 +31,11 @@ public class SpellNodeInterface : MonoBehaviour
     void Awake()
     {
         rect = GetComponent<RectTransform>();
+        if (nodeCanvas == null)
+            nodeCanvas = GetComponent<Canvas>();
+
+        if (nodeCanvas != null)
+            defaultSortOrder = nodeCanvas.sortingOrder;
         //Initialize();
         /*Node = Instantiate(PrefabNode);
         Node.Interface = this;
@@ -365,19 +373,26 @@ public class SpellNodeInterface : MonoBehaviour
 
     public void SetSelectedVisual(bool selected)
     {
+        if (nodeCanvas != null)
+        {
+            nodeCanvas.overrideSorting = true;
+            nodeCanvas.sortingOrder = selected ? selectedSortOrder : defaultSortOrder;
+        }
+
         if (selectedOutline == null) return;
 
         selectionTween?.Kill();
         selectionTween = null;
+
         if (!selected)
         {
             selectedOutline.gameObject.SetActive(false);
             return;
         }
+
         selectedOutline.gameObject.SetActive(true);
         selectedOutline.color = Color.white;
         selectionTween = selectedOutline.DOColor(new Color32(75, 75, 75, 255), 0.25f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
-        //selectedOutline.transform.DOScale(1.05f, 0.25f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
     }
 
     private void OnDestroy()

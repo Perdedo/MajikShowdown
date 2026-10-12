@@ -179,25 +179,40 @@ public class HexGrid : MonoBehaviour
     public void ReturnAllNodesToInventory()
     {
         if (caster == null || caster.inventory == null) return;
-
         foreach (var node in spellNodes)
         {
-            if (node != null)
+            if (node == null) continue;
+            DraggableNode drag = node.GetComponent<DraggableNode>();
+            if (node.hexGridNode != null)
             {
-                if (node.hexGridNode != null)
-                {
-                    node.hexGridNode.spellNode = null;
-                    node.hexGridNode.SetNodeButtonState(true);
-                }
-                node.hexGridNode = null;
-                node.Node.ResetNode();
-                caster.inventory.AddNodeToInventory(node);
+                node.hexGridNode.spellNode = null;
+                node.hexGridNode.SetNodeButtonState(true);
+            }
+            node.hexGridNode = null;
+            if (node.Node is SpellTrigger trigger)
+            {
+                trigger.TriggeredSpell = null;
+                trigger.Cooldown = 0;
+            }
+            node.Node.ResetNode();
+            var ui = GameManager.Instance?.uiController?.playerUI;
+            node.SetSelectedVisual(false);
+            if (ui != null && ui.selectedNode == node)
+            {
+                ui.selectedNode = null;
+                node.linkedDescription?.HideAll();
+            }
+            node.SetUsed(false);
+            if (drag != null && drag.inventoryClone != null)
+            {
+                drag.ReturnFromGridToInventory(caster.inventory, false);
+            }
+            else if (drag != null)
+            {
+                caster.inventory.Receive(drag);
             }
         }
-        for (int i = 0; i < spellNodes.Count; i++)
-        {
-            spellNodes[i] = null;
-        }
+        for (int i = 0; i < spellNodes.Count; i++) spellNodes[i] = null;
         ConfigurateSpell();
         caster.commander.ReturnAllNodesToInventory(this);
     }

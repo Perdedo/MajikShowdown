@@ -129,23 +129,34 @@ public class SpellCardUI : MonoBehaviour
     void Delete()
     {
         if (boundSpell == null) return;
-        boundSpell.Caster.commander.DeleteSCUI(this);
-        for (int i = 0; i < boundSpell.Caster.equippedSpells.Length; i++)
+        Spell deletedSpell = boundSpell;
+        SpellCaster caster = deletedSpell.Caster;
+        foreach (SpellNode node in caster.runtimeNodes)
         {
-            if (boundSpell.Caster.equippedSpells[i] == boundSpell)
+            if (node is not SpellTrigger trigger) continue;
+            if (trigger.TriggeredSpell == deletedSpell)
             {
-                boundSpell.Caster.equippedSpells[i] = null;
-                GameManager.Instance.uiController.playerUI.equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                trigger.TriggeredSpell = null;
+                trigger.UpdateTrigger();
+            }
+        }
+        caster.commander.DeleteSCUI(this);
+        for (int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            if (caster.equippedSpells[i] == deletedSpell)
+            {
+                caster.equippedSpells[i] = null;
+                GameManager.Instance.uiController.playerUI.equipSlotTexts[i].text = "Slot " + (i + 1);
             }
         }
         GameManager.Instance.uiController.playerUI.UpdateEquipSlotIcons();
-        if (boundSpell.grid != null)
+        if (deletedSpell.grid != null)
         {
-            boundSpell.grid.ReturnAllNodesToInventory();
-            Destroy(boundSpell.grid.gameObject);
+            deletedSpell.grid.ReturnAllNodesToInventory();
+            Destroy(deletedSpell.grid.gameObject);
         }
-        boundSpell.Caster.spells.Remove(boundSpell);
-        boundSpell.OnSpellUpdated -= RefreshUI;
+        caster.spells.Remove(deletedSpell);
+        deletedSpell.OnSpellUpdated -= RefreshUI;
         Destroy(gameObject);
         boundSpell = null;
     }

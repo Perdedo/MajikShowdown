@@ -677,7 +677,7 @@ public class UICommandController : NetworkBehaviour
             if (scui.boundSpell.Caster.equippedSpells[i] == scui.boundSpell)
             {
                 scui.boundSpell.Caster.equippedSpells[i] = null;
-                GameManager.Instance.uiController.playerUI.equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                GameManager.Instance.uiController.playerUI.equipSlotTexts[i].text = "Slot " + (i + 1);
             }
         }
         if (scui.boundSpell.grid != null)
