@@ -72,12 +72,12 @@ public class BufferTests : MonoBehaviour
         }
         else
         {
-            BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1, 1.25f);
-            BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1, 1.5f);
-            BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 1, 2f);
-            BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1, 2.25f);
+            /*-BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1, 1.25f);
+            BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1, 1.5f)*/;
+            BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 11, 2.5f);
+            /*BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1, 2.25f);
             BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 1, 2.5f);
-            BuffersControl.Instance.SpawnEffect(Elements.Poison,type, points[5].transform, 1, 3f);
+            BuffersControl.Instance.SpawnEffect(Elements.Poison,type, points[5].transform, 1, 3f);*/
         }
         
         
