@@ -110,9 +110,10 @@ public class EnemySpawner : NetworkBehaviour
                             if (!controller.usedEnemiesByType[i].Contains(e))
                             {
                                 aux = e.gameObject;
-                                aux.transform.position = spawnPos.position + GetSpawnDirection();
+                                Vector3 auxPos = spawnPos.position + GetSpawnDirection();
+                                aux.transform.position = auxPos;
                                 aux.SetActive(true);
-                                ActivateEnemy(aux);
+                                ActivateEnemy(aux, auxPos);
                                 auxEnemy = aux.GetComponent<Enemy>();
                                 break;
                             }
@@ -160,8 +161,9 @@ public class EnemySpawner : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void ActivateEnemy(GameObject obj)
+    public void ActivateEnemy(GameObject obj, Vector3 pos)
     {
+        obj.transform.position = pos;
         obj.SetActive(true);
     }
 
