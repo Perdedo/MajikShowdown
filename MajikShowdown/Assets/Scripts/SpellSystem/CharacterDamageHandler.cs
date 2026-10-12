@@ -120,6 +120,7 @@ public class CharacterDamageHandler : NetworkBehaviour
     [ClientRpc]
     public void RPCDisable()
     {
+        ((Enemy)gameCharacter).predictClient = false;
         this.gameObject.SetActive(false);
     }
 }

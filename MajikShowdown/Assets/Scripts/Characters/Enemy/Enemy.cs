@@ -73,6 +73,8 @@ public class Enemy : CrowdCharacter
     public Animator animator;
     protected bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
+
+    [HideInInspector] public bool predictClient = true;
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
 
@@ -168,6 +170,11 @@ public class Enemy : CrowdCharacter
         }
         if (GameManager.Instance.hordeController.enemiesInfo.Count <= instanceIndex)
         {
+            return;
+        }
+        if(!predictClient)
+        {
+            predictClient = true;
             return;
         }
         timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
