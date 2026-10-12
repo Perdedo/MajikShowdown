@@ -75,6 +75,7 @@ public class Enemy : CrowdCharacter
     public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
 
     [HideInInspector][SyncVar] public bool predictClient = true;
+    [HideInInspector] public bool updatePrediction = false;
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
 
@@ -174,7 +175,6 @@ public class Enemy : CrowdCharacter
         }
         if(!predictClient)
         {
-            predictClient = true;
             return;
         }
         timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
@@ -332,6 +332,11 @@ public class Enemy : CrowdCharacter
         transformInfo.vel = rb.linearVelocity;
         //transformInfo.vel = worldVelocity - rb.linearVelocity + externalVelocity;
         GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
+        if(updatePrediction)
+        {
+            predictClient = true;
+            updatePrediction = false;
+        }
     }
 
     /*public void AICalculation()

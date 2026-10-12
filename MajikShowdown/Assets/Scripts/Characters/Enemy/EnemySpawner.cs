@@ -165,6 +165,13 @@ public class EnemySpawner : NetworkBehaviour
     {
         obj.transform.position = pos;
         obj.SetActive(true);
+        EnemySetup(obj);
+    }
+
+    [Command]
+    public void EnemySetup(GameObject obj)
+    {
+        obj.GetComponent<Enemy>().updatePrediction = true;
     }
 
     Vector3 GetSpawnDirection()
