@@ -113,8 +113,9 @@ public class EnemySpawner : NetworkBehaviour
                                 Vector3 auxPos = spawnPos.position + GetSpawnDirection();
                                 aux.transform.position = auxPos;
                                 aux.SetActive(true);
-                                ActivateEnemy(aux, auxPos);
                                 auxEnemy = aux.GetComponent<Enemy>();
+                                auxEnemy.UpdateTransform();
+                                ActivateEnemy(aux, auxPos);
                                 break;
                             }
                         }
@@ -165,13 +166,6 @@ public class EnemySpawner : NetworkBehaviour
     {
         obj.transform.position = pos;
         obj.SetActive(true);
-        EnemySetup(obj);
-    }
-
-    [Command]
-    public void EnemySetup(GameObject obj)
-    {
-        obj.GetComponent<Enemy>().updatePrediction = true;
     }
 
     Vector3 GetSpawnDirection()

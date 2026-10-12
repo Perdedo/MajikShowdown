@@ -74,8 +74,6 @@ public class Enemy : CrowdCharacter
     protected bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
 
-    [HideInInspector][SyncVar] public bool predictClient = true;
-    [HideInInspector] public bool updatePrediction = false;
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
 
@@ -173,13 +171,16 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        if(!predictClient)
-        {
-            return;
-        }
         timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
-        transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
+        if((predTarget - transform.position).sqrMagnitude < 25)
+        {
+            transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
+        }
+        else
+        {
+            transform.position = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos;
+        }
         Vector3 dir = predTarget - transform.position;
         dir.y = 0;
         if (dir.sqrMagnitude >= 0.01f)
@@ -332,11 +333,6 @@ public class Enemy : CrowdCharacter
         transformInfo.vel = rb.linearVelocity;
         //transformInfo.vel = worldVelocity - rb.linearVelocity + externalVelocity;
         GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
-        if(updatePrediction)
-        {
-            predictClient = true;
-            updatePrediction = false;
-        }
     }
 
     /*public void AICalculation()
