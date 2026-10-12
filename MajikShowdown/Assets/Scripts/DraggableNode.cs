@@ -256,13 +256,13 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         GameManager.Instance.uiController.playerUI.caster.commander.HexOnEndDrag(this);
         if (shouldReturnToInventory)
         {
-            ReturnToInventory(inventory);
+            ReturnToInventory(inventory, true);
             return;
         }
 
         if (startedFromGrid && pendingDropZone is NodeInventory targetInventory && inventoryClone != null)
         {
-            ReturnFromGridToInventory(targetInventory);
+            ReturnFromGridToInventory(targetInventory, true);
             return;
         }
 
@@ -277,13 +277,13 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
-    public void ReturnToInventory(NodeInventory inventory)
+    public void ReturnToInventory(NodeInventory inventory, bool doTween)
     {
         pendingDropZone = null;
         //RegisterDrop(null);
         canvasGroup.blocksRaycasts = false;
 
-        if (nodeTween != null)
+        if (nodeTween != null && doTween)
         {
             nodeTween.SlideToWorld(savedWorldPosition, () =>
             {
@@ -308,7 +308,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
-    public void ReturnFromGridToInventory(NodeInventory targetInventory)
+    public void ReturnFromGridToInventory(NodeInventory targetInventory, bool doTween)
     {
         SpellNodeInterface nodeInterface = GetComponent<SpellNodeInterface>();
         SpellNodeInterface cloneInterface = inventoryClone.GetComponent<SpellNodeInterface>();
@@ -320,7 +320,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         //RegisterDrop(null);
         canvasGroup.blocksRaycasts = false;
 
-        if (nodeTween != null)
+        if (nodeTween != null && doTween)
         {
             nodeTween.SlideToWorld(targetWorldPosition, () =>
             {

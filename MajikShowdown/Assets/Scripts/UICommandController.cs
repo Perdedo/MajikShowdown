@@ -108,12 +108,12 @@ public class UICommandController : NetworkBehaviour
 
         if (shouldReturnToInventory)
         {
-            node.ReturnToInventory(inventory);
+            node.ReturnToInventory(inventory, false);
             return;
         }
         if (startedFromGrid && node.pendingDropZone is NodeInventory targetInventory && node.inventoryClone != null)
         {
-            node.ReturnFromGridToInventory(targetInventory);
+            node.ReturnFromGridToInventory(targetInventory, false);
             return;
         }
 
