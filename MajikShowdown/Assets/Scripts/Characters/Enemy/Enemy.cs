@@ -196,6 +196,14 @@ public class Enemy : CrowdCharacter
         }
     }
 
+    public void ResetTransform(Vector3 spawnPos)
+    {
+        transform.position = spawnPos;
+        rb.position = spawnPos;
+        transformInfo = new EnemyTransformInfo(spawnPos,(byte)transform.rotation.eulerAngles.y, Vector3.zero);
+        GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
+    }
+
     public virtual void EnemyUpdate()
     {
         if (FlowFieldManager.instance == null)
