@@ -74,7 +74,7 @@ public class Enemy : CrowdCharacter
     protected bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
 
-    [HideInInspector] public bool predictClient = true;
+    [HideInInspector][SyncVar] public bool predictClient = true;
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
 
