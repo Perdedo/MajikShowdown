@@ -535,7 +535,7 @@ public class HordeController : NetworkBehaviour
                             aux = s;
                             aux.transform.position = spawnPos;
                             aux.SetActive(true);
-                            ActivateSpawner(aux);
+                            ActivateSpawner(aux, spawnPos);
                             break;
                         }
                     }
@@ -557,8 +557,9 @@ public class HordeController : NetworkBehaviour
         }
     }
     [ClientRpc]
-    public void ActivateSpawner(GameObject obj)
+    public void ActivateSpawner(GameObject obj, Vector3 pos)
     {
+        obj.transform.position = pos;
         obj.SetActive(true);
     }
 

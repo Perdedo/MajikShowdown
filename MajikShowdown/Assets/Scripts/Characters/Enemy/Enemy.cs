@@ -73,6 +73,7 @@ public class Enemy : CrowdCharacter
     public Animator animator;
     protected bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
+
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
 
@@ -172,7 +173,14 @@ public class Enemy : CrowdCharacter
         }
         timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
-        transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
+        if((predTarget - transform.position).sqrMagnitude < 25)
+        {
+            transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
+        }
+        else
+        {
+            transform.position = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos;
+        }
         Vector3 dir = predTarget - transform.position;
         dir.y = 0;
         if (dir.sqrMagnitude >= 0.01f)
@@ -186,6 +194,14 @@ public class Enemy : CrowdCharacter
         {
             animator.SetBool("Moving", moving);
         }
+    }
+
+    public void ResetTransform(Vector3 spawnPos)
+    {
+        transform.position = spawnPos;
+        rb.position = spawnPos;
+        transformInfo = new EnemyTransformInfo(spawnPos,(byte)transform.rotation.eulerAngles.y, Vector3.zero);
+        GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
     }
 
     public virtual void EnemyUpdate()
