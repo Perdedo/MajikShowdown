@@ -29,6 +29,7 @@ public class TrainingEnemy : Enemy
         onAttackCooldown = false;
         attacked = true;
         jumpOnCooldown = false;
+        prevMoving = false;
         //CheckFieldLocation();
     }
     public override void EnemyUpdate()

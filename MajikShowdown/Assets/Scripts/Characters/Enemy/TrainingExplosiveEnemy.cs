@@ -23,6 +23,7 @@ public class TrainingExplosiveEnemy : ExplosiveEnemy
         onAttackCooldown = false;
         attacked = true;
         jumpOnCooldown = false;
+        prevMoving = false;
     }
     public override void EnemyUpdate()
     {

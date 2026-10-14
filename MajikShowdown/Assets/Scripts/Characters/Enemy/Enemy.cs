@@ -111,6 +111,8 @@ public class Enemy : CrowdCharacter
         onAttackCooldown = false;
         attacked = true;
         jumpOnCooldown = false;
+        prevMoving = false;
+        moving = false;
         //CheckFieldLocation();
     }
     public void UpdateIdWrapper(int value)
@@ -125,6 +127,7 @@ public class Enemy : CrowdCharacter
     {
         rb.isKinematic = !isServer;
     }
+
     /*void Start()
     {
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
@@ -202,6 +205,8 @@ public class Enemy : CrowdCharacter
         rb.position = spawnPos;
         transformInfo = new EnemyTransformInfo(spawnPos,(byte)transform.rotation.eulerAngles.y, Vector3.zero);
         GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
+        prevMoving = false;
+        moving = false;
     }
 
     public virtual void EnemyUpdate()
