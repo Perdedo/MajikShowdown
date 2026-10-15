@@ -96,7 +96,7 @@ public class CharacterDamageHandler : NetworkBehaviour
             //NetworkServer.Destroy(gameObject);
             if(UnityEngine.Random.Range(0, 100) < ((Enemy)gameCharacter).DropChance)
             {
-                LootSpawner.Instance.SpawnLootBox(transform.position, ((Enemy)gameCharacter).AvailablePools[((Enemy)gameCharacter).PoolProbability.GetRandomEntry()]);
+                LootSpawner.Instance.SpawnLootBox(((Enemy)gameCharacter).currentCell.position+(Vector3.up*0.5f), ((Enemy)gameCharacter).AvailablePools[((Enemy)gameCharacter).PoolProbability.GetRandomEntry()]);
             }
             GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
             GameManager.Instance.hordeController.UsedEnemies.Remove((Enemy)gameCharacter);
