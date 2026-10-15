@@ -124,7 +124,7 @@ public class CharacterDamageHandler : NetworkBehaviour
     }
 }
 
-public enum Elements { None, Fire, Ice, Earth, Lightning, Radiance, Darkness, Poison }
+public enum Elements { None, Fire, Ice, Earth, Lightning, Radiance, Darkness, Decay }
 
 public class Damage
 {

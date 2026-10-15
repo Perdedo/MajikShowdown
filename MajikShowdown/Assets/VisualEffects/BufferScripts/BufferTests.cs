@@ -68,7 +68,7 @@ public class BufferTests : MonoBehaviour
             BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 1);
             BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1);
             BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 1);
-            BuffersControl.Instance.SpawnEffect(Elements.Poison,type, points[5].transform, 1);
+            BuffersControl.Instance.SpawnEffect(Elements.Decay,type, points[5].transform, 1);
         }
         else
         {

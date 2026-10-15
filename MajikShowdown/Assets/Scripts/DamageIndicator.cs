@@ -115,7 +115,7 @@ public class DamageIndicator : MonoBehaviour
             case Elements.Darkness:
                 return new Color(0.45f, 0.15f, 0.65f);
 
-            case Elements.Poison:
+            case Elements.Decay:
                 return new Color(0.25f, 0.85f, 0.2f);
 
             case Elements.None:

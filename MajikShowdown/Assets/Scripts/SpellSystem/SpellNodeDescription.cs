@@ -764,7 +764,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
             case Elements.Lightning: return lightningIcon;
             case Elements.Radiance: return radianceIcon;
             case Elements.Darkness: return darknessIcon;
-            case Elements.Poison: return poisonIcon;
+            case Elements.Decay: return poisonIcon;
             case Elements.None:
             default: return null;
         }
