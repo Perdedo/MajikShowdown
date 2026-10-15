@@ -74,11 +74,23 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         ResolveDrop(sni.inventory);
 
+        if (sni.hexGridNode == targetHex)
+        {
+            SetOriginZone(targetHex);
+        }
+
         sni.Node.startingNode = false;
     }
 
     public void SetOriginZone(IDropZone zone)
     {
+        Debug.Log(
+    $"[SET ORIGIN] Node: {name} | " +
+    $"Previous: {OriginZone?.GetType().Name} | " +
+    $"New: {zone?.GetType().Name} | " +
+    $"NewHex: {(zone is HexGridNode targetHex ? targetHex.index.ToString() : "None")} | " +
+    $"NodeHex: {(sni != null && sni.hexGridNode != null ? sni.hexGridNode.index.ToString() : "None")}"
+);
         OriginZone = zone;
 
         if (GameManager.Instance == null ||
@@ -186,14 +198,17 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             savedListIndex = inventory.GetNodeIndex(nodeInterface);
         }
 
+        Debug.Log(
+    $"[BEGIN DRAG] Node: {name} | " +
+    $"OriginType: {OriginZone?.GetType().Name} | " +
+    $"OriginHex: {(OriginZone is HexGridNode hex ? hex.index.ToString() : "None")} | " +
+    $"NodeHex: {(sni.hexGridNode != null ? sni.hexGridNode.index.ToString() : "None")}"
+);
+
         if (inventory != null && !isClone)
-        {
             inventory.Freeze();
-        }
         else
-        {
             OriginZone?.Release(this);
-        }
 
         transform.SetParent(canvas.transform, true);
         transform.SetAsLastSibling();

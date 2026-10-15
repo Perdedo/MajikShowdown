@@ -230,11 +230,12 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         if (dragInst != null)
         {
-            if(!instance.Node.startingNode)
+            if (instance.hexGridNode == null)
             {
                 dragInst.SetOriginZone(this as IDropZone);
             }
-            dragInst.acquisitionOrder = activeNodes.Count - 1;
+
+            dragInst.acquisitionOrder = instance.acquisitionOrder;
         }
     }
 

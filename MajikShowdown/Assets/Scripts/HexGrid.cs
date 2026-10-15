@@ -247,19 +247,26 @@ public class HexGrid : MonoBehaviour
 
     public bool VerifyNode(SpellNodeInterface node)
     {
-        bool found = false;
-        for(int i = 0; i < spellNodes.Count; i++)
+        for (int i = 0; i < spellNodes.Count; i++)
         {
-            if(spellNodes[i] != null)
+            if (spellNodes[i] == null)
+                continue;
+
+            if (spellNodes[i].acquisitionOrder == node.acquisitionOrder)
             {
-                if (spellNodes[i].acquisitionOrder == node.acquisitionOrder)
-                {
-                    found = true;
-                    i = spellNodes.Count;
-                }
+                Debug.LogWarning(
+                    $"[VERIFY NODE] Duplicate acquisitionOrder: {node.acquisitionOrder} | " +
+                    $"ExistingIndex: {i} | " +
+                    $"SameInstance: {ReferenceEquals(spellNodes[i], node)} | " +
+                    $"ExistingID: {spellNodes[i].GetInstanceID()} | " +
+                    $"IncomingID: {node.GetInstanceID()}"
+                );
+
+                return true;
             }
         }
-        return found;
+
+        return false;
     }
 
     private void UpdateNodeVisuals()
