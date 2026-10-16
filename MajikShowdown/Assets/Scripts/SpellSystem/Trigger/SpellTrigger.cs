@@ -9,8 +9,18 @@ public class SpellTrigger : SpellNode
     [NonSerialized] public Spell TriggeredSpell;
     //public SpellType[] triggeredSpells = new SpellType[2];
     public enum Triggers { OnCast, OnHit, OnDeath };
-    
-    
+
+    public override void ClientInitialize()
+    {
+        SetupNodeVisual();
+        if (RandomizeOnStart)
+        {
+            RandomizeStats();
+            owner.commander.SetTriggerSpellNodeValues(this, Cooldown, BaseStats, extraValues, trigger);
+        }
+        runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
+        //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
+    }
     public void UpdateTrigger()
     {
         
@@ -33,6 +43,14 @@ public class SpellTrigger : SpellNode
     {
         base.RandomizeStats();
         trigger = RandomizeEnum<Triggers>();
+    }
+
+    public void SetTriggerStats(float cooldown, StatTypes baseStats, List<float> extras, int triggerInd)
+    {
+        Cooldown = cooldown;
+        BaseStats = baseStats;
+        SetExtras(extras);
+        trigger = (Triggers)triggerInd;
     }
     /*public List<SubSpell> TriggeredSubspells()
     {

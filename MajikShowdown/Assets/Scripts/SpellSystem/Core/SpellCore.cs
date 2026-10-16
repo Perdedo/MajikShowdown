@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static SpellTrigger;
 
 public enum SpellTypes { Projectile, Area, Explosion, Hazard, Laser, Ray, Breath }
 [CreateAssetMenu(fileName = "Core Node", menuName = "Spell Nodes/CoreNode")]
@@ -26,11 +27,30 @@ public class SpellCore : SpellNode
     [NonSerialized] public SpellCastPoint castPoint;
 
     // public SubSpell subSpell;
+
+    public override void ClientInitialize()
+    {
+        SetupNodeVisual();
+        if (RandomizeOnStart)
+        {
+            RandomizeStats();
+            owner.commander.SetCoreSpellNodeValues(this, Cooldown, BaseStats, extraValues, Element);
+        }
+        runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
+        //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
+    }
     public override void RandomizeStats()
     {
         base.RandomizeStats();
         //Type = (SpellTypes)RandomizeEnum<SpellTypes>();
         Element = RandomizeEnum<Elements>(new string[] { "None" });
+    }
+    public void SetCoreStats(float cooldown, StatTypes baseStats, List<float> extras, int elementInd)
+    {
+        Cooldown = cooldown;
+        BaseStats = baseStats;
+        SetExtras(extras);
+        Element = (Elements)elementInd;
     }
 
     [Serializable]

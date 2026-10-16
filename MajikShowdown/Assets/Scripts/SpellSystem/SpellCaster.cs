@@ -87,7 +87,17 @@ public class SpellCaster : NetworkBehaviour
     SpellNode InstantiateNode(SpellNode nodePrefab)
     {
         SpellNode runtimeNode = Instantiate(nodePrefab);
-        runtimeNode.Initialize();
+        runtimeNode.instanceIndex = commander.runtimeNodes.Count;
+        runtimeNode.owner = this;
+        commander.runtimeNodes.Add(runtimeNode);
+        if(isOwned || !network)
+        {
+            runtimeNode.ClientInitialize();
+        }
+        else
+        {
+            runtimeNode.ServerInitialize();
+        }
         runtimeNodes.Add(runtimeNode);
         return runtimeNode;
     }
