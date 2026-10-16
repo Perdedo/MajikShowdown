@@ -204,7 +204,10 @@ public class Enemy : CrowdCharacter
         transform.position = spawnPos;
         rb.position = spawnPos;
         transformInfo = new EnemyTransformInfo(spawnPos,(byte)transform.rotation.eulerAngles.y, Vector3.zero);
-        GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
+        if(GameManager.Instance.hordeController.enemiesInfo.Count > instanceIndex)
+        {
+            GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
+        }
         prevMoving = false;
         moving = false;
     }
