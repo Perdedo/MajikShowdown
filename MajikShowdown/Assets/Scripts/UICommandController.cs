@@ -26,7 +26,7 @@ public class UICommandController : NetworkBehaviour
     public void SetSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues)
     {
         if (!network) return;
-        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
+        if (isLocalPlayer && !isServer)
         {
             StartCoroutine(WaitSetSpellNodeValues(node, cooldown, baseStats, extraValues));
         }
@@ -49,7 +49,7 @@ public class UICommandController : NetworkBehaviour
     public void SetCoreSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues, Elements element)
     {
         if (!network) return;
-        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
+        if (isLocalPlayer && !isServer)
         {
             StartCoroutine(WaitSetCoreSpellNodeValues(node, cooldown, baseStats, extraValues, element));
         }
@@ -72,7 +72,7 @@ public class UICommandController : NetworkBehaviour
     public void SetTriggerSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues, SpellTrigger.Triggers trigger)
     {
         if (!network) return;
-        if (isLocalPlayer && !isServer && caster.startingSpellsReady)
+        if (isLocalPlayer && !isServer)
         {
             StartCoroutine(WaitSetTriggerSpellNodeValues(node, cooldown, baseStats, extraValues, trigger));
         }
