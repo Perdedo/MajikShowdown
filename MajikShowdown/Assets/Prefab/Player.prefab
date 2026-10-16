@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5282726350466669339}
   - component: {fileID: 4008467643355803416}
   m_Layer: 8
-  m_Name: Nose
+  m_Name: lookpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,8 +27,8 @@ Transform:
   m_GameObject: {fileID: 1235545198884938909}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.239, z: 0.302}
-  m_LocalScale: {x: 0.51, y: 0.51, z: 0.51}
+  m_LocalPosition: {x: 0, y: 0.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 8914568331542961986}
@@ -293,10 +293,15 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   mesh: {fileID: 0}
-  col: {fileID: 0}
+  col: {fileID: 2993160270347830026}
   playerCamera: {fileID: 0}
+  CameraClampHighAngle: 80
+  CameraClampLowAngle: -60
+  cameraSensitivity:
+    vertical: 9
+    horizontal: 9
   directionAnchor: {fileID: 0}
-  lookAnchor: {fileID: 0}
+  lookAnchor: {fileID: 1331101070252214030}
   coyoteTime: 0.1
   jumpBuffering: 0.25
   DashForce: 20
@@ -331,7 +336,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4265607478582442934}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -366,7 +371,19 @@ MonoBehaviour:
     m_ActionId: bc4ed9e6-b18e-4de9-9b05-95d29711dd86
     m_ActionName: 'Player/Move[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7401529235878125871}
+        m_TargetAssemblyTypeName: Player, Assembly-CSharp
+        m_MethodName: LookInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 900bcae2-2e12-475d-b774-8a658ac8ced7
     m_ActionName: 'Player/Look[/Mouse/delta]'
   - m_PersistentCalls:
