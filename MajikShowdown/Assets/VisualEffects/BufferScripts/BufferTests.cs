@@ -17,7 +17,7 @@ public class BufferTests : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            TesteType(SpellTypes.Explosion,points);
+            TesteElement(Elements.Darkness,points);
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
@@ -72,12 +72,12 @@ public class BufferTests : MonoBehaviour
         }
         else
         {
-            /*-BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1, 1.25f);
-            BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1, 1.5f)*/;
-            BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 6.7f, 1.5f);
-            /*BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1, 2.25f);
-            BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 1, 2.5f);
-            BuffersControl.Instance.SpawnEffect(Elements.Poison,type, points[5].transform, 1, 3f);*/
+            BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1.5f, 1.25f);
+            BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 2.5f, 1.5f);
+            BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 3.5f, 1.5f);
+            BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 4.5f, 2.25f);
+            BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 5.5f, 2.5f);
+            BuffersControl.Instance.SpawnEffect(Elements.Decay,type, points[5].transform, 6.5f, 3f);
         }
         
         
