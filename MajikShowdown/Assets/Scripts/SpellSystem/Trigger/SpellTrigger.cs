@@ -6,7 +6,7 @@ using UnityEngine;
 public class SpellTrigger : SpellNode
 {
     public Triggers trigger;
-    [NonSerialized] public Spell TriggeredSpell;
+    /*[NonSerialized]*/ public Spell TriggeredSpell;
     //public SpellType[] triggeredSpells = new SpellType[2];
     public enum Triggers { OnCast, OnHit, OnDeath };
 
