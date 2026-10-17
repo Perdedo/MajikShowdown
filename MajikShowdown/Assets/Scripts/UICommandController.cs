@@ -19,7 +19,79 @@ public class UICommandController : NetworkBehaviour
     public List<SpellCardUI> cards = new List<SpellCardUI>();
     public List<DraggableNode> drags = new List<DraggableNode>();
     public List<SpellNodeInterface> interfaces = new List<SpellNodeInterface>();
+    public List<SpellNode> runtimeNodes = new List<SpellNode>();
     public bool network = true;
+
+
+    public void SetSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetSpellNodeValues(node, cooldown, baseStats, extraValues));
+        }
+    }
+
+    IEnumerator WaitSetSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues)
+    {
+        yield return new WaitUntil(() => runtimeNodes.Exists(n => n.instanceIndex == node.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
+        CMDSetSpellNodeValues(node.instanceIndex, cooldown, baseStats, extraValues);
+    }
+
+    [Command]
+    public void CMDSetSpellNodeValues(int nodeInd, float cooldown, StatTypes baseStats, List<float> extraValues)
+    {
+        SpellNode node = runtimeNodes.Find(n => n.instanceIndex == nodeInd);
+        node.SetStats(cooldown, baseStats, extraValues);
+    }
+
+    public void SetCoreSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues, Elements element)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetCoreSpellNodeValues(node, cooldown, baseStats, extraValues, element));
+        }
+    }
+
+    IEnumerator WaitSetCoreSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues, Elements element)
+    {
+        yield return new WaitUntil(() => runtimeNodes.Exists(n => n.instanceIndex == node.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
+        CMDSetCoreSpellNodeValues(node.instanceIndex, cooldown, baseStats, extraValues, (int)element);
+    }
+
+    [Command]
+    public void CMDSetCoreSpellNodeValues(int nodeInd, float cooldown, StatTypes baseStats, List<float> extraValues, int elementInd)
+    {
+        SpellCore node = runtimeNodes.Find(n => n.instanceIndex == nodeInd) as SpellCore;
+        node.SetCoreStats(cooldown, baseStats, extraValues, elementInd);
+    }
+
+    public void SetTriggerSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues, SpellTrigger.Triggers trigger)
+    {
+        if (!network) return;
+        if (isLocalPlayer && !isServer)
+        {
+            StartCoroutine(WaitSetTriggerSpellNodeValues(node, cooldown, baseStats, extraValues, trigger));
+        }
+    }
+
+    IEnumerator WaitSetTriggerSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues, SpellTrigger.Triggers trigger)
+    {
+        yield return new WaitUntil(() => runtimeNodes.Exists(n => n.instanceIndex == node.instanceIndex));
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
+        CMDSetTriggerSpellNodeValues(node.instanceIndex, cooldown, baseStats, extraValues, (int)trigger);
+    }
+
+    [Command]
+    public void CMDSetTriggerSpellNodeValues(int nodeInd, float cooldown, StatTypes baseStats, List<float> extraValues, int triggerInd)
+    {
+        SpellTrigger node = runtimeNodes.Find(n => n.instanceIndex == nodeInd) as SpellTrigger;
+        node.SetTriggerStats(cooldown, baseStats, extraValues, triggerInd);
+    }
+
 
     public void HexOnBeginDrag(DraggableNode drag)
     {

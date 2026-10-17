@@ -1,9 +1,10 @@
+using Steamworks;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.VFX;
 using UnityEngine.VFX.Utility;
-using System.Collections.Generic;
-using System;
-using Steamworks;
 
 public class SetGraphicsBuffer : MonoBehaviour
 {
@@ -19,12 +20,63 @@ public class SetGraphicsBuffer : MonoBehaviour
     [SerializeField] private Queue<int> nullIndex = new Queue<int>();
     static readonly ExposedProperty newEvent = "OnNewExplosion";
     bool newCall = false;
-    
+    public VFXNetworkAuxiliar netAux;
     void Start()
+    {
+        if(netAux != null)
+        {
+            return;
+        }
+        EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
+    }
+
+    public void Initialize()
     {
         EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
     }
     public int AddEffect(Transform place, float size)
+    {
+        if(netAux != null)
+        {
+            netAux.AddEffect(this, place, size);
+        }
+        if(myType != SpellTypes.Explosion)
+        {
+            int index = instances.Count;
+            if(nullIndex.Count == 0)
+            {
+                instances.Add(place);
+                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+            }
+            else
+            {
+                index = nullIndex.Dequeue();
+                instances[index] = place;
+                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+            }
+            return index;
+        }
+        else
+        {
+            int index = instances.Count;
+            if(nullIndex.Count == 0)
+            {
+                instances.Add(place);
+                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                newCall = true;
+            }
+            else
+            {
+                index = nullIndex.Dequeue();
+                instances[index] = place;
+                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+                newCall = true;
+            }
+            return index;
+        }
+        
+    }
+    public int ClientAddEffect(Transform place, float size)
     {
         if(myType != SpellTypes.Explosion)
         {
@@ -64,6 +116,15 @@ public class SetGraphicsBuffer : MonoBehaviour
     }
     public void RemoveEffect(int index)
     {
+        if (netAux != null)
+        {
+            netAux.RemoveEffect(this, index);
+        }
+        instances[index] = null;
+        nullIndex.Enqueue(index);    
+    }
+    public void ClientRemoveEffect(int index)
+    {
         instances[index] = null;
         nullIndex.Enqueue(index);    
     }
@@ -81,8 +142,32 @@ public class SetGraphicsBuffer : MonoBehaviour
             newCall = false;
         }
     }
+
+    public void ClientUpdateVFXs()
+    {
+        UpdatePoints();
+        EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
+
+        List<Vector4> points = GetBufferPoints();
+        gBuffer.SetData(points);
+        visualEffect.SetInt(bufferCount, points.Count);
+        if (newCall)
+        {
+            visualEffect.SendEvent(newEvent);
+            newCall = false;
+        }
+    }
     
     void OnDisable()
+    {
+        ReleaseBuffer(ref gBuffer);
+        if(netAux != null)
+        {
+            netAux.DisableBuffer(this);
+        }
+    }
+
+    public void ClientDisableBuffer()
     {
         ReleaseBuffer(ref gBuffer);
     }

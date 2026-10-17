@@ -14,9 +14,11 @@ public class Player : Character
     [Header("Camera Options")]
     public CinemachineCamera playerCamera;
     //CinemachineThirdPersonAim cameraAim;
-    //public float CameraClampAngle = 80;
-    //public CameraSensitivity cameraSensitivity = new CameraSensitivity { vertical = 50, horizontal = 50 };
-    //CameraRotation cameraRotation;
+    public float CameraClampHighAngle = 80;
+    public float CameraClampLowAngle = -70;
+    public CameraSensitivity cameraSensitivity = new CameraSensitivity { vertical = 50, horizontal = 50 };
+    [HideInInspector]public bool rotateCamera = true;
+    CameraRotation cameraRotation;
     [Header("Anchors")]
     public Transform directionAnchor;
     public Transform lookAnchor;
@@ -69,7 +71,7 @@ public class Player : Character
 
     //public PlayerData data;
 
-    /*[Serializable]
+    [Serializable]
     public struct CameraSensitivity
     {
         public float vertical;
@@ -79,7 +81,7 @@ public class Player : Character
     {
         public float x;
         public float y;
-    }*/
+    }
     protected override void Awake()
     {
         base.Awake();
@@ -91,7 +93,7 @@ public class Player : Character
         input = GetComponent<PlayerInput>();
         DamageHandler = GetComponent<PlayerDamageHandler>();
         canBeKnocked = true;
-        //cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
+        cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }
 
@@ -181,7 +183,10 @@ public class Player : Character
         {
             Dash(directionInput);
         }*/
-        //RotateCamera();
+        if(rotateCamera)
+        {
+            RotateCamera();
+        }
     }
 
     private void UpdateInteractionVisual()
@@ -458,7 +463,7 @@ public class Player : Character
             currentInteraction.Interact(this);
         }
     }
-    /*Vector2 lookInput;
+    Vector2 lookInput;
     public void LookInput(InputAction.CallbackContext context)
     {
         lookInput = context.ReadValue<Vector2>();
@@ -466,14 +471,14 @@ public class Player : Character
     }
     void RotateCamera()
     {
-        cameraRotation.x -= lookInput.y * cameraSensitivity.vertical * Time.deltaTime;
-        cameraRotation.x = Mathf.Clamp(cameraRotation.x, -CameraClampAngle, CameraClampAngle);
-        cameraRotation.y += lookInput.x * cameraSensitivity.horizontal * Time.deltaTime;
+        cameraRotation.x -= lookInput.y * cameraSensitivity.vertical * 0.01f;
+        cameraRotation.x = Mathf.Clamp(cameraRotation.x, CameraClampLowAngle, CameraClampHighAngle);
+        cameraRotation.y += lookInput.x * cameraSensitivity.horizontal * 0.01f;
         lookAnchor.localRotation = Quaternion.Euler(cameraRotation.x, cameraRotation.y, 0);
         //transform.localRotation = Quaternion.Euler(0, cameraRotation.y, 0);
         //lookAnchor.Rotate(Vector3.right, -lookInput.y * cameraSensitivity* Time.deltaTime);
         //transform.Rotate(Vector3.up, lookInput.x * cameraSensitivity* Time.deltaTime);
-    }*/
+    }
     protected override void HandleRotation()
     {
         /*if (Casting)
@@ -485,8 +490,8 @@ public class Player : Character
             RotateFoward();
         }*/
 
-        RotateTowards(directionAnchor.forward);
-        //transform.eulerAngles = new Vector3(0, lookAnchor.eulerAngles.y, 0);
+        //RotateTowards(directionAnchor.forward);
+        transform.eulerAngles = new Vector3(0, lookAnchor.eulerAngles.y, 0);
     }
     IEnumerator CoyoteTimer()
     {

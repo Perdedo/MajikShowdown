@@ -30,6 +30,7 @@ public class TrainingTankEnemy : TankEnemy
         onAttackCooldown = false;
         attacked = true;
         jumpOnCooldown = false;
+        prevMoving = false;
         //CheckFieldLocation();
     }
     public override void EnemyUpdate()

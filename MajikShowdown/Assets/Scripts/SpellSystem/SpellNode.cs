@@ -36,6 +36,10 @@ public abstract class SpellNode : ScriptableObject
     public SpellNodeInfos spellInfos;
     public Sprite nodeSymbolSprite;
     [HideInInspector] public Color symbolColor;
+
+    [HideInInspector] public SpellCaster owner;
+    [HideInInspector] protected List<float> extraValues = new List<float>();
+    [HideInInspector] public int instanceIndex = -1;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
     /*public bool TryConectNode(SpellNode con, int index)
     {
@@ -79,12 +83,20 @@ public abstract class SpellNode : ScriptableObject
         public Sprite Icon;
     }
 
-    public virtual void Initialize()
+    public virtual void ServerInitialize()
+    {
+        SetupNodeVisual();
+        runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
+        //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
+    }
+
+    public virtual void ClientInitialize()
     {
         SetupNodeVisual();
         if (RandomizeOnStart)
         {
             RandomizeStats();
+            owner.commander.SetSpellNodeValues(this, Cooldown, BaseStats, extraValues);
         }
         runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
@@ -149,9 +161,16 @@ public abstract class SpellNode : ScriptableObject
         BaseStats.Randomize(statRandomizer);
         RandomizeExtras();
     }
+    public virtual void SetStats(float cooldown, StatTypes baseStats, List<float> extras)
+    {
+        Cooldown = cooldown;
+        BaseStats = baseStats;
+        SetExtras(extras);
+    }
 
     void RandomizeExtras()
     {
+        extraValues.Clear();
         var fields = GetType().GetFields();
         foreach (var field in fields)
         {
@@ -160,6 +179,24 @@ public abstract class SpellNode : ScriptableObject
             if (extra.Randomizer != null)
             {
                 extra.Value = extra.Randomizer.GetValue();
+                extraValues.Add(extra.Value);
+                field.SetValue(this, extra);
+            }
+        }
+    }
+
+    public void SetExtras(List<float> values)
+    {
+        var fields = GetType().GetFields();
+        int aux = 0;
+        foreach (var field in fields)
+        {
+            if (field.FieldType != typeof(ExtraVar)) continue;
+            ExtraVar extra = (ExtraVar)field.GetValue(this);
+            if (extra.Randomizer != null)
+            {
+                extra.Value = values[aux];
+                aux++;
                 field.SetValue(this, extra);
             }
         }

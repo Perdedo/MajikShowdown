@@ -1101,7 +1101,7 @@ public class PlayerUI : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         crosshair.SetActive(true);
-        myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = true;
+        myPlayer.rotateCamera = true;
         inGame = true;
     }
 
@@ -1110,7 +1110,7 @@ public class PlayerUI : NetworkBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         crosshair.SetActive(false);
-        myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
+        myPlayer.rotateCamera = false;
         inGame = false;
     }
 
@@ -1143,7 +1143,7 @@ public class PlayerUI : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         crosshair.SetActive(false);
-        myPlayer.playerCamera.GetComponent<CinemachineInputAxisController>().enabled = false;
+        myPlayer.rotateCamera = false;
         inGame = false;
     }
 

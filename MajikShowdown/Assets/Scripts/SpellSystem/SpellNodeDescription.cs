@@ -34,7 +34,7 @@ public class SpellNodeDescription : NetworkBehaviour
     public Sprite lightningIcon;
     public Sprite radianceIcon;
     public Sprite darknessIcon;
-    public Sprite poisonIcon;
+    public Sprite decayIcon;
     public Image elementIcon;
 
     [Header("Rune Informations")]
@@ -764,7 +764,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
             case Elements.Lightning: return lightningIcon;
             case Elements.Radiance: return radianceIcon;
             case Elements.Darkness: return darknessIcon;
-            case Elements.Poison: return poisonIcon;
+            case Elements.Decay: return decayIcon;
             case Elements.None:
             default: return null;
         }
