@@ -17,6 +17,7 @@ public class SpellInventoryUI : NetworkBehaviour
     public Transform content;
     public GameObject spellCardPrefab;
     public Transform createSpellCard;
+    public PlayerUI playerUI;
 
     [Header("Network")]
     public bool network = true;
@@ -149,8 +150,8 @@ public class SpellInventoryUI : NetworkBehaviour
 
         CreateSpellCard(newSpell);
 
-        GameManager.Instance.uiController.playerUI.StartEquipSpell(newSpell);
-        GameManager.Instance.uiController.playerUI.EquipSpellToSlot(index);
+        playerUI.StartEquipSpell(newSpell);
+        playerUI.EquipSpellToSlot(index);
 
         List<SpellNode> startingRuntimeNodes = new List<SpellNode>();
 
