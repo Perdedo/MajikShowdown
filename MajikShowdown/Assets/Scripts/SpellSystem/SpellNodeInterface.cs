@@ -47,11 +47,14 @@ public class SpellNodeInterface : MonoBehaviour
         borderImg = transform.GetChild(0).GetComponent<Image>();*/
     }
 
-    public void Setup(SpellNode nodeData)
+    public void Setup(SpellNode nodeData, bool replaceInterface)
     {
         rect = GetComponent<RectTransform>();
         Node = nodeData;
-        Node.Interface = this;
+        if(replaceInterface)
+        {
+            Node.Interface = this;
+        }
 
         InitializeConections();
         SetupMainVisual();

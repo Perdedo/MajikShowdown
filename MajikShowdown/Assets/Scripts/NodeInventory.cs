@@ -25,6 +25,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     public SpellCaster caster;
     private Dictionary<SpellNode, SpellNodeInterface> nodeMap = new();
     private bool initialized = false;
+    public bool isEditSpellInventory = true;
     public bool network = true;
 
     void Start()
@@ -210,7 +211,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         nodeMap[nodeData] = instance;
         activeNodes.Add(instance);
         commander.interfaces.Add(instance);
-        instance.Setup(nodeData);
+        instance.Setup(nodeData, isEditSpellInventory);
         DraggableNode dragInst = instance.GetComponent<DraggableNode>();
         commander.drags.Add(dragInst);
         dragInst.Initialize();
