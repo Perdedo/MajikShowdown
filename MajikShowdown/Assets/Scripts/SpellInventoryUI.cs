@@ -199,7 +199,7 @@ public class SpellInventoryUI : NetworkBehaviour
 
             startingRuntimeNodes.Add(runtimeNode);
 
-            if(runtimeNode is SpellTrigger)
+            if(ssn.triggeredSpellName != "" && runtimeNode is SpellTrigger)
             {
                 startingTriggers.Add(new StartingTrigger((SpellTrigger)runtimeNode, ssn.triggeredSpellName));
             }
