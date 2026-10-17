@@ -176,7 +176,7 @@ public class Enemy : CrowdCharacter
         }
         timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
-        if((predTarget - transform.position).sqrMagnitude < 25)
+        if((predTarget - transform.position).sqrMagnitude < 100)
         {
             transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
         }

@@ -787,6 +787,13 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         triggeredSpellIcon.color = GameManager.Instance.uiController.playerUI.visualDatabase.colors[spell.colorIndex];
     }
 
+    public void RefreshTriggerDescription(SpellTrigger trigger)
+    {
+        if (trigger == null || currentTrigger != trigger || currentNode != trigger) return;
+        UpdateTriggeredSpellUI();
+        NodeCoolDownDescription(trigger);
+    }
+
     public void SelectTriggerSpell(Spell spell)
     {
         if (currentTrigger == null) return;

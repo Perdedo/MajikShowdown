@@ -25,6 +25,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     public SpellCaster caster;
     private Dictionary<SpellNode, SpellNodeInterface> nodeMap = new();
     private bool initialized = false;
+    public bool isEditSpellInventory = true;
     public bool network = true;
 
     void Start()
@@ -42,18 +43,17 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
-            "Show All Runes",
-            "Show Core Runes",
-            "Show Trajectory Runes",
-            "Show Effect Runes",
-            "Show Casting Point Runes",
-            "Show Trigger Runes",
-            "Show Stat Runes"
+            "All Types",
+            "Core Runes",
+            "Trajectory Runes",
+            "Effect Runes",
+            "Casting Point Runes",
+            "Trigger Runes",
+            "Stat Runes"
         });
 
         rarityDropdown.ClearOptions();
-        rarityDropdown.AddOptions(new List<string> { "Show All Rarities", "Show Rusty Runes", "Show Forged Runes", "Show Refined Runes" });
-
+        rarityDropdown.AddOptions(new List<string> { "All Rarities", "Rusty Runes", "Forged Runes", "Refined Runes" });
         sortDropdown.ClearOptions();
         sortDropdown.AddOptions(new List<string> { "Rune Acquisition Order", "Rune Category"});
 
@@ -211,7 +211,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         nodeMap[nodeData] = instance;
         activeNodes.Add(instance);
         commander.interfaces.Add(instance);
-        instance.Setup(nodeData);
+        instance.Setup(nodeData, isEditSpellInventory);
         DraggableNode dragInst = instance.GetComponent<DraggableNode>();
         commander.drags.Add(dragInst);
         dragInst.Initialize();
@@ -231,11 +231,12 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         if (dragInst != null)
         {
-            if(!instance.Node.startingNode)
+            if (instance.hexGridNode == null)
             {
                 dragInst.SetOriginZone(this as IDropZone);
             }
-            dragInst.acquisitionOrder = activeNodes.Count - 1;
+
+            dragInst.acquisitionOrder = instance.acquisitionOrder;
         }
     }
 

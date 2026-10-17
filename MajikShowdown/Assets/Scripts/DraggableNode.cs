@@ -74,6 +74,11 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         ResolveDrop(sni.inventory);
 
+        if (sni.hexGridNode == targetHex)
+        {
+            SetOriginZone(targetHex);
+        }
+
         sni.Node.startingNode = false;
     }
 
@@ -187,13 +192,9 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
 
         if (inventory != null && !isClone)
-        {
             inventory.Freeze();
-        }
         else
-        {
             OriginZone?.Release(this);
-        }
 
         transform.SetParent(canvas.transform, true);
         transform.SetAsLastSibling();
@@ -335,19 +336,19 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void CompleteGridToInventoryReturn(NodeInventory targetInventory, SpellNodeInterface nodeInterface, SpellNodeInterface cloneInterface, DraggableNode savedClone, int cloneIndex)
     {
+        if (nodeInterface != null && nodeInterface.Node is SpellTrigger trigger)
+        {
+            trigger.TriggeredSpell = null;
+            trigger.Cooldown = 0;
+            nodeInterface.linkedDescription?.RefreshTriggerDescription(trigger);
+        }
+
         targetInventory.RemoveNodeFromInventory(cloneInterface);
         savedClone.gameObject.SetActive(false);
         Destroy(savedClone.gameObject);
-
         inventoryClone = null;
-
         targetInventory.Receive(this);
-
-        if (nodeInterface != null)
-        {
-            targetInventory.InsertNodeAt(nodeInterface, cloneIndex);
-        }
-
+        if (nodeInterface != null) targetInventory.InsertNodeAt(nodeInterface, cloneIndex);
         canvasGroup.blocksRaycasts = true;
     }
 

@@ -17,7 +17,6 @@ using UnityEngine.Rendering.Universal;
 
 public class PlayerUI : NetworkBehaviour
 {
-
     [Header("Shop")]
     [SerializeField] private GameObject shopPanel;
     public bool IsShopOpen => shopPanel != null && shopPanel.activeSelf;
@@ -624,7 +623,7 @@ public class PlayerUI : NetworkBehaviour
         {
             equipSlotTexts[i].text = caster.IsSlotValid(i)
                 ? caster.equippedSpells[i].spellName
-                : "Spell Slot " + (i + 1);
+                : "Slot " + (i + 1);
         }
     }
 
@@ -674,33 +673,30 @@ public class PlayerUI : NetworkBehaviour
 
     public void CloseEditSpellHUD()
     {
-        if (!isLocalPlayer && network)
-        {
-            return;
-        }
+        if (!isLocalPlayer && network) return;
         CloseCustomizationPanel();
+        if (selectedNode != null)
+        {
+            selectedNode.SetSelectedVisual(false);
+            selectedNode = null;
+        }
         editSpellPanel.gameObject.SetActive(false);
         spellNameInput.onValueChanged.RemoveAllListeners();
         spellNodeDescription.HideAll();
-
-        if (activeSpell != null)
-            activeSpell.OnSpellUpdated -= RefreshSpellInfo;
-
+        if (activeSpell != null) activeSpell.OnSpellUpdated -= RefreshSpellInfo;
         activeSpell = null;
-        selectedNode = null;
-
         createSpellPanel.gameObject.SetActive(true);
         UpdateAllEquippedSlots();
     }
 
     public void StartEquipSpell(Spell spell)
     {
-        if (!isLocalPlayer && network)
+        /*if (!isLocalPlayer && network)
         {
             return;
-        }
+        }*/
         spellToEquip = spell;
-        if(!isServer && network)
+        if(!isServer && network && caster.startingSpellsReady)
         {
             StartCoroutine(WaitStartEquipSpell(spell));
         }
@@ -720,7 +716,7 @@ public class PlayerUI : NetworkBehaviour
             if (caster.equippedSpells[i] == spell)
             {
                 caster.equippedSpells[i] = null;
-                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                equipSlotTexts[i].text = "Slot " + (i + 1);
                 UpdateEquipSlotIcons();
             }
         }
@@ -734,10 +730,10 @@ public class PlayerUI : NetworkBehaviour
 
     public void EquipSpellToSlot(int index)
     {
-        if (!isLocalPlayer && network)
+        /*if (!isLocalPlayer && network)
         {
             return;
-        }
+        }*/
         if (spellToEquip == null) return;
         if (caster.equippedSpells[index] == spellToEquip)
         {
@@ -750,14 +746,14 @@ public class PlayerUI : NetworkBehaviour
             if (caster.equippedSpells[i] == spellToEquip)
             {
                 caster.equippedSpells[i] = null;
-                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                equipSlotTexts[i].text = "Slot " + (i + 1);
             }
         }
 
         caster.equippedSpells[index] = spellToEquip;
         equipSlotTexts[index].text = spellToEquip.spellName;
         UpdateEquipSlotIcons();
-        if (!isServer && network)
+        if (!isServer && network && caster.startingSpellsReady)
         {
             CMDEquipSpell(index);
         }
@@ -784,7 +780,7 @@ public class PlayerUI : NetworkBehaviour
             if (caster.equippedSpells[i] == spellToEquip)
             {
                 caster.equippedSpells[i] = null;
-                equipSlotTexts[i].text = "Spell Slot " + (i + 1);
+                equipSlotTexts[i].text = "Slot " + (i + 1);
             }
         }
 
@@ -1271,6 +1267,12 @@ public class PlayerUI : NetworkBehaviour
             savedNode.Interface = null;
             savedNode.OwnerSpell = null;
             savedNode.IsInUse = false;
+            string triggerName = "";
+            if(savedNode is SpellTrigger)
+            {
+                triggerName = ((SpellTrigger)savedNode).TriggeredSpell.spellName;
+                ((SpellTrigger)savedNode).TriggeredSpell = null;
+            }
 
             for (int j = 0; j < savedNode.ConectedNodes.Length; j++)
             {
@@ -1282,7 +1284,8 @@ public class PlayerUI : NetworkBehaviour
             SavedSpellNode savedNodeData = new SavedSpellNode
             {
                 node = savedNode,
-                gridIndex = i
+                gridIndex = i,
+                triggeredSpellName = triggerName
             };
 
             savedSpell.nodes.Add(savedNodeData);

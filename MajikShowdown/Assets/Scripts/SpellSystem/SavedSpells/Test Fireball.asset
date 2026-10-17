@@ -174,6 +174,8 @@ MonoBehaviour:
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 21300000, guid: 58a7e7d35c02d79448e306ae3bf6a7e0, type: 3}
   symbolColor: {r: 1, g: 1, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: -1
 --- !u!114 &-2922443535534103850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -348,6 +350,8 @@ MonoBehaviour:
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 21300000, guid: 58b2eaedcdb75d142875dec809da79ee, type: 3}
   symbolColor: {r: 1, g: 0, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: -1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,17 +367,23 @@ MonoBehaviour:
   spellName: Test Fireball
   colorIndex: 3
   symbolIndex: 3
+  startEquipped: 1
   nodes:
   - node: {fileID: 1887795929342810097}
     gridIndex: 0
+    triggeredSpellName: 
   - node: {fileID: 222820860240070920}
     gridIndex: 1
+    triggeredSpellName: 
   - node: {fileID: -2922443535534103850}
     gridIndex: 5
+    triggeredSpellName: 
   - node: {fileID: -5322066436910686980}
     gridIndex: 7
+    triggeredSpellName: 
   - node: {fileID: 3528646592992653263}
     gridIndex: 19
+    triggeredSpellName: 
 --- !u!114 &222820860240070920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -548,6 +558,8 @@ MonoBehaviour:
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 21300000, guid: c41c409defb715043b75e0c572342db8, type: 3}
   symbolColor: {r: 0, g: 0.74509805, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: -1
   trajectoryType: 0
   HommingRange: 10
 --- !u!114 &1887795929342810097
@@ -724,6 +736,8 @@ MonoBehaviour:
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 21300000, guid: e0441d32ff38f5a4f95f8313f5ee2bd1, type: 3}
   symbolColor: {r: 1, g: 0, b: 0, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: -1
   Type: 1
   Collisions:
     Allies: 0
@@ -742,7 +756,7 @@ MonoBehaviour:
   HitCooldown: 0.2
   SpawnTriggeredSpellCooldown: 0.5
   DieOnObjectCollide: 0
-  Element: 6
+  Element: 1
   FinalStats:
     Speed: 24.16248
     Duration: 11.90922
@@ -954,3 +968,5 @@ MonoBehaviour:
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
   nodeSymbolSprite: {fileID: 21300000, guid: 58a7e7d35c02d79448e306ae3bf6a7e0, type: 3}
   symbolColor: {r: 1, g: 1, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: -1
