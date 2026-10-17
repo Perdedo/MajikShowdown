@@ -1267,6 +1267,12 @@ public class PlayerUI : NetworkBehaviour
             savedNode.Interface = null;
             savedNode.OwnerSpell = null;
             savedNode.IsInUse = false;
+            string triggerName = "";
+            if(savedNode is SpellTrigger)
+            {
+                triggerName = ((SpellTrigger)savedNode).TriggeredSpell.spellName;
+                ((SpellTrigger)savedNode).TriggeredSpell = null;
+            }
 
             for (int j = 0; j < savedNode.ConectedNodes.Length; j++)
             {
@@ -1278,7 +1284,8 @@ public class PlayerUI : NetworkBehaviour
             SavedSpellNode savedNodeData = new SavedSpellNode
             {
                 node = savedNode,
-                gridIndex = i
+                gridIndex = i,
+                triggeredSpellName = triggerName
             };
 
             savedSpell.nodes.Add(savedNodeData);

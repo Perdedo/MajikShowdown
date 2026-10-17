@@ -22,6 +22,20 @@ public class SpellInventoryUI : NetworkBehaviour
     [Header("Network")]
     public bool network = true;
 
+    int startingEquippedSpells = 0;
+    List<StartingTrigger> startingTriggers = new List<StartingTrigger>();
+
+    public struct StartingTrigger
+    {
+        public SpellTrigger node;
+        public string triggerSpellName;
+
+        public StartingTrigger(SpellTrigger node, string triggerSpellName)
+        {
+            this.node = node;
+            this.triggerSpellName = triggerSpellName;
+        }
+    }
     /*public override void OnStartLocalPlayer()
     {
         for (int i = 0; i < caster.startingSpells.Count; i++)
@@ -44,11 +58,27 @@ public class SpellInventoryUI : NetworkBehaviour
 
     public void CreateStartingSpells()
     {
+        startingEquippedSpells = 0;
+        startingTriggers.Clear();
         for (int i = 0; i < caster.startingSpells.Count; i++)
         {
-            CreateStartingSpell(caster.startingSpells[i], i);
+            CreateStartingSpell(caster.startingSpells[i]);
         }
+
+        foreach (StartingTrigger trigger in startingTriggers)
+        {
+            foreach (Spell spell in caster.spells)
+            {
+                if (spell.spellName == trigger.triggerSpellName)
+                {
+                    trigger.node.TriggeredSpell = spell;
+                    trigger.node.UpdateTrigger();
+                }
+            }
+        }
+
         caster.startingSpellsReady = true;
+
         if (!isServer && network)
         {
             if (NetworkClient.ready)
@@ -125,7 +155,7 @@ public class SpellInventoryUI : NetworkBehaviour
         GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
     }
 
-    public void CreateStartingSpell(SavedSpellAsset ssa, int index)
+    public void CreateStartingSpell(SavedSpellAsset ssa)
     {
         Spell newSpell = new Spell(caster);
         newSpell.spellName = ssa.spellName;
@@ -150,8 +180,12 @@ public class SpellInventoryUI : NetworkBehaviour
 
         CreateSpellCard(newSpell);
 
-        playerUI.StartEquipSpell(newSpell);
-        playerUI.EquipSpellToSlot(index);
+        if(ssa.startEquipped && startingEquippedSpells < caster.equippedSpells.Length)
+        {
+            playerUI.StartEquipSpell(newSpell);
+            playerUI.EquipSpellToSlot(startingEquippedSpells);
+            startingEquippedSpells++;
+        }
 
         List<SpellNode> startingRuntimeNodes = new List<SpellNode>();
 
@@ -164,6 +198,11 @@ public class SpellInventoryUI : NetworkBehaviour
             runtimeNode.startingNode = true;
 
             startingRuntimeNodes.Add(runtimeNode);
+
+            if(runtimeNode is SpellTrigger)
+            {
+                startingTriggers.Add(new StartingTrigger((SpellTrigger)runtimeNode, ssn.triggeredSpellName));
+            }
         }
 
         foreach (SpellNode runtimeNode in startingRuntimeNodes)
@@ -184,9 +223,23 @@ public class SpellInventoryUI : NetworkBehaviour
     [Command]
     public void CMDCreateStartingSpells()
     {
-        for(int i = 0; i < caster.startingSpells.Count; i++)
+        startingEquippedSpells = 0;
+        startingTriggers.Clear();
+        for (int i = 0; i < caster.startingSpells.Count; i++)
         {
-            CreateStartingSpell(caster.startingSpells[i], i);
+            CreateStartingSpell(caster.startingSpells[i]);
+        }
+
+        foreach(StartingTrigger trigger in startingTriggers)
+        {
+            foreach(Spell spell in caster.spells)
+            {
+                if(spell.spellName == trigger.triggerSpellName)
+                {
+                    trigger.node.TriggeredSpell = spell;
+                    trigger.node.UpdateTrigger();
+                }
+            }
         }
     }
 
