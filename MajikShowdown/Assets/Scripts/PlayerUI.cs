@@ -691,12 +691,12 @@ public class PlayerUI : NetworkBehaviour
 
     public void StartEquipSpell(Spell spell)
     {
-        if (!isLocalPlayer && network)
+        /*if (!isLocalPlayer && network)
         {
             return;
-        }
+        }*/
         spellToEquip = spell;
-        if(!isServer && network)
+        if(!isServer && network && caster.startingSpellsReady)
         {
             StartCoroutine(WaitStartEquipSpell(spell));
         }
@@ -730,10 +730,10 @@ public class PlayerUI : NetworkBehaviour
 
     public void EquipSpellToSlot(int index)
     {
-        if (!isLocalPlayer && network)
+        /*if (!isLocalPlayer && network)
         {
             return;
-        }
+        }*/
         if (spellToEquip == null) return;
         if (caster.equippedSpells[index] == spellToEquip)
         {
@@ -753,7 +753,7 @@ public class PlayerUI : NetworkBehaviour
         caster.equippedSpells[index] = spellToEquip;
         equipSlotTexts[index].text = spellToEquip.spellName;
         UpdateEquipSlotIcons();
-        if (!isServer && network)
+        if (!isServer && network && caster.startingSpellsReady)
         {
             CMDEquipSpell(index);
         }

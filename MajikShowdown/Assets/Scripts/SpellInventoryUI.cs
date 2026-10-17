@@ -21,11 +21,31 @@ public class SpellInventoryUI : NetworkBehaviour
     [Header("Network")]
     public bool network = true;
 
-    public override void OnStartLocalPlayer()
+    /*public override void OnStartLocalPlayer()
     {
-        foreach (SavedSpellAsset ssa in caster.startingSpells)
+        for (int i = 0; i < caster.startingSpells.Count; i++)
         {
-            CreateStartingSpell(ssa);
+            CreateStartingSpell(caster.startingSpells[i], i);
+        }
+        caster.startingSpellsReady = true;
+        if (!isServer && network)
+        {
+            if (NetworkClient.ready)
+            {
+                CMDCreateStartingSpells();
+            }
+            else
+            {
+                StartCoroutine(WaitCreateStartingSpells());
+            }
+        }
+    }*/
+
+    public void CreateStartingSpells()
+    {
+        for (int i = 0; i < caster.startingSpells.Count; i++)
+        {
+            CreateStartingSpell(caster.startingSpells[i], i);
         }
         caster.startingSpellsReady = true;
         if (!isServer && network)
@@ -104,7 +124,7 @@ public class SpellInventoryUI : NetworkBehaviour
         GameManager.Instance.uiController.playerUI.spellNodeDescription.RefreshTriggerUI();
     }
 
-    public void CreateStartingSpell(SavedSpellAsset ssa)
+    public void CreateStartingSpell(SavedSpellAsset ssa, int index)
     {
         Spell newSpell = new Spell(caster);
         newSpell.spellName = ssa.spellName;
@@ -128,6 +148,9 @@ public class SpellInventoryUI : NetworkBehaviour
         newSpell.symbolIndex = ssa.symbolIndex;
 
         CreateSpellCard(newSpell);
+
+        GameManager.Instance.uiController.playerUI.StartEquipSpell(newSpell);
+        GameManager.Instance.uiController.playerUI.EquipSpellToSlot(index);
 
         List<SpellNode> startingRuntimeNodes = new List<SpellNode>();
 
@@ -160,9 +183,9 @@ public class SpellInventoryUI : NetworkBehaviour
     [Command]
     public void CMDCreateStartingSpells()
     {
-        foreach (SavedSpellAsset ssa in caster.startingSpells)
+        for(int i = 0; i < caster.startingSpells.Count; i++)
         {
-            CreateStartingSpell(ssa);
+            CreateStartingSpell(caster.startingSpells[i], i);
         }
     }
 

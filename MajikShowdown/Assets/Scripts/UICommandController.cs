@@ -12,7 +12,8 @@ using static NodeConection;
 public class UICommandController : NetworkBehaviour
 {
     public SpellCaster caster;
-
+    public PlayerUI playerUI;
+    public SpellInventoryUI spellInventoryUI;
     public int gridIndexRef = 0;
     public int cardIndexRef = 0;
     public List<HexGrid> grids = new List<HexGrid>();
@@ -22,6 +23,28 @@ public class UICommandController : NetworkBehaviour
     public List<SpellNode> runtimeNodes = new List<SpellNode>();
     public bool network = true;
 
+    private void Awake()
+    {
+        if (network)
+        {
+            StartCoroutine(WaitSetup());
+        }
+        else
+        {
+            GameManager.Instance.uiController.playerUI = playerUI;
+            spellInventoryUI.CreateStartingSpells();
+        }
+    }
+
+    IEnumerator WaitSetup()
+    {
+        yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
+        if(isLocalPlayer)
+        {
+            GameManager.Instance.uiController.playerUI = playerUI;
+            spellInventoryUI.CreateStartingSpells();
+        }
+    }
 
     public void SetSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues)
     {
