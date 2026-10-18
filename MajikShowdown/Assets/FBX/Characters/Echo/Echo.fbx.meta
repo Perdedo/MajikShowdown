@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e3e8a2bfc96476044a2c410930ed888d
+guid: 759d2a564a0b2f342b6392e71128494d
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: BreakerMat
-    second: {fileID: 2100000, guid: 82d81590f17cdeb44a7822b104b52804, type: 2}
+      name: EchoMat
+    second: {fileID: 2100000, guid: 8fcaf5a00ae9a0e478fe485d9a466b90, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -37,39 +37,10 @@ ModelImporter:
     clipAnimations:
     - serializedVersion: 16
       name: Attack
-      takeName: Armature|Attack
-      internalID: 4723146814002874508
+      takeName: EchoArmature|Attack
+      internalID: -2381077553150104595
       firstFrame: 0
-      lastFrame: 32
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: Landing
-      takeName: Armature|Fall
-      internalID: -5025487861805838091
-      firstFrame: 0
-      lastFrame: 25
+      lastFrame: 59
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -95,10 +66,10 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Idle
-      takeName: Armature|Idle
-      internalID: -8945691123924629249
+      takeName: EchoArmature|Idle
+      internalID: 5145318263418923404
       firstFrame: 0
-      lastFrame: 35
+      lastFrame: 59
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -124,10 +95,39 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Jump
-      takeName: Armature|Jump
-      internalID: 1079665108409675491
+      takeName: EchoArmature|Jumping
+      internalID: -5158827678658006453
       firstFrame: 0
-      lastFrame: 120
+      lastFrame: 89
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Landing
+      takeName: EchoArmature|Landing
+      internalID: 2544267986764119230
+      firstFrame: 0
+      lastFrame: 19
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -153,10 +153,10 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Run
-      takeName: Armature|Run
-      internalID: -7551964380084998518
+      takeName: EchoArmature|Running
+      internalID: -6571231164918033777
       firstFrame: 0
-      lastFrame: 15
+      lastFrame: 29
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
