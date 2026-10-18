@@ -11,6 +11,7 @@ public class SpellCardUI : MonoBehaviour
     public TextMeshProUGUI cooldownLabel;
 
     public Button cardButton;
+    public Button editSpellButton;
     public Button unequipButton;
     public Button deleteButton;
 
@@ -47,6 +48,10 @@ public class SpellCardUI : MonoBehaviour
         cardButton.onClick.RemoveAllListeners();
         cardButton.onClick.AddListener(HandleCardClick);
 
+        // Edit Spell Button Events
+        editSpellButton.onClick.RemoveAllListeners();
+        editSpellButton.onClick.AddListener(OpenEdit);
+
         // Unequip Spell Button Events
         unequipButton.onClick.RemoveAllListeners();
         unequipButton.onClick.AddListener(Unequip);
@@ -55,6 +60,7 @@ public class SpellCardUI : MonoBehaviour
         deleteButton.onClick.RemoveAllListeners();
         deleteButton.onClick.AddListener(Delete);
 
+        editSpellButton.gameObject.SetActive(false);
         unequipButton.gameObject.SetActive(false);
         deleteButton.gameObject.SetActive(false);
 
@@ -115,6 +121,7 @@ public class SpellCardUI : MonoBehaviour
         if (spellInventory != null) spellInventory.DeselectAllCards();
 
         isSelected = true;
+        editSpellButton.gameObject.SetActive(true);
         unequipButton.gameObject.SetActive(IsEquipped());
         deleteButton.gameObject.SetActive(true);
         cardColor.color = Color.cyan;
@@ -126,13 +133,16 @@ public class SpellCardUI : MonoBehaviour
     public void Deselect()
     {
         isSelected = false;
+        editSpellButton.gameObject.SetActive(false);
         unequipButton.gameObject.SetActive(false);
         deleteButton.gameObject.SetActive(false);
         cardColor.color = Color.white;
 
-        if (GameManager.Instance.uiController.playerUI.spellToEquip == boundSpell) GameManager.Instance.uiController.playerUI.spellToEquip = null;
+        if (GameManager.Instance.uiController.playerUI.spellToEquip == boundSpell)
+            GameManager.Instance.uiController.playerUI.spellToEquip = null;
 
-        if (boundSpell != null) boundSpell.Caster.commander.DeselectSCUI(this);
+        if (boundSpell != null)
+            boundSpell.Caster.commander.DeselectSCUI(this);
     }
 
     void OpenEdit()

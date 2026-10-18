@@ -941,7 +941,6 @@ public class PlayerUI : NetworkBehaviour
                 ClosePanel(optionsPanel);
                 return;
             }
-
             HideAnimatedPanel(pausePanel, ResumeGameplay);
             return;
         }
