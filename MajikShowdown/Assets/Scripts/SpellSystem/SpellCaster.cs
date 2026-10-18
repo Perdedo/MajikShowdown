@@ -19,7 +19,7 @@ public class SpellCaster : NetworkBehaviour
     public List<NodeInventory> inventories = new();
     public Player player;
     public List<Spell> spells = new List<Spell>();
-    public Spell[] equippedSpells;
+    public Spell[] equippedSpells = new Spell[4];
     public NodeInventory inventory;
     //public SpellCollider ProjectilePrefab;
     public Transform CastingPoint;
@@ -44,7 +44,7 @@ public class SpellCaster : NetworkBehaviour
         {
             player.caster = this;
             //DamageHandler = GetComponent<CharacterDamageHandler>();
-            equippedSpells = new Spell[4];
+            //equippedSpells = new Spell[4];
             foreach (var nodeData in ownedNodes)
             {
                 InstantiateNode(nodeData);

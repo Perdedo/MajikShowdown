@@ -749,7 +749,6 @@ public class PlayerUI : NetworkBehaviour
                 equipSlotTexts[i].text = "Slot " + (i + 1);
             }
         }
-
         caster.equippedSpells[index] = spellToEquip;
         equipSlotTexts[index].text = spellToEquip.spellName;
         UpdateEquipSlotIcons();
@@ -1270,7 +1269,10 @@ public class PlayerUI : NetworkBehaviour
             string triggerName = "";
             if(savedNode is SpellTrigger)
             {
-                triggerName = ((SpellTrigger)savedNode).TriggeredSpell.spellName;
+                if(((SpellTrigger)savedNode).TriggeredSpell != null)
+                {
+                    triggerName = ((SpellTrigger)savedNode).TriggeredSpell.spellName;
+                }
                 ((SpellTrigger)savedNode).TriggeredSpell = null;
             }
 
