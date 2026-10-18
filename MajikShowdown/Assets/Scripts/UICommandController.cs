@@ -27,16 +27,23 @@ public class UICommandController : NetworkBehaviour
     {
         if (network)
         {
-            StartCoroutine(WaitSetup());
+            StartCoroutine(WaitOnlineSetup());
         }
         else
         {
-            GameManager.Instance.uiController.playerUI = playerUI;
-            spellInventoryUI.CreateStartingSpells();
+            if(GameManager.Instance.uiController != null)
+            {
+                GameManager.Instance.uiController.playerUI = playerUI;
+                spellInventoryUI.CreateStartingSpells();
+            }
+            else
+            {
+                StartCoroutine(WaitOfflineSetup());
+            }
         }
     }
 
-    IEnumerator WaitSetup()
+    IEnumerator WaitOnlineSetup()
     {
         yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         if(isLocalPlayer)
@@ -44,6 +51,13 @@ public class UICommandController : NetworkBehaviour
             GameManager.Instance.uiController.playerUI = playerUI;
             spellInventoryUI.CreateStartingSpells();
         }
+    }
+
+    IEnumerator WaitOfflineSetup()
+    {
+        yield return new WaitUntil(() => GameManager.Instance != null && GameManager.Instance.uiController != null);
+        GameManager.Instance.uiController.playerUI = playerUI;
+        spellInventoryUI.CreateStartingSpells();
     }
 
     public void SetSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues)
