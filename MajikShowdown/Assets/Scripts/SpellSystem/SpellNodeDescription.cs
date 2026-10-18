@@ -417,19 +417,23 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         enemiesToggle.gameObject.SetActive(isType);
         objectsToggle.gameObject.SetActive(isType);
         if (!isType) return;
+
         selfToggle.SetIsOnWithoutNotify(currentType.Collisions.Self);
         alliesToggle.SetIsOnWithoutNotify(currentType.Collisions.Allies);
         enemiesToggle.SetIsOnWithoutNotify(currentType.Collisions.Enemies);
         objectsToggle.SetIsOnWithoutNotify(currentType.Collisions.Objects);
-        selfToggleIcon.sprite = currentType.Collisions.Self ? checkSprite : xSprite;
-        alliesToggleIcon.sprite = currentType.Collisions.Allies ? checkSprite : xSprite;
-        enemiesToggleIcon.sprite = currentType.Collisions.Enemies ? checkSprite : xSprite;
-        objectsToggleIcon.sprite = currentType.Collisions.Objects ? checkSprite : xSprite;
 
-        if(!isServer && network)
-        {
-            CMDCollisionDescription(node.Interface.acquisitionOrder);
-        }
+        selfToggleIcon.gameObject.SetActive(currentType.Collisions.Self);
+        alliesToggleIcon.gameObject.SetActive(currentType.Collisions.Allies);
+        enemiesToggleIcon.gameObject.SetActive(currentType.Collisions.Enemies);
+        objectsToggleIcon.gameObject.SetActive(currentType.Collisions.Objects);
+
+        selfToggleIcon.sprite = checkSprite;
+        alliesToggleIcon.sprite = checkSprite;
+        enemiesToggleIcon.sprite = checkSprite;
+        objectsToggleIcon.sprite = checkSprite;
+
+        if (!isServer && network) CMDCollisionDescription(node.Interface.acquisitionOrder);
     }
 
     [Command]
@@ -443,14 +447,21 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         enemiesToggle.gameObject.SetActive(isType);
         objectsToggle.gameObject.SetActive(isType);
         if (!isType) return;
+
         selfToggle.SetIsOnWithoutNotify(currentType.Collisions.Self);
         alliesToggle.SetIsOnWithoutNotify(currentType.Collisions.Allies);
         enemiesToggle.SetIsOnWithoutNotify(currentType.Collisions.Enemies);
         objectsToggle.SetIsOnWithoutNotify(currentType.Collisions.Objects);
-        selfToggleIcon.sprite = currentType.Collisions.Self ? checkSprite : xSprite;
-        alliesToggleIcon.sprite = currentType.Collisions.Allies ? checkSprite : xSprite;
-        enemiesToggleIcon.sprite = currentType.Collisions.Enemies ? checkSprite : xSprite;
-        objectsToggleIcon.sprite = currentType.Collisions.Objects ? checkSprite : xSprite;
+
+        selfToggleIcon.gameObject.SetActive(currentType.Collisions.Self);
+        alliesToggleIcon.gameObject.SetActive(currentType.Collisions.Allies);
+        enemiesToggleIcon.gameObject.SetActive(currentType.Collisions.Enemies);
+        objectsToggleIcon.gameObject.SetActive(currentType.Collisions.Objects);
+
+        selfToggleIcon.sprite = checkSprite;
+        alliesToggleIcon.sprite = checkSprite;
+        enemiesToggleIcon.sprite = checkSprite;
+        objectsToggleIcon.sprite = checkSprite;
     }
 
     void SetSelfCollision(bool value)
@@ -459,13 +470,11 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         var col = currentType.Collisions;
         col.Self = value;
         currentType.Collisions = col;
-        selfToggleIcon.sprite = value ? checkSprite : xSprite;
+        selfToggleIcon.gameObject.SetActive(value);
+        selfToggleIcon.sprite = checkSprite;
         currentType.OwnerSpell?.UpdateSpell();
 
-        if(!isServer && network)
-        {
-            CMDSetSelfCollision(value);
-        }
+        if (!isServer && network) CMDSetSelfCollision(value);
     }
 
     void SetAlliesCollision(bool value)
@@ -474,13 +483,11 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         var col = currentType.Collisions;
         col.Allies = value;
         currentType.Collisions = col;
-        alliesToggleIcon.sprite = value ? checkSprite : xSprite;
+        alliesToggleIcon.gameObject.SetActive(value);
+        alliesToggleIcon.sprite = checkSprite;
         currentType.OwnerSpell?.UpdateSpell();
 
-        if (!isServer && network)
-        {
-            CMDSetAlliesCollision(value);
-        }
+        if (!isServer && network) CMDSetAlliesCollision(value);
     }
 
     void SetEnemiesCollision(bool value)
@@ -489,13 +496,11 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         var col = currentType.Collisions;
         col.Enemies = value;
         currentType.Collisions = col;
-        enemiesToggleIcon.sprite = value ? checkSprite : xSprite;
+        enemiesToggleIcon.gameObject.SetActive(value);
+        enemiesToggleIcon.sprite = checkSprite;
         currentType.OwnerSpell?.UpdateSpell();
 
-        if (!isServer && network)
-        {
-            CMDSetEnemiesCollision(value);
-        }
+        if (!isServer && network) CMDSetEnemiesCollision(value);
     }
 
     void SetObjectsCollision(bool value)
@@ -504,13 +509,11 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         var col = currentType.Collisions;
         col.Objects = value;
         currentType.Collisions = col;
-        objectsToggleIcon.sprite = value ? checkSprite : xSprite;
+        objectsToggleIcon.gameObject.SetActive(value);
+        objectsToggleIcon.sprite = checkSprite;
         currentType.OwnerSpell?.UpdateSpell();
 
-        if (!isServer && network)
-        {
-            CMDSetObjectsCollision(value);
-        }
+        if (!isServer && network) CMDSetObjectsCollision(value);
     }
 
     [Command]
@@ -520,7 +523,8 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         var col = currentType.Collisions;
         col.Self = value;
         currentType.Collisions = col;
-        selfToggleIcon.sprite = value ? checkSprite : xSprite;
+        selfToggleIcon.gameObject.SetActive(value);
+        selfToggleIcon.sprite = checkSprite;
         currentType.OwnerSpell?.UpdateSpell();
     }
 
@@ -531,7 +535,8 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         var col = currentType.Collisions;
         col.Allies = value;
         currentType.Collisions = col;
-        alliesToggleIcon.sprite = value ? checkSprite : xSprite;
+        alliesToggleIcon.gameObject.SetActive(value);
+        alliesToggleIcon.sprite = checkSprite;
         currentType.OwnerSpell?.UpdateSpell();
     }
 
@@ -542,7 +547,8 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         var col = currentType.Collisions;
         col.Enemies = value;
         currentType.Collisions = col;
-        enemiesToggleIcon.sprite = value ? checkSprite : xSprite;
+        enemiesToggleIcon.gameObject.SetActive(value);
+        enemiesToggleIcon.sprite = checkSprite;
         currentType.OwnerSpell?.UpdateSpell();
     }
 
@@ -553,7 +559,8 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         var col = currentType.Collisions;
         col.Objects = value;
         currentType.Collisions = col;
-        objectsToggleIcon.sprite = value ? checkSprite : xSprite;
+        objectsToggleIcon.gameObject.SetActive(value);
+        objectsToggleIcon.sprite = checkSprite;
         currentType.OwnerSpell?.UpdateSpell();
     }
 

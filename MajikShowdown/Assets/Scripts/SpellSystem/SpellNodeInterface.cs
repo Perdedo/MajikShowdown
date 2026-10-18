@@ -15,6 +15,7 @@ public class SpellNodeInterface : MonoBehaviour
     public NodeConection[] conections;
     public SpellNodeInfos info;
     public NodeInventory inventory;
+    [SerializeField] private Sprite invertedBackgroundSprite;
     [SerializeField] private Image mainImage;
     [SerializeField] private Image nodeSymbol;
     [SerializeField] private Image selectedOutline;
@@ -73,9 +74,26 @@ public class SpellNodeInterface : MonoBehaviour
         selectedOutline.gameObject.SetActive(false);
     }
 
-    private void SetupMainVisual()
+    /*private void SetupMainVisual()
     {
         mainImage.color = Node.color;
+        mainImage.alphaHitTestMinimumThreshold = 0.1f;
+    }*/
+
+    private void SetupMainVisual()
+    {
+        bool inverted = Node is SpellStat stat && stat.invertNodeColors;
+
+        if (inverted)
+        {
+            mainImage.sprite = invertedBackgroundSprite;
+            mainImage.color = Color.white;
+        }
+        else
+        {
+            mainImage.color = Node.color;
+        }
+
         mainImage.alphaHitTestMinimumThreshold = 0.1f;
     }
 
@@ -93,7 +111,16 @@ public class SpellNodeInterface : MonoBehaviour
         if (!hasBackground) return;
 
         nodeSymbol.sprite = Node.nodeSymbolSprite;
-        nodeSymbol.color = Node.symbolColor;
+
+        bool inverted = Node is SpellStat stat && stat.invertNodeColors;
+        Color symbolColor = Node.symbolColor;
+
+        if (inverted)
+        {
+            symbolColor = new Color(1f - symbolColor.r, 1f - symbolColor.g, 1f - symbolColor.b, symbolColor.a);
+        }
+
+        nodeSymbol.color = symbolColor;
         nodeSymbol.alphaHitTestMinimumThreshold = 0.1f;
 
         SetInventoryVisual();
@@ -361,7 +388,8 @@ public class SpellNodeInterface : MonoBehaviour
 
     public void SetInventoryVisual()
     {
-        SetSymbolAlpha(80);
+        bool inverted = Node is SpellStat stat && stat.invertNodeColors;
+        SetSymbolAlpha(inverted ? (byte)200 : (byte)80);
     }
 
     public void SetGridValidVisual()
@@ -371,7 +399,8 @@ public class SpellNodeInterface : MonoBehaviour
 
     public void SetGridInvalidVisual()
     {
-        SetSymbolAlpha(35);
+        bool inverted = Node is SpellStat stat && stat.invertNodeColors;
+        SetSymbolAlpha(inverted ? (byte)87.5 : (byte)35);
     }
 
     public void SetSelectedVisual(bool selected)

@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Spell Stat", menuName = "Spell Nodes/SpellStat")]
 public class SpellStat : SpellNode
 {
-
+    public bool invertNodeColors;
 }
 /*public abstract class Stat
 {

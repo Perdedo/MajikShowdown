@@ -258,21 +258,19 @@ public class PlayerUI : NetworkBehaviour
 
     public void UpdateVsyncToggleImages(bool isOn)
     {
-        if (isOn)
-        {
-            vsyncToggleImage.sprite = toggleConfirm;
-        }
-        else
-        {
-            vsyncToggleImage.sprite = toggleDeny;
-        }
+        if (vsyncToggleImage == null) return;
+
+        vsyncToggleImage.gameObject.SetActive(isOn);
+        vsyncToggleImage.sprite = toggleConfirm;
     }
+
     public void ChangeVsyncToggle(bool isOn)
     {
         QualitySettings.vSyncCount = isOn ? 1 : 0;
         data.vsyncEnabled = isOn;
         UpdateVsyncToggleImages(isOn);
     }
+
     public void ConfigUpdate()
     {
         if (resDropdown != null)
@@ -310,7 +308,6 @@ public class PlayerUI : NetworkBehaviour
             UpdateVsyncToggleImages(data.vsyncEnabled);
         }
     }
-
 
     public void ChangeMasterVolume()
     {
@@ -876,62 +873,84 @@ public class PlayerUI : NetworkBehaviour
     public void PauseInput(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network) return;
-        if (!context.started) return;
-        if (IsLoading()) return;
+        if (!context.started || IsLoading()) return;
         if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
 
-        if (pausePanel.activeSelf && !spellPanel.activeSelf)
-        {
-            if (optionsPanel.activeSelf)
-            {
-                ClosePanel(optionsPanel);
-            }
-            else if (confirmLeavePanel.activeSelf)
-            {
-                ClosePanel(confirmLeavePanel);
-            }
-            else
-            {
-                HideAnimatedPanel(pausePanel, ResumeGameplay);
-            }
-        }
-        else if (!pausePanel.activeSelf && !spellPanel.activeSelf)
-        {
-            ShowAnimatedPanel(pausePanel);
-            SetGameplayInput(false);
-            caster.canCast = false;
-            EnableUICursor();
-        }
+        HandleEscapeInput();
     }
 
     public void PauseInputFeaturesScene(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network) return;
-        if (!context.started) return;
-        if (IsLoading()) return;
+        if (!context.started || IsLoading()) return;
         if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
 
-        if (pausePanel.activeSelf)
+        HandleEscapeInput();
+    }
+
+    private void HandleEscapeInput()
+    {
+        // 1. Close first the customization panel or trigger spell selection if they are open.
+        if (customizationPanel != null && customizationPanel.activeSelf)
         {
-            if (confirmLeavePanel.activeSelf)
+            CloseCustomizationPanel();
+            EnableUICursor();
+            return;
+        }
+
+        if (triggerSpellSelectionPanel != null && triggerSpellSelectionPanel.activeSelf)
+        {
+            CloseTriggerSpellSelection();
+            EnableUICursor();
+            return;
+        }
+
+        // 2. Return to the spell inventory if the edit spell panel is open.
+        if (editSpellPanel != null && editSpellPanel.activeSelf)
+        {
+            CloseEditSpellHUD();
+            EnableUICursor();
+            return;
+        }
+
+        // 3. Close the spell panel if it's open and not in the pause menu.
+        if (spellPanel != null && spellPanel.activeSelf)
+        {
+            HideAnimatedPanel(spellPanel, FinishClosingSpellPanel);
+            return;
+        }
+
+        // 4. Close the shop panel if it's open.
+        if (IsShopOpen)
+        {
+            CloseShopPanel();
+            return;
+        }
+
+        // 5. If Pause is open, check for nested panels and close them first. If none are open, resume gameplay.
+        if (pausePanel != null && pausePanel.activeSelf)
+        {
+            if (confirmLeavePanel != null && confirmLeavePanel.activeSelf)
             {
                 ClosePanel(confirmLeavePanel);
+                return;
             }
-            else
+
+            if (optionsPanel != null && optionsPanel.activeSelf)
             {
-                HideAnimatedPanel(pausePanel, () =>
-                {
-                    SetGameplayInput(true);
-                    EnableGameplayCursor();
-                });
+                ClosePanel(optionsPanel);
+                return;
             }
+
+            HideAnimatedPanel(pausePanel, ResumeGameplay);
+            return;
         }
-        else if (!pausePanel.activeSelf)
-        {
-            ShowAnimatedPanel(pausePanel);
-            SetGameplayInput(false);
-            EnableUICursor();
-        }
+
+        // 6. Open Pause if none of the above conditions are met.
+        ShowAnimatedPanel(pausePanel);
+        SetGameplayInput(false);
+        caster.canCast = false;
+        EnableUICursor();
     }
 
     public void OpenSpellPanelInput(InputAction.CallbackContext context)

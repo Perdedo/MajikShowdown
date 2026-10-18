@@ -504,15 +504,10 @@ public class UIController : MonoBehaviour
 
     public void UpdateVsyncToggleImages(bool isOn)
     {
-        if (isOn)
-        {
-            vsyncToggleImage.sprite = toggleConfirm;
-        }
-        else
-        {
-            vsyncToggleImage.sprite = toggleDeny;
-        }
+        vsyncToggleImage.gameObject.SetActive(isOn);
+        vsyncToggleImage.sprite = toggleConfirm;
     }
+
     public void ChangeVsyncToggle(bool isOn)
     {
         QualitySettings.vSyncCount = isOn ? 1 : 0;

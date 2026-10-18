@@ -835,7 +835,7 @@ public class UICommandController : NetworkBehaviour
             scui.spellInventory.DeselectAllCards();
         }
         scui.isSelected = true;
-        scui.editButton.gameObject.SetActive(true);
+        scui.unequipButton.gameObject.SetActive(scui.IsEquipped());
         scui.deleteButton.gameObject.SetActive(true);
         scui.cardColor.color = Color.cyan;
         GameManager.Instance.uiController.playerUI.StartEquipSpell(scui.boundSpell);
@@ -863,7 +863,7 @@ public class UICommandController : NetworkBehaviour
         //SpellCardUI scui = cards[index];
         SpellCardUI scui = cards.Find(c => c.instanceIndex == index);
         scui.isSelected = false;
-        scui.editButton.gameObject.SetActive(false);
+        scui.unequipButton.gameObject.SetActive(false);
         scui.deleteButton.gameObject.SetActive(false);
         scui.cardColor.color = Color.white;
         if (GameManager.Instance.uiController.playerUI.spellToEquip == scui.boundSpell)
