@@ -55,7 +55,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         rarityDropdown.ClearOptions();
         rarityDropdown.AddOptions(new List<string> { "All Rarities", "Rusty Runes", "Forged Runes", "Refined Runes" });
         sortDropdown.ClearOptions();
-        sortDropdown.AddOptions(new List<string> { "Rune Acquisition Order", "Rune Category"});
+        sortDropdown.AddOptions(new List<string> { "Acquisition Order", "Category"});
 
         hideUsedToggle.SetIsOnWithoutNotify(false);
         reverseSortToggle.SetIsOnWithoutNotify(false);
@@ -95,20 +95,20 @@ public class NodeInventory : NetworkBehaviour, IDropZone
         initialized = true;
         typeDropdown.ClearOptions();
         typeDropdown.AddOptions(new List<string> {
-            "Show All Runes",
-            "Show Core Runes",
-            "Show Trajectory Runes",
-            "Show Effect Runes",
-            "Show Casting Point Runes",
-            "Show Trigger Runes",
-            "Show Stat Runes"
+            "All Types",
+            "Core Runes",
+            "Trajectory Runes",
+            "Effect Runes",
+            "Casting Point Runes",
+            "Trigger Runes",
+            "Stat Runes"
         });
 
         rarityDropdown.ClearOptions();
-        rarityDropdown.AddOptions(new List<string> { "Show All Rarities", "Show Rusty Runes", "Show Forged Runes", "Show Refined Runes" });
+        rarityDropdown.AddOptions(new List<string> { "All Rarities", "Rusty Runes", "Forged Runes", "Refined Runes" });
 
         sortDropdown.ClearOptions();
-        sortDropdown.AddOptions(new List<string> { "Rune Acquisition Order", "Rune Category"});
+        sortDropdown.AddOptions(new List<string> { "Acquisition Order", "Category"});
 
         hideUsedToggle.SetIsOnWithoutNotify(false);
         reverseSortToggle.SetIsOnWithoutNotify(false);

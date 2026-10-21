@@ -91,11 +91,11 @@ public class SpellCollider : NetworkBehaviour
         }
         if(OwnerSpell.coreNode.Type == SpellTypes.Explosion)
         {
-            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, stats.Size, Mathf.Round(stats.Duration * 10))/10;
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10)/10, Mathf.Round(stats.Duration * 10)/10);
         }
         else
         {
-            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, stats.Size);
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10)/10);
         }
         
         //Debug.Log( VFXIndex);

@@ -228,10 +228,10 @@ public class HordeController : NetworkBehaviour
             cell.Direction = FlowFieldManager.instance.flowField.allCells[i].direction;
             FlowFieldManager.instance.cellJobDatas[i] = cell;
         }*/
-        NativeArray<float3> playerPos = new NativeArray<float3>(GameManager.Instance.Players.Count, Allocator.TempJob);
-        for(int i =0; i<GameManager.Instance.Players.Count; i++)
+        NativeArray<float3> playerPos = new NativeArray<float3>(FlowFieldManager.instance.Targets.Count, Allocator.TempJob);
+        for(int i =0; i<FlowFieldManager.instance.Targets.Count; i++)
         {
-            playerPos[i] = GameManager.Instance.Players[i].transform.position;
+            playerPos[i] = FlowFieldManager.instance.Targets[i].transform.position;
         }
         EnemyFieldLocation enemyLocation = new EnemyFieldLocation()
         {

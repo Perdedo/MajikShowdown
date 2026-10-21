@@ -27,16 +27,23 @@ public class UICommandController : NetworkBehaviour
     {
         if (network)
         {
-            StartCoroutine(WaitSetup());
+            StartCoroutine(WaitOnlineSetup());
         }
         else
         {
-            GameManager.Instance.uiController.playerUI = playerUI;
-            spellInventoryUI.CreateStartingSpells();
+            if(GameManager.Instance.uiController != null)
+            {
+                GameManager.Instance.uiController.playerUI = playerUI;
+                spellInventoryUI.CreateStartingSpells();
+            }
+            else
+            {
+                StartCoroutine(WaitOfflineSetup());
+            }
         }
     }
 
-    IEnumerator WaitSetup()
+    IEnumerator WaitOnlineSetup()
     {
         yield return new WaitUntil(() => NetworkClient.ready && NetworkClient.active);
         if(isLocalPlayer)
@@ -44,6 +51,13 @@ public class UICommandController : NetworkBehaviour
             GameManager.Instance.uiController.playerUI = playerUI;
             spellInventoryUI.CreateStartingSpells();
         }
+    }
+
+    IEnumerator WaitOfflineSetup()
+    {
+        yield return new WaitUntil(() => GameManager.Instance != null && GameManager.Instance.uiController != null);
+        GameManager.Instance.uiController.playerUI = playerUI;
+        spellInventoryUI.CreateStartingSpells();
     }
 
     public void SetSpellNodeValues(SpellNode node, float cooldown, StatTypes baseStats, List<float> extraValues)
@@ -821,7 +835,7 @@ public class UICommandController : NetworkBehaviour
             scui.spellInventory.DeselectAllCards();
         }
         scui.isSelected = true;
-        scui.editButton.gameObject.SetActive(true);
+        scui.unequipButton.gameObject.SetActive(scui.IsEquipped());
         scui.deleteButton.gameObject.SetActive(true);
         scui.cardColor.color = Color.cyan;
         GameManager.Instance.uiController.playerUI.StartEquipSpell(scui.boundSpell);
@@ -849,7 +863,7 @@ public class UICommandController : NetworkBehaviour
         //SpellCardUI scui = cards[index];
         SpellCardUI scui = cards.Find(c => c.instanceIndex == index);
         scui.isSelected = false;
-        scui.editButton.gameObject.SetActive(false);
+        scui.unequipButton.gameObject.SetActive(false);
         scui.deleteButton.gameObject.SetActive(false);
         scui.cardColor.color = Color.white;
         if (GameManager.Instance.uiController.playerUI.spellToEquip == scui.boundSpell)
