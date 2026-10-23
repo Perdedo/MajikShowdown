@@ -18,7 +18,8 @@ public class SetGraphicsBuffer : MonoBehaviour
     [SerializeField] private ExposedProperty bufferCount = "PointsCount";
     [SerializeField] private List<Transform> instances = new List<Transform>();
     [SerializeField] private Queue<int> nullIndex = new Queue<int>();
-    static readonly ExposedProperty newEvent = "OnNewExplosion";
+    static readonly ExposedProperty newEventExplosion = "OnNewExplosion";
+    static readonly ExposedProperty newEventArea = "OnNewArea";
     bool newCall = false;
     public VFXNetworkAuxiliar netAux;
     void Start()
@@ -40,7 +41,7 @@ public class SetGraphicsBuffer : MonoBehaviour
         {
             netAux.AddEffect(this, place, size);
         }
-        if(myType != SpellTypes.Explosion)
+        if(myType != SpellTypes.Explosion && myType != SpellTypes.Area)
         {
             int index = instances.Count;
             if(nullIndex.Count == 0)
@@ -138,6 +139,7 @@ public class SetGraphicsBuffer : MonoBehaviour
         visualEffect.SetInt(bufferCount, points.Count);
         if (newCall)
         {
+            ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
             visualEffect.SendEvent(newEvent);
             newCall = false;
         }
@@ -153,6 +155,7 @@ public class SetGraphicsBuffer : MonoBehaviour
         visualEffect.SetInt(bufferCount, points.Count);
         if (newCall)
         {
+            ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
             visualEffect.SendEvent(newEvent);
             newCall = false;
         }

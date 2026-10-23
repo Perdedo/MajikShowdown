@@ -17,19 +17,11 @@ public class BufferTests : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            TesteElement(Elements.Darkness,points);
+            TesteType(SpellTypes.Area,points);
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
-            /*if(index == 1)
-            {
-                TestBufferRemove(0, Elements.Radiance, SpellTypes.Area);
-                index++;
-            }*/ 
-        }
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            index = TestBufferNulls();
+            TestBufferRemove(index, Elements.Fire, SpellTypes.Explosion);
         }
     }
     public void TestBufferSpawn()
@@ -64,15 +56,15 @@ public class BufferTests : MonoBehaviour
         if(type != SpellTypes.Explosion)
         {
             BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1);
-            BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1);
-            BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 1);
+            BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[1].transform, 1);
+            /*BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 1);
             BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1);
             BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 1);
-            BuffersControl.Instance.SpawnEffect(Elements.Decay,type, points[5].transform, 1);
+            BuffersControl.Instance.SpawnEffect(Elements.Decay,type, points[5].transform, 1);*/
         }
         else
         {
-            BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1.5f, 1.25f);
+            index = BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1.5f, 1.25f);
             BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 2.5f, 1.5f);
             BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 3.5f, 1.5f);
             BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 4.5f, 2.25f);
