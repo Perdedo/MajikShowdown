@@ -227,9 +227,15 @@ MonoBehaviour:
   instanceIndex: -1
   ActiveID:
     ID: 0
+  mesh: {fileID: 7787495591025843828}
+  colorIndex: -1
+  transparency: 1
   maxDistanceFromPlayer: 100
   repositionRange: 20
   animator: {fileID: 4985550762952184184}
+  baseColors: []
+  flickering: 0
+  flickerAmmount: 0
   explosionRadius: 10
   knockbackStrength: 15
   knockbackLift: 1
@@ -346,6 +352,8 @@ MonoBehaviour:
   Health: 15
   minHealthMultiplier: 1
   maxHealthMultiplier: 1.5
+  resistancePercentValue: 50
+  weaknessPercentValue: -100
   Resistances: []
   enemyIndex: 0
   moneyDrop: 0
@@ -508,5 +516,10 @@ Transform:
 --- !u!95 &4985550762952184184 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5202055709408992756, guid: c6fccbd8ff638ff4dbad6e0b7c2d46c1, type: 3}
+  m_PrefabInstance: {fileID: 937124868186229900}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &7787495591025843828 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6995193997155685112, guid: c6fccbd8ff638ff4dbad6e0b7c2d46c1, type: 3}
   m_PrefabInstance: {fileID: 937124868186229900}
   m_PrefabAsset: {fileID: 0}

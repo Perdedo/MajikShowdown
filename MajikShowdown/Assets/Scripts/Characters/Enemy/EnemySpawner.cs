@@ -89,11 +89,17 @@ public class EnemySpawner : NetworkBehaviour
                 sum += enemies[i].chance;
                 if(randDifficulty <= sum)
                 {
+
                     if (controller.enemiesByType[i].Count <= controller.usedEnemiesByType[i].Count)
                     {
                         aux = Instantiate(enemies[i].enemy, spawnPos.position + GetSpawnDirection(), Quaternion.identity);
                         NetworkServer.Spawn(aux);
                         auxEnemy = aux.GetComponent<Enemy>();
+                        auxEnemy.transparency = 1;
+                        foreach (Material mat in auxEnemy.mesh.materials)
+                        {
+                            mat.SetFloat("_Alpha_Threshold", 1);
+                        }
                         controller.enemiesByType[i].Add(auxEnemy);
                         auxEnemy.instanceIndex = controller.enemiesInfo.Count;
                         EnemyTransformInfo auxTrInfo = new EnemyTransformInfo(/*aux, */spawnPos.position, 0,/* (float)NetworkTime.time,*/ Vector3.zero);
@@ -114,6 +120,11 @@ public class EnemySpawner : NetworkBehaviour
                                 aux.transform.position = auxPos;
                                 auxEnemy = aux.GetComponent<Enemy>();
                                 auxEnemy.ResetTransform(auxPos);
+                                auxEnemy.transparency = 1;
+                                foreach (Material mat in auxEnemy.mesh.materials)
+                                {
+                                    mat.SetFloat("_Alpha_Threshold", 1);
+                                }
                                 aux.SetActive(true);
                                 ActivateEnemy(aux, auxPos);
                                 break;

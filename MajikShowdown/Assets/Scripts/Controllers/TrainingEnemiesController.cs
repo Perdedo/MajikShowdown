@@ -13,6 +13,7 @@ public class TrainingEnemiesController : MonoBehaviour
     public float3[] Directions = new float3[8];
     public List<Enemy> GameEnemies = new List<Enemy>();
     public List<Enemy> UsedEnemies = new List<Enemy>();
+    public List<Enemy> DyingEnemies = new List<Enemy>();
     [HideInInspector] public List<List<Enemy>> enemiesByType = new List<List<Enemy>>();
     [HideInInspector] public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
     public float spawnerHeight = 2;
@@ -33,6 +34,7 @@ public class TrainingEnemiesController : MonoBehaviour
         JobDirectionData.CopyFrom(Directions);
         enemiesByType.Clear();
         usedEnemiesByType.Clear();
+        DyingEnemies.Clear();
         for (int i = 0; i < spawners.Count; i++)
         {
             enemiesByType.Add(new List<Enemy>());
@@ -55,7 +57,7 @@ public class TrainingEnemiesController : MonoBehaviour
     }
     private void Update()
     {
-        if(UsedEnemies.Count <= 0)
+        if(UsedEnemies.Count <= 0 && DyingEnemies.Count <= 0)
         {
             return;
         }
@@ -70,6 +72,10 @@ public class TrainingEnemiesController : MonoBehaviour
                     UsedEnemies[i].MoveDirection = results[i];
                     UsedEnemies[i].Reposition();
                     UsedEnemies[i].ResetKnockbackCooldown();
+                    if (UsedEnemies[i].flickering)
+                    {
+                        UsedEnemies[i].Flicker();
+                    }
                     UsedEnemies[i].EnemyUpdate();
                 }
             }
@@ -81,6 +87,16 @@ public class TrainingEnemiesController : MonoBehaviour
                 if (UsedEnemies[i] != null)
                 {
                     UsedEnemies[i].EnemyUpdate();
+                }
+            }
+        }
+        if(DyingEnemies.Count > 0)
+        {
+            for(int i = 0; i < DyingEnemies.Count; i++)
+            {
+                if(DyingEnemies[i] != null)
+                {
+                    DyingEnemies[i].DyingUpdate();
                 }
             }
         }
@@ -99,6 +115,11 @@ public class TrainingEnemiesController : MonoBehaviour
                 {
                     aux = Instantiate(enemy, pos + distanceBetweenSpawns * i, Quaternion.identity);
                     auxEnemy = aux.GetComponent<Enemy>();
+                    auxEnemy.transparency = 1;
+                    foreach (Material mat in auxEnemy.mesh.materials)
+                    {
+                        mat.SetFloat("_Alpha_Threshold", 1);
+                    }
                     enemiesByType[ind].Add(auxEnemy);
                     GameEnemies.Add(auxEnemy);
                 }
@@ -110,8 +131,13 @@ public class TrainingEnemiesController : MonoBehaviour
                         {
                             aux = e.gameObject;
                             aux.transform.position = pos + distanceBetweenSpawns * i;
-                            aux.SetActive(true);
                             auxEnemy = aux.GetComponent<Enemy>();
+                            auxEnemy.transparency = 1;
+                            foreach (Material mat in auxEnemy.mesh.materials)
+                            {
+                                mat.SetFloat("_Alpha_Threshold", 1);
+                            }
+                            aux.SetActive(true);
                             break;
                         }
                     }

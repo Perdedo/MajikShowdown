@@ -66,6 +66,14 @@ public class CharacterDamageHandler : NetworkBehaviour
         {
             Die();
         }
+        else if(gameCharacter is Enemy)
+        {
+            if(!network)
+            {
+                ((Enemy)gameCharacter).flickerAmmount = 6;
+            }
+            ((Enemy)gameCharacter).flickering = true;
+        }
     }
 
     public virtual void Heal(float amount)
@@ -104,8 +112,10 @@ public class CharacterDamageHandler : NetworkBehaviour
             GameManager.Instance.hordeController.UsedEnemies.Remove((Enemy)gameCharacter);
             ((Enemy)gameCharacter).UpdateIdWrapper(-1);
             GameManager.Instance.hordeController.UpdateEnemyActiveID();
+            ((Enemy)gameCharacter).transparency = 0;
+            GameManager.Instance.hordeController.DyingEnemies.Add((Enemy)gameCharacter);
             RPCDisable();
-            this.gameObject.SetActive(false);
+            //this.gameObject.SetActive(false);
         }
         else
         {
@@ -113,16 +123,20 @@ public class CharacterDamageHandler : NetworkBehaviour
             GameManager.Instance.trainingController.UsedEnemies.Remove((Enemy)gameCharacter);
             ((Enemy)gameCharacter).UpdateIdWrapper(-1);
             GameManager.Instance.trainingController.UpdateEnemyActiveID();
-            this.gameObject.SetActive(false);
+            GameManager.Instance.trainingController.DyingEnemies.Add((Enemy)gameCharacter);
+            //this.gameObject.SetActive(false);
             //Destroy(gameObject);
         }
         
     }
 
+
     [ClientRpc]
     public void RPCDisable()
     {
-        this.gameObject.SetActive(false);
+        ((Enemy)gameCharacter).transparency = 0;
+        GameManager.Instance.hordeController.DyingEnemies.Add((Enemy)gameCharacter);
+        //this.gameObject.SetActive(false);
     }
 }
 

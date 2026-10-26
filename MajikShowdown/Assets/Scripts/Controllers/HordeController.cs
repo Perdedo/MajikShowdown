@@ -31,6 +31,7 @@ public class HordeController : NetworkBehaviour
     [HideInInspector] public Enemy[] clientEnemies;
     [HideInInspector] public List<Enemy> GameEnemies = new List<Enemy>();
     [HideInInspector] public List<Enemy> UsedEnemies = new List<Enemy>();
+    [HideInInspector] public List<Enemy> DyingEnemies = new List<Enemy>();
     [HideInInspector] public List<EnemyTransformInfo> enemiesInfo = new List<EnemyTransformInfo>();
     [HideInInspector] public List<List<Enemy>> enemiesByType = new List<List<Enemy>>();
     [HideInInspector] public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
@@ -68,6 +69,7 @@ public class HordeController : NetworkBehaviour
         spawners.Clear();
         enemiesByType.Clear();
         usedEnemiesByType.Clear();
+        DyingEnemies.Clear();
         for (int i = 0; i < baseEnemyChances.Count; i++)
         {
             enemiesByType.Add(new List<Enemy>());
@@ -146,6 +148,10 @@ public class HordeController : NetworkBehaviour
                             UsedEnemies[i].MoveDirection = results[i];
                             UsedEnemies[i].Reposition();
                             UsedEnemies[i].ResetKnockbackCooldown();
+                            if (UsedEnemies[i].flickering)
+                            {
+                                UsedEnemies[i].Flicker();
+                            }
                             UsedEnemies[i].EnemyUpdate();
                         }
                     }
@@ -161,7 +167,16 @@ public class HordeController : NetworkBehaviour
                     }
                 }
 
-
+                if (DyingEnemies.Count > 0)
+                {
+                    for (int i = 0; i < DyingEnemies.Count; i++)
+                    {
+                        if (DyingEnemies[i] != null)
+                        {
+                            DyingEnemies[i].DyingUpdate();
+                        }
+                    }
+                }
                 //UpdateEnemiesPos(enemiesInfo);
             }
             else
@@ -190,6 +205,20 @@ public class HordeController : NetworkBehaviour
                         if(aux)
                         {
                             e.Reposition();
+                            if(e.flickering)
+                            {
+                                e.Flicker();
+                            }
+                        }
+                    }
+                }
+                if (DyingEnemies.Count > 0)
+                {
+                    for (int i = 0; i < DyingEnemies.Count; i++)
+                    {
+                        if (DyingEnemies[i] != null)
+                        {
+                            DyingEnemies[i].DyingUpdate();
                         }
                     }
                 }
