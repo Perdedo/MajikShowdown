@@ -40539,9 +40539,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   startingSpells:
-  - {fileID: 11400000, guid: 7adfc160948623d4087efb883d5d0282, type: 2}
-  - {fileID: 11400000, guid: 1783a19ee346ab54c8da166eb832de89, type: 2}
   - {fileID: 11400000, guid: d52e0876ee7afe84296a6de3916dc907, type: 2}
+  - {fileID: 11400000, guid: 1783a19ee346ab54c8da166eb832de89, type: 2}
   AimController: {fileID: 6982475888199955597}
   genericNodePrefab: {fileID: 4987073506986097210, guid: 90062ac18eaa795429e3132159484390, type: 3}
   ownedNodes:
@@ -69340,6 +69339,8 @@ MonoBehaviour:
   Health: 0
   minHealthMultiplier: 1
   maxHealthMultiplier: 1.5
+  resistancePercentValue: 50
+  weaknessPercentValue: -100
   Resistances: []
   enemyIndex: 0
   moneyDrop: 0
@@ -69347,6 +69348,7 @@ MonoBehaviour:
   damageIndicatorPrefab: {fileID: 0}
   network: 1
   canDie: 1
+  dying: 0
   myPlayer: {fileID: 6002867169297178958}
 --- !u!114 &231414976514505296
 MonoBehaviour:
