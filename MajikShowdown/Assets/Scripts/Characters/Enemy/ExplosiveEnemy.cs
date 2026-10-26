@@ -32,6 +32,7 @@ public class ExplosiveEnemy : Enemy
         {
             NetworkServer.Spawn(inst);
         }
+        inst.GetComponent<Explosion>().Initialize(element);
         hits = Physics.OverlapSphere(transform.position, explosionRadius, affectedByExplosion);
         foreach (Collider collider in hits)
         {

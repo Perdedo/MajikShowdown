@@ -324,7 +324,7 @@ public class Enemy : CrowdCharacter
 
     public void DyingUpdate()
     {
-        transparency = Mathf.Clamp(transparency + Time.deltaTime, 0f, 1f);
+        transparency = Mathf.Clamp(transparency + Time.deltaTime * 3, 0f, 1f);
         foreach (Material mat in mesh.materials)
         {
             mat.SetFloat("_Alpha_Threshold", transparency);
