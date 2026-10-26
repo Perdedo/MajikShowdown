@@ -20,6 +20,13 @@ public class SetGraphicsBuffer : MonoBehaviour
     [SerializeField] private Queue<int> nullIndex = new Queue<int>();
     static readonly ExposedProperty newEventExplosion = "OnNewExplosion";
     static readonly ExposedProperty newEventArea = "OnNewArea";
+    static readonly ExposedProperty endEventArea = "OnEndArea";
+    static readonly ExposedProperty positionAttribute = "position";
+    static readonly ExposedProperty sizeAttribute = "size"; 
+    static readonly ExposedProperty hitEventProjec = "OnHitProject";
+
+    VFXEventAttribute eventAttribute;
+
     bool newCall = false;
     public VFXNetworkAuxiliar netAux;
     void Start()
@@ -28,6 +35,7 @@ public class SetGraphicsBuffer : MonoBehaviour
         {
             return;
         }
+        eventAttribute = visualEffect.CreateVFXEventAttribute();
         EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
     }
 
@@ -121,6 +129,18 @@ public class SetGraphicsBuffer : MonoBehaviour
         {
             netAux.RemoveEffect(this, index);
         }
+        if(myType == SpellTypes.Area)
+        {
+            eventAttribute.SetVector3(positionAttribute, instances[index].position);
+            eventAttribute.SetFloat(sizeAttribute, spawnPoints[index].w);
+            visualEffect.SendEvent(endEventArea, eventAttribute);
+        }else if(myType == SpellTypes.Projectile)
+        {
+            eventAttribute.SetVector3(positionAttribute, instances[index].position);
+            eventAttribute.SetFloat(sizeAttribute, spawnPoints[index].w);
+            visualEffect.SendEvent(hitEventProjec, eventAttribute);
+        }
+
         instances[index] = null;
         nullIndex.Enqueue(index);    
     }
