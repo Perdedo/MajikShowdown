@@ -10,6 +10,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
+
 #if UNITY_EDITOR
 using static UnityEditor.PlayerSettings;
 #endif
@@ -58,6 +59,9 @@ public class Enemy : CrowdCharacter
     protected Damage dmgCtrl;
     [HideInInspector][SyncVar(hook = "ClientInitialize")] public int instanceIndex = -1;
     [HideInInspector][SyncVar] public IdWrapper ActiveID;
+    public SkinnedMeshRenderer mesh;
+    [HideInInspector][SyncVar(hook = "ChangeColor")] public int colorIndex = -1;
+
     [Serializable]
     public struct IdWrapper
     {
@@ -74,8 +78,31 @@ public class Enemy : CrowdCharacter
     protected bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
 
+    public List<EnemyElementColors> baseColors = new List<EnemyElementColors>();
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
 
+
+    public void ChangeColor(int oldVal, int newVal)
+    {
+        if(newVal >= 0)
+        {
+            foreach(Material mat in mesh.materials)
+            {
+                mat.SetColor("_Main_Color", GameManager.Instance.hordeController.enemyElementColors[newVal].mainColor);
+                mat.SetColor("_Emission_Color", GameManager.Instance.hordeController.enemyElementColors[newVal].emissionColor);
+                mat.SetColor("_Emission_Color1", GameManager.Instance.hordeController.enemyElementColors[newVal].emissionColor1);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < mesh.materials.Length; i++)
+            {
+                mesh.materials[i].SetColor("_Main_Color", baseColors[i].mainColor);
+                mesh.materials[i].SetColor("_Emission_Color", baseColors[i].emissionColor);
+                mesh.materials[i].SetColor("_Emission_Color1", baseColors[i].emissionColor1);
+            }
+        }
+    }
 
     public void ClientInitialize(int oldVal, int newVal)
     {

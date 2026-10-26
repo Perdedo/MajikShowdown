@@ -171,9 +171,20 @@ MonoBehaviour:
   instanceIndex: -1
   ActiveID:
     ID: 0
+  mesh: {fileID: 7787495591025843828}
+  colorIndex: 7
   maxDistanceFromPlayer: 100
   repositionRange: 20
   animator: {fileID: 4985550762952184184}
+  baseColors:
+  - element: Base
+    mainColor: {r: 1, g: 1, b: 1, a: 1}
+    emissionColor: {r: 0, g: 0.09947154, b: 44.727043, a: 1}
+    emissionColor1: {r: 0, g: 8.933399, b: 0.92552805, a: 0}
+  - element: Battery
+    mainColor: {r: 1, g: 1, b: 1, a: 1}
+    emissionColor: {r: 0.10980392, g: 0.29411766, b: 1, a: 1}
+    emissionColor1: {r: 0, g: 6.6912913, b: 0.41927618, a: 0}
   explosionRadius: 10
   knockbackStrength: 15
   knockbackLift: 1
@@ -290,6 +301,8 @@ MonoBehaviour:
   Health: 5
   minHealthMultiplier: 1
   maxHealthMultiplier: 2
+  resistancePercentValue: 50
+  weaknessPercentValue: -100
   Resistances: []
   enemyIndex: 0
   moneyDrop: 70
@@ -452,5 +465,10 @@ Transform:
 --- !u!95 &4985550762952184184 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5202055709408992756, guid: c6fccbd8ff638ff4dbad6e0b7c2d46c1, type: 3}
+  m_PrefabInstance: {fileID: 937124868186229900}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &7787495591025843828 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6995193997155685112, guid: c6fccbd8ff638ff4dbad6e0b7c2d46c1, type: 3}
   m_PrefabInstance: {fileID: 937124868186229900}
   m_PrefabAsset: {fileID: 0}

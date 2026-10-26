@@ -9,6 +9,8 @@ public class CharacterDamageHandler : NetworkBehaviour
     [SyncVar]public float MaxHealth;
     [SyncVar]public float Health;
     public float minHealthMultiplier = 1, maxHealthMultiplier = 1.5f;
+    [Range(-100, 100)] public float resistancePercentValue = 50;
+    [Range(-100, 100)] public float weaknessPercentValue = -100;
     public List<Resistance> Resistances;
     public int enemyIndex;
     //public int lootDropPoolInd;
@@ -158,6 +160,12 @@ public class Resistance
 {
     public Elements Element;
     [Range(-100, 100)] public float PercentValue;
+
+    public Resistance (Elements element, float percentValue)
+    {
+        Element = element;
+        PercentValue = percentValue;
+    }
 }
 public interface IGameCharacter
 {

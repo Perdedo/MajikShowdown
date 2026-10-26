@@ -48,6 +48,8 @@ public class HordeController : NetworkBehaviour
     Timer aiCalcTimer = new Timer(false);
     float enemyAIupdateRate = 1f / 10f; // Hz
 
+    public List<EnemyElementColors> enemyElementColors = new List<EnemyElementColors>();
+
     [Header("Ground Raycast Options")]
     [SerializeField] protected LayerMask RayMasks;
     private void Awake()
@@ -791,4 +793,15 @@ public struct EnemyTransformInfo
         //this.lastTime = lastTime;
         this.vel = vel;
     }
+}
+
+[Serializable]
+public struct EnemyElementColors
+{
+    public string element;
+    public Color mainColor;
+    [ColorUsage(true, true)]
+    public Color emissionColor;
+    [ColorUsage(true, true)]
+    public Color emissionColor1;
 }
