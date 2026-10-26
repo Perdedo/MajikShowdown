@@ -61,7 +61,7 @@ public class Enemy : CrowdCharacter
     [HideInInspector][SyncVar] public IdWrapper ActiveID;
     public SkinnedMeshRenderer mesh;
     [HideInInspector][SyncVar(hook = "ChangeColor")] public int colorIndex = -1;
-    /*[HideInInspector]*/ public float transparency = 1;
+    [HideInInspector] public float transparency = 1;
 
     [Serializable]
     public struct IdWrapper

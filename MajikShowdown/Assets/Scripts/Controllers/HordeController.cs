@@ -7,6 +7,7 @@ using Unity.Collections;
 using UnityEngine;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine.Rendering.Universal;
 
 public class HordeController : NetworkBehaviour
 {
@@ -27,7 +28,7 @@ public class HordeController : NetworkBehaviour
     [HideInInspector][SyncVar] public bool inHordeTime = false;
     [HideInInspector][SyncVar] public bool inPause = false;
     public TextMeshProUGUI timerTxt;
-    /*[HideInInspector]*/ public List<Enemy> enemies = new List<Enemy>();
+    [HideInInspector] public List<Enemy> enemies = new List<Enemy>();
     [HideInInspector] public Enemy[] clientEnemies;
     [HideInInspector] public List<Enemy> GameEnemies = new List<Enemy>();
     [HideInInspector] public List<Enemy> UsedEnemies = new List<Enemy>();
@@ -51,10 +52,13 @@ public class HordeController : NetworkBehaviour
 
     public List<EnemyElementColors> enemyElementColors = new List<EnemyElementColors>();
 
+    public ScriptableRendererFeature xray;
+
     [Header("Ground Raycast Options")]
     [SerializeField] protected LayerMask RayMasks;
     private void Awake()
     {
+        xray.SetActive(false);
         hordeIndex = 0;
         clientEnemies = new Enemy[maxEnemyCount];
         GameManager.Instance.hordeController = this;
@@ -450,6 +454,7 @@ public class HordeController : NetworkBehaviour
     [Server]
     public void StartPause()
     {
+        xray.SetActive(false);
         pauseStartTime = Time.time;
         pauseEndTime = pauseStartTime + pauseDuration;
         inPause = true;
@@ -598,6 +603,7 @@ public class HordeController : NetworkBehaviour
     IEnumerator StopSpawning()
     {
         yield return new WaitForSeconds(hordeDuration);
+        xray.SetActive(true);
         inHordeTime = false;
         //StopAllCoroutines();
         CheckEnemyCount();

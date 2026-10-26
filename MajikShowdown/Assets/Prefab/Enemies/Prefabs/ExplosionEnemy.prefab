@@ -173,6 +173,7 @@ MonoBehaviour:
     ID: 0
   mesh: {fileID: 7787495591025843828}
   colorIndex: 7
+  transparency: 1
   maxDistanceFromPlayer: 100
   repositionRange: 20
   animator: {fileID: 4985550762952184184}
@@ -185,6 +186,8 @@ MonoBehaviour:
     mainColor: {r: 1, g: 1, b: 1, a: 1}
     emissionColor: {r: 0.10980392, g: 0.29411766, b: 1, a: 1}
     emissionColor1: {r: 0, g: 6.6912913, b: 0.41927618, a: 0}
+  flickering: 0
+  flickerAmmount: 0
   explosionRadius: 10
   knockbackStrength: 15
   knockbackLift: 1
@@ -310,6 +313,7 @@ MonoBehaviour:
   damageIndicatorPrefab: {fileID: 0}
   network: 1
   canDie: 1
+  dying: 0
 --- !u!1 &2002080844044921225
 GameObject:
   m_ObjectHideFlags: 0
@@ -451,6 +455,10 @@ PrefabInstance:
     - target: {fileID: 4179838819264887688, guid: c6fccbd8ff638ff4dbad6e0b7c2d46c1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5858996907940184334, guid: c6fccbd8ff638ff4dbad6e0b7c2d46c1, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
