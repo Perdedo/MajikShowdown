@@ -25,6 +25,8 @@ public class CharacterDamageHandler : NetworkBehaviour
     public bool network = true;
     public IGameCharacter gameCharacter;
     public bool canDie = true;
+    [HideInInspector] public bool dying = false;
+
     void Awake()
     {
         Health = MaxHealth;
@@ -87,6 +89,11 @@ public class CharacterDamageHandler : NetworkBehaviour
 
     public virtual void Die()
     {
+        if(dying)
+        {
+            return;
+        }
+        dying = true;
         gameCharacter.Die();
         if(GameManager.Instance.hordeController != null && GameManager.Instance.hordeController.enemies.Contains((Enemy)gameCharacter))
         {
@@ -94,12 +101,12 @@ public class CharacterDamageHandler : NetworkBehaviour
             {
                 player.AddMoney(moneyDrop);
             }
-            GameManager.Instance.hordeController.enemies.Remove((Enemy)gameCharacter);
+            /*GameManager.Instance.hordeController.enemies.Remove((Enemy)gameCharacter);
             GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
             if (!GameManager.Instance.hordeController.inHordeTime)
             {
                 GameManager.Instance.hordeController.CheckEnemyCount();
-            }
+            }*/
         }
         if (network)
         {
@@ -108,10 +115,10 @@ public class CharacterDamageHandler : NetworkBehaviour
             {
                 LootSpawner.Instance.SpawnLootBox(((Enemy)gameCharacter).currentCell.position+(Vector3.up*0.5f), ((Enemy)gameCharacter).AvailablePools[((Enemy)gameCharacter).PoolProbability.GetRandomEntry()]);
             }
-            GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
+            /*GameManager.Instance.hordeController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
             GameManager.Instance.hordeController.UsedEnemies.Remove((Enemy)gameCharacter);
             ((Enemy)gameCharacter).UpdateIdWrapper(-1);
-            GameManager.Instance.hordeController.UpdateEnemyActiveID();
+            GameManager.Instance.hordeController.UpdateEnemyActiveID();*/
             ((Enemy)gameCharacter).transparency = 0;
             GameManager.Instance.hordeController.DyingEnemies.Add((Enemy)gameCharacter);
             RPCDisable();
@@ -119,10 +126,11 @@ public class CharacterDamageHandler : NetworkBehaviour
         }
         else
         {
-            GameManager.Instance.trainingController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
+            /*GameManager.Instance.trainingController.usedEnemiesByType[enemyIndex].Remove((Enemy)gameCharacter);
             GameManager.Instance.trainingController.UsedEnemies.Remove((Enemy)gameCharacter);
             ((Enemy)gameCharacter).UpdateIdWrapper(-1);
-            GameManager.Instance.trainingController.UpdateEnemyActiveID();
+            GameManager.Instance.trainingController.UpdateEnemyActiveID();*/
+            ((Enemy)gameCharacter).transparency = 0;
             GameManager.Instance.trainingController.DyingEnemies.Add((Enemy)gameCharacter);
             //this.gameObject.SetActive(false);
             //Destroy(gameObject);
@@ -134,8 +142,11 @@ public class CharacterDamageHandler : NetworkBehaviour
     [ClientRpc]
     public void RPCDisable()
     {
-        ((Enemy)gameCharacter).transparency = 0;
-        GameManager.Instance.hordeController.DyingEnemies.Add((Enemy)gameCharacter);
+        if(!isServer)
+        {
+            ((Enemy)gameCharacter).transparency = 0;
+            GameManager.Instance.hordeController.DyingEnemies.Add((Enemy)gameCharacter);
+        }
         //this.gameObject.SetActive(false);
     }
 }

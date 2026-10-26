@@ -61,7 +61,7 @@ public class Enemy : CrowdCharacter
     [HideInInspector][SyncVar] public IdWrapper ActiveID;
     public SkinnedMeshRenderer mesh;
     [HideInInspector][SyncVar(hook = "ChangeColor")] public int colorIndex = -1;
-    [HideInInspector] public float transparency = 1;
+    /*[HideInInspector]*/ public float transparency = 1;
 
     [Serializable]
     public struct IdWrapper
@@ -331,12 +331,26 @@ public class Enemy : CrowdCharacter
         }
         if(transparency >= 1)
         {
-            if(GameManager.Instance.hordeController != null)
+            if (GameManager.Instance.hordeController != null)
             {
+                GameManager.Instance.hordeController.enemies.Remove(this);
+                GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
+                if (!GameManager.Instance.hordeController.inHordeTime)
+                {
+                    GameManager.Instance.hordeController.CheckEnemyCount();
+                }
+                GameManager.Instance.hordeController.usedEnemiesByType[DamageHandler.enemyIndex].Remove(this);
+                GameManager.Instance.hordeController.UsedEnemies.Remove(this);
+                UpdateIdWrapper(-1);
+                GameManager.Instance.hordeController.UpdateEnemyActiveID();
                 GameManager.Instance.hordeController.DyingEnemies.Remove(this);
             }
             else if (GameManager.Instance.trainingController != null)
             {
+                GameManager.Instance.trainingController.usedEnemiesByType[DamageHandler.enemyIndex].Remove(this);
+                GameManager.Instance.trainingController.UsedEnemies.Remove(this);
+                UpdateIdWrapper(-1);
+                GameManager.Instance.trainingController.UpdateEnemyActiveID();
                 GameManager.Instance.trainingController.DyingEnemies.Remove(this);
             }
             gameObject.SetActive(false);

@@ -120,6 +120,10 @@ public class EnemySpawner : NetworkBehaviour
                                 aux.transform.position = auxPos;
                                 auxEnemy = aux.GetComponent<Enemy>();
                                 auxEnemy.ResetTransform(auxPos);
+                                if(controller.DyingEnemies.Contains(auxEnemy))
+                                {
+                                    controller.DyingEnemies.Remove(auxEnemy);
+                                }
                                 auxEnemy.transparency = 1;
                                 foreach (Material mat in auxEnemy.mesh.materials)
                                 {
@@ -131,6 +135,7 @@ public class EnemySpawner : NetworkBehaviour
                             }
                         }
                     }
+                    auxEnemy.DamageHandler.dying = false;
                     auxEnemy.ResetAllVelocities();
                     controller.enemies.Add(auxEnemy);
                     controller.UpdateEnemyText(controller.enemies.Count);
