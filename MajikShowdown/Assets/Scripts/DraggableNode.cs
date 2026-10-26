@@ -290,7 +290,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             {
                 transform.SetParent(savedParent, true);
                 rectTransform.anchoredPosition = savedPosition;
-
+                GetComponent<SpellNodeInterface>()?.SetFavoriteButtonVisible(true);
                 inventory.Unfreeze();
                 inventory.ApplyFilter();
 
@@ -301,7 +301,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             transform.SetParent(savedParent, true);
             rectTransform.anchoredPosition = savedPosition;
-
+            GetComponent<SpellNodeInterface>()?.SetFavoriteButtonVisible(true);
             inventory.Unfreeze();
             inventory.ApplyFilter();
 
@@ -348,6 +348,7 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Destroy(savedClone.gameObject);
         inventoryClone = null;
         targetInventory.Receive(this);
+        nodeInterface?.SetFavoriteButtonVisible(true);
         if (nodeInterface != null) targetInventory.InsertNodeAt(nodeInterface, cloneIndex);
         canvasGroup.blocksRaycasts = true;
     }
@@ -368,7 +369,6 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             clone.canvasGroup.blocksRaycasts = true;
 
             SpellNodeInterface cloneInterface = cloneGO.GetComponent<SpellNodeInterface>();
-
             inventoryClone = clone;
             inventory.Receive(clone);
             inventory.InsertNodeAt(cloneInterface, savedListIndex);

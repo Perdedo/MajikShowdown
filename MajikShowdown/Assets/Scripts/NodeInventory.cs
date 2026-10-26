@@ -20,6 +20,7 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     public TMP_Dropdown sortDropdown;
     public Toggle hideUsedToggle;
     public Toggle reverseSortToggle;
+    public Toggle favoritesOnlyToggle;
     private NodeFilter currentFilter = new NodeFilter();
     private Dictionary<DraggableNode, int> usageCount = new();
     public SpellCaster caster;
@@ -59,16 +60,19 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         hideUsedToggle.SetIsOnWithoutNotify(false);
         reverseSortToggle.SetIsOnWithoutNotify(false);
+        favoritesOnlyToggle.SetIsOnWithoutNotify(false);
         typeDropdown.onValueChanged.RemoveAllListeners();
         rarityDropdown.onValueChanged.RemoveAllListeners();
         sortDropdown.onValueChanged.RemoveAllListeners();
         hideUsedToggle.onValueChanged.RemoveAllListeners();
         reverseSortToggle.onValueChanged.RemoveAllListeners();
+        favoritesOnlyToggle.onValueChanged.RemoveAllListeners();
         typeDropdown.onValueChanged.AddListener(OnFilterChanged);
         rarityDropdown.onValueChanged.AddListener(OnFilterChanged);
         sortDropdown.onValueChanged.AddListener(OnFilterChanged);
         hideUsedToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         reverseSortToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
+        favoritesOnlyToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         ApplyFilter();
         if(!isServer && network && caster.startingSpellsReady)
         {
@@ -112,16 +116,19 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         hideUsedToggle.SetIsOnWithoutNotify(false);
         reverseSortToggle.SetIsOnWithoutNotify(false);
+        favoritesOnlyToggle.SetIsOnWithoutNotify(false);
         typeDropdown.onValueChanged.RemoveAllListeners();
         rarityDropdown.onValueChanged.RemoveAllListeners();
         sortDropdown.onValueChanged.RemoveAllListeners();
         hideUsedToggle.onValueChanged.RemoveAllListeners();
         reverseSortToggle.onValueChanged.RemoveAllListeners();
+        favoritesOnlyToggle.onValueChanged.RemoveAllListeners();
         typeDropdown.onValueChanged.AddListener(OnFilterChanged);
         rarityDropdown.onValueChanged.AddListener(OnFilterChanged);
         sortDropdown.onValueChanged.AddListener(OnFilterChanged);
         hideUsedToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         reverseSortToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
+        favoritesOnlyToggle.onValueChanged.AddListener(_ => OnFilterChanged(0));
         ApplyFilter();
     }
 
@@ -381,9 +388,10 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     {
         currentFilter.category = (NodeCategory)typeDropdown.value;
         currentFilter.quality = rarityDropdown.value - 1;
-        currentFilter.hideUsed = hideUsedToggle.isOn;
         currentFilter.sortMode = (NodeSortMode)sortDropdown.value;
+        currentFilter.hideUsed = hideUsedToggle.isOn;
         currentFilter.reverseSort = reverseSortToggle.isOn;
+        currentFilter.favoritesOnly = favoritesOnlyToggle.isOn;
         ApplyFilter();
         if (!isServer && network && caster.startingSpellsReady)
         {
@@ -402,11 +410,18 @@ public class NodeInventory : NetworkBehaviour, IDropZone
     {
         currentFilter.category = (NodeCategory)typeDropdown.value;
         currentFilter.quality = rarityDropdown.value - 1;
-        currentFilter.hideUsed = hideUsedToggle.isOn;
         currentFilter.sortMode = (NodeSortMode)sortDropdown.value;
+        currentFilter.hideUsed = hideUsedToggle.isOn;
         currentFilter.reverseSort = reverseSortToggle.isOn;
+        currentFilter.favoritesOnly = favoritesOnlyToggle.isOn;
         ApplyFilter();
     }
+
+    public void OnNodeFavoriteChanged(SpellNodeInterface node)
+    {
+        ApplyFilter();
+    }
+
     public void ApplyFilter()
     {
         IEnumerable<SpellNodeInterface> query = activeNodes;
@@ -424,12 +439,19 @@ public class NodeInventory : NetworkBehaviour, IDropZone
             query = query.Where(n => !n.IsUsed());
         }
 
+        if (currentFilter.favoritesOnly)
+        {
+            query = query.Where(n => n.IsFavorite);
+        }
+
         switch (currentFilter.sortMode)
         {
-            case NodeSortMode.AcquisitionOrder: query = currentFilter.reverseSort ? query.OrderByDescending(n => n.acquisitionOrder) : query.OrderBy(n => n.acquisitionOrder);
+            case NodeSortMode.AcquisitionOrder:
+                query = currentFilter.reverseSort ? query.OrderByDescending(n => n.acquisitionOrder) : query.OrderBy(n => n.acquisitionOrder);
                 break;
 
-            case NodeSortMode.Category: query = currentFilter.reverseSort ? query.OrderByDescending(n => n.GetCategory()) : query.OrderBy(n => n.GetCategory());
+            case NodeSortMode.Category:
+                query = currentFilter.reverseSort ? query.OrderByDescending(n => n.GetCategory()) : query.OrderBy(n => n.GetCategory());
                 break;
         }
 

@@ -57,6 +57,7 @@ public class HexGridNode : MonoBehaviour, IDropZone, IDropHandler
 
         node.transform.SetParent(transform, false);
         node.transform.localPosition = Vector3.zero;
+        spell.SetFavoriteButtonVisible(false);
         node.SetOriginZone(this);
         ConnectNode(spell, returningToOriginalPosition);
         grid.caster.commander.HexReceive(node,this);
