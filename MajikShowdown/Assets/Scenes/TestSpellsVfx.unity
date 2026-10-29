@@ -1139,7 +1139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &409704876
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1251,7 +1251,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!135 &415760666
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1298,7 +1298,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 696db6d147f9f8e41aa74c627a1cdd2f, type: 2}
+  - {fileID: 2100000, guid: ba49dd696b231b449be8eee074f3540c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2622,7 +2622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1408860782
 Transform:
   m_ObjectHideFlags: 0
@@ -2646,7 +2646,7 @@ VFXRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1408860781}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -2703,7 +2703,7 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.4
+      - m_Value: 0.21
         m_Name: Opacity
         m_Overridden: 1
       - m_Value: 0.3
@@ -4629,6 +4629,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 71964139336056463, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 886234396413216504, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Int.m_Array.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 886234396413216504, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Int.m_Array.Array.data[1].m_Name
+      value: PointsCount
+      objectReference: {fileID: 0}
+    - target: {fileID: 886234396413216504, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 886234396413216504, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Int.m_Array.Array.data[1].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1921680596906593342, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -4668,6 +4688,10 @@ PrefabInstance:
     - target: {fileID: 1921680596906593342, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4596932138439004923, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_CastShadows
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6689734942567695830, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
       propertyPath: m_Name

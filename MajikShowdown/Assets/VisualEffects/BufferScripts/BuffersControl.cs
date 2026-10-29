@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class BuffersControl : MonoBehaviour
@@ -61,6 +62,11 @@ public class BuffersControl : MonoBehaviour
                 Debug.LogError("VFX element don't exist");
             }
         }
+
+        if(type == SpellTypes.Explosion)
+        {
+            StartCoroutine(RemoveExplosion(time, element, index));
+        }
         return index;
     }
     public void UnspawnEffect(Elements element, SpellTypes type, int index)
@@ -73,5 +79,11 @@ public class BuffersControl : MonoBehaviour
                 i = buffers.Count;
             }
         }
+    }
+    private IEnumerator  RemoveExplosion(float time, Elements element, int index)
+    {
+
+        yield return new WaitForSeconds(1 + time);
+        UnspawnEffect(element, SpellTypes.Explosion, index);
     }
 }
