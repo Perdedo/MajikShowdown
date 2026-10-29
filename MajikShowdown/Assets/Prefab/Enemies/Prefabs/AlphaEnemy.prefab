@@ -171,9 +171,19 @@ MonoBehaviour:
   instanceIndex: -1
   ActiveID:
     ID: 0
+  mesh: {fileID: 4389692973958546504}
+  colorIndex: 7
+  transparency: 1
   maxDistanceFromPlayer: 100
   repositionRange: 20
   animator: {fileID: 5686492304332502192}
+  baseColors:
+  - element: Base
+    mainColor: {r: 1, g: 1, b: 1, a: 1}
+    emissionColor: {r: 0, g: 0.5566101, b: 2, a: 1}
+    emissionColor1: {r: 0, g: 3.6886053, b: 0.76910204, a: 0}
+  flickering: 0
+  flickerAmmount: 0
 --- !u!114 &1204932771429242631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,11 +284,13 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  BaseMaxHealth: 15
-  MaxHealth: 15
-  Health: 15
+  BaseMaxHealth: 5
+  MaxHealth: 5
+  Health: 5
   minHealthMultiplier: 1
   maxHealthMultiplier: 2
+  resistancePercentValue: 50
+  weaknessPercentValue: -100
   Resistances: []
   enemyIndex: 0
   moneyDrop: 100
@@ -286,6 +298,7 @@ MonoBehaviour:
   damageIndicatorPrefab: {fileID: 0}
   network: 1
   canDie: 1
+  dying: 0
 --- !u!1 &7619042804517948128
 GameObject:
   m_ObjectHideFlags: 0
@@ -436,6 +449,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5324728702645747821, guid: 2e4b05c6979b20443bf8b86f3f6a41f1, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 2e4b05c6979b20443bf8b86f3f6a41f1, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -452,6 +469,11 @@ PrefabInstance:
 --- !u!4 &1732291890503937738 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2e4b05c6979b20443bf8b86f3f6a41f1, type: 3}
+  m_PrefabInstance: {fileID: 2270077230128007457}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &4389692973958546504 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -6671029832770892439, guid: 2e4b05c6979b20443bf8b86f3f6a41f1, type: 3}
   m_PrefabInstance: {fileID: 2270077230128007457}
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &5686492304332502192 stripped

@@ -79,7 +79,7 @@ public class PlayerUI : NetworkBehaviour
     [SerializeField] private Image[] iconSlots;
     [SerializeField] private Button[] iconButtons;
     [SerializeField] private Image[] cooldownIcons;
-
+    
     [Header("Trigger Spell Selection")]
     public GameObject triggerSpellSelectionPanel;
     public Transform triggerSpellContent;
@@ -97,6 +97,17 @@ public class PlayerUI : NetworkBehaviour
     public GameObject crosshair;
     [HideInInspector] public bool inGame = false;
     public PopupManager popupManager;
+
+    [Header("Player Name and Ready")]
+    public TextMeshPro playerNameText;
+    public Image readyImage;
+    public Sprite readySprite;
+    public Sprite notReadySprite;
+
+    [Header("Ally Cards")]
+    public AllyCardUI allyCardPrefab;
+    public Transform allyCardsContainer;
+
     [Header("Network")]
     public bool network = true;
     bool loaded;

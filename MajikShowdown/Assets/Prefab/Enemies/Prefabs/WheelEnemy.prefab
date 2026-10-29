@@ -171,9 +171,19 @@ MonoBehaviour:
   instanceIndex: -1
   ActiveID:
     ID: 0
+  mesh: {fileID: 166480242653700688}
+  colorIndex: -1
+  transparency: 1
   maxDistanceFromPlayer: 125
   repositionRange: 40
   animator: {fileID: 8523925023661244627}
+  baseColors:
+  - element: Base
+    mainColor: {r: 1, g: 1, b: 1, a: 1}
+    emissionColor: {r: 0.32467824, g: 13.766361, b: 10.460308, a: 1}
+    emissionColor1: {r: 0, g: 3.82173, b: 22.363522, a: 0}
+  flickering: 0
+  flickerAmmount: 0
   chargeStartDistance: 30
   chargeSpeed: 30
   baseRotationSpeed: 360
@@ -280,11 +290,13 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  BaseMaxHealth: 25
-  MaxHealth: 25
-  Health: 25
+  BaseMaxHealth: 10
+  MaxHealth: 10
+  Health: 10
   minHealthMultiplier: 1
   maxHealthMultiplier: 2
+  resistancePercentValue: 50
+  weaknessPercentValue: -100
   Resistances: []
   enemyIndex: 0
   moneyDrop: 100
@@ -292,6 +304,7 @@ MonoBehaviour:
   damageIndicatorPrefab: {fileID: 0}
   network: 1
   canDie: 1
+  dying: 0
 --- !u!1 &2002080844044921225
 GameObject:
   m_ObjectHideFlags: 0
@@ -394,6 +407,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Joust
       objectReference: {fileID: 0}
+    - target: {fileID: 8276326608636488448, guid: 8d35af8ec55f13742b17aaa64f173bb9, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8484286953798132059, guid: 8d35af8ec55f13742b17aaa64f173bb9, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5
@@ -455,6 +472,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d35af8ec55f13742b17aaa64f173bb9, type: 3}
+--- !u!137 &166480242653700688 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7082003895934498204, guid: 8d35af8ec55f13742b17aaa64f173bb9, type: 3}
+  m_PrefabInstance: {fileID: 6919536613439903692}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1565317440135198359 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8484286953798132059, guid: 8d35af8ec55f13742b17aaa64f173bb9, type: 3}

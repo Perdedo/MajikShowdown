@@ -10,6 +10,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
+
 #if UNITY_EDITOR
 using static UnityEditor.PlayerSettings;
 #endif
@@ -58,6 +59,10 @@ public class Enemy : CrowdCharacter
     protected Damage dmgCtrl;
     [HideInInspector][SyncVar(hook = "ClientInitialize")] public int instanceIndex = -1;
     [HideInInspector][SyncVar] public IdWrapper ActiveID;
+    public SkinnedMeshRenderer mesh;
+    [HideInInspector][SyncVar(hook = "ChangeColor")] public int colorIndex = -1;
+    [HideInInspector] public float transparency = 1;
+
     [Serializable]
     public struct IdWrapper
     {
@@ -74,8 +79,32 @@ public class Enemy : CrowdCharacter
     protected bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
 
+    public List<EnemyElementColors> baseColors = new List<EnemyElementColors>();
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
+    [HideInInspector][SyncVar(hook = "ResetFlicker")] public bool flickering = false;
+    [HideInInspector] public int flickerAmmount = 0;
 
+    public void ChangeColor(int oldVal, int newVal)
+    {
+        if(newVal >= 0)
+        {
+            foreach(Material mat in mesh.materials)
+            {
+                mat.SetColor("_Main_Color", GameManager.Instance.hordeController.enemyElementColors[newVal].mainColor);
+                mat.SetColor("_Emission_Color", GameManager.Instance.hordeController.enemyElementColors[newVal].emissionColor);
+                mat.SetColor("_Emission_Color1", GameManager.Instance.hordeController.enemyElementColors[newVal].emissionColor1);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < mesh.materials.Length; i++)
+            {
+                mesh.materials[i].SetColor("_Main_Color", baseColors[i].mainColor);
+                mesh.materials[i].SetColor("_Emission_Color", baseColors[i].emissionColor);
+                mesh.materials[i].SetColor("_Emission_Color1", baseColors[i].emissionColor1);
+            }
+        }
+    }
 
     public void ClientInitialize(int oldVal, int newVal)
     {
@@ -174,6 +203,16 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
+        if(transparency > 0)
+        {
+            transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
+
+            foreach (Material mat in mesh.materials)
+            {
+                mat.SetFloat("_Alpha_Threshold", transparency);
+            }
+            return;
+        }
         timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
         if((predTarget - transform.position).sqrMagnitude < 100)
@@ -201,6 +240,11 @@ public class Enemy : CrowdCharacter
 
     public void ResetTransform(Vector3 spawnPos)
     {
+        transparency = 1;
+        foreach(Material mat in mesh.materials)
+        {
+            mat.SetFloat("_Alpha_Threshold", 1);
+        }
         transform.position = spawnPos;
         rb.position = spawnPos;
         transformInfo = new EnemyTransformInfo(spawnPos,(byte)transform.rotation.eulerAngles.y, Vector3.zero);
@@ -231,7 +275,16 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
+        if (transparency > 0)
+        {
+            transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
 
+            foreach (Material mat in mesh.materials)
+            {
+                mat.SetFloat("_Alpha_Threshold", transparency);
+            }
+            return;
+        }
         if (forwardCell != null)
         {
             CheckForJump();
@@ -267,6 +320,61 @@ public class Enemy : CrowdCharacter
             animator.SetBool("Moving", moving);
         }
         UpdateTransform();
+    }
+
+    public void DyingUpdate()
+    {
+        transparency = Mathf.Clamp(transparency + Time.deltaTime * 3, 0f, 1f);
+        foreach (Material mat in mesh.materials)
+        {
+            mat.SetFloat("_Alpha_Threshold", transparency);
+        }
+        if(transparency >= 1)
+        {
+            if (GameManager.Instance.hordeController != null)
+            {
+                GameManager.Instance.hordeController.enemies.Remove(this);
+                GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
+                if (!GameManager.Instance.hordeController.inHordeTime)
+                {
+                    GameManager.Instance.hordeController.CheckEnemyCount();
+                }
+                GameManager.Instance.hordeController.usedEnemiesByType[DamageHandler.enemyIndex].Remove(this);
+                GameManager.Instance.hordeController.UsedEnemies.Remove(this);
+                UpdateIdWrapper(-1);
+                GameManager.Instance.hordeController.UpdateEnemyActiveID();
+                GameManager.Instance.hordeController.DyingEnemies.Remove(this);
+            }
+            else if (GameManager.Instance.trainingController != null)
+            {
+                GameManager.Instance.trainingController.usedEnemiesByType[DamageHandler.enemyIndex].Remove(this);
+                GameManager.Instance.trainingController.UsedEnemies.Remove(this);
+                UpdateIdWrapper(-1);
+                GameManager.Instance.trainingController.UpdateEnemyActiveID();
+                GameManager.Instance.trainingController.DyingEnemies.Remove(this);
+            }
+            gameObject.SetActive(false);
+        }
+    }
+
+    public void Flicker()
+    {
+        mesh.enabled = !mesh.enabled;
+        flickerAmmount--;
+
+        if(flickerAmmount <= 0)
+        {
+            mesh.enabled = true;
+            flickering = false;
+        }
+    }
+
+    public void ResetFlicker(bool oldVal, bool newVal)
+    {
+        if(newVal)
+        {
+            flickerAmmount = 6;
+        }
     }
 
     /*public void OnAnimStateChange(EnemyAnimState oldVal, EnemyAnimState newVal)

@@ -7,6 +7,7 @@ using Unity.Collections;
 using UnityEngine;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine.Rendering.Universal;
 
 public class HordeController : NetworkBehaviour
 {
@@ -31,6 +32,7 @@ public class HordeController : NetworkBehaviour
     [HideInInspector] public Enemy[] clientEnemies;
     [HideInInspector] public List<Enemy> GameEnemies = new List<Enemy>();
     [HideInInspector] public List<Enemy> UsedEnemies = new List<Enemy>();
+    [HideInInspector] public List<Enemy> DyingEnemies = new List<Enemy>();
     [HideInInspector] public List<EnemyTransformInfo> enemiesInfo = new List<EnemyTransformInfo>();
     [HideInInspector] public List<List<Enemy>> enemiesByType = new List<List<Enemy>>();
     [HideInInspector] public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
@@ -48,10 +50,15 @@ public class HordeController : NetworkBehaviour
     Timer aiCalcTimer = new Timer(false);
     float enemyAIupdateRate = 1f / 10f; // Hz
 
+    public List<EnemyElementColors> enemyElementColors = new List<EnemyElementColors>();
+
+    public ScriptableRendererFeature xray;
+
     [Header("Ground Raycast Options")]
     [SerializeField] protected LayerMask RayMasks;
     private void Awake()
     {
+        xray.SetActive(false);
         hordeIndex = 0;
         clientEnemies = new Enemy[maxEnemyCount];
         GameManager.Instance.hordeController = this;
@@ -66,6 +73,7 @@ public class HordeController : NetworkBehaviour
         spawners.Clear();
         enemiesByType.Clear();
         usedEnemiesByType.Clear();
+        DyingEnemies.Clear();
         for (int i = 0; i < baseEnemyChances.Count; i++)
         {
             enemiesByType.Add(new List<Enemy>());
@@ -144,6 +152,10 @@ public class HordeController : NetworkBehaviour
                             UsedEnemies[i].MoveDirection = results[i];
                             UsedEnemies[i].Reposition();
                             UsedEnemies[i].ResetKnockbackCooldown();
+                            if (UsedEnemies[i].flickering)
+                            {
+                                UsedEnemies[i].Flicker();
+                            }
                             UsedEnemies[i].EnemyUpdate();
                         }
                     }
@@ -159,7 +171,16 @@ public class HordeController : NetworkBehaviour
                     }
                 }
 
-
+                if (DyingEnemies.Count > 0)
+                {
+                    for (int i = 0; i < DyingEnemies.Count; i++)
+                    {
+                        if (DyingEnemies[i] != null)
+                        {
+                            DyingEnemies[i].DyingUpdate();
+                        }
+                    }
+                }
                 //UpdateEnemiesPos(enemiesInfo);
             }
             else
@@ -188,6 +209,20 @@ public class HordeController : NetworkBehaviour
                         if(aux)
                         {
                             e.Reposition();
+                            if(e.flickering)
+                            {
+                                e.Flicker();
+                            }
+                        }
+                    }
+                }
+                if (DyingEnemies.Count > 0)
+                {
+                    for (int i = 0; i < DyingEnemies.Count; i++)
+                    {
+                        if (DyingEnemies[i] != null)
+                        {
+                            DyingEnemies[i].DyingUpdate();
                         }
                     }
                 }
@@ -419,6 +454,7 @@ public class HordeController : NetworkBehaviour
     [Server]
     public void StartPause()
     {
+        xray.SetActive(false);
         pauseStartTime = Time.time;
         pauseEndTime = pauseStartTime + pauseDuration;
         inPause = true;
@@ -567,6 +603,7 @@ public class HordeController : NetworkBehaviour
     IEnumerator StopSpawning()
     {
         yield return new WaitForSeconds(hordeDuration);
+        xray.SetActive(true);
         inHordeTime = false;
         //StopAllCoroutines();
         CheckEnemyCount();
@@ -791,4 +828,15 @@ public struct EnemyTransformInfo
         //this.lastTime = lastTime;
         this.vel = vel;
     }
+}
+
+[Serializable]
+public struct EnemyElementColors
+{
+    public string element;
+    public Color mainColor;
+    [ColorUsage(true, true)]
+    public Color emissionColor;
+    [ColorUsage(true, true)]
+    public Color emissionColor1;
 }

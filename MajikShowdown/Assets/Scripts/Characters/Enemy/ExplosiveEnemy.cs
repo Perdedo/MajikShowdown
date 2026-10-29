@@ -32,6 +32,7 @@ public class ExplosiveEnemy : Enemy
         {
             NetworkServer.Spawn(inst);
         }
+        inst.GetComponent<Explosion>().Initialize(element);
         hits = Physics.OverlapSphere(transform.position, explosionRadius, affectedByExplosion);
         foreach (Collider collider in hits)
         {
@@ -67,6 +68,16 @@ public class ExplosiveEnemy : Enemy
         }
         if (currentCell == null)
         {
+            return;
+        }
+        if (transparency > 0)
+        {
+            transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
+
+            foreach (Material mat in mesh.materials)
+            {
+                mat.SetFloat("_Alpha_Threshold", transparency);
+            }
             return;
         }
 

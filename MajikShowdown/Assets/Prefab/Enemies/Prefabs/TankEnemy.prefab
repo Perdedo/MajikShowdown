@@ -172,9 +172,19 @@ MonoBehaviour:
   instanceIndex: -1
   ActiveID:
     ID: 0
+  mesh: {fileID: 5029163026695217312}
+  colorIndex: -1
+  transparency: 1
   maxDistanceFromPlayer: 150
   repositionRange: 50
   animator: {fileID: 4311237413474159649}
+  baseColors:
+  - element: Base
+    mainColor: {r: 1, g: 1, b: 1, a: 1}
+    emissionColor: {r: 9.082411, g: 0.8196448, b: 0, a: 1}
+    emissionColor1: {r: 13.76636, g: 1.8251675, b: 0, a: 0}
+  flickering: 0
+  flickerAmmount: 0
   hitPoint: {fileID: 6818907241630132136}
   hitRadius: 5
   tremorRadius: 15
@@ -285,11 +295,13 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  BaseMaxHealth: 50
-  MaxHealth: 50
-  Health: 50
+  BaseMaxHealth: 20
+  MaxHealth: 20
+  Health: 20
   minHealthMultiplier: 1
-  maxHealthMultiplier: 1.4
+  maxHealthMultiplier: 1.2
+  resistancePercentValue: 50
+  weaknessPercentValue: -100
   Resistances: []
   enemyIndex: 0
   moneyDrop: 100
@@ -297,6 +309,7 @@ MonoBehaviour:
   damageIndicatorPrefab: {fileID: 0}
   network: 1
   canDie: 1
+  dying: 0
 --- !u!1 &6273527919916935559
 GameObject:
   m_ObjectHideFlags: 0
@@ -474,6 +487,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: dec3aaa72320f524facbe753679ceca3, type: 2}
+    - target: {fileID: 7081915997815359556, guid: e1b93b75a38df164f93d71d08b0f537b, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -482,6 +499,11 @@ PrefabInstance:
 --- !u!95 &4311237413474159649 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: e1b93b75a38df164f93d71d08b0f537b, type: 3}
+  m_PrefabInstance: {fileID: 7691587670706811312}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &5029163026695217312 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5803680744858283760, guid: e1b93b75a38df164f93d71d08b0f537b, type: 3}
   m_PrefabInstance: {fileID: 7691587670706811312}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &7869120338548594267 stripped

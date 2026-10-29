@@ -205,9 +205,6 @@ MonoBehaviour:
   ObstacleMask:
     serializedVersion: 2
     m_Bits: 2112
-  EnemyMask:
-    serializedVersion: 2
-    m_Bits: 128
   CanSeeTargetThrough:
     serializedVersion: 2
     m_Bits: 384
@@ -230,9 +227,15 @@ MonoBehaviour:
   instanceIndex: -1
   ActiveID:
     ID: 0
+  mesh: {fileID: 166480242653700688}
+  colorIndex: -1
+  transparency: 1
   maxDistanceFromPlayer: 125
   repositionRange: 40
   animator: {fileID: 8523925023661244627}
+  baseColors: []
+  flickering: 0
+  flickerAmmount: 0
   chargeStartDistance: 30
   chargeSpeed: 30
   baseRotationSpeed: 360
@@ -342,9 +345,15 @@ MonoBehaviour:
   BaseMaxHealth: 25
   MaxHealth: 25
   Health: 25
+  minHealthMultiplier: 1
+  maxHealthMultiplier: 1.5
+  resistancePercentValue: 50
+  weaknessPercentValue: -100
   Resistances: []
   enemyIndex: 0
   moneyDrop: 0
+  canHaveDamageIndicator: 0
+  damageIndicatorPrefab: {fileID: 0}
   network: 0
   canDie: 1
 --- !u!1 &2002080844044921225
@@ -510,6 +519,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d35af8ec55f13742b17aaa64f173bb9, type: 3}
+--- !u!137 &166480242653700688 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7082003895934498204, guid: 8d35af8ec55f13742b17aaa64f173bb9, type: 3}
+  m_PrefabInstance: {fileID: 6919536613439903692}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1565317440135198359 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8484286953798132059, guid: 8d35af8ec55f13742b17aaa64f173bb9, type: 3}

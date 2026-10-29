@@ -29,6 +29,13 @@ public class SpellNodeInterface : MonoBehaviour
     public int CriticalConections = 0;
     private Tween selectionTween;
 
+    [Header("Favorite")]
+    [SerializeField] private Button favoriteButton;
+    [SerializeField] private Image favoriteIcon;
+    private static readonly Color FavoriteColor = new Color(1f, 0.84f, 0f);
+    private static readonly Color NotFavoriteColor = new Color(0.45f, 0.45f, 0.45f);
+    public bool IsFavorite { get; private set; }
+
     void Awake()
     {
         rect = GetComponent<RectTransform>();
@@ -61,8 +68,9 @@ public class SpellNodeInterface : MonoBehaviour
         SetupMainVisual();
         SetupBorder();
         SetupSelectionOutline();
-        SetupBackground();
+        SetupBackground(); 
         SetupUsedState();
+        SetupFavorite();
     }
 
     private void SetupSelectionOutline()
@@ -129,6 +137,38 @@ public class SpellNodeInterface : MonoBehaviour
     private void SetupUsedState()
     {
         usedNodeImg.SetActive(Node.IsInUse);
+    }
+
+    private void SetupFavorite()
+    {
+        if (favoriteButton != null)
+        {
+            favoriteButton.onClick.RemoveListener(ToggleFavorite);
+            favoriteButton.onClick.AddListener(ToggleFavorite);
+        }
+
+        ApplyFavoriteVisual();
+    }
+
+    public void SetFavoriteButtonVisible(bool visible)
+    {
+        if (favoriteButton != null)
+        {
+            favoriteButton.gameObject.SetActive(visible);
+        }
+    }
+
+    public void ToggleFavorite()
+    {
+        IsFavorite = !IsFavorite;
+        ApplyFavoriteVisual();
+        inventory?.OnNodeFavoriteChanged(this);
+    }
+
+    private void ApplyFavoriteVisual()
+    {
+        if (favoriteIcon == null) return;
+        favoriteIcon.color = IsFavorite ? FavoriteColor : NotFavoriteColor;
     }
     /*private void Start()
     {
