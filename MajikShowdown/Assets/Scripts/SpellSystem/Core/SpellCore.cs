@@ -34,7 +34,10 @@ public class SpellCore : SpellNode
         if (RandomizeOnStart)
         {
             RandomizeStats();
-            owner.commander.SetCoreSpellNodeValues(this, Cooldown, BaseStats, extraValues, Element);
+            if(owner is SpellCaster p)
+            {
+                p.commander.SetCoreSpellNodeValues(this, Cooldown, BaseStats, extraValues, Element);
+            }
         }
         runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};

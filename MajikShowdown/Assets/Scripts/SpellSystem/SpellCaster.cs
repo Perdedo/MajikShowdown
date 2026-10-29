@@ -1,11 +1,10 @@
 using Mirror;
 using System.Collections.Generic;
-using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class SpellCaster : NetworkBehaviour
+public class SpellCaster : NetworkBehaviour, ISpellCaster
 {
     public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
     //public CharacterDamageHandler DamageHandler { get; private set; }
@@ -90,7 +89,7 @@ public class SpellCaster : NetworkBehaviour
         runtimeNode.instanceIndex = commander.runtimeNodes.Count;
         runtimeNode.owner = this;
         commander.runtimeNodes.Add(runtimeNode);
-        if(isOwned || !network)
+        if (isOwned || !network)
         {
             runtimeNode.ClientInitialize();
         }
@@ -143,16 +142,16 @@ public class SpellCaster : NetworkBehaviour
                 if (equippedSpells[i].cooldownTimer.timer(equippedSpells[i].SpellCooldown, Time.deltaTime, false, true))
                 {
                     equippedSpells[i].onCooldown = false;
-                    if(!isServer && network)
+                    if (!isServer && network)
                     {
                         RemoveCooldown(i);
                     }
                 }
             }
         }
-        if(player != null && player.Casting)
+        if (player != null && player.Casting)
         {
-            if(castPoseTimer.timer(player.CastPoseTime,Time.deltaTime, false, false))
+            if (castPoseTimer.timer(player.CastPoseTime, Time.deltaTime, false, false))
             {
                 player.Casting = false;
             }
@@ -164,7 +163,7 @@ public class SpellCaster : NetworkBehaviour
     {
         equippedSpells[index].onCooldown = false;
     }
-    
+
 
     [TargetRpc]
     public void AddCooldown(NetworkConnection target, int index)
@@ -203,7 +202,7 @@ public class SpellCaster : NetworkBehaviour
                 }
                 SpellColliderManager.Instance.ServerInitializeSpellCollider(spell, castPos, dir, true);
             }
-            if(player != null)
+            if (player != null)
             {
                 player.Casting = true;
                 castPoseTimer.SetTimer(0);
@@ -255,7 +254,7 @@ public class SpellCaster : NetworkBehaviour
                 }
                 SpellColliderManager.Instance.InitializeSpellCollider(spell, castPos, dir, true);
             }
-            if(player != null)
+            if (player != null)
             {
                 player.Casting = true;
                 castPoseTimer.SetTimer(0);
@@ -374,4 +373,8 @@ public class SpellCaster : NetworkBehaviour
             CastSpell(3);
         }
     }
+}
+public interface ISpellCaster
+{
+    public void CastSpell(int spellInd);
 }

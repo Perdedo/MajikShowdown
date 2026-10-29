@@ -16,7 +16,14 @@ public class SpellTrigger : SpellNode
         if (RandomizeOnStart)
         {
             RandomizeStats();
-            owner.commander.SetTriggerSpellNodeValues(this, Cooldown, BaseStats, extraValues, trigger);
+            if(owner is SpellCaster p)
+            {
+                p.commander.SetTriggerSpellNodeValues(this, Cooldown, BaseStats, extraValues, trigger);
+            }
+            /*else if(owner is EnmSpellCaster e)
+            {
+                e.commander.SetTriggerSpellNodeValues(this, Cooldown, BaseStats, extraValues, trigger);
+            }*/
         }
         runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
