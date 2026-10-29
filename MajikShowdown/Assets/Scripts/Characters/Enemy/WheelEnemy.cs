@@ -24,7 +24,16 @@ public class WheelEnemy : Enemy
         {
             return;
         }
+        if (transparency > 0)
+        {
+            transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
 
+            foreach (Material mat in mesh.materials)
+            {
+                mat.SetFloat("_Alpha_Threshold", transparency);
+            }
+            return;
+        }
         if (forwardCell != null)
         {
             CheckForJump();
