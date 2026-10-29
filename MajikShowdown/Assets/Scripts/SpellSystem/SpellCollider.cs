@@ -91,7 +91,8 @@ public class SpellCollider : NetworkBehaviour
         }
         if(OwnerSpell.coreNode.Type == SpellTypes.Explosion)
         {
-            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10)/10, Mathf.Round(stats.Duration * 10)/10);
+            float roundedDuration = Mathf.Round(stats.Duration*1.1f * 10) / 10;
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10)/10, roundedDuration);
         }
         else
         {
@@ -183,7 +184,10 @@ public class SpellCollider : NetworkBehaviour
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
         if (MarkedToDie)
         {
-            BuffersControl.Instance.UnspawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, VFXIndex);
+            if(OwnerSpell.coreNode.Type != SpellTypes.Explosion)
+            {
+                BuffersControl.Instance.UnspawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, VFXIndex);
+            }
             Die();
         }
 
