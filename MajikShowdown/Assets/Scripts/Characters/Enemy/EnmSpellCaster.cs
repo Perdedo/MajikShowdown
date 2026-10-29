@@ -7,7 +7,6 @@ using UnityEngine.InputSystem;
 public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
 {
     public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
-    public AimController AimController;
 
     [Header("Generic Node")]
     public SpellNodeInterface genericNodePrefab;
@@ -216,7 +215,7 @@ public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
     {
         if (network)
         {
-            CMDCastSpell(spellInd, AimController.AimPoint);
+            CMDCastSpell(spellInd, enemy.target.transform.position);
             return;
         }
         Spell spell = equippedSpells[spellInd];
@@ -227,15 +226,15 @@ public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
             spell.onCooldown = true;
             if (spell.coreNode.castPoint == null)
             {
-                SpellColliderManager.Instance.InitializeSpellCollider(spell, CastingPoint, (AimController.AimPoint - CastingPoint.position).normalized, true);
+                SpellColliderManager.Instance.InitializeSpellCollider(spell, CastingPoint, enemy.targetVector.normalized, true);
             }
             else
             {
-                Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, AimController.AimPoint);
-                Vector3 dir = (AimController.AimPoint - castPos).normalized;
+                Vector3 castPos = spell.coreNode.castPoint.GetCastPoint(transform, enemy.target.transform.position);
+                Vector3 dir = (enemy.target.transform.position - castPos).normalized;
                 if (dir == Vector3.zero)
                 {
-                    dir = AimController.AimPoint - transform.position;
+                    dir = enemy.targetVector;
                 }
                 SpellColliderManager.Instance.InitializeSpellCollider(spell, castPos, dir, true);
             }
