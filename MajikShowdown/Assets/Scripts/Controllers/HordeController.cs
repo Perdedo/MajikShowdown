@@ -19,7 +19,7 @@ public class HordeController : NetworkBehaviour
     public int hordeIndex;
     //public AnimationCurve spawnerFrequencyCurve;
     //public AnimationCurve enemyHPMultiplierCurve;
-    public float minSpawnRadius, maxSpawnRadius, radiusStepIncrease = 2, radiusLimit = 100, maxEnemySpawnRadius = 3, hordeDuration = 300, pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
+    public float minSpawnRadius, maxSpawnRadius, radiusStepIncrease = 2, radiusLimit = 100, maxEnemySpawnRadius = 3, /*hordeDuration = 300, */pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
     float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime;
     public GameObject spawner;
     GameObject aux;
@@ -44,7 +44,7 @@ public class HordeController : NetworkBehaviour
     bool possiblePos;
     public TextMeshProUGUI enemyCounterTxt;
     public int maxEnemyCount = 500;
-    public int hordesToWin = 3;
+    //public int hordesToWin = 3;
     int hordeCount;
     public float lastTime;
     Timer aiCalcTimer = new Timer(false);
@@ -473,7 +473,7 @@ public class HordeController : NetworkBehaviour
     {
         hordeCount++;
         hordeStartTime = Time.time;
-        hordeEndTime = hordeStartTime + hordeDuration;
+        hordeEndTime = hordeStartTime + hordes[hordeIndex].hordeDuration;
         spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, hordes[hordeIndex].spawnerFrequencyCurve.Evaluate(0));
         inHorde = true;
         inHordeTime = true;
@@ -581,14 +581,14 @@ public class HordeController : NetworkBehaviour
                 {
                     selections.Add(enemyChances[i]);
                 }*/
-                aux.GetComponent<EnemySpawner>().Initialize(hordes[hordeIndex].enemyChances, hordes[hordeIndex].baseSpawnTime, hordes[hordeIndex].minSpawnTime, Mathf.Min(hordes[hordeIndex].maxLifeTime, hordeEndTime - Time.time), hordes[hordeIndex].baseElemental, hordes[hordeIndex].maxElemental, hordeStartTime, hordeDuration, maxEnemySpawnRadius);
+                aux.GetComponent<EnemySpawner>().Initialize(hordes[hordeIndex].enemyChances, hordes[hordeIndex].baseSpawnTime, hordes[hordeIndex].minSpawnTime, Mathf.Min(hordes[hordeIndex].maxLifeTime, hordeEndTime - Time.time), hordes[hordeIndex].baseElemental, hordes[hordeIndex].maxElemental, hordeStartTime, hordes[hordeIndex].hordeDuration, maxEnemySpawnRadius);
                 usedSpawners.Add(aux);
             }
         }
         if (inHordeTime)
         {
             yield return new WaitForSeconds(spawnTime);
-            spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, hordes[hordeIndex].spawnerFrequencyCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDuration, 0, 1)));
+            spawnTime = Mathf.Lerp(maxSpawnTime, minSpawnTime, hordes[hordeIndex].spawnerFrequencyCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordes[hordeIndex].hordeDuration, 0, 1)));
             StartCoroutine(SpawnSpawner());
         }
     }
@@ -602,7 +602,7 @@ public class HordeController : NetworkBehaviour
     [Server]
     IEnumerator StopSpawning()
     {
-        yield return new WaitForSeconds(hordeDuration);
+        yield return new WaitForSeconds(hordes[hordeIndex].hordeDuration);
         xray.SetActive(true);
         inHordeTime = false;
         //StopAllCoroutines();
@@ -690,7 +690,7 @@ public class HordeController : NetworkBehaviour
         if (enemies.Count == 0)
         {
             inHorde = false;
-            if (hordeCount < hordesToWin)
+            if (hordeCount < hordes.Count)
             {
                 hordeIndex++;
                 StartPause();
@@ -809,7 +809,7 @@ public class HordeSettings
     public AnimationCurve baseHPMultiplierCurve;
     public AnimationCurve enemySpawnRateCurve;
     public AnimationCurve elementalCurve;
-    public float baseSpawnTime, minSpawnTime, maxLifeTime, baseElemental, maxElemental;
+    public float baseSpawnTime, minSpawnTime, maxLifeTime, baseElemental, maxElemental, hordeDuration = 180;
 }
 
 public struct EnemyTransformInfo
