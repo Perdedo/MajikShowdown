@@ -4,39 +4,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
+public class EnmSpellCaster : SpellCaster
 {
-    public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
-
-    [Header("Generic Node")]
-    public SpellNodeInterface genericNodePrefab;
-    [Header("Enemy Nodes")]
-    public List<SpellNode> ownedNodes = new();
-
-    public List<SpellNode> runtimeNodes = new();
-    public List<NodeInventory> inventories = new();
     public CasterEnemy enemy;
-    public List<Spell> spells = new List<Spell>();
-    public List<Spell> equippedSpells = new List<Spell>();
-    public NodeInventory inventory;
-    //public SpellCollider ProjectilePrefab;
-    public Transform CastingPoint;
-    //public UICommandController commander;
 
-    [Header("Collision Layers")]
-    public LayerMask EnemyLayer;
-    public LayerMask PlayerLayer;
-    public LayerMask ObjectLayer;
-
-    [HideInInspector] public bool canCast = true;
-    Timer castPoseTimer = new Timer(false);
-
-    public bool startingSpellsReady = false;
-
-    [Header("Network")]
-    public bool network = true;
-
-    private void Awake()
+    protected override void Awake()
     {
         if (!network)
         {
@@ -60,7 +32,7 @@ public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
     {
         enemy.caster = this;
         //DamageHandler = GetComponent<CharacterDamageHandler>();
-        equippedSpells = new List<Spell>();
+        equippedSpells = new Spell[4];
         foreach (var nodeData in ownedNodes)
         {
             InstantiateNode(nodeData);
@@ -72,17 +44,17 @@ public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
     }
 
     [Command]
-    public void CMDInitialize()
+    public override void CMDInitialize()
     {
         enemy.caster = this;
         //DamageHandler = GetComponent<CharacterDamageHandler>();
-        equippedSpells = new List<Spell>();
+        equippedSpells = new Spell[4];
         foreach (var nodeData in ownedNodes)
         {
             InstantiateNode(nodeData);
         }
     }
-    SpellNode InstantiateNode(SpellNode nodePrefab)
+    protected override SpellNode InstantiateNode(SpellNode nodePrefab)
     {
         SpellNode runtimeNode = Instantiate(nodePrefab);
         //runtimeNode.instanceIndex = commander.runtimeNodes.Count;
@@ -100,31 +72,8 @@ public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
         return runtimeNode;
     }
 
-    public SpellNode AddRune(SpellNode nodePrefab, bool syncInventory = true)
-    {
-        ownedNodes.Add(nodePrefab);
-        SpellNode runtimeNode = InstantiateNode(nodePrefab);
 
-        if (syncInventory)
-        {
-            foreach (var inv in inventories)
-            {
-                inv.SyncFromCaster();
-            }
-        }
-
-        return runtimeNode;
-    }
-
-    private string GetPath(Transform current)
-    {
-        if (current.parent == null)
-            return current.name;
-
-        return GetPath(current.parent) + "/" + current.name;
-    }
-
-    private void Update()
+    protected override void Update()
     {
         if (!isLocalPlayer && network)
         {
@@ -134,7 +83,7 @@ public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
         {
             return;
         }
-        for (int i = 0; i < equippedSpells.Count; i++)
+        for (int i = 0; i < equippedSpells.Length; i++)
         {
             if (equippedSpells[i] != null && equippedSpells[i].onCooldown)
             {
@@ -157,22 +106,10 @@ public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
         }
     }
 
-    [Command]
-    public void RemoveCooldown(int index)
-    {
-        equippedSpells[index].onCooldown = false;
-    }
-    
-
-    [TargetRpc]
-    public void AddCooldown(NetworkConnection target, int index)
-    {
-        equippedSpells[index].onCooldown = true;
-    }
 
 
     [Command]
-    public void CMDCastSpell(int spellInd, Vector3 aimPoint)
+    public override void CMDCastSpell(int spellInd, Vector3 aimPoint)
     {
         Spell spell = equippedSpells[spellInd];
         if (spell.onCooldown) return;
@@ -211,7 +148,7 @@ public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
 
 
 
-    public void CastSpell(int spellInd)
+    public override void CastSpell(int spellInd)
     {
         if (network)
         {
@@ -246,23 +183,4 @@ public class EnmSpellCaster : NetworkBehaviour, ISpellCaster
         }
 
     }
-
-    /*public bool IsSlotValid(int index)
-    {
-        if (index < 0 || index >= equippedSpells.Count) return false;
-        var spell = equippedSpells[index];
-        return spell != null && !string.IsNullOrEmpty(spell.spellName);
-    }
-
-    public bool IsNodeInUse(SpellNode node)
-    {
-        return node.IsInUse;
-    }
-
-    public void SetNodeInUse(SpellNode node, bool value)
-    {
-        node.IsInUse = value;
-        foreach (var inventory in inventories)
-            inventory.RefreshNodeState(node);
-    }*/
 }

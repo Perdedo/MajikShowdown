@@ -16,9 +16,9 @@ public class SpellTrigger : SpellNode
         if (RandomizeOnStart)
         {
             RandomizeStats();
-            if(owner is SpellCaster p)
+            if(owner is not EnmSpellCaster)
             {
-                p.commander.SetTriggerSpellNodeValues(this, Cooldown, BaseStats, extraValues, trigger);
+                owner.commander.SetTriggerSpellNodeValues(this, Cooldown, BaseStats, extraValues, trigger);
             }
             /*else if(owner is EnmSpellCaster e)
             {

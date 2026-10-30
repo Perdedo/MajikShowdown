@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class SpellCaster : NetworkBehaviour, ISpellCaster
+public class SpellCaster : NetworkBehaviour
 {
     public List<SavedSpellAsset> startingSpells = new List<SavedSpellAsset>();
     //public CharacterDamageHandler DamageHandler { get; private set; }
@@ -30,14 +30,14 @@ public class SpellCaster : NetworkBehaviour, ISpellCaster
     public LayerMask ObjectLayer;
 
     [HideInInspector] public bool canCast = true;
-    Timer castPoseTimer = new Timer(false);
+    protected Timer castPoseTimer = new Timer(false);
 
     public bool startingSpellsReady = false;
 
     [Header("Network")]
     public bool network = true;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         if (!network)
         {
@@ -73,7 +73,7 @@ public class SpellCaster : NetworkBehaviour, ISpellCaster
     }
 
     [Command]
-    public void CMDInitialize()
+    public virtual void CMDInitialize()
     {
         player.caster = this;
         //DamageHandler = GetComponent<CharacterDamageHandler>();
@@ -83,7 +83,7 @@ public class SpellCaster : NetworkBehaviour, ISpellCaster
             InstantiateNode(nodeData);
         }
     }
-    SpellNode InstantiateNode(SpellNode nodePrefab)
+    protected virtual SpellNode InstantiateNode(SpellNode nodePrefab)
     {
         SpellNode runtimeNode = Instantiate(nodePrefab);
         runtimeNode.instanceIndex = commander.runtimeNodes.Count;
@@ -125,7 +125,7 @@ public class SpellCaster : NetworkBehaviour, ISpellCaster
         return GetPath(current.parent) + "/" + current.name;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (!isLocalPlayer && network)
         {
@@ -173,7 +173,7 @@ public class SpellCaster : NetworkBehaviour, ISpellCaster
 
 
     [Command]
-    public void CMDCastSpell(int spellInd, Vector3 aimPoint)
+    public virtual void CMDCastSpell(int spellInd, Vector3 aimPoint)
     {
         Spell spell = equippedSpells[spellInd];
         if (spell.onCooldown) return;
@@ -232,7 +232,7 @@ public class SpellCaster : NetworkBehaviour, ISpellCaster
         NetworkServer.Spawn(g);
     }*/
 
-    public void CastSpell(int spellInd)
+    public virtual void CastSpell(int spellInd)
     {
         Spell spell = equippedSpells[spellInd];
         if (spell.onCooldown) return;
@@ -373,8 +373,4 @@ public class SpellCaster : NetworkBehaviour, ISpellCaster
             CastSpell(3);
         }
     }
-}
-public interface ISpellCaster
-{
-    public void CastSpell(int spellInd);
 }

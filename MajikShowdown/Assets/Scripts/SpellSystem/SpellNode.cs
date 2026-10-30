@@ -37,7 +37,7 @@ public abstract class SpellNode : ScriptableObject
     public Sprite nodeSymbolSprite;
     [HideInInspector] public Color symbolColor;
 
-    [HideInInspector] public ISpellCaster owner;
+    [HideInInspector] public SpellCaster owner;
     [HideInInspector] protected List<float> extraValues = new List<float>();
     [HideInInspector] public int instanceIndex = -1;
     //public enum NodeEntry { None, Type, Stat, Trigger, Trajectory, Effect, All };
@@ -96,9 +96,9 @@ public abstract class SpellNode : ScriptableObject
         if (RandomizeOnStart)
         {
             RandomizeStats();
-            if(owner is SpellCaster p)
+            if(owner is not EnmSpellCaster)
             {
-                p.commander.SetSpellNodeValues(this, Cooldown, BaseStats, extraValues);
+                owner.commander.SetSpellNodeValues(this, Cooldown, BaseStats, extraValues);
             }
         }
         runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
