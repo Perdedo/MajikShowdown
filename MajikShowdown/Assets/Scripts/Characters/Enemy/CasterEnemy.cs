@@ -1,3 +1,4 @@
+using Mirror;
 using UnityEngine;
 
 public class CasterEnemy : Enemy
@@ -7,7 +8,7 @@ public class CasterEnemy : Enemy
     public bool Casting;
     public float CastPoseTime = 3f;
     [Header("Warping")]
-    bool Warped = false;
+    protected bool Warped = false;
     public float MinWarpDistance = 5f, MaxWarpDistance = 15f, MinWarpHeight = 5f, MaxWarpHeight = 7f;
     public override void Initialize(float HealthMultiplier)
     {
@@ -103,7 +104,7 @@ public class CasterEnemy : Enemy
             float warpHeight = Random.Range(MinWarpHeight, MaxWarpHeight);
             Vector3 warpDir = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
             FieldCell warpCell = FlowFieldManager.instance.WorldToGridPosition(targetPos + warpDir * warpDistance);
-            if (!Physics.CapsuleCast(warpCell.position + Vector3.up * 0.5f, warpCell.position + Vector3.up * 2f, 0.5f, Vector3.up, warpHeight))
+            if (warpCell != null && !Physics.CapsuleCast(warpCell.position + Vector3.up * 0.5f, warpCell.position + Vector3.up * 2f, 0.5f, Vector3.up, warpHeight))
             {
                 WarpPos = warpCell.position + Vector3.up * warpHeight;
                 validWarp = true;

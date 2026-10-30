@@ -189,7 +189,7 @@ public class Enemy : CrowdCharacter
 #endif
 
     //[ClientRpc]
-    public void EnemyClientUpdate()
+    public virtual void EnemyClientUpdate()
     {
         if (isServer)
         {

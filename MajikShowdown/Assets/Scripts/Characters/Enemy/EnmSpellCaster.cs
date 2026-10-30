@@ -1,13 +1,19 @@
 using Mirror;
+using Mirror.Examples.Basic;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static SpellInventoryUI;
 
 
 public class EnmSpellCaster : SpellCaster
 {
     public CasterEnemy enemy;
 
+    int startingEquippedSpells = 0;
+    List<StartingTrigger> startingTriggers = new List<StartingTrigger>();
+
+    public Elements defaultElement;
     protected override void Awake()
     {
         if (!network)
@@ -19,6 +25,7 @@ public class EnmSpellCaster : SpellCaster
             {
                 InstantiateNode(nodeData);
             }
+            CreateStartingSpells();
         }
 
 
@@ -28,7 +35,7 @@ public class EnmSpellCaster : SpellCaster
         }*/
     }
 
-    public override void OnStartAuthority()
+    public override void OnStartServer()
     {
         enemy.caster = this;
         //DamageHandler = GetComponent<CharacterDamageHandler>();
@@ -37,22 +44,69 @@ public class EnmSpellCaster : SpellCaster
         {
             InstantiateNode(nodeData);
         }
-        if (!isServer)
+        CreateStartingSpells();
+    }
+    public void CreateStartingSpells()
+    {
+        startingEquippedSpells = 0;
+        startingTriggers.Clear();
+        for (int i = 0; i < startingSpells.Count; i++)
         {
-            CMDInitialize();
+            CreateStartingSpell(startingSpells[i]);
+        }
+
+        foreach (StartingTrigger trigger in startingTriggers)
+        {
+            foreach (Spell spell in spells)
+            {
+                if (spell.spellName == trigger.triggerSpellName)
+                {
+                    trigger.node.TriggeredSpell = spell;
+                    trigger.node.UpdateTrigger();
+                }
+            }
         }
     }
-
-    [Command]
-    public override void CMDInitialize()
+    public void CreateStartingSpell(SavedSpellAsset ssa)
     {
-        enemy.caster = this;
-        //DamageHandler = GetComponent<CharacterDamageHandler>();
-        equippedSpells = new Spell[4];
-        foreach (var nodeData in ownedNodes)
+        Spell newSpell = new Spell(this);
+        newSpell.spellName = ssa.spellName;
+        newSpell.instanceIndex = spells.Count;
+        spells.Add(newSpell);
+
+        if (ssa.startEquipped && startingEquippedSpells < equippedSpells.Length)
         {
-            InstantiateNode(nodeData);
+            equippedSpells[startingEquippedSpells] = newSpell;
+            startingEquippedSpells++;
         }
+
+        foreach (SavedSpellNode ssn in ssa.nodes)
+        {
+            SpellNode runtimeNode = AddRune(ssn.node, false);
+
+            runtimeNode.OwnerSpell = newSpell;
+            runtimeNode.startingNode = true;
+
+            if (runtimeNode is SpellCore)
+            {
+                if(enemy.element != Elements.None)
+                {
+                    ((SpellCore)runtimeNode).Element = enemy.element;
+                }
+                else
+                {
+                    ((SpellCore)runtimeNode).Element = defaultElement;
+                }
+                newSpell.validSpell = true;
+                newSpell.coreNode = runtimeNode as SpellCore;
+            }
+            if (ssn.triggeredSpellName != "" && runtimeNode is SpellTrigger)
+            {
+                startingTriggers.Add(new StartingTrigger((SpellTrigger)runtimeNode, ssn.triggeredSpellName));
+            }
+            newSpell.spellNodes.Add(runtimeNode);
+        }
+        newSpell.UpdateEnemySpell();
     }
     protected override SpellNode InstantiateNode(SpellNode nodePrefab)
     {
@@ -60,14 +114,15 @@ public class EnmSpellCaster : SpellCaster
         //runtimeNode.instanceIndex = commander.runtimeNodes.Count;
         runtimeNode.owner = this;
         //commander.runtimeNodes.Add(runtimeNode);
-        if(isOwned || !network)
+        /*if(isOwned || !network)
         {
             runtimeNode.ClientInitialize();
         }
         else
         {
             runtimeNode.ServerInitialize();
-        }
+        }*/
+        runtimeNode.ClientInitialize();
         runtimeNodes.Add(runtimeNode);
         return runtimeNode;
     }
@@ -75,7 +130,7 @@ public class EnmSpellCaster : SpellCaster
 
     protected override void Update()
     {
-        if (!isLocalPlayer && network)
+        if (!isServer && network)
         {
             return;
         }
@@ -108,7 +163,7 @@ public class EnmSpellCaster : SpellCaster
 
 
 
-    [Command]
+    /*[Command]
     public override void CMDCastSpell(int spellInd, Vector3 aimPoint)
     {
         Spell spell = equippedSpells[spellInd];
@@ -144,17 +199,17 @@ public class EnmSpellCaster : SpellCaster
                 castPoseTimer.SetTimer(0);
             }
         }
-    }
+    }*/
 
 
 
     public override void CastSpell(int spellInd)
     {
-        if (network)
+        /*if (network)
         {
             CMDCastSpell(spellInd, enemy.target.transform.position);
             return;
-        }
+        }*/
         Spell spell = equippedSpells[spellInd];
         if (spell.onCooldown) return;
         if (spell.validSpell)
@@ -163,7 +218,7 @@ public class EnmSpellCaster : SpellCaster
             spell.onCooldown = true;
             if (spell.coreNode.castPoint == null)
             {
-                SpellColliderManager.Instance.InitializeSpellCollider(spell, CastingPoint, enemy.targetVector.normalized, true);
+                SpellColliderManager.Instance.InitializeSpellCollider(spell, CastingPoint, enemy.target.transform.position - CastingPoint.position, true);
             }
             else
             {

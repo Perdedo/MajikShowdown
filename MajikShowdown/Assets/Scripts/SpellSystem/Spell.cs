@@ -139,6 +139,99 @@ public class Spell
             }
         }
     }*/
+
+    public void UpdateEnemySpell(SpellTrigger updatedCall = null)
+    {
+        //CreateSubSpells();
+        if (coreNode == null)
+        {
+            SpellCooldown = 0;
+            spellNodes.Clear();
+            triggers.Clear();
+            spellEffects.Clear();
+
+            OnSpellUpdated?.Invoke();
+            return;
+        }
+        coreNode.hierarchy = 0;
+        SpellCooldown = 0;
+        auxCooldown = 0;
+
+        //spellNodes = coreNode.GetSpellList(new List<SpellNode>());
+        coreNode.StatBuffs.Clear();
+        triggers.Clear();
+        spellEffects.Clear();
+        foreach (SpellNode s in spellNodes)
+        {
+            if (s != coreNode)
+            {
+                coreNode.AddBuff(s.BaseStats);
+            }
+            s.OwnerSpell = this;
+            if (s is SpellTrigger t)
+            {
+                triggers.Add(t);
+                SpellCooldown += s.Cooldown;
+                continue;
+            }
+            if (s is SpellEffect e)
+            {
+                if (e.Repeatable || !spellEffects.Any(x => x.GetType() == e.GetType()))
+                {
+                    spellEffects.Add(e);
+                }
+            }
+
+            SpellCooldown += s.Cooldown;
+            auxCooldown += s.Cooldown;
+        }
+        SpellCooldown = Mathf.Max(SpellCooldown, 0.1f);
+        auxCooldown = Mathf.Max(auxCooldown, 0.1f);
+        bool foundCall = false;
+        if (updatedCall != null)
+        {
+            if (triggerCalls.Contains(updatedCall))
+            {
+                foundCall = true;
+            }
+            if (!foundCall)
+            {
+                if (callAux == 0)
+                {
+                    Caster.StartCoroutine(ResetCalls());
+                }
+                callAux++;
+                triggerCalls.Add(updatedCall);
+            }
+
+        }
+        if (!foundCall)
+        {
+            foreach (SpellNode n in Caster.runtimeNodes)
+            {
+                if (n is SpellTrigger trigger && !triggerCalls.Contains(trigger) && trigger.TriggeredSpell == this)
+                {
+                    trigger.UpdateTrigger();
+                }
+            }
+        }
+        spellCollisionLayers = 0;
+        if (coreNode.Collisions.Objects)
+        {
+            spellCollisionLayers |= Caster.ObjectLayer;
+        }
+        if (coreNode.Collisions.Allies || coreNode.Collisions.Self)
+        {
+            spellCollisionLayers |= Caster.PlayerLayer;
+        }
+        if (coreNode.Collisions.Enemies)
+        {
+            spellCollisionLayers |= Caster.EnemyLayer;
+        }
+        coreNode.UpdateNode();
+        OnSpellUpdated?.Invoke();
+
+    }
     public IEnumerator ResetCalls()
     {
         yield return new WaitForEndOfFrame();

@@ -70,7 +70,10 @@ public class TrainingEnemiesController : MonoBehaviour
                 if (UsedEnemies[i] != null)
                 {
                     UsedEnemies[i].MoveDirection = results[i];
-                    UsedEnemies[i].Reposition();
+                    if(!(UsedEnemies[i] is TrainingCasterEnemy))
+                    {
+                        UsedEnemies[i].Reposition();
+                    }
                     UsedEnemies[i].ResetKnockbackCooldown();
                     if (UsedEnemies[i].flickering)
                     {

@@ -39,7 +39,18 @@ public class SpellTrigger : SpellNode
         {
             Cooldown = 0;
         }
-        OwnerSpell?.UpdateSpell(this);
+        if(OwnerSpell != null)
+        {
+            if(OwnerSpell.Caster is not EnmSpellCaster)
+            {
+                OwnerSpell.UpdateSpell(this);
+            }
+            else
+            {
+                OwnerSpell.UpdateEnemySpell(this);
+            }
+        }
+        //OwnerSpell?.UpdateSpell(this);
     }
     /*public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {

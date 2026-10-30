@@ -150,7 +150,10 @@ public class HordeController : NetworkBehaviour
                         if (UsedEnemies[i] != null)
                         {
                             UsedEnemies[i].MoveDirection = results[i];
-                            UsedEnemies[i].Reposition();
+                            if(!(UsedEnemies[i] is CasterEnemy))
+                            {
+                                UsedEnemies[i].Reposition();
+                            }
                             UsedEnemies[i].ResetKnockbackCooldown();
                             if (UsedEnemies[i].flickering)
                             {
@@ -208,7 +211,10 @@ public class HordeController : NetworkBehaviour
                         e.EnemyClientUpdate();
                         if(aux)
                         {
-                            e.Reposition();
+                            if(!(e is CasterEnemy))
+                            {
+                                e.Reposition();
+                            }
                             if(e.flickering)
                             {
                                 e.Flicker();

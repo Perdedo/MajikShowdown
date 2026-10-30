@@ -109,10 +109,34 @@ public class SpellCore : SpellNode
         }
         
     }
+    public void GetEnemyConectedNodes()
+    {
+        trajectory = null;
+        castPoint = null;
+        foreach (SpellNode c in OwnerSpell.spellNodes)
+        {
+            if (c is SpellTrajectory t)
+            {
+                trajectory = t;
+            }
+            else if (c is SpellCastPoint cp)
+            {
+                castPoint = cp;
+            }
+        }
+        
+    }
     public void UpdateNode()
     {
         CalculateFinalStats();
-        GetConectedNodes();
+        if(OwnerSpell.Caster is not EnmSpellCaster)
+        {
+            GetConectedNodes();
+        }
+        else
+        {
+            GetEnemyConectedNodes();
+        }
     }
     public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {

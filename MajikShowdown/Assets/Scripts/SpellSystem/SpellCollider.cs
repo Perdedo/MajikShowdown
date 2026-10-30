@@ -494,7 +494,7 @@ public class SpellCollider : NetworkBehaviour
     public void CollideCreature(Collider col, bool isPlayer = false)
     {
         //if (OwnerSpell.coreNode.HitCooldown > 0 && !routineStarted) StartCoroutine(StartHitCooldown());
-        if (isPlayer)
+        if (isPlayer && OwnerSpell.Caster.player != null)
         {
             if (!((OwnerSpell.coreNode.Collisions.Self && col.gameObject == OwnerSpell.Caster.player.gameObject) || (OwnerSpell.coreNode.Collisions.Allies && col.gameObject != OwnerSpell.Caster.player.gameObject)))
             {
