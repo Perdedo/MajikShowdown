@@ -4,6 +4,14 @@ public class TrainingCasterEnemy : CasterEnemy
 {
     public override void Initialize(float HealthMultiplier)
     {
+        for(int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            if(caster.equippedSpells[i] != null && caster.equippedSpells[i].coreNode.Element == element)
+            {
+                selectedSpellIndex = i;
+                break;
+            }
+        }
         currentCell = FlowFieldManager.instance.flowField.allCells[0];
         DamageHandler.Initialize(this, HealthMultiplier);
         size = GetComponent<CapsuleCollider>().radius * transform.localScale.x;
@@ -31,7 +39,7 @@ public class TrainingCasterEnemy : CasterEnemy
         prevMoving = false;
         //CheckFieldLocation();
         Casting = false;
-        attackCooldown = caster.equippedSpells[0].SpellCooldown + 0.1f;
+        attackCooldown = caster.equippedSpells[selectedSpellIndex].SpellCooldown + 0.1f;
         gravityPaused = true;
         Warped = false;
         warping = false;
