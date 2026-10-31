@@ -92,7 +92,22 @@ public class EnemySpawner : NetworkBehaviour
 
                     if (controller.enemiesByType[i].Count <= controller.usedEnemiesByType[i].Count)
                     {
-                        aux = Instantiate(enemies[i].enemy, spawnPos.position + GetSpawnDirection(), Quaternion.identity);
+                        if(i != controller.hordes[controller.hordeIndex].casterEnemyIndex)
+                        {
+                            aux = Instantiate(enemies[i].enemy, spawnPos.position + GetSpawnDirection(), Quaternion.identity);
+                        }
+                        else
+                        {
+                            Vector3 auxPos = spawnPos.position + GetSpawnDirection();
+                            if (!Physics.CapsuleCast(auxPos - (Vector3.up * controller.spawnerHeight) + Vector3.up * 0.5f, auxPos - (Vector3.up * controller.spawnerHeight) + Vector3.up * 2f, 0.5f, Vector3.up, controller.spawnerHeight))
+                            {
+                                aux = Instantiate(enemies[i].enemy, auxPos + Vector3.up * (controller.casterEnemySpawnHeight - controller.spawnerHeight), Quaternion.identity);
+                            }
+                            else
+                            {
+                                aux = Instantiate(enemies[i].enemy, auxPos, Quaternion.identity);
+                            }
+                        }
                         NetworkServer.Spawn(aux);
                         auxEnemy = aux.GetComponent<Enemy>();
                         auxEnemy.transparency = 1;
@@ -117,7 +132,21 @@ public class EnemySpawner : NetworkBehaviour
                             {
                                 aux = e.gameObject;
                                 Vector3 auxPos = spawnPos.position + GetSpawnDirection();
-                                aux.transform.position = auxPos;
+                                if(i != controller.hordes[controller.hordeIndex].casterEnemyIndex)
+                                {
+                                    aux.transform.position = auxPos;
+                                }
+                                else
+                                {
+                                    if (!Physics.CapsuleCast(auxPos - (Vector3.up * controller.spawnerHeight) + Vector3.up * 0.5f, auxPos - (Vector3.up * controller.spawnerHeight) + Vector3.up * 2f, 0.5f, Vector3.up, controller.spawnerHeight))
+                                    {
+                                        aux.transform.position = auxPos + Vector3.up * (controller.casterEnemySpawnHeight - controller.spawnerHeight);
+                                    }
+                                    else
+                                    {
+                                        aux.transform.position = auxPos;
+                                    }
+                                }
                                 auxEnemy = aux.GetComponent<Enemy>();
                                 auxEnemy.ResetTransform(auxPos);
                                 if(controller.DyingEnemies.Contains(auxEnemy))

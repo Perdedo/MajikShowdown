@@ -19,7 +19,7 @@ public class HordeController : NetworkBehaviour
     public int hordeIndex;
     //public AnimationCurve spawnerFrequencyCurve;
     //public AnimationCurve enemyHPMultiplierCurve;
-    public float minSpawnRadius, maxSpawnRadius, radiusStepIncrease = 2, radiusLimit = 100, maxEnemySpawnRadius = 3, /*hordeDuration = 300, */pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2;
+    public float minSpawnRadius, maxSpawnRadius, radiusStepIncrease = 2, radiusLimit = 100, maxEnemySpawnRadius = 3, /*hordeDuration = 300, */pauseDuration = 300, maxSpawnTime = 30, minSpawnTime = 10, heightCheckPoint = 5, checkHeight = 15, spawnerHeight = 2, casterEnemySpawnHeight = 5;
     float hordeStartTime, hordeEndTime, spawnTime, timer, pauseStartTime, pauseEndTime;
     public GameObject spawner;
     GameObject aux;
@@ -816,6 +816,7 @@ public class HordeSettings
     public AnimationCurve enemySpawnRateCurve;
     public AnimationCurve elementalCurve;
     public float baseSpawnTime, minSpawnTime, maxLifeTime, baseElemental, maxElemental, hordeDuration = 180;
+    public int casterEnemyIndex = -1;
 }
 
 public struct EnemyTransformInfo
