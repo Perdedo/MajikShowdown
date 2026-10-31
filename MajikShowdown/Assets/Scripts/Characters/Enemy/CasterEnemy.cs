@@ -140,13 +140,17 @@ public class CasterEnemy : Enemy
             FieldCell warpCell = FlowFieldManager.instance.WorldToGridPosition(targetPos + warpDir * warpDistance);
             if (warpCell != null && !Physics.CapsuleCast(warpCell.position + Vector3.up * 0.5f, warpCell.position + Vector3.up * 2f, 0.5f, Vector3.up, warpHeight))
             {
-                WarpPos = warpCell.position + Vector3.up * warpHeight;
-                validWarp = true;
-                warpingIn = true;
-                warping = true;
-                PlayAnimation(EnemyAnimState.Teleport);
-                //transform.position = WarpPos;
+                if(count >= 20 || Vector3.Distance(warpCell.position, currentCell.position) > 5)
+                {
+                    WarpPos = warpCell.position + Vector3.up * warpHeight;
+                    validWarp = true;
+                    warpingIn = true;
+                    warping = true;
+                    PlayAnimation(EnemyAnimState.Teleport);
+                }
             }
+                //transform.position = WarpPos;
+            
             count++;
             if (count > 20)
             {
