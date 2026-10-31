@@ -238,12 +238,12 @@ public class NodeInventory : NetworkBehaviour, IDropZone
 
         if (dragInst != null)
         {
+            dragInst.acquisitionOrder = instance.acquisitionOrder;
             if (instance.hexGridNode == null)
             {
                 dragInst.SetOriginZone(this as IDropZone);
             }
 
-            dragInst.acquisitionOrder = instance.acquisitionOrder;
         }
     }
 
