@@ -144,7 +144,7 @@ public class EnemySpawner : NetworkBehaviour
                     randElemental = UnityEngine.Random.Range(0, 100);
                     if(randElemental < elementalChance)
                     {
-                        auxEnemy.element = (Elements)UnityEngine.Random.Range(0, Enum.GetNames(typeof(Elements)).Length);
+                        auxEnemy.element = (Elements)UnityEngine.Random.Range(1, Enum.GetNames(typeof(Elements)).Length);
                         auxEnemy.DamageHandler.Resistances.Add(new Resistance(auxEnemy.element, auxEnemy.DamageHandler.resistancePercentValue));
                         switch (auxEnemy.element)
                         {
@@ -195,6 +195,25 @@ public class EnemySpawner : NetworkBehaviour
                             default:
                                 auxEnemy.colorIndex = -1;
                                 break;
+                        }
+
+                        if(auxEnemy is CasterEnemy)
+                        {
+                            foreach (SpellNode n in ((CasterEnemy)auxEnemy).caster.runtimeNodes)
+                            {
+                                if (n is SpellCore)
+                                {
+                                    if(auxEnemy.element != Elements.Lightning)
+                                    {
+                                        ((SpellCore)n).Element = auxEnemy.element;
+                                    }
+                                    else
+                                    {
+                                        //Provisório até ter os VFX de Lightning
+                                        ((SpellCore)n).Element = Elements.Radiance;
+                                    }
+                                }
+                            }
                         }
                     }
                     else

@@ -1,4 +1,5 @@
 using Mirror;
+using Mirror.BouncyCastle.Math.EC;
 using Mirror.Examples.Basic;
 using System.Collections.Generic;
 using UnityEngine;
@@ -212,13 +213,21 @@ public class EnmSpellCaster : SpellCaster
         }*/
         Spell spell = equippedSpells[spellInd];
         if (spell.onCooldown) return;
+        spell.onCooldown = true;
         if (spell.validSpell)
         {
             enemy.CastAnim();
             spell.onCooldown = true;
             if (spell.coreNode.castPoint == null)
             {
-                SpellColliderManager.Instance.InitializeSpellCollider(spell, CastingPoint, enemy.target.transform.position - CastingPoint.position, true);
+                if(network)
+                {
+                    SpellColliderManager.Instance.ServerInitializeSpellCollider(spell, CastingPoint, enemy.target.transform.position - CastingPoint.position, true);
+                }
+                else
+                {
+                    SpellColliderManager.Instance.InitializeSpellCollider(spell, CastingPoint, enemy.target.transform.position - CastingPoint.position, true);
+                }
             }
             else
             {
@@ -228,7 +237,14 @@ public class EnmSpellCaster : SpellCaster
                 {
                     dir = enemy.targetVector;
                 }
-                SpellColliderManager.Instance.InitializeSpellCollider(spell, castPos, dir, true);
+                if (network)
+                {
+                    SpellColliderManager.Instance.ServerInitializeSpellCollider(spell, castPos, dir, true);
+                }
+                else
+                {
+                    SpellColliderManager.Instance.InitializeSpellCollider(spell, castPos, dir, true);
+                }
             }
             if(enemy != null)
             {
@@ -236,6 +252,5 @@ public class EnmSpellCaster : SpellCaster
                 castPoseTimer.SetTimer(0);
             }
         }
-
     }
 }
