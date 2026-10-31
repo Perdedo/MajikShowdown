@@ -7,6 +7,7 @@ public class CasterEnemy : Enemy
     public EnmSpellCaster caster;
     public bool Casting;
     public float CastPoseTime = 3f;
+    protected int selectedSpellIndex = 0;
     [Header("Warping")]
     protected bool Warped = false;
     public float MinWarpDistance = 5f, MaxWarpDistance = 15f, MinWarpHeight = 5f, MaxWarpHeight = 7f;
@@ -15,9 +16,17 @@ public class CasterEnemy : Enemy
     public float warpDuration = 1.8f, warpInDuration = 0.9f;
     public override void Initialize(float HealthMultiplier)
     {
+        for(int i = 0; i < caster.equippedSpells.Length; i++)
+        {
+            if(caster.equippedSpells[i] != null && caster.equippedSpells[i].coreNode.Element == element)
+            {
+                selectedSpellIndex = i;
+                break;
+            }
+        }
         base.Initialize(HealthMultiplier);
         Casting = false;
-        attackCooldown = caster.equippedSpells[0].SpellCooldown + 0.1f;
+        attackCooldown = caster.equippedSpells[selectedSpellIndex].SpellCooldown + 0.1f;
         gravityPaused = true;
         Warped = false;
         warping = false;
@@ -27,7 +36,7 @@ public class CasterEnemy : Enemy
     }
     protected override void AttackPlayer()
     {
-        caster.CastSpell(0);
+        caster.CastSpell(selectedSpellIndex);
         Warped = false;
     }
     public void CastAnim()

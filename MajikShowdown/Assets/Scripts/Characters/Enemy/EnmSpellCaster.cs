@@ -14,14 +14,14 @@ public class EnmSpellCaster : SpellCaster
     int startingEquippedSpells = 0;
     List<StartingTrigger> startingTriggers = new List<StartingTrigger>();
 
-    public Elements defaultElement;
+    //public Elements defaultElement;
     protected override void Awake()
     {
         if (!network)
         {
             enemy.caster = this;
             //DamageHandler = GetComponent<CharacterDamageHandler>();
-            //equippedSpells = new Spell[4];
+            equippedSpells = new Spell[6];
             foreach (var nodeData in ownedNodes)
             {
                 InstantiateNode(nodeData);
@@ -40,7 +40,7 @@ public class EnmSpellCaster : SpellCaster
     {
         enemy.caster = this;
         //DamageHandler = GetComponent<CharacterDamageHandler>();
-        equippedSpells = new Spell[4];
+        equippedSpells = new Spell[6];
         foreach (var nodeData in ownedNodes)
         {
             InstantiateNode(nodeData);
@@ -90,14 +90,14 @@ public class EnmSpellCaster : SpellCaster
 
             if (runtimeNode is SpellCore)
             {
-                if(enemy.element != Elements.None)
+                /*if(enemy.element != Elements.None)
                 {
                     ((SpellCore)runtimeNode).Element = enemy.element;
                 }
                 else
                 {
                     ((SpellCore)runtimeNode).Element = defaultElement;
-                }
+                }*/
                 newSpell.validSpell = true;
                 newSpell.coreNode = runtimeNode as SpellCore;
             }
