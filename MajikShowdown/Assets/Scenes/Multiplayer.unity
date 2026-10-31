@@ -731,6 +731,41 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+  - enemy: {fileID: 1272920518353865679, guid: 97bc68d4e85f54b40ad694b8eb63a92e, type: 3}
+    chance: 0
+    spawnCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.003345985
+        outSlope: 0.003345985
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.35872787
+      - serializedVersion: 3
+        time: 0.84007055
+        value: 0.01871004
+        inSlope: 0.0922352
+        outSlope: 0.0922352
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.15929565
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0067902
+        value: 0.025259398
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   hordes:
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
@@ -958,6 +993,8 @@ MonoBehaviour:
     maxLifeTime: 10
     baseElemental: 5
     maxElemental: 30
+    hordeDuration: 180
+    casterEnemyIndex: -1
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
       chance: 0
@@ -1219,6 +1256,8 @@ MonoBehaviour:
     maxLifeTime: 10
     baseElemental: 5
     maxElemental: 30
+    hordeDuration: 180
+    casterEnemyIndex: -1
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
       chance: 0
@@ -1515,6 +1554,8 @@ MonoBehaviour:
     maxLifeTime: 10
     baseElemental: 5
     maxElemental: 30
+    hordeDuration: 180
+    casterEnemyIndex: -1
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
       chance: 0
@@ -1846,19 +1887,21 @@ MonoBehaviour:
     maxLifeTime: 10
     baseElemental: 5
     maxElemental: 30
+    hordeDuration: 180
+    casterEnemyIndex: -1
   hordeIndex: 0
   minSpawnRadius: 10
   maxSpawnRadius: 20
   radiusStepIncrease: 2
   radiusLimit: 100
   maxEnemySpawnRadius: 3
-  hordeDuration: 180
   pauseDuration: 300
   maxSpawnTime: 5
   minSpawnTime: 2.5
   heightCheckPoint: 10
   checkHeight: 60
   spawnerHeight: 2
+  casterEnemySpawnHeight: 5
   spawner: {fileID: 5452045144222140182, guid: cd01f523005fa364ba79119105b8aacd, type: 3}
   inHorde: 0
   inHordeTime: 0
@@ -1879,7 +1922,6 @@ MonoBehaviour:
     m_Bits: 0
   enemyCounterTxt: {fileID: 375887363}
   maxEnemyCount: 500
-  hordesToWin: 4
   lastTime: 0
   enemyElementColors:
   - element: Ice
@@ -3532,6 +3574,7 @@ MonoBehaviour:
   - {fileID: 8251614635071055290, guid: 67c2eb052c6ffde4ab8a2414619cdd92, type: 3}
   - {fileID: 1083197047355929555, guid: 808169c51eb7c3e47b2054fa93efc1dd, type: 3}
   - {fileID: 1272920518353865679, guid: 3364965d1fa285145b734610c2cd4b68, type: 3}
+  - {fileID: 1272920518353865679, guid: 97bc68d4e85f54b40ad694b8eb63a92e, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2

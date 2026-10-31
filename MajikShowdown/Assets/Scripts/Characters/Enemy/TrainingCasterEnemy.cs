@@ -34,6 +34,10 @@ public class TrainingCasterEnemy : CasterEnemy
         attackCooldown = caster.equippedSpells[0].SpellCooldown + 0.1f;
         gravityPaused = true;
         Warped = false;
+        warping = false;
+        warpingIn = false;
+        warpTimer.Paused = true;
+        warpTimer.SetTimer(0);
     }
 
     public override void EnemyUpdate()
@@ -81,6 +85,9 @@ public class TrainingCasterEnemy : CasterEnemy
             if (!Warped && attackCooldownTimer.Timestamp > attackCooldown * 0.5f)
             {
                 Warp();
+                warpTimer.SetTimer(0);
+                warpTimer.Paused = false;
+                attackCooldownTimer.Paused = true;
             }
         }
         else
@@ -96,6 +103,20 @@ public class TrainingCasterEnemy : CasterEnemy
                 attackedPlayer = target;
                 attackTimer.Paused = false;
                 PlayAnimation(EnemyAnimState.Attack);
+            }
+        }
+        if (warping)
+        {
+            if (warpTimer.timer(warpDuration, Time.deltaTime, false, false))
+            {
+                warping = false;
+                warpTimer.Paused = true;
+                attackCooldownTimer.Paused = false;
+            }
+            else if (warpingIn && warpTimer.Timestamp > warpInDuration)
+            {
+                warpingIn = false;
+                transform.position = WarpPos;
             }
         }
     }
