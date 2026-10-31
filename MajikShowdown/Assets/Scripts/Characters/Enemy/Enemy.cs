@@ -70,14 +70,14 @@ public class Enemy : CrowdCharacter
     }
     public EnemyTransformInfo transformInfo;
     protected Player attackedPlayer;
-    float timePred;
-    Vector3 predTarget;
+    protected float timePred;
+    protected Vector3 predTarget;
     protected int detectRadius;
     public float maxDistanceFromPlayer = 100, repositionRange = 20;
 
     public Animator animator;
     protected bool prevMoving = false, moving = false;
-    public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
+    public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop, Teleport };
 
     public List<EnemyElementColors> baseColors = new List<EnemyElementColors>();
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
@@ -424,6 +424,10 @@ public class Enemy : CrowdCharacter
                     animator.ResetTrigger("Land");
                     animator.SetTrigger("Land");
                     break;
+                case EnemyAnimState.Teleport:
+                    animator.ResetTrigger("Teleport");
+                    animator.SetTrigger("Teleport");
+                    break;
             }
         }
     }
@@ -444,6 +448,10 @@ public class Enemy : CrowdCharacter
             case EnemyAnimState.Land:
                 animator.ResetTrigger("Land");
                 animator.SetTrigger("Land");
+                break;
+            case EnemyAnimState.Teleport:
+                animator.ResetTrigger("Teleport");
+                animator.SetTrigger("Teleport");
                 break;
         }
     }
