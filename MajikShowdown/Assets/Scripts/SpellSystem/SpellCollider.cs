@@ -7,6 +7,7 @@ using UnityEngine.Events;
 
 public class SpellCollider : NetworkBehaviour
 {
+    [Range(0f, 100f)][SerializeField] float bounceRandomness = 10;
     public GameObject mesh;
     public StaticRB rb;
     public StatTypes stats;
@@ -77,10 +78,10 @@ public class SpellCollider : NetworkBehaviour
             transform.localScale = Vector3.zero;
         }*/
         mesh.transform.localScale = Vector3.zero;
-        if(OwnerSpell.Caster.network)
+        if (OwnerSpell.Caster.network)
         {
             isVisible = true;
-            if(isServer)
+            if (isServer)
             {
                 SetInitialScale();
             }
@@ -89,16 +90,16 @@ public class SpellCollider : NetworkBehaviour
         {
             mesh.gameObject.SetActive(true);
         }
-        if(OwnerSpell.coreNode.Type == SpellTypes.Explosion)
+        if (OwnerSpell.coreNode.Type == SpellTypes.Explosion)
         {
-            float roundedDuration = Mathf.Round(stats.Duration*1.1f * 10) / 10;
-            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10)/10, roundedDuration);
+            float roundedDuration = Mathf.Round(stats.Duration * 1.1f * 10) / 10;
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10) / 10, roundedDuration);
         }
         else
         {
-            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10)/10);
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10) / 10);
         }
-        
+
         //Debug.Log( VFXIndex);
         //spellCol = GetComponent<Collider>();
 
@@ -180,11 +181,11 @@ public class SpellCollider : NetworkBehaviour
         {
             mesh.transform.localScale = Vector3.one * currentSize;
         }
-        
+
         //Debug.DrawRay(transform.position, TrajectoryTransform.Forward * 5, Color.red);
         if (MarkedToDie)
         {
-            if(OwnerSpell.coreNode.Type != SpellTypes.Explosion)
+            if (OwnerSpell.coreNode.Type != SpellTypes.Explosion)
             {
                 BuffersControl.Instance.UnspawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, VFXIndex);
             }
@@ -563,11 +564,10 @@ public class SpellCollider : NetworkBehaviour
             {
                 normal = hit.normal;
             }
-            else
+            /*else
             {
-                //normal = (transform.position - data.collider.transform.position).normalized;
                 Debug.LogWarning("Failed to find normal for bounce, this should not happen. " + data.collider.gameObject.name);
-            }
+            }*/
             /* else if (Physics.Raycast(transform.position, previousVelocity.normalized, out hit, currentSize * 10, OwnerSpell.spellCollisionLayers))
              {
                  //Debug.Log(normal);
@@ -588,7 +588,7 @@ public class SpellCollider : NetworkBehaviour
             {
                 Vector3 reflection = Vector3.Reflect(new Vector3(rb.Velocity.x, 0, rb.Velocity.z), normal);
                 reflection.y = rb.Velocity.y;
-                SetTrajectoryForward(reflection);
+                SetTrajectoryForward(RandomizeBounce(reflection));
                 transform.position += normal * (currentSize / 2 + 0.01f);
             }
 
@@ -596,7 +596,7 @@ public class SpellCollider : NetworkBehaviour
         else
         {
             //SetTrajectoryForward(Vector3.Reflect(TrajectoryTransform.Forward, data.hitNormal));
-            SetTrajectoryForward(Vector3.Reflect(rb.Velocity, normal));
+            SetTrajectoryForward(RandomizeBounce(Vector3.Reflect(rb.Velocity, normal)));
             transform.position += normal * (currentSize / 2 + 0.01f);
         }
 
@@ -604,6 +604,14 @@ public class SpellCollider : NetworkBehaviour
         {
             previousDir = Vector3.zero;
         }*/
+    }
+    Vector3 RandomizeBounce(Vector3 direction)
+    {
+        Vector3 randomAxis = Vector3.Cross(direction.normalized, UnityEngine.Random.onUnitSphere).normalized;
+
+        float randomAngle = UnityEngine.Random.Range(-bounceRandomness, bounceRandomness);
+
+        return Quaternion.AngleAxis(randomAngle, randomAxis) * direction;
     }
 
     //[Server]
