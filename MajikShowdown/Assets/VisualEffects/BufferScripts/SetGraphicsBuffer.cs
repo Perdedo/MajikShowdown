@@ -41,6 +41,7 @@ public class SetGraphicsBuffer : MonoBehaviour
 
     public void Initialize()
     {
+        eventAttribute = visualEffect.CreateVFXEventAttribute();
         EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
     }
     public int AddEffect(Transform place, float size)
@@ -87,41 +88,41 @@ public class SetGraphicsBuffer : MonoBehaviour
     }
     public int ClientAddEffect(Transform place, float size)
     {
-        if(myType != SpellTypes.Explosion)
+        if (myType != SpellTypes.Explosion && myType != SpellTypes.Area)
         {
             int index = instances.Count;
-            if(nullIndex.Count == 0)
+            if (nullIndex.Count == 0)
             {
                 instances.Add(place);
-                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                spawnPoints.Add(new Vector4(place.position.x, place.position.y, place.position.z, size));
             }
             else
             {
                 index = nullIndex.Dequeue();
                 instances[index] = place;
-                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+                spawnPoints[index] = new Vector4(place.position.x, place.position.y, place.position.z, size);
             }
             return index;
         }
         else
         {
             int index = instances.Count;
-            if(nullIndex.Count == 0)
+            if (nullIndex.Count == 0)
             {
                 instances.Add(place);
-                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                spawnPoints.Add(new Vector4(place.position.x, place.position.y, place.position.z, size));
                 newCall = true;
             }
             else
             {
                 index = nullIndex.Dequeue();
                 instances[index] = place;
-                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+                spawnPoints[index] = new Vector4(place.position.x, place.position.y, place.position.z, size);
                 newCall = true;
             }
             return index;
         }
-        
+
     }
     public void RemoveEffect(int index)
     {
@@ -146,6 +147,19 @@ public class SetGraphicsBuffer : MonoBehaviour
     }
     public void ClientRemoveEffect(int index)
     {
+        if (myType == SpellTypes.Area)
+        {
+            eventAttribute.SetVector3(positionAttribute, instances[index].position);
+            eventAttribute.SetFloat(sizeAttribute, spawnPoints[index].w);
+            visualEffect.SendEvent(endEventArea, eventAttribute);
+        }
+        else if (myType == SpellTypes.Projectile)
+        {
+            eventAttribute.SetVector3(positionAttribute, instances[index].position);
+            eventAttribute.SetFloat(sizeAttribute, spawnPoints[index].w);
+            visualEffect.SendEvent(hitEventProjec, eventAttribute);
+        }
+
         instances[index] = null;
         nullIndex.Enqueue(index);    
     }
