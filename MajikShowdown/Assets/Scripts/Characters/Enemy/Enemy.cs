@@ -111,6 +111,7 @@ public class Enemy : CrowdCharacter
         if (!isServer)
         {
             GameManager.Instance.hordeController.clientEnemies[newVal] = this;
+            DamageHandler.gameCharacter = this;
         }
     }
 
@@ -333,16 +334,19 @@ public class Enemy : CrowdCharacter
         {
             if (GameManager.Instance.hordeController != null)
             {
-                GameManager.Instance.hordeController.enemies.Remove(this);
-                GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
-                if (!GameManager.Instance.hordeController.inHordeTime)
+                if(isServer)
                 {
-                    GameManager.Instance.hordeController.CheckEnemyCount();
+                    GameManager.Instance.hordeController.enemies.Remove(this);
+                    GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
+                    if (!GameManager.Instance.hordeController.inHordeTime)
+                    {
+                        GameManager.Instance.hordeController.CheckEnemyCount();
+                    }
+                    GameManager.Instance.hordeController.usedEnemiesByType[DamageHandler.enemyIndex].Remove(this);
+                    GameManager.Instance.hordeController.UsedEnemies.Remove(this);
+                    UpdateIdWrapper(-1);
+                    GameManager.Instance.hordeController.UpdateEnemyActiveID();
                 }
-                GameManager.Instance.hordeController.usedEnemiesByType[DamageHandler.enemyIndex].Remove(this);
-                GameManager.Instance.hordeController.UsedEnemies.Remove(this);
-                UpdateIdWrapper(-1);
-                GameManager.Instance.hordeController.UpdateEnemyActiveID();
                 GameManager.Instance.hordeController.DyingEnemies.Remove(this);
             }
             else if (GameManager.Instance.trainingController != null)
@@ -754,6 +758,7 @@ public class Enemy : CrowdCharacter
                 {
                     attacked = false;
                     attackTimer.SetTimer(0);
+                    target = GetClosestPlayer();
                     attackedPlayer = target;
                     attackTimer.Paused = false;
                     PlayAnimation(EnemyAnimState.Attack);

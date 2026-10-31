@@ -144,7 +144,10 @@ public class CharacterDamageHandler : NetworkBehaviour
     {
         if(!isServer)
         {
-            ((Enemy)gameCharacter).transparency = 0;
+            if(gameCharacter != null)
+            {
+                ((Enemy)gameCharacter).transparency = 0;
+            }
             GameManager.Instance.hordeController.DyingEnemies.Add((Enemy)gameCharacter);
         }
         //this.gameObject.SetActive(false);
