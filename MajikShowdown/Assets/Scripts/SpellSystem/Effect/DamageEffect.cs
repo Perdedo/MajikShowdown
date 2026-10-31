@@ -5,7 +5,7 @@ public class DamageEffect : SpellEffect
 {
     public override void ApplyEffect(CharacterDamageHandler target)
     {
-        Damage damage = new Damage(OwnerSpell.coreNode.FinalStats.Damage, OwnerSpell.coreNode.Element, OwnerSpell.Caster.player);
+        Damage damage = new Damage(OwnerNode.coreNode.FinalStats.Damage, OwnerNode.coreNode.Element, OwnerNode.Caster.player);
         target.TakeDamage(damage);
     }
 }

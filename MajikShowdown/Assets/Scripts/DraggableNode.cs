@@ -54,15 +54,15 @@ public class DraggableNode : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private void LoadStartingNode()
     {
         if (sni.inventory == null) return;
-        if (sni.Node.OwnerSpell == null) return;
-        if (sni.Node.OwnerSpell.grid == null) return;
+        if (sni.Node.OwnerNode == null) return;
+        if (sni.Node.OwnerNode.grid == null) return;
 
         int gridIndex = sni.Node.startingGridInd;
 
-        if (gridIndex < 0 || gridIndex >= sni.Node.OwnerSpell.grid.hexGridNodes.Count)
+        if (gridIndex < 0 || gridIndex >= sni.Node.OwnerNode.grid.hexGridNodes.Count)
             return;
 
-        HexGridNode targetHex = sni.Node.OwnerSpell.grid.hexGridNodes[gridIndex];
+        HexGridNode targetHex = sni.Node.OwnerNode.grid.hexGridNodes[gridIndex];
         OriginZone = sni.inventory;
 
         savedPosition = rectTransform.anchoredPosition;

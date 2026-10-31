@@ -85,7 +85,7 @@ public class EnmSpellCaster : SpellCaster
         {
             SpellNode runtimeNode = AddRune(ssn.node, false);
 
-            runtimeNode.OwnerSpell = newSpell;
+            runtimeNode.OwnerNode = newSpell;
             runtimeNode.startingNode = true;
 
             if (runtimeNode is SpellCore)

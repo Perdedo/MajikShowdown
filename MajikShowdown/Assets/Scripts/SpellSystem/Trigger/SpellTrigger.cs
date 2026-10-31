@@ -39,15 +39,15 @@ public class SpellTrigger : SpellNode
         {
             Cooldown = 0;
         }
-        if(OwnerSpell != null)
+        if(OwnerNode != null)
         {
-            if(OwnerSpell.Caster is not EnmSpellCaster)
+            if(OwnerNode.Caster is not EnmSpellCaster)
             {
-                OwnerSpell.UpdateSpell(this);
+                OwnerNode.UpdateSpell(this);
             }
             else
             {
-                OwnerSpell.UpdateEnemySpell(this);
+                OwnerNode.UpdateEnemySpell(this);
             }
         }
         //OwnerSpell?.UpdateSpell(this);
@@ -96,7 +96,7 @@ public class TriggerInfo
     {
         if (SpellOnCooldown)
         {
-            SpellOnCooldown = TriggerTimer.timer(Trigger.OwnerSpell.coreNode.SpawnTriggeredSpellCooldown, Time.deltaTime, true, true);
+            SpellOnCooldown = TriggerTimer.timer(Trigger.OwnerNode.coreNode.SpawnTriggeredSpellCooldown, Time.deltaTime, true, true);
         }
     }
 }

@@ -77,14 +77,14 @@ public class SpellTrajectory : SpellNode
                 break;
 
             case TrajectoryType.Boomerang:
-                if (collider.LifeTime / OwnerSpell.coreNode.FinalStats.Duration < 0.5f)
+                if (collider.LifeTime / OwnerNode.coreNode.FinalStats.Duration < 0.5f)
                 {
                     dir = collider.TrajectoryTransform.Forward;
                 }
                 else
                 {
-                    Vector3 distance = OwnerSpell.Caster.CastingPoint.position - collider.transform.position;
-                    float multiplier = Mathf.Max(distance.magnitude / (OwnerSpell.coreNode.FinalStats.Speed * OwnerSpell.coreNode.FinalStats.Duration / 2), 1);
+                    Vector3 distance = OwnerNode.Caster.CastingPoint.position - collider.transform.position;
+                    float multiplier = Mathf.Max(distance.magnitude / (OwnerNode.coreNode.FinalStats.Speed * OwnerNode.coreNode.FinalStats.Duration / 2), 1);
                     dir = distance.normalized * multiplier;
                     if (distance.sqrMagnitude < 0.1f)
                     {
