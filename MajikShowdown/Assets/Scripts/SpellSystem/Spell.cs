@@ -63,7 +63,7 @@ public class Spell
             {
                 coreNode.AddBuff(s.BaseStats);
             }
-            s.OwnerSpell = this;
+            s.OwnerNode = this;
             if (s is SpellTrigger t)
             {
                 triggers.Add(t);
@@ -167,7 +167,7 @@ public class Spell
             {
                 coreNode.AddBuff(s.BaseStats);
             }
-            s.OwnerSpell = this;
+            s.OwnerNode = this;
             if (s is SpellTrigger t)
             {
                 triggers.Add(t);

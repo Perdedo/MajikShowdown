@@ -28,7 +28,7 @@ public abstract class SpellNode : ScriptableObject
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     //public SpellNode[] NeighborNodes = new SpellNode[6];
-    public Spell OwnerSpell;
+    public Spell OwnerNode;
     public int startingGridInd = -1;
     public bool startingNode = false;
     [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
@@ -156,7 +156,7 @@ public abstract class SpellNode : ScriptableObject
     public virtual void ResetNode()
     {
         hierarchy = -1;
-        OwnerSpell = null;
+        OwnerNode = null;
     }
     public virtual void RandomizeStats()
     {
