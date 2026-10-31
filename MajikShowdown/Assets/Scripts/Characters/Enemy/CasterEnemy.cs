@@ -119,7 +119,11 @@ public class CasterEnemy : Enemy
             else if(warpingIn && warpTimer.Timestamp > warpInDuration)
             {
                 warpingIn = false;
+                rb.interpolation = RigidbodyInterpolation.None;
+                rb.position = WarpPos;
                 transform.position = WarpPos;
+                ResetAllVelocities();
+                rb.interpolation = RigidbodyInterpolation.Interpolate;
             }
         }
         UpdateTransform();

@@ -123,8 +123,13 @@ public class TrainingCasterEnemy : CasterEnemy
             }
             else if (warpingIn && warpTimer.Timestamp > warpInDuration)
             {
+                //Debug.Log("Warping to position: " + WarpPos);
                 warpingIn = false;
+                rb.interpolation = RigidbodyInterpolation.None;
+                rb.position = WarpPos;
                 transform.position = WarpPos;
+                ResetAllVelocities();
+                rb.interpolation = RigidbodyInterpolation.Interpolate;
             }
         }
     }
