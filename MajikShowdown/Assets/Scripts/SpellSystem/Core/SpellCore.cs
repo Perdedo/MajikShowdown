@@ -46,7 +46,7 @@ public class SpellCore : SpellNode
     {
         base.RandomizeStats();
         //Type = (SpellTypes)RandomizeEnum<SpellTypes>();
-        Element = RandomizeEnum<Elements>(new string[] { "None" });
+        Element = RandomizeEnum<Elements>(new string[] { "None", "Lightning" });
     }
     public void SetCoreStats(float cooldown, StatTypes baseStats, List<float> extras, int elementInd)
     {
