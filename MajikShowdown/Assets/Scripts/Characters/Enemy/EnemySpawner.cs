@@ -92,9 +92,9 @@ public class EnemySpawner : NetworkBehaviour
                 if(randEnemy <= enmSum)
                 {
 
-                    if (controller.enemiesByType[i].Count <= controller.usedEnemiesByType[i].Count)
+                    if (controller.enemiesByType[enemies[i].typeIndex].Count <= controller.usedEnemiesByType[enemies[i].typeIndex].Count)
                     {
-                        if(i != controller.hordes[controller.hordeIndex].casterEnemyIndex)
+                        if(enemies[i].typeIndex != 5)
                         {
                             aux = Instantiate(enemies[i].enemy, spawnPos.position + GetSpawnDirection(), Quaternion.identity);
                         }
@@ -117,7 +117,7 @@ public class EnemySpawner : NetworkBehaviour
                         {
                             mat.SetFloat("_Alpha_Threshold", 1);
                         }
-                        controller.enemiesByType[i].Add(auxEnemy);
+                        controller.enemiesByType[enemies[i].typeIndex].Add(auxEnemy);
                         auxEnemy.instanceIndex = controller.enemiesInfo.Count;
                         EnemyTransformInfo auxTrInfo = new EnemyTransformInfo(/*aux, */spawnPos.position, 0,/* (float)NetworkTime.time,*/ Vector3.zero);
                         controller.enemiesInfo.Add(auxTrInfo);
@@ -128,13 +128,13 @@ public class EnemySpawner : NetworkBehaviour
                     }
                     else
                     {
-                        foreach(Enemy e in controller.enemiesByType[i])
+                        foreach(Enemy e in controller.enemiesByType[enemies[i].typeIndex])
                         {
-                            if (!controller.usedEnemiesByType[i].Contains(e))
+                            if (!controller.usedEnemiesByType[enemies[i].typeIndex].Contains(e))
                             {
                                 aux = e.gameObject;
                                 Vector3 auxPos = spawnPos.position + GetSpawnDirection();
-                                if(i != controller.hordes[controller.hordeIndex].casterEnemyIndex)
+                                if(enemies[i].typeIndex != 5)
                                 {
                                     aux.transform.position = auxPos;
                                 }
@@ -170,7 +170,7 @@ public class EnemySpawner : NetworkBehaviour
                     auxEnemy.ResetAllVelocities();
                     controller.enemies.Add(auxEnemy);
                     controller.UpdateEnemyText(controller.enemies.Count);
-                    controller.usedEnemiesByType[i].Add(auxEnemy);
+                    controller.usedEnemiesByType[enemies[i].typeIndex].Add(auxEnemy);
                     auxEnemy.DamageHandler.Resistances.Clear();
                     randElemental = UnityEngine.Random.Range(0f, 100f);
                     if(randElemental <= enemies[i].elementalChance)
@@ -267,7 +267,7 @@ public class EnemySpawner : NetworkBehaviour
                         auxEnemy.element = Elements.None;
                         auxEnemy.colorIndex = -1;
                     }
-                    aux.GetComponent<CharacterDamageHandler>().enemyIndex = i;
+                    aux.GetComponent<CharacterDamageHandler>().enemyIndex = enemies[i].typeIndex;
                     controller.UsedEnemies.Add(auxEnemy);
                     auxEnemy.Initialize(Mathf.Lerp(auxEnemy.DamageHandler.minHealthMultiplier, auxEnemy.DamageHandler.maxHealthMultiplier, controller.hordes[controller.hordeIndex].baseHPMultiplierCurve.Evaluate(Mathf.Clamp((Time.time - hordeStartTime) / hordeDurationTime, 0, 1))));
                     i = enemies.Count;
@@ -351,6 +351,7 @@ public class EnemySpawner : NetworkBehaviour
 public class EnemySelection
 {
     public GameObject enemy;
+    public int typeIndex;
     //public float baseChance;
     [HideInInspector]public float chance;
     //public bool difficult;

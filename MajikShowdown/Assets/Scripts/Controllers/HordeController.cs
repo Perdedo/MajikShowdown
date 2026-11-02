@@ -816,7 +816,7 @@ public class HordeSettings
     public AnimationCurve enemySpawnRateCurve;
     //public AnimationCurve elementalCurve;
     public float baseSpawnTime, minSpawnTime, maxLifeTime,/* baseElemental, maxElemental, */hordeDuration = 180;
-    public int casterEnemyIndex = -1;
+    //public int casterEnemyIndex = -1;
 }
 
 public struct EnemyTransformInfo
