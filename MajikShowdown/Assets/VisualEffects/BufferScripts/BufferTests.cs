@@ -17,14 +17,11 @@ public class BufferTests : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            /*index = BuffersControl.Instance.SpawnEffect(Elements.Decay,SpellTypes.Area, points[0].transform, 1);
-            BuffersControl.Instance.SpawnEffect(Elements.Decay,SpellTypes.Area, points[1].transform, 1.75f);*/
-            //TesteType(SpellTypes.Area,points);
-            index = BuffersControl.Instance.SpawnEffect(Elements.Ice,SpellTypes.Projectile, points[0].transform, 1.75f);
+            index = BuffersControl.Instance.SpawnEffect(Elements.Earth, SpellTypes.Projectile, points[0].transform, 1);
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
-           BuffersControl.Instance.UnspawnEffect(Elements.Ice, SpellTypes.Projectile, index);   
+           BuffersControl.Instance.UnspawnEffect(Elements.Earth, SpellTypes.Projectile, index);   
         }
     }
     public void TestBufferSpawn()
@@ -59,6 +56,7 @@ public class BufferTests : MonoBehaviour
         if(type != SpellTypes.Explosion)
         {
             BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1);
+            BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1);
             BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 1);
             BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1);
             BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 1);
