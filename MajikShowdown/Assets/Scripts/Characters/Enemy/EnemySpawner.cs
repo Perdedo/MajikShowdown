@@ -239,7 +239,7 @@ public class EnemySpawner : NetworkBehaviour
                                         auxEnemy.colorIndex = -1;
                                         break;
                                 }
-                                if(auxEnemy is CasterEnemy)
+                                /*if(auxEnemy is CasterEnemy)
                                 {
                                     foreach (SpellNode n in ((CasterEnemy)auxEnemy).caster.runtimeNodes)
                                     {
@@ -251,12 +251,12 @@ public class EnemySpawner : NetworkBehaviour
                                             }
                                             else
                                             {
-                                                //Provisório até ter os VFX de Lightning
+                                                //Provisï¿½rio atï¿½ ter os VFX de Lightning
                                                 ((SpellCore)n).Element = Elements.Radiance;
                                             }
                                         }
                                     }
-                                }
+                                }*/
                                 j = enemies[i].elements.Count;
                             }
                         }
