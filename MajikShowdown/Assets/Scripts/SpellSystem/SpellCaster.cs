@@ -197,7 +197,7 @@ public class SpellCaster : NetworkBehaviour
                 //Vector3 dir = (AimController.AimPoint - castPos).normalized;
                 if (dir == Vector3.zero)
                 {
-                    dir = aimPoint - transform.position;
+                    dir = aimPoint - CastingPoint.position;
                     //dir = AimController.AimPoint - transform.position;
                 }
                 SpellColliderManager.Instance.ServerInitializeSpellCollider(spell, castPos, dir, true);
@@ -250,7 +250,7 @@ public class SpellCaster : NetworkBehaviour
                 Vector3 dir = (AimController.AimPoint - castPos).normalized;
                 if (dir == Vector3.zero)
                 {
-                    dir = AimController.AimPoint - transform.position;
+                    dir = AimController.AimPoint - CastingPoint.position;
                 }
                 SpellColliderManager.Instance.InitializeSpellCollider(spell, castPos, dir, true);
             }
