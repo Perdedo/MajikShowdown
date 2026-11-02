@@ -112,7 +112,7 @@ public class SpellTrajectory : SpellNode
 
         foreach (Collider hit in hits)
         {
-            if (hit.transform != collider.transform && hit.transform != collider.OwnerSpell.Caster.player.transform)
+            if (hit.transform != collider.transform && hit.transform != collider.OwnerSpell.Caster.transform)
             {
                 float distance = Vector3.Distance(collider.transform.position, hit.transform.position);
                 if (distance < closestDistance)
