@@ -26,6 +26,7 @@ public class SetGraphicsBuffer : MonoBehaviour
     static readonly ExposedProperty hitEventProjec = "OnHitProject";
 
     VFXEventAttribute eventAttribute;
+    ElementBuffers myParent;
 
     bool newCall = false;
     public VFXNetworkAuxiliar netAux;
@@ -37,6 +38,7 @@ public class SetGraphicsBuffer : MonoBehaviour
         }
         eventAttribute = visualEffect.CreateVFXEventAttribute();
         EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
+        myParent = this.transform.parent.GetComponent<ElementBuffers>();
     }
 
     public void Initialize()
@@ -52,6 +54,7 @@ public class SetGraphicsBuffer : MonoBehaviour
         if(myType != SpellTypes.Explosion && myType != SpellTypes.Area)
         {
             int index = instances.Count;
+            newCall = myParent.myElement == Elements.Earth;
             if(nullIndex.Count == 0)
             {
                 instances.Add(place);
