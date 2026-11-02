@@ -234,7 +234,11 @@ MonoBehaviour:
   maxDistanceFromPlayer: 150
   repositionRange: 50
   animator: {fileID: 4311237413474159649}
-  baseColors: []
+  baseColors:
+  - element: Base
+    mainColor: {r: 1, g: 1, b: 1, a: 1}
+    emissionColor: {r: 9.082411, g: 0.8196448, b: 0, a: 1}
+    emissionColor1: {r: 13.76636, g: 1.8251675, b: 0, a: 0}
   flickering: 0
   flickerAmmount: 0
   hitPoint: {fileID: 6818907241630132136}
@@ -361,6 +365,7 @@ MonoBehaviour:
   damageIndicatorPrefab: {fileID: 0}
   network: 0
   canDie: 1
+  dying: 0
 --- !u!1 &6273527919916935559
 GameObject:
   m_ObjectHideFlags: 0

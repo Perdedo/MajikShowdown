@@ -106,6 +106,33 @@ public class Enemy : CrowdCharacter
         }
     }
 
+    public void OfflineChangeColor(int index)
+    {
+        if(colorIndex == index)
+        {
+            return;
+        }
+        colorIndex = index;
+        if(index >= 0)
+        {
+            foreach(Material mat in mesh.materials)
+            {
+                mat.SetColor("_Main_Color", GameManager.Instance.trainingController.enemyElementColors[index].mainColor);
+                mat.SetColor("_Emission_Color", GameManager.Instance.trainingController.enemyElementColors[index].emissionColor);
+                mat.SetColor("_Emission_Color1", GameManager.Instance.trainingController.enemyElementColors[index].emissionColor1);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < mesh.materials.Length; i++)
+            {
+                mesh.materials[i].SetColor("_Main_Color", baseColors[i].mainColor);
+                mesh.materials[i].SetColor("_Emission_Color", baseColors[i].emissionColor);
+                mesh.materials[i].SetColor("_Emission_Color1", baseColors[i].emissionColor1);
+            }
+        }
+    }
+
     public void ClientInitialize(int oldVal, int newVal)
     {
         if (!isServer)
