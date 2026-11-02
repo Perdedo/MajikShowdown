@@ -472,7 +472,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         selfToggleIcon.gameObject.SetActive(value);
         selfToggleIcon.sprite = checkSprite;
-        currentType.OwnerSpell?.UpdateSpell();
+        currentType.OwnerNode?.UpdateSpell();
 
         if (!isServer && network) CMDSetSelfCollision(value);
     }
@@ -485,7 +485,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         alliesToggleIcon.gameObject.SetActive(value);
         alliesToggleIcon.sprite = checkSprite;
-        currentType.OwnerSpell?.UpdateSpell();
+        currentType.OwnerNode?.UpdateSpell();
 
         if (!isServer && network) CMDSetAlliesCollision(value);
     }
@@ -498,7 +498,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         enemiesToggleIcon.gameObject.SetActive(value);
         enemiesToggleIcon.sprite = checkSprite;
-        currentType.OwnerSpell?.UpdateSpell();
+        currentType.OwnerNode?.UpdateSpell();
 
         if (!isServer && network) CMDSetEnemiesCollision(value);
     }
@@ -511,7 +511,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         objectsToggleIcon.gameObject.SetActive(value);
         objectsToggleIcon.sprite = checkSprite;
-        currentType.OwnerSpell?.UpdateSpell();
+        currentType.OwnerNode?.UpdateSpell();
 
         if (!isServer && network) CMDSetObjectsCollision(value);
     }
@@ -525,7 +525,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         selfToggleIcon.gameObject.SetActive(value);
         selfToggleIcon.sprite = checkSprite;
-        currentType.OwnerSpell?.UpdateSpell();
+        currentType.OwnerNode?.UpdateSpell();
     }
 
     [Command]
@@ -537,7 +537,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         alliesToggleIcon.gameObject.SetActive(value);
         alliesToggleIcon.sprite = checkSprite;
-        currentType.OwnerSpell?.UpdateSpell();
+        currentType.OwnerNode?.UpdateSpell();
     }
 
     [Command]
@@ -549,7 +549,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         enemiesToggleIcon.gameObject.SetActive(value);
         enemiesToggleIcon.sprite = checkSprite;
-        currentType.OwnerSpell?.UpdateSpell();
+        currentType.OwnerNode?.UpdateSpell();
     }
 
     [Command]
@@ -561,7 +561,7 @@ public void HideAll() => ApplyConfig(new SectionConfig());
         currentType.Collisions = col;
         objectsToggleIcon.gameObject.SetActive(value);
         objectsToggleIcon.sprite = checkSprite;
-        currentType.OwnerSpell?.UpdateSpell();
+        currentType.OwnerNode?.UpdateSpell();
     }
 
     void SetupAvailableSpells()

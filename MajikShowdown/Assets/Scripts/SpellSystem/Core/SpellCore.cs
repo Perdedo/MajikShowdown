@@ -34,7 +34,10 @@ public class SpellCore : SpellNode
         if (RandomizeOnStart)
         {
             RandomizeStats();
-            owner.commander.SetCoreSpellNodeValues(this, Cooldown, BaseStats, extraValues, Element);
+            if(owner is not EnmSpellCaster)
+            {
+                owner.commander.SetCoreSpellNodeValues(this, Cooldown, BaseStats, extraValues, Element);
+            }
         }
         runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
@@ -43,7 +46,7 @@ public class SpellCore : SpellNode
     {
         base.RandomizeStats();
         //Type = (SpellTypes)RandomizeEnum<SpellTypes>();
-        Element = RandomizeEnum<Elements>(new string[] { "None" });
+        Element = RandomizeEnum<Elements>(new string[] { "None", "Lightning" });
     }
     public void SetCoreStats(float cooldown, StatTypes baseStats, List<float> extras, int elementInd)
     {
@@ -106,10 +109,34 @@ public class SpellCore : SpellNode
         }
         
     }
+    public void GetEnemyConectedNodes()
+    {
+        trajectory = null;
+        castPoint = null;
+        foreach (SpellNode c in OwnerNode.spellNodes)
+        {
+            if (c is SpellTrajectory t)
+            {
+                trajectory = t;
+            }
+            else if (c is SpellCastPoint cp)
+            {
+                castPoint = cp;
+            }
+        }
+        
+    }
     public void UpdateNode()
     {
         CalculateFinalStats();
-        GetConectedNodes();
+        if(OwnerNode.Caster is not EnmSpellCaster)
+        {
+            GetConectedNodes();
+        }
+        else
+        {
+            GetEnemyConectedNodes();
+        }
     }
     public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {

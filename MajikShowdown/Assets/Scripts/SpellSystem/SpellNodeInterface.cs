@@ -243,7 +243,7 @@ public class SpellNodeInterface : MonoBehaviour
 
             UpdateConected();
 
-            var spell = Node.OwnerSpell;
+            var spell = Node.OwnerNode;
 
             if (spell != null)
             {

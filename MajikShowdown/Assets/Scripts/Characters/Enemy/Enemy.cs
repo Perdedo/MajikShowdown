@@ -70,14 +70,14 @@ public class Enemy : CrowdCharacter
     }
     public EnemyTransformInfo transformInfo;
     protected Player attackedPlayer;
-    float timePred;
-    Vector3 predTarget;
+    protected float timePred;
+    protected Vector3 predTarget;
     protected int detectRadius;
     public float maxDistanceFromPlayer = 100, repositionRange = 20;
 
     public Animator animator;
     protected bool prevMoving = false, moving = false;
-    public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop };
+    public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop, Teleport };
 
     public List<EnemyElementColors> baseColors = new List<EnemyElementColors>();
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
@@ -106,11 +106,39 @@ public class Enemy : CrowdCharacter
         }
     }
 
+    public void OfflineChangeColor(int index)
+    {
+        if(colorIndex == index)
+        {
+            return;
+        }
+        colorIndex = index;
+        if(index >= 0)
+        {
+            foreach(Material mat in mesh.materials)
+            {
+                mat.SetColor("_Main_Color", GameManager.Instance.trainingController.enemyElementColors[index].mainColor);
+                mat.SetColor("_Emission_Color", GameManager.Instance.trainingController.enemyElementColors[index].emissionColor);
+                mat.SetColor("_Emission_Color1", GameManager.Instance.trainingController.enemyElementColors[index].emissionColor1);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < mesh.materials.Length; i++)
+            {
+                mesh.materials[i].SetColor("_Main_Color", baseColors[i].mainColor);
+                mesh.materials[i].SetColor("_Emission_Color", baseColors[i].emissionColor);
+                mesh.materials[i].SetColor("_Emission_Color1", baseColors[i].emissionColor1);
+            }
+        }
+    }
+
     public void ClientInitialize(int oldVal, int newVal)
     {
         if (!isServer)
         {
             GameManager.Instance.hordeController.clientEnemies[newVal] = this;
+            DamageHandler.gameCharacter = this;
         }
     }
 
@@ -189,7 +217,7 @@ public class Enemy : CrowdCharacter
 #endif
 
     //[ClientRpc]
-    public void EnemyClientUpdate()
+    public virtual void EnemyClientUpdate()
     {
         if (isServer)
         {
@@ -333,16 +361,19 @@ public class Enemy : CrowdCharacter
         {
             if (GameManager.Instance.hordeController != null)
             {
-                GameManager.Instance.hordeController.enemies.Remove(this);
-                GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
-                if (!GameManager.Instance.hordeController.inHordeTime)
+                if(isServer)
                 {
-                    GameManager.Instance.hordeController.CheckEnemyCount();
+                    GameManager.Instance.hordeController.enemies.Remove(this);
+                    GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
+                    if (!GameManager.Instance.hordeController.inHordeTime)
+                    {
+                        GameManager.Instance.hordeController.CheckEnemyCount();
+                    }
+                    GameManager.Instance.hordeController.usedEnemiesByType[DamageHandler.enemyIndex].Remove(this);
+                    GameManager.Instance.hordeController.UsedEnemies.Remove(this);
+                    UpdateIdWrapper(-1);
+                    GameManager.Instance.hordeController.UpdateEnemyActiveID();
                 }
-                GameManager.Instance.hordeController.usedEnemiesByType[DamageHandler.enemyIndex].Remove(this);
-                GameManager.Instance.hordeController.UsedEnemies.Remove(this);
-                UpdateIdWrapper(-1);
-                GameManager.Instance.hordeController.UpdateEnemyActiveID();
                 GameManager.Instance.hordeController.DyingEnemies.Remove(this);
             }
             else if (GameManager.Instance.trainingController != null)
@@ -424,6 +455,10 @@ public class Enemy : CrowdCharacter
                     animator.ResetTrigger("Land");
                     animator.SetTrigger("Land");
                     break;
+                case EnemyAnimState.Teleport:
+                    animator.ResetTrigger("Teleport");
+                    animator.SetTrigger("Teleport");
+                    break;
             }
         }
     }
@@ -444,6 +479,10 @@ public class Enemy : CrowdCharacter
             case EnemyAnimState.Land:
                 animator.ResetTrigger("Land");
                 animator.SetTrigger("Land");
+                break;
+            case EnemyAnimState.Teleport:
+                animator.ResetTrigger("Teleport");
+                animator.SetTrigger("Teleport");
                 break;
         }
     }
@@ -746,6 +785,7 @@ public class Enemy : CrowdCharacter
                 {
                     attacked = false;
                     attackTimer.SetTimer(0);
+                    target = GetClosestPlayer();
                     attackedPlayer = target;
                     attackTimer.Paused = false;
                     PlayAnimation(EnemyAnimState.Attack);

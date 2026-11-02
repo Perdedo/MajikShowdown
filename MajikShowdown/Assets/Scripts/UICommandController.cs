@@ -687,7 +687,7 @@ public class UICommandController : NetworkBehaviour
 
             sni.UpdateConected();
 
-            var spell = sni.Node.OwnerSpell;
+            var spell = sni.Node.OwnerNode;
 
             if (spell != null)
             {

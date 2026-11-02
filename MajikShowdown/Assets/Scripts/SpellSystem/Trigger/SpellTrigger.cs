@@ -16,7 +16,14 @@ public class SpellTrigger : SpellNode
         if (RandomizeOnStart)
         {
             RandomizeStats();
-            owner.commander.SetTriggerSpellNodeValues(this, Cooldown, BaseStats, extraValues, trigger);
+            if(owner is not EnmSpellCaster)
+            {
+                owner.commander.SetTriggerSpellNodeValues(this, Cooldown, BaseStats, extraValues, trigger);
+            }
+            /*else if(owner is EnmSpellCaster e)
+            {
+                e.commander.SetTriggerSpellNodeValues(this, Cooldown, BaseStats, extraValues, trigger);
+            }*/
         }
         runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
@@ -32,7 +39,18 @@ public class SpellTrigger : SpellNode
         {
             Cooldown = 0;
         }
-        OwnerSpell?.UpdateSpell(this);
+        if(OwnerNode != null)
+        {
+            if(OwnerNode.Caster is not EnmSpellCaster)
+            {
+                OwnerNode.UpdateSpell(this);
+            }
+            else
+            {
+                OwnerNode.UpdateEnemySpell(this);
+            }
+        }
+        //OwnerSpell?.UpdateSpell(this);
     }
     /*public override List<SpellNode> GetSpellList(List<SpellNode> list)
     {
@@ -78,7 +96,7 @@ public class TriggerInfo
     {
         if (SpellOnCooldown)
         {
-            SpellOnCooldown = TriggerTimer.timer(Trigger.OwnerSpell.coreNode.SpawnTriggeredSpellCooldown, Time.deltaTime, true, true);
+            SpellOnCooldown = TriggerTimer.timer(Trigger.OwnerNode.coreNode.SpawnTriggeredSpellCooldown, Time.deltaTime, true, true);
         }
     }
 }

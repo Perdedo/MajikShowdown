@@ -3473,7 +3473,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  caster: {fileID: 1701926122361929969}
+  caster: {fileID: 6775029081619686729}
   playerUI: {fileID: 6932264981861579884}
   spellInventoryUI: {fileID: 2826145939144236601}
   gridIndexRef: 0
@@ -20509,7 +20509,7 @@ MonoBehaviour:
   lightningIcon: {fileID: 21300000, guid: c1415252e58cc114aaa3ddac9d8e0b08, type: 3}
   radianceIcon: {fileID: 21300000, guid: a8696561b58f78b4b932a74cf4f109ba, type: 3}
   darknessIcon: {fileID: 21300000, guid: baf1c9a41de8e6a4caa976fd5ae76a30, type: 3}
-  decayIcon: {fileID: 0}
+  decayIcon: {fileID: 21300000, guid: 8ec7e549a60fccc44b18fbbef7658b81, type: 3}
   elementIcon: {fileID: 698517157435959475}
   cooldownIcon: {fileID: 4357475228480313325}
   nodeCooldown: {fileID: 9108832300432527708}
@@ -20563,7 +20563,7 @@ MonoBehaviour:
   multiBounceImage: {fileID: 1114836869057418414}
   multiKnockbackText: {fileID: 2553177376895114269}
   multiKnockbackImage: {fileID: 3461090802160276719}
-  caster: {fileID: 1701926122361929969}
+  caster: {fileID: 0}
   grid: {fileID: 6584108632056666729, guid: 14835c110065a754f8f1675b217de9c1, type: 3}
   network: 1
 --- !u!1 &2721453448475659198
@@ -24812,7 +24812,7 @@ MonoBehaviour:
   hideUsedToggle: {fileID: 3185663614208478210}
   reverseSortToggle: {fileID: 8544366765523535820}
   favoritesOnlyToggle: {fileID: 1965448895533365472}
-  caster: {fileID: 1701926122361929969}
+  caster: {fileID: 6775029081619686729}
   isEditSpellInventory: 1
   network: 1
 --- !u!114 &6513425668837857634
@@ -26473,7 +26473,7 @@ MonoBehaviour:
   hideUsedToggle: {fileID: 6111080531112685604}
   reverseSortToggle: {fileID: 7425570936046368896}
   favoritesOnlyToggle: {fileID: 6226784699956851444}
-  caster: {fileID: 1701926122361929969}
+  caster: {fileID: 6775029081619686729}
   isEditSpellInventory: 0
   network: 1
 --- !u!114 &7602644464807898147
@@ -41014,7 +41014,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7322676972798157240}
   - component: {fileID: 6982475888199955597}
-  - component: {fileID: 1701926122361929969}
   - component: {fileID: 7285538749250529348}
   m_Layer: 8
   m_Name: AimController
@@ -41061,133 +41060,6 @@ MonoBehaviour:
     m_Bits: 3027
   ShowHit: 1
   AimPoint: {x: 0, y: 0, z: 0}
---- !u!114 &1701926122361929969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5324450181588145462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eebe486acfbc22f428ce29abf5f77efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpellCaster
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  startingSpells:
-  - {fileID: 11400000, guid: d52e0876ee7afe84296a6de3916dc907, type: 2}
-  - {fileID: 11400000, guid: 1783a19ee346ab54c8da166eb832de89, type: 2}
-  AimController: {fileID: 6982475888199955597}
-  genericNodePrefab: {fileID: 4987073506986097210, guid: 90062ac18eaa795429e3132159484390, type: 3}
-  ownedNodes:
-  - {fileID: 11400000, guid: fbc1f1f918bdb3744b82ca58741bc8dc, type: 2}
-  - {fileID: 11400000, guid: f91b9a6e7405d0545925f7f767d3728d, type: 2}
-  - {fileID: 11400000, guid: 2399f2ee075eeee4b801efc12503be73, type: 2}
-  - {fileID: 11400000, guid: 64bed0574180f81439ae9b6158533312, type: 2}
-  - {fileID: 11400000, guid: 741dda3e9771dee4198651b3bd50838a, type: 2}
-  - {fileID: 11400000, guid: fd251213ccc8ae2479775da86623f2fb, type: 2}
-  - {fileID: 11400000, guid: 2d62b0e1990d4fe418bf67d579510dc6, type: 2}
-  - {fileID: 11400000, guid: be8fd24032057ca4ca00309e70d32f93, type: 2}
-  - {fileID: 11400000, guid: f490409d6f25baa48a48924ecc0b619a, type: 2}
-  - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
-  - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
-  - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
-  - {fileID: 11400000, guid: e5a7eaef2ea1df8459f01cde7c0a7433, type: 2}
-  - {fileID: 11400000, guid: 02c686d126546bf4ca77b3bba178daff, type: 2}
-  - {fileID: 11400000, guid: 0dbc51ac2645d7c43b33ca63bba3fc59, type: 2}
-  - {fileID: 11400000, guid: ba5d8738e35456445b28685f110df77a, type: 2}
-  - {fileID: 11400000, guid: fb385dfd0d92f3e4fac9a5c9e836bcb4, type: 2}
-  - {fileID: 11400000, guid: a5cfb7c5569b70f4dbc60bf13c1f4cd8, type: 2}
-  - {fileID: 11400000, guid: e28da45c00442584cbb52c9ff30912c0, type: 2}
-  - {fileID: 11400000, guid: 234ab63505d5dea41966027761459329, type: 2}
-  - {fileID: 11400000, guid: 7fd29b8f3659c414f848fe811c60ac5b, type: 2}
-  - {fileID: 11400000, guid: 552b98e6749cb1c40b982734824a6bed, type: 2}
-  - {fileID: 11400000, guid: ae4d9412cd42a3745a9fab7a5fa5c453, type: 2}
-  - {fileID: 11400000, guid: 4572eb763389748438fa35b83fc182e3, type: 2}
-  - {fileID: 11400000, guid: 86d7b479c33dd234e8bbaf417c65e25c, type: 2}
-  - {fileID: 11400000, guid: e2ab254cabbb39c418de8e7c40ad03db, type: 2}
-  - {fileID: 11400000, guid: c65782bbe93b4d3439a4d6de2694e851, type: 2}
-  - {fileID: 11400000, guid: 2adb7ae0f482dfa468fb50d43f48129a, type: 2}
-  - {fileID: 11400000, guid: 066a41cc9d6fd2e44b2ea8b2d12c6196, type: 2}
-  - {fileID: 11400000, guid: 64fabc9a98947d3429fdd9a1ce94176e, type: 2}
-  - {fileID: 11400000, guid: cb4b72dd4349f734fb53377f3a6e3848, type: 2}
-  - {fileID: 11400000, guid: cee3db6028e9e7a42952976c46aa08db, type: 2}
-  - {fileID: 11400000, guid: a7648e07787147849abe764a5a19b543, type: 2}
-  - {fileID: 11400000, guid: 0e70df82dedecdc4d87fdcd83b852fdc, type: 2}
-  - {fileID: 11400000, guid: 7e76069515a246b41b09bc1277376b11, type: 2}
-  - {fileID: 11400000, guid: ad071d28ca2a0b74f8f3e6f8cfebd064, type: 2}
-  - {fileID: 11400000, guid: a0f76ebc750397b469d4f2fb62e528ed, type: 2}
-  - {fileID: 11400000, guid: d742b3983109d024eb31b505d34eece4, type: 2}
-  - {fileID: 11400000, guid: e2d0972c5ac13c942be4f4b641fe4485, type: 2}
-  - {fileID: 11400000, guid: 305a7e9c70923194ea28c2e6ac0d8fa7, type: 2}
-  - {fileID: 11400000, guid: 6e073f9018bceff4cb508284fc1d2706, type: 2}
-  - {fileID: 11400000, guid: 61c0a0ffbbb029241be43ba0c9f42c3c, type: 2}
-  - {fileID: 11400000, guid: cfd120551b36856499037f3b7905ff46, type: 2}
-  - {fileID: 11400000, guid: af479bf0f0d09ab42a44de81c34af52b, type: 2}
-  - {fileID: 11400000, guid: ab2c6e6aa3cacc2449142dcebeef1e21, type: 2}
-  - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
-  - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
-  - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
-  - {fileID: 11400000, guid: 1c81d13cfb783c543897a613a1ad49f1, type: 2}
-  - {fileID: 11400000, guid: 1c81d13cfb783c543897a613a1ad49f1, type: 2}
-  - {fileID: 11400000, guid: 1c81d13cfb783c543897a613a1ad49f1, type: 2}
-  - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}
-  - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}
-  - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}
-  - {fileID: 11400000, guid: d5629279227f93342a01588e1a27cc11, type: 2}
-  - {fileID: 11400000, guid: 8562eafb3912bc64192b6708d7b97011, type: 2}
-  - {fileID: 11400000, guid: 451188460737c584d88cf633d36cb44f, type: 2}
-  - {fileID: 11400000, guid: 6aed3ed64c34e9b42b5bd2c13db52f8d, type: 2}
-  - {fileID: 11400000, guid: 1d9ff62e904089545b537998732d9784, type: 2}
-  - {fileID: 11400000, guid: 5101f76e5330d2b4fa2745f4e55ff3e0, type: 2}
-  - {fileID: 11400000, guid: 00d940a69857b54469ce48eda478de0e, type: 2}
-  - {fileID: 11400000, guid: 9e7bffd4ba9921841bb6d7bbe2070a50, type: 2}
-  - {fileID: 11400000, guid: e13dae0dea42eee4287825282fe434db, type: 2}
-  - {fileID: 11400000, guid: 571bacd2f0883f047bb86a6f8eddbd7c, type: 2}
-  - {fileID: 11400000, guid: 05fb794fd18b51e49a4e1993686da3ee, type: 2}
-  - {fileID: 11400000, guid: f922223ab8d8e9745baf803056d65e18, type: 2}
-  - {fileID: 11400000, guid: ba641916d12d14549af400a4f8b0a2b3, type: 2}
-  - {fileID: 11400000, guid: 2f3c00123984dd04892a9db4fdc4286b, type: 2}
-  - {fileID: 11400000, guid: 31dd8405377cf7b47bf276c5dae9628b, type: 2}
-  - {fileID: 11400000, guid: 39318fdeb09a3d841bdc8ad4c1e62718, type: 2}
-  - {fileID: 11400000, guid: eec25f993c0246445b0e1eaa315b9950, type: 2}
-  - {fileID: 11400000, guid: 6f80c1d2841151f4ca912a70575269b1, type: 2}
-  - {fileID: 11400000, guid: 76a8d7ce1837fc34393900190e7534b5, type: 2}
-  - {fileID: 11400000, guid: 16b2d9a49d46b684093f88d79bacc505, type: 2}
-  - {fileID: 11400000, guid: abe9f7572e3fc254881e770b6f4f35e8, type: 2}
-  - {fileID: 11400000, guid: c5a1d60250471834a9935dfc953451a2, type: 2}
-  - {fileID: 11400000, guid: cda9f2213c7450c408ace279fa844b95, type: 2}
-  - {fileID: 11400000, guid: 872cfb04fcb0c134699eb34ca24d36ee, type: 2}
-  - {fileID: 11400000, guid: 62182c047a6f5924a8aabecb0b26d8b5, type: 2}
-  - {fileID: 11400000, guid: da0dc13f573a2fd448031c938846d4ed, type: 2}
-  - {fileID: 11400000, guid: a33b9a4d405bdfb4a8fadda4282e08fd, type: 2}
-  - {fileID: 11400000, guid: ddde59ddcfc885d49abba7c0b0d8cfe9, type: 2}
-  - {fileID: 11400000, guid: 02f5b983dd1eb754c9481c04f9441d48, type: 2}
-  - {fileID: 11400000, guid: 689ffe85e56419b48bc7f6bf59303608, type: 2}
-  runtimeNodes: []
-  inventories:
-  - {fileID: 6150298183587537734}
-  - {fileID: 4453426358881861390}
-  player: {fileID: 6002867169297178958}
-  spells: []
-  equippedSpells: []
-  inventory: {fileID: 6150298183587537734}
-  CastingPoint: {fileID: 7322676972798157240}
-  commander: {fileID: 4366072604718926134}
-  EnemyLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  PlayerLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  ObjectLayer:
-    serializedVersion: 2
-    m_Bits: 2625
-  canCast: 1
-  startingSpellsReady: 0
-  network: 1
 --- !u!114 &7285538749250529348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41430,7 +41302,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.001021987}
+  m_AnchoredPosition: {x: 0, y: 0.0009976549}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &4602415906032893341
@@ -47951,7 +47823,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  caster: {fileID: 1701926122361929969}
+  caster: {fileID: 6775029081619686729}
   gridPrefab: {fileID: 6584108632056666729, guid: 14835c110065a754f8f1675b217de9c1, type: 3}
   gridParent: {fileID: 1687055863835437759}
   content: {fileID: 2472678668191509851}
@@ -48004,7 +47876,7 @@ MonoBehaviour:
   - {fileID: 7970474603174760626}
   - {fileID: 3307452410743430344}
   - {fileID: 6170524864100556769}
-  caster: {fileID: 1701926122361929969}
+  caster: {fileID: 6775029081619686729}
   spellNameInput: {fileID: 8678173079674739409}
   spellNameText: {fileID: 0}
   spellCooldownText: {fileID: 5115548959201576174}
@@ -55422,7 +55294,7 @@ MonoBehaviour:
   multiBounceImage: {fileID: 2797347458473069918}
   multiKnockbackText: {fileID: 827740343452911045}
   multiKnockbackImage: {fileID: 8135254581577283558}
-  caster: {fileID: 1701926122361929969}
+  caster: {fileID: 0}
   grid: {fileID: 6584108632056666729, guid: 14835c110065a754f8f1675b217de9c1, type: 3}
   network: 1
 --- !u!1 &7250604800542074651
@@ -69742,19 +69614,19 @@ PrefabInstance:
     - target: {fileID: 6598984743513336198, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       propertyPath: m_ActionEvents.Array.data[25].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1701926122361929969}
+      objectReference: {fileID: 6775029081619686729}
     - target: {fileID: 6598984743513336198, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       propertyPath: m_ActionEvents.Array.data[26].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1701926122361929969}
+      objectReference: {fileID: 6775029081619686729}
     - target: {fileID: 6598984743513336198, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       propertyPath: m_ActionEvents.Array.data[27].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1701926122361929969}
+      objectReference: {fileID: 6775029081619686729}
     - target: {fileID: 6598984743513336198, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       propertyPath: m_ActionEvents.Array.data[28].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1701926122361929969}
+      objectReference: {fileID: 6775029081619686729}
     - target: {fileID: 6598984743513336198, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       propertyPath: m_ActionEvents.Array.data[29].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -69997,6 +69869,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4265607478582442934, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 231414976514505296}
+    - targetCorrespondingSourceObject: {fileID: 4265607478582442934, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6775029081619686729}
   m_SourcePrefab: {fileID: 100100000, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
 --- !u!1 &1066103122001722327 stripped
 GameObject:
@@ -70133,6 +70008,185 @@ MonoBehaviour:
       m_RotationOrder: 4
     curveMultiplier: 1
     curveTimeMax: 1
+--- !u!114 &6775029081619686729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066103122001722327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eebe486acfbc22f428ce29abf5f77efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpellCaster
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  startingSpells:
+  - {fileID: 11400000, guid: d52e0876ee7afe84296a6de3916dc907, type: 2}
+  - {fileID: 11400000, guid: 1783a19ee346ab54c8da166eb832de89, type: 2}
+  AimController: {fileID: 6982475888199955597}
+  genericNodePrefab: {fileID: 4987073506986097210, guid: 90062ac18eaa795429e3132159484390, type: 3}
+  ownedNodes:
+  - {fileID: 11400000, guid: fbc1f1f918bdb3744b82ca58741bc8dc, type: 2}
+  - {fileID: 11400000, guid: f91b9a6e7405d0545925f7f767d3728d, type: 2}
+  - {fileID: 11400000, guid: 2399f2ee075eeee4b801efc12503be73, type: 2}
+  - {fileID: 11400000, guid: 64bed0574180f81439ae9b6158533312, type: 2}
+  - {fileID: 11400000, guid: 741dda3e9771dee4198651b3bd50838a, type: 2}
+  - {fileID: 11400000, guid: fd251213ccc8ae2479775da86623f2fb, type: 2}
+  - {fileID: 11400000, guid: 2d62b0e1990d4fe418bf67d579510dc6, type: 2}
+  - {fileID: 11400000, guid: be8fd24032057ca4ca00309e70d32f93, type: 2}
+  - {fileID: 11400000, guid: f490409d6f25baa48a48924ecc0b619a, type: 2}
+  - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
+  - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
+  - {fileID: 11400000, guid: 8829ec73885b8074dac59e3a5ffda090, type: 2}
+  - {fileID: 11400000, guid: e5a7eaef2ea1df8459f01cde7c0a7433, type: 2}
+  - {fileID: 11400000, guid: 02c686d126546bf4ca77b3bba178daff, type: 2}
+  - {fileID: 11400000, guid: 0dbc51ac2645d7c43b33ca63bba3fc59, type: 2}
+  - {fileID: 11400000, guid: ba5d8738e35456445b28685f110df77a, type: 2}
+  - {fileID: 11400000, guid: fb385dfd0d92f3e4fac9a5c9e836bcb4, type: 2}
+  - {fileID: 11400000, guid: a5cfb7c5569b70f4dbc60bf13c1f4cd8, type: 2}
+  - {fileID: 11400000, guid: e28da45c00442584cbb52c9ff30912c0, type: 2}
+  - {fileID: 11400000, guid: 234ab63505d5dea41966027761459329, type: 2}
+  - {fileID: 11400000, guid: 7fd29b8f3659c414f848fe811c60ac5b, type: 2}
+  - {fileID: 11400000, guid: 552b98e6749cb1c40b982734824a6bed, type: 2}
+  - {fileID: 11400000, guid: ae4d9412cd42a3745a9fab7a5fa5c453, type: 2}
+  - {fileID: 11400000, guid: 4572eb763389748438fa35b83fc182e3, type: 2}
+  - {fileID: 11400000, guid: 86d7b479c33dd234e8bbaf417c65e25c, type: 2}
+  - {fileID: 11400000, guid: e2ab254cabbb39c418de8e7c40ad03db, type: 2}
+  - {fileID: 11400000, guid: c65782bbe93b4d3439a4d6de2694e851, type: 2}
+  - {fileID: 11400000, guid: 2adb7ae0f482dfa468fb50d43f48129a, type: 2}
+  - {fileID: 11400000, guid: 066a41cc9d6fd2e44b2ea8b2d12c6196, type: 2}
+  - {fileID: 11400000, guid: 64fabc9a98947d3429fdd9a1ce94176e, type: 2}
+  - {fileID: 11400000, guid: cb4b72dd4349f734fb53377f3a6e3848, type: 2}
+  - {fileID: 11400000, guid: cee3db6028e9e7a42952976c46aa08db, type: 2}
+  - {fileID: 11400000, guid: a7648e07787147849abe764a5a19b543, type: 2}
+  - {fileID: 11400000, guid: 0e70df82dedecdc4d87fdcd83b852fdc, type: 2}
+  - {fileID: 11400000, guid: 7e76069515a246b41b09bc1277376b11, type: 2}
+  - {fileID: 11400000, guid: ad071d28ca2a0b74f8f3e6f8cfebd064, type: 2}
+  - {fileID: 11400000, guid: a0f76ebc750397b469d4f2fb62e528ed, type: 2}
+  - {fileID: 11400000, guid: d742b3983109d024eb31b505d34eece4, type: 2}
+  - {fileID: 11400000, guid: e2d0972c5ac13c942be4f4b641fe4485, type: 2}
+  - {fileID: 11400000, guid: 305a7e9c70923194ea28c2e6ac0d8fa7, type: 2}
+  - {fileID: 11400000, guid: 6e073f9018bceff4cb508284fc1d2706, type: 2}
+  - {fileID: 11400000, guid: 61c0a0ffbbb029241be43ba0c9f42c3c, type: 2}
+  - {fileID: 11400000, guid: cfd120551b36856499037f3b7905ff46, type: 2}
+  - {fileID: 11400000, guid: af479bf0f0d09ab42a44de81c34af52b, type: 2}
+  - {fileID: 11400000, guid: ab2c6e6aa3cacc2449142dcebeef1e21, type: 2}
+  - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
+  - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
+  - {fileID: 11400000, guid: 01d057f1df857c34ea99ebae972c9f87, type: 2}
+  - {fileID: 11400000, guid: 1c81d13cfb783c543897a613a1ad49f1, type: 2}
+  - {fileID: 11400000, guid: 1c81d13cfb783c543897a613a1ad49f1, type: 2}
+  - {fileID: 11400000, guid: 1c81d13cfb783c543897a613a1ad49f1, type: 2}
+  - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}
+  - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}
+  - {fileID: 11400000, guid: 28a43e447bf4abb4c97deaec9d2fd006, type: 2}
+  - {fileID: 11400000, guid: d5629279227f93342a01588e1a27cc11, type: 2}
+  - {fileID: 11400000, guid: 8562eafb3912bc64192b6708d7b97011, type: 2}
+  - {fileID: 11400000, guid: 451188460737c584d88cf633d36cb44f, type: 2}
+  - {fileID: 11400000, guid: 6aed3ed64c34e9b42b5bd2c13db52f8d, type: 2}
+  - {fileID: 11400000, guid: 1d9ff62e904089545b537998732d9784, type: 2}
+  - {fileID: 11400000, guid: 5101f76e5330d2b4fa2745f4e55ff3e0, type: 2}
+  - {fileID: 11400000, guid: 00d940a69857b54469ce48eda478de0e, type: 2}
+  - {fileID: 11400000, guid: 9e7bffd4ba9921841bb6d7bbe2070a50, type: 2}
+  - {fileID: 11400000, guid: e13dae0dea42eee4287825282fe434db, type: 2}
+  - {fileID: 11400000, guid: 571bacd2f0883f047bb86a6f8eddbd7c, type: 2}
+  - {fileID: 11400000, guid: 05fb794fd18b51e49a4e1993686da3ee, type: 2}
+  - {fileID: 11400000, guid: f922223ab8d8e9745baf803056d65e18, type: 2}
+  - {fileID: 11400000, guid: ba641916d12d14549af400a4f8b0a2b3, type: 2}
+  - {fileID: 11400000, guid: 2f3c00123984dd04892a9db4fdc4286b, type: 2}
+  - {fileID: 11400000, guid: 31dd8405377cf7b47bf276c5dae9628b, type: 2}
+  - {fileID: 11400000, guid: 39318fdeb09a3d841bdc8ad4c1e62718, type: 2}
+  - {fileID: 11400000, guid: eec25f993c0246445b0e1eaa315b9950, type: 2}
+  - {fileID: 11400000, guid: 6f80c1d2841151f4ca912a70575269b1, type: 2}
+  - {fileID: 11400000, guid: 76a8d7ce1837fc34393900190e7534b5, type: 2}
+  - {fileID: 11400000, guid: 16b2d9a49d46b684093f88d79bacc505, type: 2}
+  - {fileID: 11400000, guid: abe9f7572e3fc254881e770b6f4f35e8, type: 2}
+  - {fileID: 11400000, guid: c5a1d60250471834a9935dfc953451a2, type: 2}
+  - {fileID: 11400000, guid: cda9f2213c7450c408ace279fa844b95, type: 2}
+  - {fileID: 11400000, guid: 872cfb04fcb0c134699eb34ca24d36ee, type: 2}
+  - {fileID: 11400000, guid: 62182c047a6f5924a8aabecb0b26d8b5, type: 2}
+  - {fileID: 11400000, guid: da0dc13f573a2fd448031c938846d4ed, type: 2}
+  - {fileID: 11400000, guid: a33b9a4d405bdfb4a8fadda4282e08fd, type: 2}
+  - {fileID: 11400000, guid: ddde59ddcfc885d49abba7c0b0d8cfe9, type: 2}
+  - {fileID: 11400000, guid: 02f5b983dd1eb754c9481c04f9441d48, type: 2}
+  - {fileID: 11400000, guid: 689ffe85e56419b48bc7f6bf59303608, type: 2}
+  runtimeNodes: []
+  inventories:
+  - {fileID: 6150298183587537734}
+  - {fileID: 4453426358881861390}
+  player: {fileID: 6002867169297178958}
+  spells: []
+  equippedSpells:
+  - spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  - spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  - spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  - spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  inventory: {fileID: 6150298183587537734}
+  CastingPoint: {fileID: 7322676972798157240}
+  commander: {fileID: 4366072604718926134}
+  EnemyLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  PlayerLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  ObjectLayer:
+    serializedVersion: 2
+    m_Bits: 2625
+  canCast: 1
+  startingSpellsReady: 0
+  network: 1
 --- !u!4 &2846540068074129263 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1331101070252214030, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}

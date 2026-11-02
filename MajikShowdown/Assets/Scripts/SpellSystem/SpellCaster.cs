@@ -1,6 +1,5 @@
 using Mirror;
 using System.Collections.Generic;
-using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -31,14 +30,14 @@ public class SpellCaster : NetworkBehaviour
     public LayerMask ObjectLayer;
 
     [HideInInspector] public bool canCast = true;
-    Timer castPoseTimer = new Timer(false);
+    protected Timer castPoseTimer = new Timer(false);
 
     public bool startingSpellsReady = false;
 
     [Header("Network")]
     public bool network = true;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         if (!network)
         {
@@ -74,7 +73,7 @@ public class SpellCaster : NetworkBehaviour
     }
 
     [Command]
-    public void CMDInitialize()
+    public virtual void CMDInitialize()
     {
         player.caster = this;
         //DamageHandler = GetComponent<CharacterDamageHandler>();
@@ -84,13 +83,13 @@ public class SpellCaster : NetworkBehaviour
             InstantiateNode(nodeData);
         }
     }
-    SpellNode InstantiateNode(SpellNode nodePrefab)
+    protected virtual SpellNode InstantiateNode(SpellNode nodePrefab)
     {
         SpellNode runtimeNode = Instantiate(nodePrefab);
         runtimeNode.instanceIndex = commander.runtimeNodes.Count;
         runtimeNode.owner = this;
         commander.runtimeNodes.Add(runtimeNode);
-        if(isOwned || !network)
+        if (isOwned || !network)
         {
             runtimeNode.ClientInitialize();
         }
@@ -126,7 +125,7 @@ public class SpellCaster : NetworkBehaviour
         return GetPath(current.parent) + "/" + current.name;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (!isLocalPlayer && network)
         {
@@ -143,16 +142,16 @@ public class SpellCaster : NetworkBehaviour
                 if (equippedSpells[i].cooldownTimer.timer(equippedSpells[i].SpellCooldown, Time.deltaTime, false, true))
                 {
                     equippedSpells[i].onCooldown = false;
-                    if(!isServer && network)
+                    if (!isServer && network)
                     {
                         RemoveCooldown(i);
                     }
                 }
             }
         }
-        if(player != null && player.Casting)
+        if (player != null && player.Casting)
         {
-            if(castPoseTimer.timer(player.CastPoseTime,Time.deltaTime, false, false))
+            if (castPoseTimer.timer(player.CastPoseTime, Time.deltaTime, false, false))
             {
                 player.Casting = false;
             }
@@ -164,7 +163,7 @@ public class SpellCaster : NetworkBehaviour
     {
         equippedSpells[index].onCooldown = false;
     }
-    
+
 
     [TargetRpc]
     public void AddCooldown(NetworkConnection target, int index)
@@ -174,7 +173,7 @@ public class SpellCaster : NetworkBehaviour
 
 
     [Command]
-    public void CMDCastSpell(int spellInd, Vector3 aimPoint)
+    public virtual void CMDCastSpell(int spellInd, Vector3 aimPoint)
     {
         Spell spell = equippedSpells[spellInd];
         if (spell.onCooldown) return;
@@ -198,12 +197,12 @@ public class SpellCaster : NetworkBehaviour
                 //Vector3 dir = (AimController.AimPoint - castPos).normalized;
                 if (dir == Vector3.zero)
                 {
-                    dir = aimPoint - transform.position;
+                    dir = aimPoint - CastingPoint.position;
                     //dir = AimController.AimPoint - transform.position;
                 }
                 SpellColliderManager.Instance.ServerInitializeSpellCollider(spell, castPos, dir, true);
             }
-            if(player != null)
+            if (player != null)
             {
                 player.Casting = true;
                 castPoseTimer.SetTimer(0);
@@ -233,7 +232,7 @@ public class SpellCaster : NetworkBehaviour
         NetworkServer.Spawn(g);
     }*/
 
-    public void CastSpell(int spellInd)
+    public virtual void CastSpell(int spellInd)
     {
         Spell spell = equippedSpells[spellInd];
         if (spell.onCooldown) return;
@@ -251,11 +250,11 @@ public class SpellCaster : NetworkBehaviour
                 Vector3 dir = (AimController.AimPoint - castPos).normalized;
                 if (dir == Vector3.zero)
                 {
-                    dir = AimController.AimPoint - transform.position;
+                    dir = AimController.AimPoint - CastingPoint.position;
                 }
                 SpellColliderManager.Instance.InitializeSpellCollider(spell, castPos, dir, true);
             }
-            if(player != null)
+            if (player != null)
             {
                 player.Casting = true;
                 castPoseTimer.SetTimer(0);

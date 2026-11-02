@@ -22,6 +22,8 @@ public class TrainingEnemiesController : MonoBehaviour
     float enemyAIupdateRate = 1f / 10f;
     public float elementalChance = 5;
     [SerializeField] protected LayerMask RayMasks;
+    public List<EnemyElementColors> enemyElementColors = new List<EnemyElementColors>();
+
     private void Awake()
     {
         GameManager.Instance.trainingController = this;
@@ -70,7 +72,10 @@ public class TrainingEnemiesController : MonoBehaviour
                 if (UsedEnemies[i] != null)
                 {
                     UsedEnemies[i].MoveDirection = results[i];
-                    UsedEnemies[i].Reposition();
+                    if(!(UsedEnemies[i] is TrainingCasterEnemy))
+                    {
+                        UsedEnemies[i].Reposition();
+                    }
                     UsedEnemies[i].ResetKnockbackCooldown();
                     if (UsedEnemies[i].flickering)
                     {
@@ -132,6 +137,10 @@ public class TrainingEnemiesController : MonoBehaviour
                             aux = e.gameObject;
                             aux.transform.position = pos + distanceBetweenSpawns * i;
                             auxEnemy = aux.GetComponent<Enemy>();
+                            if (DyingEnemies.Contains(auxEnemy))
+                            {
+                                DyingEnemies.Remove(auxEnemy);
+                            }
                             auxEnemy.transparency = 1;
                             foreach (Material mat in auxEnemy.mesh.materials)
                             {
@@ -142,12 +151,88 @@ public class TrainingEnemiesController : MonoBehaviour
                         }
                     }
                 }
+                auxEnemy.DamageHandler.dying = false;
                 auxEnemy.ResetAllVelocities();
                 usedEnemiesByType[ind].Add(auxEnemy);
+                auxEnemy.DamageHandler.Resistances.Clear();
                 float randElemental = UnityEngine.Random.Range(0, 100);
-                if (randElemental < elementalChance)
+                if (randElemental < elementalChance || auxEnemy is TrainingCasterEnemy)
                 {
-                    auxEnemy.element = (Elements)UnityEngine.Random.Range(0, Enum.GetNames(typeof(Elements)).Length);
+                    auxEnemy.element = (Elements)UnityEngine.Random.Range(1, Enum.GetNames(typeof(Elements)).Length);
+                    auxEnemy.DamageHandler.Resistances.Add(new Resistance(auxEnemy.element, auxEnemy.DamageHandler.resistancePercentValue));
+                    switch (auxEnemy.element)
+                    {
+                        case Elements.Ice:
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Fire, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Radiance, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Earth, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Decay, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.OfflineChangeColor(0);
+                            break;
+                        case Elements.Fire:
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Darkness, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Earth, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Ice, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Decay, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.OfflineChangeColor(1);
+                            break;
+                        case Elements.Lightning:
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Earth, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Ice, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Radiance, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.OfflineChangeColor(2);
+                            break;
+                        case Elements.Radiance:
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Darkness, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Decay, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.OfflineChangeColor(3);
+                            break;
+                        case Elements.Decay:
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Fire, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Radiance, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Darkness, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.OfflineChangeColor(4);
+                            break;
+                        case Elements.Earth:
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Ice, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Fire, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Lightning, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Decay, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.OfflineChangeColor(5);
+                            break;
+                        case Elements.Darkness:
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Lightning, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Radiance, auxEnemy.DamageHandler.weaknessPercentValue));
+                            auxEnemy.DamageHandler.Resistances.Add(new Resistance(Elements.Fire, auxEnemy.DamageHandler.resistancePercentValue));
+                            auxEnemy.OfflineChangeColor(6);
+                            break;
+                        default:
+                            auxEnemy.OfflineChangeColor(-1);
+                            break;
+                    }
+                    /*if (auxEnemy is CasterEnemy)
+                    {
+                        foreach (SpellNode n in ((CasterEnemy)auxEnemy).caster.runtimeNodes)
+                        {
+                            if (n is SpellCore)
+                            {
+                                if (auxEnemy.element != Elements.Lightning)
+                                {
+                                    ((SpellCore)n).Element = auxEnemy.element;
+                                }
+                                else
+                                {
+                                    //Provis�rio at� ter os VFX de Lightning
+                                    ((SpellCore)n).Element = Elements.Radiance;
+                                }
+                            }
+                        }
+                    }*/
+                }
+                else
+                {
+                    auxEnemy.element = Elements.None;
+                    auxEnemy.OfflineChangeColor(-1);
                 }
                 aux.GetComponent<CharacterDamageHandler>().enemyIndex = ind;
                 UsedEnemies.Add(auxEnemy);

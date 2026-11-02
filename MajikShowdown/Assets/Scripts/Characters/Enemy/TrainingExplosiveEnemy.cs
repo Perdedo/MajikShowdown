@@ -24,6 +24,7 @@ public class TrainingExplosiveEnemy : ExplosiveEnemy
         attacked = true;
         jumpOnCooldown = false;
         prevMoving = false;
+        jumpForce = baseJumpForce;
     }
     public override void EnemyUpdate()
     {

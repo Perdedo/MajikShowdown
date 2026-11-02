@@ -8,6 +8,6 @@ public class HealEffect : SpellEffect
     public override bool Repeatable { get => base.Repeatable; protected set => base.Repeatable = true;}
     public override void ApplyEffect(CharacterDamageHandler target)
     {
-        target.Heal(HealAmount.Value);
+        target.Heal(OwnerNode.coreNode.StatMultipliers.Damage*HealAmount.Value);
     }
 }

@@ -28,7 +28,7 @@ public abstract class SpellNode : ScriptableObject
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     //public SpellNode[] NeighborNodes = new SpellNode[6];
-    public Spell OwnerSpell;
+    public Spell OwnerNode;
     public int startingGridInd = -1;
     public bool startingNode = false;
     [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
@@ -96,7 +96,10 @@ public abstract class SpellNode : ScriptableObject
         if (RandomizeOnStart)
         {
             RandomizeStats();
-            owner.commander.SetSpellNodeValues(this, Cooldown, BaseStats, extraValues);
+            if(owner is not EnmSpellCaster)
+            {
+                owner.commander.SetSpellNodeValues(this, Cooldown, BaseStats, extraValues);
+            }
         }
         runeType = GetCategory() == NodeCategory.Core ? "Core" : GetCategory().ToString();
         //conections = new NodeConection[]{new(this), new(this), new(this),new(this), new(this), new(this)};
@@ -153,7 +156,7 @@ public abstract class SpellNode : ScriptableObject
     public virtual void ResetNode()
     {
         hierarchy = -1;
-        OwnerSpell = null;
+        OwnerNode = null;
     }
     public virtual void RandomizeStats()
     {

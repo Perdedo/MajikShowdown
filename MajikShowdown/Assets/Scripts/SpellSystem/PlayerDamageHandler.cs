@@ -49,7 +49,14 @@ public class PlayerDamageHandler : CharacterDamageHandler
             return;
         }
         Health = Mathf.Min(Health + amount, MaxHealth);
-        UpdateUI();
+        if(network)
+        {
+            UpdateUI();
+        }
+        else
+        {
+            GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+        }
     }
     public override void Die()
     {
