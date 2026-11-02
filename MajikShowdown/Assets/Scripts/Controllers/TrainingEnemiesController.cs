@@ -135,6 +135,10 @@ public class TrainingEnemiesController : MonoBehaviour
                             aux = e.gameObject;
                             aux.transform.position = pos + distanceBetweenSpawns * i;
                             auxEnemy = aux.GetComponent<Enemy>();
+                            if (DyingEnemies.Contains(auxEnemy))
+                            {
+                                DyingEnemies.Remove(auxEnemy);
+                            }
                             auxEnemy.transparency = 1;
                             foreach (Material mat in auxEnemy.mesh.materials)
                             {
@@ -145,6 +149,7 @@ public class TrainingEnemiesController : MonoBehaviour
                         }
                     }
                 }
+                auxEnemy.DamageHandler.dying = false;
                 auxEnemy.ResetAllVelocities();
                 usedEnemiesByType[ind].Add(auxEnemy);
                 float randElemental = UnityEngine.Random.Range(0, 100);

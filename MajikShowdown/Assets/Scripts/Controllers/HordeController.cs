@@ -587,7 +587,7 @@ public class HordeController : NetworkBehaviour
                 {
                     selections.Add(enemyChances[i]);
                 }*/
-                aux.GetComponent<EnemySpawner>().Initialize(hordes[hordeIndex].enemyChances, hordes[hordeIndex].baseSpawnTime, hordes[hordeIndex].minSpawnTime, Mathf.Min(hordes[hordeIndex].maxLifeTime, hordeEndTime - Time.time), hordes[hordeIndex].baseElemental, hordes[hordeIndex].maxElemental, hordeStartTime, hordes[hordeIndex].hordeDuration, maxEnemySpawnRadius);
+                aux.GetComponent<EnemySpawner>().Initialize(hordes[hordeIndex].enemyChances, hordes[hordeIndex].baseSpawnTime, hordes[hordeIndex].minSpawnTime, Mathf.Min(hordes[hordeIndex].maxLifeTime, hordeEndTime - Time.time), hordeStartTime, hordes[hordeIndex].hordeDuration, maxEnemySpawnRadius);
                 usedSpawners.Add(aux);
             }
         }
@@ -814,8 +814,8 @@ public class HordeSettings
     public AnimationCurve spawnerFrequencyCurve;
     public AnimationCurve baseHPMultiplierCurve;
     public AnimationCurve enemySpawnRateCurve;
-    public AnimationCurve elementalCurve;
-    public float baseSpawnTime, minSpawnTime, maxLifeTime, baseElemental, maxElemental, hordeDuration = 180;
+    //public AnimationCurve elementalCurve;
+    public float baseSpawnTime, minSpawnTime, maxLifeTime,/* baseElemental, maxElemental, */hordeDuration = 180;
     public int casterEnemyIndex = -1;
 }
 

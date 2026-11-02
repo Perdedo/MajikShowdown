@@ -42,7 +42,7 @@ public class Explosion : NetworkBehaviour
 
         if(disappearTimer.timer(duration, Time.deltaTime, false, false))
         {
-            BuffersControl.Instance.UnspawnEffect(enemyElement, SpellTypes.Explosion, VFXIndex);
+            //BuffersControl.Instance.UnspawnEffect(enemyElement, SpellTypes.Explosion, VFXIndex);
             Disappear();
         }
     }
