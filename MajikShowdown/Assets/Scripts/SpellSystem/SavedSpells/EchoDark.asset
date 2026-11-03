@@ -1,0 +1,996 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8646904356393292396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c8f43e557dc914caf160dbd96537f7, type: 3}
+  m_Name: CooldownRuneRefined(Clone)
+  m_EditorClassIdentifier: Assembly-CSharp::SpellStat
+  quality: 2
+  price:
+    type: 1
+    value: 0
+    min: 2000
+    max: 3500
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    curveMultiplier: 1
+    curveTimeMax: 1
+  RandomizeOnStart: 0
+  statRandomizer:
+    Cooldown:
+      type: 1
+      value: 0
+      min: -1.5
+      max: -0.9
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Speed:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Bounce:
+      type: 0
+      value: 0
+      min: 1
+      max: 4
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+  runeName: Refined Reduce Cooldown
+  runeType: Stat
+  runeDescription: Reduces cooldown of attached spell
+  color: {r: 0.28235295, g: 0.2509804, b: 0.28627452, a: 1}
+  Cooldown: -1.2703038
+  BaseStats:
+    Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  Interface: {fileID: 0}
+  hierarchy: 2
+  ConectedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  OwnerNode:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  startingGridInd: -1
+  startingNode: 0
+  ConectionPorts: 000000000000000000000000000000000000000000000000
+  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
+  nodeSymbolSprite: {fileID: 21300000, guid: 58a7e7d35c02d79448e306ae3bf6a7e0, type: 3}
+  symbolColor: {r: 1, g: 1, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: 56
+  invertNodeColors: 0
+--- !u!114 &-5868797309393220363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d812af3cd8d7e3447bf529f073acadd0, type: 3}
+  m_Name: Above Aim Point(Clone)
+  m_EditorClassIdentifier: Assembly-CSharp::SpellCastPoint
+  quality: 1
+  price:
+    type: 1
+    value: 0
+    min: 900
+    max: 1500
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    curveMultiplier: 1
+    curveTimeMax: 1
+  RandomizeOnStart: 0
+  statRandomizer:
+    Cooldown:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Speed:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Bounce:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+  runeName: Above Aim Point
+  runeType: CastingPoint
+  runeDescription: 'The spell is cast above where the caster is aiming '
+  color: {r: 0.25232238, g: 0.4339623, b: 0.06755074, a: 1}
+  Cooldown: 0
+  BaseStats:
+    Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  Interface: {fileID: 0}
+  hierarchy: 1
+  ConectedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  OwnerNode:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  startingGridInd: -1
+  startingNode: 0
+  ConectionPorts: 000000000400000000000000000000000000000000000000
+  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
+  nodeSymbolSprite: {fileID: 791743558, guid: 467e9c10d4a36014a84042a771f56e3a, type: 3}
+  symbolColor: {r: 0.5, g: 1, b: 0, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: 45
+  castPoint: 2
+--- !u!114 &-3484266320325426864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e873651b2d0183c4ca51f62a95ca85eb, type: 3}
+  m_Name: ProjectileForged(Clone)
+  m_EditorClassIdentifier: Assembly-CSharp::SpellType
+  quality: 1
+  price:
+    type: 1
+    value: 0
+    min: 900
+    max: 1500
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    curveMultiplier: 1
+    curveTimeMax: 1
+  RandomizeOnStart: 0
+  statRandomizer:
+    Cooldown:
+      type: 1
+      value: 0
+      min: 1.2
+      max: 1.4
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Speed:
+      type: 1
+      value: 0
+      min: 3
+      max: 6
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Duration:
+      type: 1
+      value: 2
+      min: 3
+      max: 5
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Size:
+      type: 1
+      value: 0
+      min: 2
+      max: 3
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Bounce:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Knockback:
+      type: 1
+      value: 10
+      min: 15
+      max: 20
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+  runeName: Forged Projectile
+  runeType: Core
+  runeDescription: Defines the spell as a single projectile.
+  color: {r: 0.4, g: 0.0627451, b: 0.0627451, a: 1}
+  Cooldown: 1.222708
+  BaseStats:
+    Speed: 3.5003755
+    Duration: 4.798044
+    Size: 2.7431924
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 18.172358
+  Interface: {fileID: 0}
+  hierarchy: 0
+  ConectedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  OwnerNode:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  startingGridInd: -1
+  startingNode: 0
+  ConectionPorts: 010000000300000002000000030000000400000003000000
+  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
+  nodeSymbolSprite: {fileID: 21300000, guid: 2d6ebd84f8f2de34e969b8f49cfed287, type: 3}
+  symbolColor: {r: 1, g: 0, b: 0, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: 4
+  Type: 0
+  Collisions:
+    Allies: 1
+    Self: 0
+    Enemies: 0
+    Objects: 1
+  StatMultipliers:
+    Speed: 1.5
+    Duration: 1
+    Size: 1
+    Damage: 1.2
+    Piercing: 1.2
+    Bounce: 1
+    Knockback: 1
+  HitOnStay: 0
+  HitCooldown: 0
+  SpawnTriggeredSpellCooldown: 0.5
+  DieOnObjectCollide: 1
+  Element: 6
+  FinalStats:
+    Speed: 5.250563
+    Duration: 4.798044
+    Size: 2.7431924
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 18.172358
+  StatBuffs:
+  - Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  - Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  - Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  - Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  - Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7516de2ab66216140b3e86e61f33e33b, type: 3}
+  m_Name: EchoDark
+  m_EditorClassIdentifier: Assembly-CSharp::SavedSpellAsset
+  spellName: EchoDark
+  colorIndex: 7
+  symbolIndex: 2
+  startEquipped: 1
+  nodes:
+  - node: {fileID: -3484266320325426864}
+    gridIndex: 0
+    triggeredSpellName: 
+  - node: {fileID: 5544316603904858226}
+    gridIndex: 2
+    triggeredSpellName: EchoDTrig
+  - node: {fileID: -5868797309393220363}
+    gridIndex: 3
+    triggeredSpellName: 
+  - node: {fileID: 1211460457054703445}
+    gridIndex: 11
+    triggeredSpellName: 
+  - node: {fileID: -8646904356393292396}
+    gridIndex: 12
+    triggeredSpellName: 
+--- !u!114 &1211460457054703445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c8f43e557dc914caf160dbd96537f7, type: 3}
+  m_Name: CooldownRuneForged(Clone)
+  m_EditorClassIdentifier: Assembly-CSharp::SpellStat
+  quality: 1
+  price:
+    type: 1
+    value: 0
+    min: 900
+    max: 1500
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    curveMultiplier: 1
+    curveTimeMax: 1
+  RandomizeOnStart: 0
+  statRandomizer:
+    Cooldown:
+      type: 1
+      value: 0
+      min: -0.9
+      max: -0.4
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Speed:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Bounce:
+      type: 0
+      value: 0
+      min: 1
+      max: 4
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+  runeName: Forged Reduce Cooldown
+  runeType: Stat
+  runeDescription: Reduces cooldown of attached spell
+  color: {r: 0.28235295, g: 0.2509804, b: 0.28627452, a: 1}
+  Cooldown: -0.73334384
+  BaseStats:
+    Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  Interface: {fileID: 0}
+  hierarchy: 2
+  ConectedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  OwnerNode:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  startingGridInd: -1
+  startingNode: 0
+  ConectionPorts: 000000000000000000000000000000000000000000000000
+  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
+  nodeSymbolSprite: {fileID: 21300000, guid: 58a7e7d35c02d79448e306ae3bf6a7e0, type: 3}
+  symbolColor: {r: 1, g: 1, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: 55
+  invertNodeColors: 0
+--- !u!114 &5544316603904858226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b96bcacb0b8a1647b8050cd8d3ca9c9, type: 3}
+  m_Name: Trigger Node(Clone)
+  m_EditorClassIdentifier: Assembly-CSharp::SpellTrigger
+  quality: 2
+  price:
+    type: 1
+    value: 0
+    min: 2000
+    max: 3500
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    curveMultiplier: 1
+    curveTimeMax: 1
+  RandomizeOnStart: 0
+  statRandomizer:
+    Cooldown:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Speed:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Bounce:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+  runeName: Invoker
+  runeType: Trigger
+  runeDescription: Invokes a spell when conditions are met. Only works if this is
+    not an invoked spell.
+  color: {r: 0.5019608, g: 0.2627451, b: 0.05882353, a: 1}
+  Cooldown: 3.6396506
+  BaseStats:
+    Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  Interface: {fileID: 0}
+  hierarchy: 1
+  ConectedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  OwnerNode:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  startingGridInd: -1
+  startingNode: 0
+  ConectionPorts: 030000000000000003000000000000000300000000000000
+  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
+  nodeSymbolSprite: {fileID: 21300000, guid: 4d9edf44e371ad14aa4b2f587a7f798c, type: 3}
+  symbolColor: {r: 1, g: 0.58431375, b: 0, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: 9
+  trigger: 2
+  TriggeredSpell:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
