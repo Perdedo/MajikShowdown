@@ -612,9 +612,9 @@ public void HideAll() => ApplyConfig(new SectionConfig());
     {
         switch (trigger)
         {
-            case SpellTrigger.Triggers.OnCast: return "Is Cast";
-            case SpellTrigger.Triggers.OnHit: return "Hits";
-            case SpellTrigger.Triggers.OnDeath: return "Finish";
+            case SpellTrigger.Triggers.OnCast: return "Cast";
+            case SpellTrigger.Triggers.OnHit: return "Hit";
+            case SpellTrigger.Triggers.OnDeath: return "End";
             default: return trigger.ToString();
         }
     }

@@ -33,6 +33,7 @@ public class SpellCollider : NetworkBehaviour
     [HideInInspector] public bool UseAcceleration = false;
     [NonSerialized] public Transform SpawnTransform;
     [NonSerialized] public Vector3 SpawnPoint;
+    [SerializeField] private AudioSource spellSFXSource;
     public int VFXIndex = -1;
     public bool SeeMesh;
     public struct TrajectoryInfo
@@ -55,29 +56,47 @@ public class SpellCollider : NetworkBehaviour
     public bool MarkedToDie = false;
     [SyncVar(hook = nameof(ChangeVisibility))] public bool isVisible = false;
 
+    private void Awake()
+    {
+        if (spellSFXSource == null) spellSFXSource = GetComponent<AudioSource>();
+        if (spellSFXSource == null) spellSFXSource = gameObject.AddComponent<AudioSource>();
+
+        spellSFXSource.playOnAwake = false;
+        spellSFXSource.spatialBlend = 1f;
+    }
+
+    public void PlaySpellSFX(Elements element, SpellTypes type, int clipIndex)
+    {
+        if (AudioController.instance == null || clipIndex < 0) return;
+
+        if (spellSFXSource == null)
+        {
+            spellSFXSource = GetComponent<AudioSource>();
+            if (spellSFXSource == null) spellSFXSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        AudioController.instance.PlaySpellSFX(spellSFXSource, element, type, clipIndex);
+    }
+
     //[Server]
     public void Initialize(Spell owner, bool isPrimary)
     {
         SetTrajectoryForward(transform.forward);
-        //projectileConfig.CalculateFinalStats();
         OwnerSpell = owner;
         primarySpell = isPrimary;
         stats = OwnerSpell.coreNode.FinalStats;
-        //transform.localScale = Vector3.one * stats.Size;
-        //Invoke("Die", stats.Duration);
         pierceCount = stats.Piercing;
         bounceCount = stats.Bounce;
+
         if (primarySpell)
         {
             InitiateTriggeredSpells();
         }
+
         OnCast.Invoke();
 
-        /*if (OwnerSpell.coreNode.Type == SpellType.SpellTypes.Explosion)
-        {
-            transform.localScale = Vector3.zero;
-        }*/
         mesh.transform.localScale = Vector3.zero;
+
         if (OwnerSpell.Caster.network)
         {
             isVisible = true;
@@ -90,6 +109,7 @@ public class SpellCollider : NetworkBehaviour
         {
             mesh.gameObject.SetActive(true);
         }
+
         if (OwnerSpell.coreNode.Type == SpellTypes.Explosion)
         {
             float roundedDuration = Mathf.Round(stats.Duration * 1.1f * 10) / 10;
@@ -99,10 +119,6 @@ public class SpellCollider : NetworkBehaviour
         {
             VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10) / 10);
         }
-
-        //Debug.Log( VFXIndex);
-        //spellCol = GetComponent<Collider>();
-
     }
 
     [ClientRpc]
@@ -629,6 +645,12 @@ public class SpellCollider : NetworkBehaviour
     }
     public void ResetCollider()
     {
+        if (spellSFXSource != null)
+        {
+            spellSFXSource.Stop();
+            spellSFXSource.clip = null;
+            spellSFXSource.loop = false;
+        }
         VFXIndex = -1;
         OwnerSpell = null;
         pierceCount = 0;

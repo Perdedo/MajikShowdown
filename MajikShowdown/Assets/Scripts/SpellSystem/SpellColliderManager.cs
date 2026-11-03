@@ -67,6 +67,11 @@ public class SpellColliderManager : NetworkBehaviour
         collider.SpawnPoint = pos;
         collider.Initialize(Spell, primary);
         collider.gameObject.SetActive(true);
+        if (AudioController.instance != null)
+        {
+            int sfxIndex = AudioController.instance.GetRandomSpellSFXIndex(Spell.coreNode.Element, Spell.coreNode.Type);
+            collider.PlaySpellSFX(Spell.coreNode.Element, Spell.coreNode.Type, sfxIndex);
+        }
     }
     public void InitializeSpellCollider(Spell Spell, Transform castPoint, Vector3 lookDir, bool primary = false)
     {
@@ -83,6 +88,11 @@ public class SpellColliderManager : NetworkBehaviour
         collider.SpawnPoint = castPoint.position;
         collider.Initialize(Spell, primary);
         collider.gameObject.SetActive(true);
+        if (AudioController.instance != null)
+        {
+            int sfxIndex = AudioController.instance.GetRandomSpellSFXIndex(Spell.coreNode.Element, Spell.coreNode.Type);
+            collider.PlaySpellSFX(Spell.coreNode.Element, Spell.coreNode.Type, sfxIndex);
+        }
     }
     [Server]
     public void ServerInitializeSpellCollider(Spell Spell, Vector3 pos, Vector3 lookDir, bool primary = false)
@@ -91,6 +101,11 @@ public class SpellColliderManager : NetworkBehaviour
         {
             ServerInstantiateNewCollider();
         }
+
+        Elements element = Spell.coreNode.Element;
+        SpellTypes type = Spell.coreNode.Type;
+        int sfxIndex = AudioController.instance != null ? AudioController.instance.GetRandomSpellSFXIndex(element, type) : -1;
+
         SpellCollider collider = inactiveSpellColliders[0];
         inactiveSpellColliders.RemoveAt(0);
         activeSpellColliders.Add(collider);
@@ -99,7 +114,8 @@ public class SpellColliderManager : NetworkBehaviour
         collider.SpawnPoint = pos;
         collider.Initialize(Spell, primary);
         collider.gameObject.SetActive(true);
-        RPCInitializeSpellCollider(collider.gameObject);
+
+        RPCInitializeSpellCollider(collider.gameObject, element, type, sfxIndex);
     }
     [Server]
     public void ServerInitializeSpellCollider(Spell Spell, Transform castPoint, Vector3 lookDir, bool primary = false)
@@ -108,6 +124,11 @@ public class SpellColliderManager : NetworkBehaviour
         {
             ServerInstantiateNewCollider();
         }
+
+        Elements element = Spell.coreNode.Element;
+        SpellTypes type = Spell.coreNode.Type;
+        int sfxIndex = AudioController.instance != null ? AudioController.instance.GetRandomSpellSFXIndex(element, type) : -1;
+
         SpellCollider collider = inactiveSpellColliders[0];
         inactiveSpellColliders.RemoveAt(0);
         activeSpellColliders.Add(collider);
@@ -117,14 +138,22 @@ public class SpellColliderManager : NetworkBehaviour
         collider.SpawnPoint = castPoint.position;
         collider.Initialize(Spell, primary);
         collider.gameObject.SetActive(true);
-        RPCInitializeSpellCollider(collider.gameObject);
+
+        RPCInitializeSpellCollider(collider.gameObject, element, type, sfxIndex);
     }
     [ClientRpc]
-    public void RPCInitializeSpellCollider(GameObject collider)
+    public void RPCInitializeSpellCollider(GameObject collider, Elements element, SpellTypes type, int sfxIndex)
     {
         collider.SetActive(true);
+
+        SpellCollider spellCollider = collider.GetComponent<SpellCollider>();
+
+        if (spellCollider != null)
+        {
+            spellCollider.PlaySpellSFX(element, type, sfxIndex);
+        }
     }
-    
+
     public void DeactivateSpellCollider(SpellCollider collider)
     {
         collider.gameObject.SetActive(false);
