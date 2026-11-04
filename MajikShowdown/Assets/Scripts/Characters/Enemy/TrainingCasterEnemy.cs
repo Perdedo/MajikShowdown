@@ -39,7 +39,7 @@ public class TrainingCasterEnemy : CasterEnemy
         prevMoving = false;
         //CheckFieldLocation();
         Casting = false;
-        attackCooldown = caster.equippedSpells[selectedSpellIndex].SpellCooldown + 0.1f;
+        spellCooldown = caster.equippedSpells[selectedSpellIndex].SpellCooldown + 0.1f;
         gravityPaused = true;
         Warped = false;
         warping = false;
@@ -89,8 +89,8 @@ public class TrainingCasterEnemy : CasterEnemy
         }
         if (onAttackCooldown)
         {
-            onAttackCooldown = attackCooldownTimer.timer(attackCooldown, Time.deltaTime, true, false);
-            if (!Warped && attackCooldownTimer.Timestamp > attackCooldown * 0.5f)
+            onAttackCooldown = attackCooldownTimer.timer(attackCooldown + spellCooldown, Time.deltaTime, true, false);
+            if (!Warped && attackCooldownTimer.Timestamp > (spellCooldown * 0.5f) + attackCooldown)
             {
                 Warp();
                 warpTimer.SetTimer(0);

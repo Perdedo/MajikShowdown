@@ -13,7 +13,7 @@ public class CasterEnemy : Enemy
     public float MinWarpDistance = 5f, MaxWarpDistance = 15f, MinWarpHeight = 5f, MaxWarpHeight = 7f;
     protected Timer warpTimer = new Timer(false);
     protected bool warping = false, warpingIn = false;
-    public float warpDuration = 1.8f, warpInDuration = 0.9f;
+    public float spellCooldown, warpDuration = 1.8f, warpInDuration = 0.9f;
     public override void Initialize(float HealthMultiplier)
     {
         for(int i = 0; i < caster.equippedSpells.Length; i++)
@@ -26,7 +26,7 @@ public class CasterEnemy : Enemy
         }
         base.Initialize(HealthMultiplier);
         Casting = false;
-        attackCooldown = caster.equippedSpells[selectedSpellIndex].SpellCooldown + 0.1f;
+        spellCooldown = caster.equippedSpells[selectedSpellIndex].SpellCooldown + 0.1f;
         gravityPaused = true;
         Warped = false;
         warping = false;
@@ -84,8 +84,8 @@ public class CasterEnemy : Enemy
         }
         if (onAttackCooldown)
         {
-            onAttackCooldown = attackCooldownTimer.timer(attackCooldown, Time.deltaTime, true, false);
-            if (!Warped && attackCooldownTimer.Timestamp > attackCooldown * 0.5f)
+            onAttackCooldown = attackCooldownTimer.timer(attackCooldown + spellCooldown, Time.deltaTime, true, false);
+            if (!Warped && attackCooldownTimer.Timestamp > (spellCooldown * 0.5f) + attackCooldown)
             {
                 Warp();
                 warpTimer.SetTimer(0);
@@ -146,6 +146,7 @@ public class CasterEnemy : Enemy
             {
                 if(count >= 20 || Vector3.Distance(warpCell.position, currentCell.position) > 5)
                 {
+                    warpTimer.SetTimer(0);
                     WarpPos = warpCell.position + Vector3.up * warpHeight;
                     validWarp = true;
                     warpingIn = true;
