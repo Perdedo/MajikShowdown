@@ -113,7 +113,7 @@ public class SpellCore : SpellNode
     {
         trajectory = null;
         castPoint = null;
-        foreach (SpellNode c in OwnerNode.spellNodes)
+        foreach (SpellNode c in OwnerSpell.spellNodes)
         {
             if (c is SpellTrajectory t)
             {
@@ -129,7 +129,7 @@ public class SpellCore : SpellNode
     public void UpdateNode()
     {
         CalculateFinalStats();
-        if(OwnerNode.Caster is not EnmSpellCaster)
+        if(OwnerSpell.Caster is not EnmSpellCaster)
         {
             GetConectedNodes();
         }

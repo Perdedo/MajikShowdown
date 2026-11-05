@@ -63,7 +63,7 @@ public class Spell
             {
                 coreNode.AddBuff(s.BaseStats);
             }
-            s.OwnerNode = this;
+            s.OwnerSpell = this;
             if (s is SpellTrigger t)
             {
                 triggers.Add(t);
@@ -103,10 +103,11 @@ public class Spell
         }
         if (!foundCall)
         {
-            foreach (SpellNode n in Caster.runtimeNodes)
+            foreach (SpellNode n in Caster.runtimeNodes)           
             {
                 if (n is SpellTrigger trigger && !triggerCalls.Contains(trigger) && trigger.TriggeredSpell == this)
                 {
+                    //Debug.Log($"Updating trigger {trigger.name} for spell {spellName}");
                     trigger.UpdateTrigger();
                 }
             }
@@ -125,6 +126,13 @@ public class Spell
             spellCollisionLayers |= Caster.EnemyLayer;
         }
         coreNode.UpdateNode();
+        foreach (SpellTrigger t in triggerCalls)
+        {
+            if(t != null && t.OwnerSpell == this && t.TriggeredSpell == this && t.Cooldown != auxCooldown)
+            {
+                t.UpdateTrigger();
+            }
+        }
         OnSpellUpdated?.Invoke();
         
     }
@@ -167,7 +175,7 @@ public class Spell
             {
                 coreNode.AddBuff(s.BaseStats);
             }
-            s.OwnerNode = this;
+            s.OwnerSpell = this;
             if (s is SpellTrigger t)
             {
                 triggers.Add(t);

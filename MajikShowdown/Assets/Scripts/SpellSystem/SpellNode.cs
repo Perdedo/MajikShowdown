@@ -28,7 +28,7 @@ public abstract class SpellNode : ScriptableObject
     //public NodeConection[] conections;
     public SpellNode[] ConectedNodes = new SpellNode[6];
     //public SpellNode[] NeighborNodes = new SpellNode[6];
-    public Spell OwnerNode;
+    public Spell OwnerSpell;
     public int startingGridInd = -1;
     public bool startingNode = false;
     [HideInInspector] public NodeConection.Conections[] ConectionPorts = new NodeConection.Conections[6];
@@ -156,11 +156,12 @@ public abstract class SpellNode : ScriptableObject
     public virtual void ResetNode()
     {
         hierarchy = -1;
-        OwnerNode = null;
+        OwnerSpell = null;
     }
     public virtual void RandomizeStats()
     {
         Cooldown = statRandomizer.Cooldown.GetValue();
+        Cooldown = Mathf.Round(Cooldown * 10f) / 10f;
         BaseStats.Randomize(statRandomizer);
         RandomizeExtras();
     }
@@ -182,6 +183,7 @@ public abstract class SpellNode : ScriptableObject
             if (extra.Randomizer != null)
             {
                 extra.Value = extra.Randomizer.GetValue();
+                extra.Value = Mathf.Round(extra.Value * 10f) / 10f;
                 extraValues.Add(extra.Value);
                 field.SetValue(this, extra);
             }
@@ -428,12 +430,19 @@ public struct StatTypes
     public void Randomize(StatRandomizer randomizer)
     {
         Speed = randomizer.Speed.GetValue();
+        Speed = Mathf.Round(Speed * 10f) / 10f;
         Duration = randomizer.Duration.GetValue();
+        Duration = Mathf.Round(Duration * 10f) / 10f;
         Size = randomizer.Size.GetValue();
+        Size = Mathf.Round(Size * 10f) / 10f;
         Damage = randomizer.Damage.GetValue();
+        Damage = Mathf.Round(Damage * 10f) / 10f;
         Piercing = randomizer.Piercing.GetValue();
+        Piercing = Mathf.Round(Piercing * 10f) / 10f;
         Bounce = randomizer.Bounce.GetValue();
+        Bounce = Mathf.Round(Bounce * 10f) / 10f;
         Knockback = randomizer.Knockback.GetValue();
+        Knockback = Mathf.Round(Knockback * 10f) / 10f;
     }
     public static StatTypes ClampToZero(StatTypes s)
     {
