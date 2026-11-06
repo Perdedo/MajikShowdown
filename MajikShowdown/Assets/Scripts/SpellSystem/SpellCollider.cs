@@ -383,10 +383,29 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     public void SetTrajectoryForward(Vector3 forward)
     {
-        if (forward == Vector3.zero) return;
-        TrajectoryTransform.Forward = forward.normalized;
-        TrajectoryTransform.Right = new Vector3(TrajectoryTransform.Forward.z, 0, -TrajectoryTransform.Forward.x).normalized;
-        TrajectoryTransform.Up = Vector3.Cross(TrajectoryTransform.Right, TrajectoryTransform.Forward);
+        Vector3 f = forward.normalized;
+        //if (f.sqrMagnitude < 0.0001f) return;
+
+        Vector3 referenceUp = Vector3.up;
+
+        // If forward is too close to world up/down, use another reference axis.
+        if (Mathf.Abs(Vector3.Dot(f, Vector3.up)) > 0.999f)
+        {
+            referenceUp = Vector3.forward;
+        }
+
+        Vector3 right = Vector3.Cross(referenceUp, f).normalized;
+        if (right.sqrMagnitude < 0.0001f)
+        {
+            // Fallback in case referenceUp and forward are still parallel
+            right = Vector3.Cross(Vector3.right, f).normalized;
+        }
+
+        Vector3 up = Vector3.Cross(f, right).normalized;
+
+        TrajectoryTransform.Forward = f;
+        TrajectoryTransform.Right = right;
+        TrajectoryTransform.Up = up;
     }
     //[Server]
     public void InitiateTriggeredSpells()
@@ -599,6 +618,10 @@ public class SpellCollider : NetworkBehaviour
         //Debug.Log(normal);
         if (OwnerSpell.coreNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
         {
+            if (TrajectoryTransform.Forward == Vector3.down)
+            {
+                SetTrajectoryForward(((OwnerSpell.Caster.AimController.AimPoint - OwnerSpell.Caster.CastingPoint.position).normalized + Vector3.up).normalized);
+            }
             float upDot = Vector3.Dot(normal, Vector3.up);
             if (upDot < 0.5f)
             {

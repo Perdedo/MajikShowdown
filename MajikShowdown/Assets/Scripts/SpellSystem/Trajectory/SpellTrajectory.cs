@@ -20,7 +20,7 @@ public class SpellTrajectory : SpellNode
                 dir = collider.TrajectoryTransform.Forward;
                 break;
             case TrajectoryType.Lobbed:
-                if (collider.previousVelocity == Vector3.zero)
+                if (collider.previousVelocity == Vector3.zero && collider.TrajectoryTransform.Forward != Vector3.down)
                 {
                     dir = (collider.TrajectoryTransform.Forward + Vector3.up).normalized;
                 }
