@@ -112,8 +112,9 @@ public class SpellCollider : NetworkBehaviour
 
         if (OwnerSpell.coreNode.Type == SpellTypes.Explosion)
         {
-            float roundedDuration = Mathf.Round(stats.Duration * 1.1f * 10) / 10;
-            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10) / 10, roundedDuration);
+            float extraDuration = Mathf.Min(1, stats.Duration * 0.2f);
+            float roundedDuration = Mathf.Round((stats.Duration + extraDuration) * 10) / 10;
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size/2 * 10) / 10, roundedDuration);
         }
         else
         {
