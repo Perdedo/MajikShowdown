@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
+--- !u!114 &-7873773136390226632
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,24 +9,175 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7516de2ab66216140b3e86e61f33e33b, type: 3}
-  m_Name: EchoHomEnemy
-  m_EditorClassIdentifier: Assembly-CSharp::SavedSpellAsset
-  spellName: EchoHomEnemy
-  colorIndex: 0
-  symbolIndex: 0
-  startEquipped: 1
-  nodes:
-  - node: {fileID: 8078430866761697800}
-    gridIndex: 0
-    triggeredSpellName: 
-  - node: {fileID: 8973983860032144339}
-    gridIndex: 1
-    triggeredSpellName: 
-  - node: {fileID: 5703400194057839507}
-    gridIndex: 5
-    triggeredSpellName: 
---- !u!114 &5703400194057839507
+  m_Script: {fileID: 11500000, guid: 30c8f43e557dc914caf160dbd96537f7, type: 3}
+  m_Name: SizeRuneForged(Clone)
+  m_EditorClassIdentifier: Assembly-CSharp::SpellStat
+  quality: 1
+  price:
+    type: 1
+    value: 0
+    min: 900
+    max: 1500
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    curveMultiplier: 1
+    curveTimeMax: 1
+  RandomizeOnStart: 0
+  statRandomizer:
+    Cooldown:
+      type: 0
+      value: 0.3
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Speed:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Size:
+      type: 1
+      value: 0
+      min: 0.8
+      max: 2.5
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Bounce:
+      type: 0
+      value: 0
+      min: 1
+      max: 4
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+  runeName: Forged Add Size
+  runeType: Stat
+  runeDescription: Grants additional Size stat to attached spell
+  color: {r: 0.28235295, g: 0.2509804, b: 0.28627452, a: 1}
+  Cooldown: 0.3
+  BaseStats:
+    Speed: 0
+    Duration: 0
+    Size: 1.8704559
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  Interface: {fileID: 0}
+  hierarchy: 2
+  ConectedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  OwnerNode:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  startingGridInd: -1
+  startingNode: 0
+  ConectionPorts: 000000000000000000000000000000000000000000000000
+  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
+  nodeSymbolSprite: {fileID: 21300000, guid: bb5c25f19e22b68469ad4a79d4d99b85, type: 3}
+  symbolColor: {r: 1, g: 1, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: 73
+  invertNodeColors: 0
+--- !u!114 &-2068273274121808207
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -36,14 +187,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ebada4b227f663a4d9d204be5a95d0e4, type: 3}
-  m_Name: DamageEffect(Clone)
+  m_Name: DamageEffectRefined(Clone)
   m_EditorClassIdentifier: Assembly-CSharp::DamageEffect
-  quality: 0
+  quality: 2
   price:
     type: 1
     value: 0
-    min: 350
-    max: 500
+    min: 2000
+    max: 3500
     curve:
       serializedVersion: 2
       m_Curve: []
@@ -57,8 +208,8 @@ MonoBehaviour:
     Cooldown:
       type: 1
       value: 3
-      min: 0.2
-      max: 0.5
+      min: 0.6
+      max: 1.2
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -109,8 +260,8 @@ MonoBehaviour:
     Damage:
       type: 1
       value: 0
-      min: 5
-      max: 10
+      min: 9
+      max: 18
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -158,16 +309,16 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Rusty Damage
+  runeName: Refined Damage
   runeType: Effect
   runeDescription: Adds a damaging effect to the attached spell.
   color: {r: 0.38039216, g: 0.050980393, b: 0.38039216, a: 1}
-  Cooldown: 0.36271873
+  Cooldown: 0.61216766
   BaseStats:
     Speed: 0
     Duration: 0
     Size: 0
-    Damage: 5.109992
+    Damage: 16.98664
     Piercing: 0
     Bounce: 0
     Knockback: 0
@@ -201,8 +352,40 @@ MonoBehaviour:
   nodeSymbolSprite: {fileID: 21300000, guid: 58b2eaedcdb75d142875dec809da79ee, type: 3}
   symbolColor: {r: 1, g: 0, b: 1, a: 1}
   owner: {fileID: 0}
-  instanceIndex: 39
---- !u!114 &8078430866761697800
+  instanceIndex: 41
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7516de2ab66216140b3e86e61f33e33b, type: 3}
+  m_Name: EchoDTrig
+  m_EditorClassIdentifier: Assembly-CSharp::SavedSpellAsset
+  spellName: EchoDTrig
+  colorIndex: 7
+  symbolIndex: 0
+  startEquipped: 0
+  nodes:
+  - node: {fileID: 1029106594347615838}
+    gridIndex: 0
+    triggeredSpellName: 
+  - node: {fileID: 8843794787061036857}
+    gridIndex: 1
+    triggeredSpellName: 
+  - node: {fileID: -2068273274121808207}
+    gridIndex: 5
+    triggeredSpellName: 
+  - node: {fileID: 7283027542445375903}
+    gridIndex: 7
+    triggeredSpellName: 
+  - node: {fileID: -7873773136390226632}
+    gridIndex: 8
+    triggeredSpellName: 
+--- !u!114 &1029106594347615838
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -212,14 +395,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e873651b2d0183c4ca51f62a95ca85eb, type: 3}
-  m_Name: Area(Clone)
+  m_Name: ProjectileRefined(Clone)
   m_EditorClassIdentifier: Assembly-CSharp::SpellType
-  quality: 0
+  quality: 2
   price:
     type: 1
     value: 0
-    min: 350
-    max: 500
+    min: 2000
+    max: 3500
     curve:
       serializedVersion: 2
       m_Curve: []
@@ -232,9 +415,9 @@ MonoBehaviour:
   statRandomizer:
     Cooldown:
       type: 1
-      value: 2
-      min: 0.5
-      max: 1
+      value: 0
+      min: 2.2
+      max: 2.4
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -244,10 +427,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Speed:
-      type: 0
+      type: 1
       value: 0
-      min: 0
-      max: 0
+      min: 3
+      max: 6
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -258,7 +441,7 @@ MonoBehaviour:
       curveTimeMax: 1
     Duration:
       type: 1
-      value: 0
+      value: 2
       min: 4
       max: 6
       curve:
@@ -272,8 +455,8 @@ MonoBehaviour:
     Size:
       type: 1
       value: 0
-      min: 4
-      max: 7
+      min: 3
+      max: 4
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -296,7 +479,7 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Piercing:
-      type: 2
+      type: 0
       value: 0
       min: 0
       max: 0
@@ -323,9 +506,9 @@ MonoBehaviour:
       curveTimeMax: 1
     Knockback:
       type: 1
-      value: 100
-      min: 10
-      max: 20
+      value: 10
+      min: 20
+      max: 25
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -334,19 +517,19 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Rusty Area
+  runeName: Refined Projectile
   runeType: Core
-  runeDescription: Defines the spell as an area of effect.
+  runeDescription: Defines the spell as a single projectile.
   color: {r: 0.4, g: 0.0627451, b: 0.0627451, a: 1}
-  Cooldown: 0.77934325
+  Cooldown: 1
   BaseStats:
-    Speed: 0
-    Duration: 4.1873055
-    Size: 5.757599
+    Speed: 5.532997
+    Duration: 5.3993764
+    Size: 3.16359
     Damage: 0
-    Piercing: Infinity
+    Piercing: 0
     Bounce: 0
-    Knockback: 17.611046
+    Knockback: 20.796936
   Interface: {fileID: 0}
   hierarchy: 0
   ConectedNodes:
@@ -374,53 +557,244 @@ MonoBehaviour:
   startingNode: 0
   ConectionPorts: 010000000300000002000000030000000400000003000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 21300000, guid: e0441d32ff38f5a4f95f8313f5ee2bd1, type: 3}
+  nodeSymbolSprite: {fileID: 21300000, guid: 2d6ebd84f8f2de34e969b8f49cfed287, type: 3}
   symbolColor: {r: 1, g: 0, b: 0, a: 1}
   owner: {fileID: 0}
-  instanceIndex: 0
-  Type: 1
+  instanceIndex: 5
+  Type: 0
   Collisions:
     Allies: 1
     Self: 0
     Enemies: 0
     Objects: 1
   StatMultipliers:
-    Speed: 1
-    Duration: 1.2
-    Size: 1
-    Damage: 0.4
-    Piercing: 1
-    Bounce: 0
-    Knockback: 0.1
-  HitOnStay: 1
-  HitCooldown: 0.2
+    Speed: 1.8
+    Duration: 1
+    Size: 1.2
+    Damage: 1.5
+    Piercing: 1.4
+    Bounce: 1
+    Knockback: 1
+  HitOnStay: 0
+  HitCooldown: 0
   SpawnTriggeredSpellCooldown: 0.5
-  DieOnObjectCollide: 0
-  Element: 5
+  DieOnObjectCollide: 1
+  Element: 6
   FinalStats:
-    Speed: 15.577349
-    Duration: 5.024767
-    Size: 5.757599
-    Damage: 2.0439968
-    Piercing: Infinity
+    Speed: 51.501125
+    Duration: 5.3993764
+    Size: 6.040855
+    Damage: 25.479961
+    Piercing: 0
     Bounce: 0
-    Knockback: 1.7611046
+    Knockback: 20.796936
   StatBuffs:
-  - Speed: 15.577349
+  - Speed: 10.390956
     Duration: 0
     Size: 0
     Damage: 0
-    Piercing: 4.188159
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  - Speed: 12.687782
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  - Speed: 0
+    Duration: 0
+    Size: 1.8704559
+    Damage: 0
+    Piercing: 0
     Bounce: 0
     Knockback: 0
   - Speed: 0
     Duration: 0
     Size: 0
-    Damage: 5.109992
+    Damage: 16.98664
     Piercing: 0
     Bounce: 0
     Knockback: 0
---- !u!114 &8973983860032144339
+--- !u!114 &7283027542445375903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c8f43e557dc914caf160dbd96537f7, type: 3}
+  m_Name: SpeedRuneForged(Clone)
+  m_EditorClassIdentifier: Assembly-CSharp::SpellStat
+  quality: 1
+  price:
+    type: 1
+    value: 0
+    min: 900
+    max: 1500
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    curveMultiplier: 1
+    curveTimeMax: 1
+  RandomizeOnStart: 0
+  statRandomizer:
+    Cooldown:
+      type: 0
+      value: 0.3
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Speed:
+      type: 1
+      value: 0
+      min: 7
+      max: 14
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Bounce:
+      type: 0
+      value: 0
+      min: 1
+      max: 4
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+  runeName: Forged Add Speed
+  runeType: Stat
+  runeDescription: Grants additional Speed stat to attached spell
+  color: {r: 0.28235295, g: 0.2509804, b: 0.28627452, a: 1}
+  Cooldown: 0.3
+  BaseStats:
+    Speed: 12.687782
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  Interface: {fileID: 0}
+  hierarchy: 2
+  ConectedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  OwnerNode:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  startingGridInd: -1
+  startingNode: 0
+  ConectionPorts: 000000000000000000000000000000000000000000000000
+  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
+  nodeSymbolSprite: {fileID: 21300000, guid: ea0c512db7136e8418bec6c3aaf2bf31, type: 3}
+  symbolColor: {r: 1, g: 1, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: 76
+  invertNodeColors: 0
+--- !u!114 &8843794787061036857
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -430,7 +804,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b2ab1ed0c378944f8357d7513ab20be, type: 3}
-  m_Name: FollowEnemy(Clone)
+  m_Name: Forward(Clone)
   m_EditorClassIdentifier: Assembly-CSharp::SpellTrajectory
   quality: 0
   price:
@@ -450,7 +824,7 @@ MonoBehaviour:
   statRandomizer:
     Cooldown:
       type: 0
-      value: 0.2
+      value: 0.1
       min: 0
       max: 0
       curve:
@@ -463,7 +837,7 @@ MonoBehaviour:
       curveTimeMax: 1
     Speed:
       type: 1
-      value: 10
+      value: 0
       min: 10
       max: 20
       curve:
@@ -514,10 +888,10 @@ MonoBehaviour:
       curveMultiplier: 1
       curveTimeMax: 1
     Piercing:
-      type: 1
+      type: 0
       value: 0
-      min: 1
-      max: 5
+      min: 0
+      max: 0
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -530,7 +904,7 @@ MonoBehaviour:
       type: 0
       value: 0
       min: 0
-      max: 0
+      max: 3.5
       curve:
         serializedVersion: 2
         m_Curve: []
@@ -552,17 +926,17 @@ MonoBehaviour:
         m_RotationOrder: 4
       curveMultiplier: 1
       curveTimeMax: 1
-  runeName: Rusty Follow Enemy
+  runeName: Rusty Forward
   runeType: Trajectory
-  runeDescription: The spell leans into nearby enemies.
+  runeDescription: The spell moves foward.
   color: {r: 0.090196066, g: 0.1492894, b: 0.40392157, a: 1}
-  Cooldown: 0.2
+  Cooldown: 0.1
   BaseStats:
-    Speed: 15.577349
+    Speed: 10.390956
     Duration: 0
     Size: 0
     Damage: 0
-    Piercing: 4.188159
+    Piercing: 0
     Bounce: 0
     Knockback: 0
   Interface: {fileID: 0}
@@ -592,9 +966,9 @@ MonoBehaviour:
   startingNode: 0
   ConectionPorts: 000000000000000000000000010000000000000000000000
   spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 21300000, guid: 1105234bd7f9e5e4a92f9f66d7c3b0f9, type: 3}
+  nodeSymbolSprite: {fileID: 21300000, guid: c41c409defb715043b75e0c572342db8, type: 3}
   symbolColor: {r: 0, g: 0.74509805, b: 1, a: 1}
   owner: {fileID: 0}
-  instanceIndex: 33
-  trajectoryType: 4
+  instanceIndex: 27
+  trajectoryType: 0
   HommingRange: 10
