@@ -108,6 +108,11 @@ public class PlayerUI : NetworkBehaviour
     public AllyCardUI allyCardPrefab;
     public Transform allyCardsContainer;
 
+    [Header("Spectator")]
+    public GameObject spectatorPanel;
+    public TMP_Text spectatorPlayerText;
+    public TMP_Text spectatorHintText;
+
     [Header("Network")]
     public bool network = true;
     bool loaded;
@@ -153,6 +158,10 @@ public class PlayerUI : NetworkBehaviour
         if (shopPanel != null)
         {
             shopPanel.SetActive(false);
+        }
+        if (spectatorPanel != null)
+        {
+            spectatorPanel.SetActive(false);
         }
         ResolutionDropdown();
         ScreenModeDropdown();
@@ -1232,6 +1241,35 @@ public class PlayerUI : NetworkBehaviour
         if (moneyText == null) return;
 
         moneyText.text = amount.ToString();
+    }
+
+    public void ShowSpectatorUI(string playerName)
+    {
+        if (spectatorPanel == null) return;
+
+        spectatorPanel.SetActive(true);
+        UpdateSpectatorUI(playerName);
+    }
+
+    public void UpdateSpectatorUI(string playerName)
+    {
+        if (spectatorPlayerText != null)
+        {
+            spectatorPlayerText.text = string.IsNullOrEmpty(playerName) ? "No players available to spectate" : "You are watching " + playerName;
+        }
+
+        if (spectatorHintText != null)
+        {
+            spectatorHintText.text = string.IsNullOrEmpty(playerName) ? "" : "Left Click to switch player";
+        }
+    }
+
+    public void HideSpectatorUI()
+    {
+        if (spectatorPanel != null)
+        {
+            spectatorPanel.SetActive(false);
+        }
     }
 
     public void ShowRunePickup(SpellNode node, Vector3 lootboxWorldPosition)
