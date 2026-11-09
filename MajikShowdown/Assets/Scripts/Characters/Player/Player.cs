@@ -114,6 +114,14 @@ public class Player : Character
     {
         base.OnStartServer();
         money = startingMoney;
+        /*if(NetworkManager.singleton.GetComponent<RoomManager>() != null)
+        {
+            myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
+        }*/
+    }
+
+    public override void OnStartClient()
+    {
         if(NetworkManager.singleton.GetComponent<RoomManager>() != null)
         {
             myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
