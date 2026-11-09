@@ -62,13 +62,16 @@ public class AllyCardUI : NetworkBehaviour
         }
         return texture;
     }
-    public void Initialize(Player p)
+    public void Initialize()
     {
-        myPlayer = p;
-        myPlayer.myCards.Add(this);
+        //myPlayer = p;
+        //myPlayer.myCards.Add(this);
         SetupAllyHealth(myPlayer.DamageHandler.MaxHealth, myPlayer.DamageHandler.MaxHealth);
+        Debug.Log("A");
+        Debug.Log(myPlayer.myRoomPlayer);
         if(myPlayer.myRoomPlayer != null)
         {
+            Debug.Log("B");
             SetAllyName(myPlayer.myRoomPlayer.playerName);
             imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
         }
