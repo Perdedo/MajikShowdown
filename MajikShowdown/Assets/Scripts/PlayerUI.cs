@@ -24,6 +24,9 @@ public class PlayerUI : NetworkBehaviour
     [Header("Currency")]
     [SerializeField] private TMP_Text moneyText;
 
+    [Header("Horde Timer")]
+    [SerializeField] private TMP_Text panelTimerText;
+
     [Header("Rune Pickup")]
     [SerializeField] private RunePickupUI runePickupUI;
 
@@ -1186,6 +1189,13 @@ public class PlayerUI : NetworkBehaviour
     public void CloseTriggerSpellSelection()
     {
         triggerSpellSelectionPanel.SetActive(false);
+    }
+
+    public void UpdateHordeTimerText(string txt)
+    {
+        if (panelTimerText == null) return;
+
+        panelTimerText.text = txt;
     }
 
     private void EnableLoadingState()

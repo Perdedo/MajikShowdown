@@ -557,7 +557,15 @@ public class HordeController : NetworkBehaviour
     [ClientRpc]
     public void UpdateTimerText(string txt)
     {
-        timerTxt.text = txt;
+        if (timerTxt != null)
+        {
+            timerTxt.text = txt;
+        }
+
+        if (GameManager.Instance != null && GameManager.Instance.uiController != null && GameManager.Instance.uiController.playerUI != null)
+        {
+            GameManager.Instance.uiController.playerUI.UpdateHordeTimerText(txt);
+        }
     }
 
     [ClientRpc]
