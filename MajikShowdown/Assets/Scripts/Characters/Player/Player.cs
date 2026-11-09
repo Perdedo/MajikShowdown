@@ -114,9 +114,9 @@ public class Player : Character
     {
         base.OnStartServer();
         money = startingMoney;
-        if(NetworkServer.connections[connectionToClient.connectionId].identity.GetComponent<RoomPlayer>() != null)
+        if(NetworkManager.singleton.GetComponent<RoomManager>() != null)
         {
-            myRoomPlayer = NetworkServer.connections[connectionToClient.connectionId].identity.GetComponent<RoomPlayer>();
+            myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
         }
     }
 
