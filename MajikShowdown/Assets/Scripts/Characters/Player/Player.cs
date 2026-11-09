@@ -373,6 +373,32 @@ public class Player : Character
         }
     }
 
+    public void DownAnim()
+    {
+        if (network)
+        {
+            CMDAnimTrigger("Downed");
+        }
+        else
+        {
+            animator.ResetTrigger("Downed");
+            animator.SetTrigger("Downed");
+        }
+    }
+
+    public void RevivedAnim()
+    {
+        if (network)
+        {
+            CMDAnimTrigger("Revived");
+        }
+        else
+        {
+            animator.ResetTrigger("Revived");
+            animator.SetTrigger("Revived");
+        }
+    }
+
     [Command]
     public void CMDAnimTrigger(string trigger)
     {

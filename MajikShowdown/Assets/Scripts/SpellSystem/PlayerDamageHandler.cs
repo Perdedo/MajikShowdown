@@ -29,7 +29,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         if(network)
         {
             UpdateUI();
-            foreach (AllyCardUI card in ((Player)gameCharacter).myCards)
+            foreach (AllyCardUI card in myPlayer.myCards)
             {
                 card.UpdateAllyHealth(card.id.connectionToClient, Health);
             }
@@ -56,7 +56,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         if(network)
         {
             UpdateUI();
-            foreach(AllyCardUI card in ((Player)gameCharacter).myCards)
+            foreach(AllyCardUI card in myPlayer.myCards)
             {
                 card.UpdateAllyHealth(card.id.connectionToClient, Health);
             }
@@ -69,6 +69,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
     public override void Die()
     {
         gameCharacter.Die();
+        myPlayer.DownAnim();
         //Atualizar depois com sistema de reviver
         myPlayer.dead = true;
         FlowFieldManager.instance.UpdateFlowField();
@@ -109,6 +110,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         Health = MaxHealth / 2;
         myPlayer.dead = false;
         FlowFieldManager.instance.UpdateFlowField();
+        myPlayer.RevivedAnim();
         if(network)
         {
             PanelRespawnSwitch();
