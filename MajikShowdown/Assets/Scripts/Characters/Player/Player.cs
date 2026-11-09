@@ -121,8 +121,6 @@ public class Player : Character
         if(NetworkManager.singleton.GetComponent<RoomManager>() != null && network)
         {
             myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
-            Debug.Log(myRoomPlayer.playerSteamID);
-            Debug.Log(myRoomPlayer.playerName);
             playerName = myRoomPlayer.playerName;
             playerSteamID = myRoomPlayer.playerSteamID;
         }
