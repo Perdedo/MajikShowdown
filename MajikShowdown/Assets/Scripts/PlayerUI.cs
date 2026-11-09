@@ -508,11 +508,12 @@ public class PlayerUI : NetworkBehaviour
         }
     }
 
-    public void UpdateHealthUI()
+    public void UpdateHealthUI(float hp)
     {
         if (damageHandler == null) return;
         healthSlider.maxValue = damageHandler.MaxHealth;
-        healthSlider.value = damageHandler.Health;
+        healthSlider.value = hp;
+        //healthSlider.value = damageHandler.Health;
     }
 
     public void LeavePauseButton()

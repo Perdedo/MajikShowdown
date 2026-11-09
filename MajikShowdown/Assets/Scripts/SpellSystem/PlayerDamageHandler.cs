@@ -28,7 +28,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         }
         if(network)
         {
-            UpdateUI();
+            UpdateUI(Health);
             foreach (AllyCardUI card in myPlayer.myCards)
             {
                 card.UpdateAllyHealth(card.id.connectionToClient, Health);
@@ -36,14 +36,14 @@ public class PlayerDamageHandler : CharacterDamageHandler
         }
         else
         {
-            GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+            GameManager.Instance.uiController.playerUI.UpdateHealthUI(Health);
         }
     }
 
     [TargetRpc]
-    public void UpdateUI()
+    public void UpdateUI(float hp)
     {
-        GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+        GameManager.Instance.uiController.playerUI.UpdateHealthUI(hp);
     }
 
     public override void Heal(float amount)
@@ -55,7 +55,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         Health = Mathf.Min(Health + amount, MaxHealth);
         if(network)
         {
-            UpdateUI();
+            UpdateUI(Health);
             foreach(AllyCardUI card in myPlayer.myCards)
             {
                 card.UpdateAllyHealth(card.id.connectionToClient, Health);
@@ -63,7 +63,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         }
         else
         {
-            GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+            GameManager.Instance.uiController.playerUI.UpdateHealthUI(Health);
         }
     }
     public override void Die()
@@ -114,7 +114,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         if(network)
         {
             PanelRespawnSwitch();
-            UpdateUI();
+            UpdateUI(Health);
             foreach (AllyCardUI card in myPlayer.myCards)
             {
                 card.UpdateAllyHealth(card.id.connectionToClient, Health);
@@ -123,7 +123,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
         else
         {
             GameManager.Instance.uiController.playerUI.deathPanel.SetActive(false);
-            GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+            GameManager.Instance.uiController.playerUI.UpdateHealthUI(Health);
         }
         //Reappear();
     }
