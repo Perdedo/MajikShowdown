@@ -1,4 +1,6 @@
 using Mirror;
+using Steamworks;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -70,8 +72,15 @@ public class GameManager : MonoBehaviour
                         {
                             if(!p1.myUI.usedAllyCards.Contains(card))
                             {
-                                card.Initialize(p2);
                                 p1.myUI.usedAllyCards.Add(card);
+                                if(p2.steamSynced && p2.nameSynced)
+                                {
+                                    card.Initialize(p2);
+                                }
+                                else
+                                {
+                                    StartCoroutine(WaitCardInitialize(p2, card));
+                                }
                                 break;
                             }
                         }
@@ -83,6 +92,14 @@ public class GameManager : MonoBehaviour
         {
             hordeController.Initialize();
         }*/
+    }
+
+
+    IEnumerator WaitCardInitialize(Player p, AllyCardUI card)
+    {
+        yield return new WaitUntil(() => p.steamSynced);
+        yield return new WaitUntil(() => p.nameSynced);
+        card.Initialize(p);
     }
 
     public void RemovePlayer(Player player)
