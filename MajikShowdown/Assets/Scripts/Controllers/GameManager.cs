@@ -70,7 +70,9 @@ public class GameManager : MonoBehaviour
                         {
                             if(!p1.myUI.usedAllyCards.Contains(card))
                             {
-                                card.Initialize(p2);
+                                //card.Initialize(p2);
+                                card.myPlayer = p2;
+                                p2.myCards.Add(card);
                                 p1.myUI.usedAllyCards.Add(card);
                                 break;
                             }
@@ -100,6 +102,7 @@ public class GameManager : MonoBehaviour
                 {
                     if(card.myPlayer == player)
                     {
+                        p.myUI.usedAllyCards.Remove(card);
                         card.Disable(card.id.connectionToClient);
                     }
                 }

@@ -117,14 +117,26 @@ public class Player : Character
         if(NetworkManager.singleton.GetComponent<RoomManager>() != null)
         {
             myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
-            SetRoomPlayer();
+            foreach (AllyCardUI card in myCards)
+            {
+                card.Initialize();
+            }
+            InitializeAllyCards();
         }
     }
 
     [ClientRpc]
-    public void SetRoomPlayer()
+    public void InitializeAllyCards()
     {
+        if(isServer)
+        {
+            return;
+        }
         myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
+        foreach(AllyCardUI card in myCards)
+        {
+            card.Initialize();
+        }
     }
 
     protected override void FixedUpdate()
