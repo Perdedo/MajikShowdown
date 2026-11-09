@@ -114,10 +114,16 @@ public class PlayerDamageHandler : CharacterDamageHandler
         if(network)
         {
             PanelRespawnSwitch();
+            UpdateUI();
+            foreach (AllyCardUI card in myPlayer.myCards)
+            {
+                card.UpdateAllyHealth(card.id.connectionToClient, Health);
+            }
         }
         else
         {
             GameManager.Instance.uiController.playerUI.deathPanel.SetActive(false);
+            GameManager.Instance.uiController.playerUI.UpdateHealthUI();
         }
         //Reappear();
     }
