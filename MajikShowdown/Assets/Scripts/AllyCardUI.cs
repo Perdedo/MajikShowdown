@@ -63,6 +63,15 @@ public class AllyCardUI : NetworkBehaviour
         }
         return texture;
     }
+    void GetPlayerIcon()
+    {
+        int imageID = SteamFriends.GetLargeFriendAvatar((CSteamID)myPlayer.playerSteamID);
+        if (imageID == -1)
+        {
+            return;
+        }
+        allyImage.texture = GetSteamImageAsTexture(imageID);
+    }
     public void Initialize(Player p)
     {
         myPlayer = p;
@@ -70,6 +79,7 @@ public class AllyCardUI : NetworkBehaviour
         SetupAllyHealth(myPlayer.DamageHandler.MaxHealth, myPlayer.DamageHandler.MaxHealth);
         SetAllyName(myPlayer.playerName);
         imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
+        GetPlayerIcon();
     }
     
 
