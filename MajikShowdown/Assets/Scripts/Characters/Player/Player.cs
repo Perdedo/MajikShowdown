@@ -376,7 +376,8 @@ public class Player : Character
     {
         if (network)
         {
-            CMDAnimTrigger("Downed");
+            RPCAnimTrigger("Downed");
+            //CMDAnimTrigger("Downed");
         }
         else
         {
@@ -389,7 +390,8 @@ public class Player : Character
     {
         if (network)
         {
-            CMDAnimTrigger("Revived");
+            RPCAnimTrigger("Revived");
+            //CMDAnimTrigger("Revived");
         }
         else
         {
