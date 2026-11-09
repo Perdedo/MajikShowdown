@@ -116,7 +116,7 @@ public class Player : Character
     {
         base.OnStartServer();
         money = startingMoney;
-        if(NetworkManager.singleton.GetComponent<RoomManager>() != null)
+        if(NetworkManager.singleton.GetComponent<RoomManager>() != null && network)
         {
             myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
             playerName = myRoomPlayer.playerName;
