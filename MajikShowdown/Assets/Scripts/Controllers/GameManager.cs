@@ -117,8 +117,8 @@ public class GameManager : MonoBehaviour
                 {
                     if(card.myPlayer == player)
                     {
-                        p.myUI.usedAllyCards.Remove(card);
                         card.Disable(card.id.connectionToClient);
+                        p.myUI.usedAllyCards.Remove(card);
                     }
                 }
             }
