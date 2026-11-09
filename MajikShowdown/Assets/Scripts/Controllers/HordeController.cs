@@ -473,7 +473,7 @@ public class HordeController : NetworkBehaviour
             p.SetReadyImageVisibility(true);
             foreach(AllyCardUI card in p.myCards)
             {
-                card.ReappearReady(card.id.connectionToClient);
+                card.SetReadyVisibility(card.id.connectionToClient, true);
             }
         }
         StartCoroutine(EndPause());
@@ -623,6 +623,10 @@ public class HordeController : NetworkBehaviour
         yield return new WaitForSeconds(hordes[hordeIndex].hordeDuration);
         xray.SetActive(true);
         inHordeTime = false;
+        foreach(Player p in GameManager.Instance.Players)
+        {
+            p.ResetReady();
+        }
         //StopAllCoroutines();
         CheckEnemyCount();
     }
@@ -785,7 +789,11 @@ public class HordeController : NetworkBehaviour
             StopAllCoroutines();
             foreach (Player p in GameManager.Instance.Players)
             {
-                p.ResetReady();
+                p.SetReadyImageVisibility(false);
+                foreach (AllyCardUI card in p.myCards)
+                {
+                    card.SetReadyVisibility(card.id.connectionToClient, false);
+                }
             }
             inPause = false;
             StartHorde();

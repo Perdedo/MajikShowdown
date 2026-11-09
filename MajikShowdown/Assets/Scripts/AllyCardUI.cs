@@ -131,15 +131,14 @@ public class AllyCardUI : NetworkBehaviour
         }
         else
         {
-            readyImage.gameObject.SetActive(false);
             readyImage.sprite = notReadySprite;
         }
     }
 
     [TargetRpc]
-    public void ReappearReady(NetworkConnectionToClient target)
+    public void SetReadyVisibility(NetworkConnectionToClient target, bool visible)
     {
-        readyImage.gameObject.SetActive(true);
+        readyImage.gameObject.SetActive(visible);
     }
 
     [TargetRpc]
