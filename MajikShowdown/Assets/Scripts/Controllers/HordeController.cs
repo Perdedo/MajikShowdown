@@ -470,6 +470,7 @@ public class HordeController : NetworkBehaviour
             {
                 p.GetComponent<PlayerDamageHandler>().Respawn();
             }
+            p.SetReadyImageVisibility(true);
         }
         StartCoroutine(EndPause());
     }
@@ -773,7 +774,7 @@ public class HordeController : NetworkBehaviour
             StopAllCoroutines();
             foreach (Player p in GameManager.Instance.Players)
             {
-                p.readyForHorde = false;
+                p.ResetReady();
             }
             inPause = false;
             StartHorde();

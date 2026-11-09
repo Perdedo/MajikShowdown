@@ -131,6 +131,7 @@ public class AllyCardUI : NetworkBehaviour
         }
         else
         {
+            readyImage.gameObject.SetActive(false);
             readyImage.sprite = notReadySprite;
         }
     }

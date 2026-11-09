@@ -269,8 +269,24 @@ public class Player : Character
         readyForHorde = true;
         foreach(AllyCardUI card in myCards)
         {
-            card.UpdateAllyReady(card.id.connectionToClient, readyForHorde);
+            card.UpdateAllyReady(card.id.connectionToClient, true);
         }
+    }
+
+    public void ResetReady()
+    {
+        SetReadyImageVisibility(false);
+        readyForHorde = false;
+        foreach (AllyCardUI card in myCards)
+        {
+            card.UpdateAllyReady(card.id.connectionToClient, false);
+        }
+    }
+
+    [TargetRpc]
+    public void SetReadyImageVisibility(bool visible)
+    {
+        myUI.readyImage.gameObject.SetActive(false);
     }
 
     public void GetReady(bool oldVal, bool newVal)
