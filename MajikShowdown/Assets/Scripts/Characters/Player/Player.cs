@@ -12,8 +12,8 @@ using UnityEngine.InputSystem;
 public class Player : Character
 {
     [HideInInspector] public RoomPlayer myRoomPlayer;
-    [HideInInspector][SyncVar] public string playerName;
-    [HideInInspector][SyncVar] public ulong playerSteamID;
+    [SyncVar] public string playerName;
+    [SyncVar] public ulong playerSteamID;
     public PlayerUI myUI;
     public GameObject mesh;
     public Collider col;
