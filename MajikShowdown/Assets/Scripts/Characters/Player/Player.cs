@@ -265,6 +265,7 @@ public class Player : Character
     void CMDReadyInput()
     {
         readyForHorde = true;
+        myUI.UpdateReady(true);
         foreach(AllyCardUI card in myCards)
         {
             card.UpdateAllyReady(card.id.connectionToClient, true);
@@ -274,6 +275,7 @@ public class Player : Character
     public void ResetReady()
     {
         SetReadyImageVisibility(false);
+        myUI.UpdateReady(false);
         readyForHorde = false;
         foreach (AllyCardUI card in myCards)
         {

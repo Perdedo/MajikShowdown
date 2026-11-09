@@ -214,6 +214,19 @@ public class PlayerUI : NetworkBehaviour
             }
         }
     }
+
+    [TargetRpc]
+    public void UpdateReady(bool isReady)
+    {
+        if (isReady)
+        {
+            readyImage.sprite = readySprite;
+        }
+        else
+        {
+            readyImage.sprite = notReadySprite;
+        }
+    }
     private void Update()
     {
         if (!isLocalPlayer && network) return;
