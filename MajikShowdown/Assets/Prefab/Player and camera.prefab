@@ -3439,7 +3439,6 @@ Transform:
   - {fileID: 5642760642209226531}
   - {fileID: 3422179289092898950}
   - {fileID: 4383528992280756488}
-  - {fileID: 8858267516594520711}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3665451783351053803
@@ -41534,7 +41533,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00025001637}
+  m_AnchoredPosition: {x: 0, y: 0.00070692925}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &4602415906032893341
@@ -62504,6 +62503,7 @@ GameObject:
   - component: {fileID: 8858267516594520711}
   - component: {fileID: 597488836187208399}
   - component: {fileID: 4884958969985402121}
+  - component: {fileID: 4806680052006313739}
   m_Layer: 0
   m_Name: T_PlayerName
   m_TagString: Untagged
@@ -62518,16 +62518,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8250076680077144216}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2693384560482220527}
+  m_Father: {fileID: 5642760642209226531}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 3.1}
+  m_AnchoredPosition: {x: 0, y: 1.31}
   m_SizeDelta: {x: 4, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &597488836187208399
@@ -62674,6 +62674,18 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 597488836187208399}
   m_maskType: 0
+--- !u!114 &4806680052006313739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8250076680077144216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed2090ed857c4934cb3f6b7d65830512, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerNickname
 --- !u!1 &8252056943346279705
 GameObject:
   m_ObjectHideFlags: 0
@@ -70778,6 +70790,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8914568331542961986, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5755441369480769390}
+    - targetCorrespondingSourceObject: {fileID: 8914568331542961986, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8858267516594520711}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4265607478582442934, guid: c057eacdaf69a5f4d845903ffbcbd5f6, type: 3}
       insertIndex: -1

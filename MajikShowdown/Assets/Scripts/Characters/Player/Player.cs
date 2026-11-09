@@ -111,6 +111,7 @@ public class Player : Character
         base.OnStartLocalPlayer();
         playerCamera.Priority = 2;
         input.enabled = true;
+        myUI.playerNameText.gameObject.SetActive(false);
         //readyForHorde = false;
     }
 
