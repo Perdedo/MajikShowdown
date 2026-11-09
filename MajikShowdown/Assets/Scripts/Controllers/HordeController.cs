@@ -471,6 +471,10 @@ public class HordeController : NetworkBehaviour
                 p.GetComponent<PlayerDamageHandler>().Respawn();
             }
             p.SetReadyImageVisibility(true);
+            foreach(AllyCardUI card in p.myCards)
+            {
+                card.ReappearReady(card.id.connectionToClient);
+            }
         }
         StartCoroutine(EndPause());
     }
@@ -478,6 +482,13 @@ public class HordeController : NetworkBehaviour
     [Server]
     public void StartHorde()
     {
+        foreach (Player p in GameManager.Instance.Players)
+        {
+            if (p.dead)
+            {
+                p.GetComponent<PlayerDamageHandler>().Respawn();
+            }
+        }
         hordeCount++;
         hordeStartTime = Time.time;
         hordeEndTime = hordeStartTime + hordes[hordeIndex].hordeDuration;

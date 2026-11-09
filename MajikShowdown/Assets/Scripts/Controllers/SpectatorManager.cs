@@ -7,6 +7,7 @@ public class SpectatorManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Player owner;
+    [SerializeField] private Transform lookpoint;
     [SerializeField] private LookAnchor cameraLookAnchor;
 
     private PlayerUI playerUI;
@@ -90,9 +91,9 @@ public class SpectatorManager : MonoBehaviour
         isSpectating = false;
         currentTarget = null;
 
-        if (cameraLookAnchor != null && owner.lookAnchor != null)
+        if (cameraLookAnchor != null && lookpoint != null)
         {
-            cameraLookAnchor.PlayerFollow = owner.lookAnchor;
+            cameraLookAnchor.PlayerFollow = lookpoint;
         }
 
         if (playerUI != null)

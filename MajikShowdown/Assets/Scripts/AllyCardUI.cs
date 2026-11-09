@@ -137,6 +137,12 @@ public class AllyCardUI : NetworkBehaviour
     }
 
     [TargetRpc]
+    public void ReappearReady(NetworkConnectionToClient target)
+    {
+        readyImage.gameObject.SetActive(true);
+    }
+
+    [TargetRpc]
     public void Disable(NetworkConnectionToClient target)
     {
         gameObject.SetActive(false);
