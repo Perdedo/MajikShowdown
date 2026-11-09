@@ -286,7 +286,7 @@ public class Player : Character
     [TargetRpc]
     public void SetReadyImageVisibility(bool visible)
     {
-        myUI.readyImage.gameObject.SetActive(false);
+        myUI.readyImage.gameObject.SetActive(visible);
     }
 
     public void GetReady(bool oldVal, bool newVal)
