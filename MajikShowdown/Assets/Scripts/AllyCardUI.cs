@@ -62,16 +62,17 @@ public class AllyCardUI : NetworkBehaviour
         }
         return texture;
     }
-    public void Initialize()
+    public void Initialize(Player p)
     {
-        //myPlayer = p;
-        //myPlayer.myCards.Add(this);
+        myPlayer = p;
+        myPlayer.myCards.Add(this);
         SetupAllyHealth(myPlayer.DamageHandler.MaxHealth, myPlayer.DamageHandler.MaxHealth);
         Debug.Log("A");
-        Debug.Log(myPlayer.myRoomPlayer);
-        if(myPlayer.myRoomPlayer != null)
+        Debug.Log(myPlayer.myRoomPlayer.playerName);
+        if (NetworkManager.singleton.GetComponent<RoomManager>() != null)
         {
             Debug.Log("B");
+            myPlayer.myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == myPlayer.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
             SetAllyName(myPlayer.myRoomPlayer.playerName);
             imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
         }

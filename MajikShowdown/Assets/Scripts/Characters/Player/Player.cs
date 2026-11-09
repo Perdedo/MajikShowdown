@@ -113,30 +113,7 @@ public class Player : Character
     public override void OnStartServer()
     {
         base.OnStartServer();
-        money = startingMoney;
-        if(NetworkManager.singleton.GetComponent<RoomManager>() != null)
-        {
-            myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
-            foreach (AllyCardUI card in myCards)
-            {
-                card.Initialize();
-            }
-            InitializeAllyCards();
-        }
-    }
-
-    [ClientRpc]
-    public void InitializeAllyCards()
-    {
-        if(isServer)
-        {
-            return;
-        }
-        myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
-        foreach(AllyCardUI card in myCards)
-        {
-            card.Initialize();
-        }
+        money = startingMoney; 
     }
 
     protected override void FixedUpdate()
