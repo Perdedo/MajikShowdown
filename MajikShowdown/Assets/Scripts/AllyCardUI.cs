@@ -23,25 +23,24 @@ public class AllyCardUI : NetworkBehaviour
     public Sprite readySprite;
     public Sprite notReadySprite;
 
-    protected Callback<AvatarImageLoaded_t> imageLoaded;
+    //protected Callback<AvatarImageLoaded_t> imageLoaded;
     public NetworkIdentity id;
     public override void OnStartServer()
     {
         id = GetComponentInParent<NetworkIdentity>(true);
     }
 
-    void OnImageLoaded(AvatarImageLoaded_t callback)
+    /*void OnImageLoaded(AvatarImageLoaded_t callback)
     {
         if (callback.m_steamID.m_SteamID == myPlayer.playerSteamID)
         {
             allyImage.texture = GetSteamImageAsTexture(callback.m_iImage);
-            gameObject.SetActive(true);
         }
         else
         {
             return;
         }
-    }
+    }*/
 
     private Texture2D GetSteamImageAsTexture(int iImage)
     {
@@ -78,8 +77,9 @@ public class AllyCardUI : NetworkBehaviour
         myPlayer.myCards.Add(this);
         SetupAllyHealth(myPlayer.DamageHandler.MaxHealth, myPlayer.DamageHandler.MaxHealth);
         SetAllyName(myPlayer.playerName);
-        imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
+        //imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
         GetPlayerIcon();
+        gameObject.SetActive(true);
     }
     
 
