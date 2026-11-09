@@ -11,7 +11,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 public class Player : Character
 {
-    [HideInInspector]public RoomPlayer myRoomPlayer;
+    [HideInInspector] public RoomPlayer myRoomPlayer;
+    [HideInInspector][SyncVar] public string playerName;
+    [HideInInspector][SyncVar] public ulong playerSteamID;
     public PlayerUI myUI;
     public GameObject mesh;
     public Collider col;
@@ -113,7 +115,13 @@ public class Player : Character
     public override void OnStartServer()
     {
         base.OnStartServer();
-        money = startingMoney; 
+        money = startingMoney;
+        if(NetworkManager.singleton.GetComponent<RoomManager>() != null)
+        {
+            myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
+            playerName = myRoomPlayer.playerName;
+            playerSteamID = myRoomPlayer.playerSteamID;
+        }
     }
 
     protected override void FixedUpdate()

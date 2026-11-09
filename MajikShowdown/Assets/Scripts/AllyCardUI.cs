@@ -31,7 +31,7 @@ public class AllyCardUI : NetworkBehaviour
 
     void OnImageLoaded(AvatarImageLoaded_t callback)
     {
-        if (callback.m_steamID.m_SteamID == myPlayer.myRoomPlayer.playerSteamID)
+        if (callback.m_steamID.m_SteamID == myPlayer.playerSteamID)
         {
             allyImage.texture = GetSteamImageAsTexture(callback.m_iImage);
             gameObject.SetActive(true);
@@ -67,15 +67,8 @@ public class AllyCardUI : NetworkBehaviour
         myPlayer = p;
         myPlayer.myCards.Add(this);
         SetupAllyHealth(myPlayer.DamageHandler.MaxHealth, myPlayer.DamageHandler.MaxHealth);
-        Debug.Log("A");
-        Debug.Log(myPlayer.myRoomPlayer.playerName);
-        if (NetworkManager.singleton.GetComponent<RoomManager>() != null)
-        {
-            Debug.Log("B");
-            myPlayer.myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == myPlayer.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
-            SetAllyName(myPlayer.myRoomPlayer.playerName);
-            imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
-        }
+        SetAllyName(myPlayer.playerName);
+        imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
     }
 
     /*public void SetAllyImage()
