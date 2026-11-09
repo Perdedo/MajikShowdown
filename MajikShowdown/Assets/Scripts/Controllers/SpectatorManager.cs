@@ -52,6 +52,11 @@ public class SpectatorManager : MonoBehaviour
                 CheckCurrentTarget();
                 HandleSpectatorInput();
             }
+
+            if(!GameManager.Instance.hordeController.running)
+            {
+                playerUI.HideSpectatorUI();
+            }
         }
         else if (isSpectating)
         {
@@ -186,8 +191,9 @@ public class SpectatorManager : MonoBehaviour
             return null;
         }
 
-        int index = GameManager.Instance.Players.IndexOf(target);
+        return target.playerName;
+        //int index = GameManager.Instance.Players.IndexOf(target);
 
-        return "Player " + (index + 1);
+        //return "Player " + (index + 1);
     }
 }
