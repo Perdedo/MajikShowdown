@@ -86,6 +86,14 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
+                if(p1.nameSynced)
+                {
+                    p1.myUI.playerNameText.text = p1.playerName;
+                }
+                else
+                {
+                    StartCoroutine(WaitNameInitialize(p1));
+                }
             }
         }
         /*if(hordeController != null)
@@ -100,6 +108,12 @@ public class GameManager : MonoBehaviour
         yield return new WaitUntil(() => p.steamSynced);
         yield return new WaitUntil(() => p.nameSynced);
         card.Initialize(p);
+    }
+
+    IEnumerator WaitNameInitialize(Player p)
+    {
+        yield return new WaitUntil(() => p.nameSynced);
+        p.myUI.playerNameText.text = p.playerName;
     }
 
     public void RemovePlayer(Player player, bool isServer)
