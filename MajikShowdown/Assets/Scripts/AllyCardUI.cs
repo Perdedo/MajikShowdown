@@ -1,6 +1,7 @@
 
 using Mirror;
 using Steamworks;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -67,6 +68,21 @@ public class AllyCardUI : NetworkBehaviour
         myPlayer = p;
         myPlayer.myCards.Add(this);
         SetupAllyHealth(myPlayer.DamageHandler.MaxHealth, myPlayer.DamageHandler.MaxHealth);
+        if(myPlayer.steamSynced && myPlayer.nameSynced)
+        {
+            SetAllyName(myPlayer.playerName);
+            imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
+        }
+        else
+        {
+            StartCoroutine(WaitInitialize());
+        }
+    }
+    
+    IEnumerator WaitInitialize()
+    {
+        yield return new WaitUntil(() => myPlayer.steamSynced);
+        yield return new WaitUntil(() => myPlayer.nameSynced);
         SetAllyName(myPlayer.playerName);
         imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
     }

@@ -12,8 +12,10 @@ using UnityEngine.InputSystem;
 public class Player : Character
 {
     [HideInInspector] public RoomPlayer myRoomPlayer;
-    [SyncVar] public string playerName;
-    [SyncVar] public ulong playerSteamID;
+    [HideInInspector] public bool steamSynced = false;
+    [HideInInspector] public bool nameSynced = false;
+    [SyncVar(hook = "NameSync")] public string playerName;
+    [SyncVar(hook = "SteamSync")] public ulong playerSteamID;
     public PlayerUI myUI;
     public GameObject mesh;
     public Collider col;
@@ -119,9 +121,21 @@ public class Player : Character
         if(NetworkManager.singleton.GetComponent<RoomManager>() != null && network)
         {
             myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
+            Debug.Log(myRoomPlayer.playerSteamID);
+            Debug.Log(myRoomPlayer.playerName);
             playerName = myRoomPlayer.playerName;
             playerSteamID = myRoomPlayer.playerSteamID;
         }
+    }
+
+    public void SteamSync(ulong oldVal, ulong newVal)
+    {
+        steamSynced = true;
+    }
+
+    public void NameSync(string oldVal, string newVal)
+    {
+        nameSynced = true;
     }
 
     protected override void FixedUpdate()
