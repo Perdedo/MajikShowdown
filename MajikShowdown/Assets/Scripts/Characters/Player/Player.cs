@@ -275,7 +275,6 @@ public class Player : Character
 
     public void ResetReady()
     {
-        SetReadyImageVisibility(false);
         myUI.UpdateReady(false);
         readyForHorde = false;
         foreach (AllyCardUI card in myCards)
