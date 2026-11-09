@@ -140,7 +140,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1989305016, guid: 7d4bed1de6a776f4b905eade40e8befa, type: 3}
+  m_Sprite: {fileID: 289485879, guid: 941cbd5475fa3c143bea844aaa66cd91, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -272,6 +272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2659625030573190756}
   - component: {fileID: 8160172676391386873}
+  - component: {fileID: -7151650946922327989}
   m_Layer: 5
   m_Name: AllyCard
   m_TagString: Untagged
@@ -314,12 +315,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eab354071f92c8248a3edb70225f8116, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AllyCardUI
-  allyImage: {fileID: 8174196949982391195}
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  myPlayer: {fileID: 0}
+  allyImage: {fileID: 5645538547705036996}
   healthSlider: {fileID: 5456340254243233523}
   allyNameText: {fileID: 5407684196425870771}
   readyImage: {fileID: 6787014452674368047}
   readySprite: {fileID: 1989305016, guid: 7d4bed1de6a776f4b905eade40e8befa, type: 3}
   notReadySprite: {fileID: 289485879, guid: 941cbd5475fa3c143bea844aaa66cd91, type: 3}
+  id: {fileID: 0}
+--- !u!114 &-7151650946922327989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7009749110412936766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 0
+  _assetId: 626687252
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &7338080262426619170
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,7 +490,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8906194745645328792}
   - component: {fileID: 2724136011846897195}
-  - component: {fileID: 8174196949982391195}
+  - component: {fileID: 5645538547705036996}
   m_Layer: 5
   m_Name: AllyImage
   m_TagString: Untagged
@@ -502,7 +525,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8459752548872066612}
   m_CullTransparentMesh: 1
---- !u!114 &8174196949982391195
+--- !u!114 &5645538547705036996
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -511,9 +534,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8459752548872066612}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -522,16 +545,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 1
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!1 &8928752763613291576
 GameObject:
   m_ObjectHideFlags: 0

@@ -58,6 +58,27 @@ public class GameManager : MonoBehaviour
             return;
         }
         netCtrl?.ffManager.gameObject.SetActive(true);
+        if(Players.Count > 1)
+        {
+            foreach(Player p1 in Players)
+            {
+                foreach(Player p2 in Players)
+                {
+                    if(p1 != p2)
+                    {
+                        foreach(AllyCardUI card in p1.myUI.allyCards)
+                        {
+                            if(!p1.myUI.usedAllyCards.Contains(card))
+                            {
+                                card.Initialize(p2);
+                                p1.myUI.usedAllyCards.Add(card);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         /*if(hordeController != null)
         {
             hordeController.Initialize();
@@ -70,6 +91,19 @@ public class GameManager : MonoBehaviour
         if(Players.Count <= 0)
         {
             netCtrl?.ffManager?.gameObject.SetActive(false);
+        }
+        else
+        {
+            foreach(Player p in Players)
+            {
+                foreach(AllyCardUI card in p.myUI.usedAllyCards)
+                {
+                    if(card.myPlayer == player)
+                    {
+                        card.Disable(card.id.connectionToClient);
+                    }
+                }
+            }
         }
     }
     

@@ -52,6 +52,10 @@ public class PlayerDamageHandler : CharacterDamageHandler
         if(network)
         {
             UpdateUI();
+            foreach(AllyCardUI card in ((Player)gameCharacter).myCards)
+            {
+                card.UpdateAllyHealth(card.id.connectionToClient, Health);
+            }
         }
         else
         {

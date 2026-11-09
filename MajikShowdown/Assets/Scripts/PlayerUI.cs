@@ -105,8 +105,9 @@ public class PlayerUI : NetworkBehaviour
     public Sprite notReadySprite;
 
     [Header("Ally Cards")]
-    public AllyCardUI allyCardPrefab;
-    public Transform allyCardsContainer;
+    public List<AllyCardUI> allyCards = new List<AllyCardUI>();
+    public List<AllyCardUI> usedAllyCards = new List<AllyCardUI>();
+    //public Transform allyCardsContainer;
 
     [Header("Network")]
     public bool network = true;

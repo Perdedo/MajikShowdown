@@ -1,6 +1,8 @@
 ﻿using Mirror;
+using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Cinemachine;
 using Unity.Mathematics;
 using UnityEngine;
@@ -9,6 +11,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 public class Player : Character
 {
+    [HideInInspector]public RoomPlayer myRoomPlayer;
+    public PlayerUI myUI;
     public GameObject mesh;
     public Collider col;
     [Header("Camera Options")]
@@ -69,6 +73,7 @@ public class Player : Character
     [SyncVar] public Vector2 netInput = Vector2.zero;
     public int TargetCellID;
 
+    public List<AllyCardUI> myCards = new List<AllyCardUI>();
     //public PlayerData data;
 
     [Serializable]
@@ -109,6 +114,10 @@ public class Player : Character
     {
         base.OnStartServer();
         money = startingMoney;
+        if(NetworkServer.connections[connectionToClient.connectionId].identity.GetComponent<RoomPlayer>() != null)
+        {
+            myRoomPlayer = NetworkServer.connections[connectionToClient.connectionId].identity.GetComponent<RoomPlayer>();
+        }
     }
 
     protected override void FixedUpdate()
@@ -240,6 +249,10 @@ public class Player : Character
     void CMDReadyInput()
     {
         readyForHorde = true;
+        foreach(AllyCardUI card in myCards)
+        {
+            card.UpdateAllyReady(card.id.connectionToClient, readyForHorde);
+        }
     }
 
     public void GetReady(bool oldVal, bool newVal)
