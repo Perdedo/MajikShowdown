@@ -560,7 +560,7 @@ public class Player : Character
             previousInteraction.HideInteractionIndicator();
         }
 
-        GameManager.Instance.RemovePlayer(this);
+        GameManager.Instance.RemovePlayer(this, false);
     }
 
     [Command]

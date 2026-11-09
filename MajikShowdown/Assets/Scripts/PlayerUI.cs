@@ -1114,7 +1114,7 @@ public class PlayerUI : NetworkBehaviour
                 col.MarkedToDie = true;
             }
         }
-        GameManager.Instance.RemovePlayer(myPlayer);
+        GameManager.Instance.RemovePlayer(myPlayer, true);
         FlowFieldManager.instance.UpdateFlowField();
         ClientLeaveGame(this.connectionToClient);
     }

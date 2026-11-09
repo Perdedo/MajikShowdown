@@ -102,14 +102,14 @@ public class GameManager : MonoBehaviour
         card.Initialize(p);
     }
 
-    public void RemovePlayer(Player player)
+    public void RemovePlayer(Player player, bool isServer)
     {
         Players.Remove(player);
         if(Players.Count <= 0)
         {
             netCtrl?.ffManager?.gameObject.SetActive(false);
         }
-        else
+        else if(isServer)
         {
             foreach(Player p in Players)
             {
