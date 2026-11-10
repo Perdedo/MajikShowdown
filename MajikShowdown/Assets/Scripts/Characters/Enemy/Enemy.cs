@@ -350,7 +350,7 @@ public class Enemy : CrowdCharacter
         UpdateTransform();
     }
 
-    public void DyingUpdate()
+    public virtual void DyingUpdate()
     {
         transparency = Mathf.Clamp(transparency + Time.deltaTime * 3, 0f, 1f);
         foreach (Material mat in mesh.materials)

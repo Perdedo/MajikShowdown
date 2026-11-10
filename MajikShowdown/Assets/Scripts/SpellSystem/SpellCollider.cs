@@ -33,6 +33,7 @@ public class SpellCollider : NetworkBehaviour
     [HideInInspector] public bool UseAcceleration = false;
     [NonSerialized] public Transform SpawnTransform;
     [NonSerialized] public Vector3 SpawnPoint;
+    [SerializeField] private AudioSource spellSFXSource;
     public int VFXIndex = -1;
     public bool SeeMesh;
     public struct TrajectoryInfo
@@ -55,29 +56,47 @@ public class SpellCollider : NetworkBehaviour
     public bool MarkedToDie = false;
     [SyncVar(hook = nameof(ChangeVisibility))] public bool isVisible = false;
 
+    private void Awake()
+    {
+        if (spellSFXSource == null) spellSFXSource = GetComponent<AudioSource>();
+        if (spellSFXSource == null) spellSFXSource = gameObject.AddComponent<AudioSource>();
+
+        spellSFXSource.playOnAwake = false;
+        spellSFXSource.spatialBlend = 1f;
+    }
+
+    public void PlaySpellSFX(Elements element, SpellTypes type, int clipIndex)
+    {
+        if (AudioController.instance == null || clipIndex < 0) return;
+
+        if (spellSFXSource == null)
+        {
+            spellSFXSource = GetComponent<AudioSource>();
+            if (spellSFXSource == null) spellSFXSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        AudioController.instance.PlaySpellSFX(spellSFXSource, element, type, clipIndex);
+    }
+
     //[Server]
     public void Initialize(Spell owner, bool isPrimary)
     {
         SetTrajectoryForward(transform.forward);
-        //projectileConfig.CalculateFinalStats();
         OwnerSpell = owner;
         primarySpell = isPrimary;
         stats = OwnerSpell.coreNode.FinalStats;
-        //transform.localScale = Vector3.one * stats.Size;
-        //Invoke("Die", stats.Duration);
         pierceCount = stats.Piercing;
         bounceCount = stats.Bounce;
+
         if (primarySpell)
         {
             InitiateTriggeredSpells();
         }
+
         OnCast.Invoke();
 
-        /*if (OwnerSpell.coreNode.Type == SpellType.SpellTypes.Explosion)
-        {
-            transform.localScale = Vector3.zero;
-        }*/
         mesh.transform.localScale = Vector3.zero;
+
         if (OwnerSpell.Caster.network)
         {
             isVisible = true;
@@ -90,19 +109,17 @@ public class SpellCollider : NetworkBehaviour
         {
             mesh.gameObject.SetActive(true);
         }
+
         if (OwnerSpell.coreNode.Type == SpellTypes.Explosion)
         {
-            float roundedDuration = Mathf.Round(stats.Duration * 1.1f * 10) / 10;
-            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10) / 10, roundedDuration);
+            float extraDuration = Mathf.Min(1, stats.Duration * 0.2f);
+            float roundedDuration = Mathf.Round((stats.Duration + extraDuration) * 10) / 10;
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size/2 * 10) / 10, roundedDuration);
         }
         else
         {
             VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10) / 10);
         }
-
-        //Debug.Log( VFXIndex);
-        //spellCol = GetComponent<Collider>();
-
     }
 
     [ClientRpc]
@@ -367,10 +384,29 @@ public class SpellCollider : NetworkBehaviour
     //[Server]
     public void SetTrajectoryForward(Vector3 forward)
     {
-        if (forward == Vector3.zero) return;
-        TrajectoryTransform.Forward = forward.normalized;
-        TrajectoryTransform.Right = new Vector3(TrajectoryTransform.Forward.z, 0, -TrajectoryTransform.Forward.x).normalized;
-        TrajectoryTransform.Up = Vector3.Cross(TrajectoryTransform.Right, TrajectoryTransform.Forward);
+        Vector3 f = forward.normalized;
+        //if (f.sqrMagnitude < 0.0001f) return;
+
+        Vector3 referenceUp = Vector3.up;
+
+        // If forward is too close to world up/down, use another reference axis.
+        if (Mathf.Abs(Vector3.Dot(f, Vector3.up)) > 0.999f)
+        {
+            referenceUp = Vector3.forward;
+        }
+
+        Vector3 right = Vector3.Cross(referenceUp, f).normalized;
+        if (right.sqrMagnitude < 0.0001f)
+        {
+            // Fallback in case referenceUp and forward are still parallel
+            right = Vector3.Cross(Vector3.right, f).normalized;
+        }
+
+        Vector3 up = Vector3.Cross(f, right).normalized;
+
+        TrajectoryTransform.Forward = f;
+        TrajectoryTransform.Right = right;
+        TrajectoryTransform.Up = up;
     }
     //[Server]
     public void InitiateTriggeredSpells()
@@ -583,6 +619,10 @@ public class SpellCollider : NetworkBehaviour
         //Debug.Log(normal);
         if (OwnerSpell.coreNode.trajectory.trajectoryType == SpellTrajectory.TrajectoryType.Lobbed)
         {
+            if (TrajectoryTransform.Forward == Vector3.down)
+            {
+                SetTrajectoryForward(((OwnerSpell.Caster.AimController.AimPoint - OwnerSpell.Caster.CastingPoint.position).normalized + Vector3.up).normalized);
+            }
             float upDot = Vector3.Dot(normal, Vector3.up);
             if (upDot < 0.5f)
             {
@@ -629,6 +669,12 @@ public class SpellCollider : NetworkBehaviour
     }
     public void ResetCollider()
     {
+        if (spellSFXSource != null)
+        {
+            spellSFXSource.Stop();
+            spellSFXSource.clip = null;
+            spellSFXSource.loop = false;
+        }
         VFXIndex = -1;
         OwnerSpell = null;
         pierceCount = 0;

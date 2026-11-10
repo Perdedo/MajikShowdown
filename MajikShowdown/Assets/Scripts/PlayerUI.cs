@@ -1293,7 +1293,7 @@ public class PlayerUI : NetworkBehaviour
             savedNode.name = nodeInterface.Node.name;
             savedNode.RandomizeOnStart = false;
             savedNode.Interface = null;
-            savedNode.OwnerNode = null;
+            savedNode.OwnerSpell = null;
             savedNode.IsInUse = false;
             string triggerName = "";
             if(savedNode is SpellTrigger)

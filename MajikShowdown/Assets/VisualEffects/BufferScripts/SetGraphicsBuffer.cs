@@ -45,6 +45,7 @@ public class SetGraphicsBuffer : MonoBehaviour
     {
         eventAttribute = visualEffect.CreateVFXEventAttribute();
         EnsureBufferCap(ref gBuffer, bufferCapacity, STRIDE, visualEffect, bufferPoints);
+        myParent = this.transform.parent.GetComponent<ElementBuffers>();
     }
     public int AddEffect(Transform place, float size)
     {
@@ -94,6 +95,7 @@ public class SetGraphicsBuffer : MonoBehaviour
         if (myType != SpellTypes.Explosion && myType != SpellTypes.Area)
         {
             int index = instances.Count;
+            newCall = myParent.myElement == Elements.Earth;
             if (nullIndex.Count == 0)
             {
                 instances.Add(place);
@@ -164,7 +166,7 @@ public class SetGraphicsBuffer : MonoBehaviour
         }
 
         instances[index] = null;
-        nullIndex.Enqueue(index);    
+        nullIndex.Enqueue(index);
     }
     void LateUpdate()
     {

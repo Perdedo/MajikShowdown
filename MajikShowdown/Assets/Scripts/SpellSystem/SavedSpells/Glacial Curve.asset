@@ -1,35 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7516de2ab66216140b3e86e61f33e33b, type: 3}
-  m_Name: Glacial Curve
-  m_EditorClassIdentifier: Assembly-CSharp::SavedSpellAsset
-  spellName: Glacial Curve
-  colorIndex: 6
-  symbolIndex: 6
-  startEquipped: 1
-  nodes:
-  - node: {fileID: 1851529031804784434}
-    gridIndex: 0
-    triggeredSpellName: 
-  - node: {fileID: 2155330344665947883}
-    gridIndex: 1
-    triggeredSpellName: 
-  - node: {fileID: 4070247180056829618}
-    gridIndex: 5
-    triggeredSpellName: 
-  - node: {fileID: 4761319127667223670}
-    gridIndex: 7
-    triggeredSpellName: 
---- !u!114 &1851529031804784434
+--- !u!114 &-2759515585418378752
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -165,15 +136,15 @@ MonoBehaviour:
   runeType: Core
   runeDescription: Defines the spell as an area of effect.
   color: {r: 0.4, g: 0.0627451, b: 0.0627451, a: 1}
-  Cooldown: 0.9824198
+  Cooldown: 0.7
   BaseStats:
     Speed: 0
-    Duration: 5.724213
-    Size: 6.6083694
+    Duration: 5.7
+    Size: 6.9
     Damage: 0
     Piercing: Infinity
     Bounce: 0
-    Knockback: 17.789642
+    Knockback: 19.8
   Interface: {fileID: 0}
   hierarchy: 0
   ConectedNodes:
@@ -225,214 +196,36 @@ MonoBehaviour:
   DieOnObjectCollide: 0
   Element: 2
   FinalStats:
-    Speed: 30.074514
-    Duration: 6.869056
-    Size: 6.6083694
-    Damage: 2.57526
+    Speed: 37.2
+    Duration: 6.84
+    Size: 6.9
+    Damage: 3.16
     Piercing: Infinity
     Bounce: 0
-    Knockback: 1.7789643
+    Knockback: 1.9799999
   StatBuffs:
-  - Speed: 25.734604
+  - Speed: 29.8
     Duration: 0
     Size: 0
     Damage: 0
-    Piercing: 5.42297
-    Bounce: 0
-    Knockback: 0
-  - Speed: 4.339911
-    Duration: 0
-    Size: 0
-    Damage: 0
-    Piercing: 0
+    Piercing: 4.3
     Bounce: 0
     Knockback: 0
   - Speed: 0
     Duration: 0
     Size: 0
-    Damage: 6.4381495
+    Damage: 7.9
     Piercing: 0
     Bounce: 0
     Knockback: 0
---- !u!114 &2155330344665947883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b2ab1ed0c378944f8357d7513ab20be, type: 3}
-  m_Name: Boomerang(Clone)
-  m_EditorClassIdentifier: Assembly-CSharp::SpellTrajectory
-  quality: 0
-  price:
-    type: 1
-    value: 0
-    min: 350
-    max: 500
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    curveMultiplier: 1
-    curveTimeMax: 1
-  RandomizeOnStart: 0
-  statRandomizer:
-    Cooldown:
-      type: 0
-      value: 0.2
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Speed:
-      type: 1
-      value: 0
-      min: 15
-      max: 30
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Duration:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Size:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Damage:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Piercing:
-      type: 1
-      value: 0
-      min: 3
-      max: 7
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Bounce:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Knockback:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-  runeName: Rusty Boomerang
-  runeType: Trajectory
-  runeDescription: The spell moves in a boomerang pattern.
-  color: {r: 0.090196066, g: 0.1492894, b: 0.40392157, a: 1}
-  Cooldown: 0.2
-  BaseStats:
-    Speed: 25.734604
+  - Speed: 7.4
     Duration: 0
     Size: 0
     Damage: 0
-    Piercing: 5.42297
+    Piercing: 0
     Bounce: 0
     Knockback: 0
-  Interface: {fileID: 0}
-  hierarchy: 1
-  ConectedNodes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  OwnerSpell:
-    spellName: 
-    colorIndex: 0
-    symbolIndex: 0
-    spellNodes: []
-    SpellCooldown: 0
-    auxCooldown: 0
-    coreNode: {fileID: 0}
-    triggers: []
-    spellEffects: []
-    validSpell: 0
-    grid: {fileID: 0}
-    instanceIndex: 0
-    onCooldown: 0
-  startingGridInd: -1
-  startingNode: 0
-  ConectionPorts: 000000000000000000000000010000000000000000000000
-  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 21300000, guid: 25c409f0d34894141b37dcf405429f19, type: 3}
-  symbolColor: {r: 0, g: 0.74509805, b: 1, a: 1}
-  owner: {fileID: 0}
-  instanceIndex: 12
-  trajectoryType: 8
-  HommingRange: 10
---- !u!114 &4070247180056829618
+--- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -441,174 +234,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebada4b227f663a4d9d204be5a95d0e4, type: 3}
-  m_Name: DamageEffect(Clone)
-  m_EditorClassIdentifier: Assembly-CSharp::DamageEffect
-  quality: 0
-  price:
-    type: 1
-    value: 0
-    min: 350
-    max: 500
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    curveMultiplier: 1
-    curveTimeMax: 1
-  RandomizeOnStart: 0
-  statRandomizer:
-    Cooldown:
-      type: 1
-      value: 3
-      min: 0.2
-      max: 0.5
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Speed:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Duration:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Size:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Damage:
-      type: 1
-      value: 0
-      min: 5
-      max: 10
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Piercing:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Bounce:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-    Knockback:
-      type: 0
-      value: 0
-      min: 0
-      max: 0
-      curve:
-        serializedVersion: 2
-        m_Curve: []
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      curveMultiplier: 1
-      curveTimeMax: 1
-  runeName: Rusty Damage
-  runeType: Effect
-  runeDescription: Adds a damaging effect to the attached spell.
-  color: {r: 0.38039216, g: 0.050980393, b: 0.38039216, a: 1}
-  Cooldown: 0.46160188
-  BaseStats:
-    Speed: 0
-    Duration: 0
-    Size: 0
-    Damage: 6.4381495
-    Piercing: 0
-    Bounce: 0
-    Knockback: 0
-  Interface: {fileID: 0}
-  hierarchy: 1
-  ConectedNodes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  OwnerSpell:
-    spellName: 
-    colorIndex: 0
-    symbolIndex: 0
-    spellNodes: []
-    SpellCooldown: 0
-    auxCooldown: 0
-    coreNode: {fileID: 0}
-    triggers: []
-    spellEffects: []
-    validSpell: 0
-    grid: {fileID: 0}
-    instanceIndex: 0
-    onCooldown: 0
-  startingGridInd: -1
-  startingNode: 0
-  ConectionPorts: 000000000000000002000000000000000000000002000000
-  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
-  nodeSymbolSprite: {fileID: 21300000, guid: 58b2eaedcdb75d142875dec809da79ee, type: 3}
-  symbolColor: {r: 1, g: 0, b: 1, a: 1}
-  owner: {fileID: 0}
-  instanceIndex: 39
---- !u!114 &4761319127667223670
+  m_Script: {fileID: 11500000, guid: 7516de2ab66216140b3e86e61f33e33b, type: 3}
+  m_Name: Glacial Curve
+  m_EditorClassIdentifier: Assembly-CSharp::SavedSpellAsset
+  spellName: Glacial Curve
+  colorIndex: 6
+  symbolIndex: 6
+  startEquipped: 1
+  nodes:
+  - node: {fileID: -2759515585418378752}
+    gridIndex: 0
+    triggeredSpellName: 
+  - node: {fileID: 6533114072811741991}
+    gridIndex: 1
+    triggeredSpellName: 
+  - node: {fileID: 3581950120545823150}
+    gridIndex: 5
+    triggeredSpellName: 
+  - node: {fileID: 898821905175856543}
+    gridIndex: 14
+    triggeredSpellName: 
+--- !u!114 &898821905175856543
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -746,7 +392,7 @@ MonoBehaviour:
   color: {r: 0.28235295, g: 0.2509804, b: 0.28627452, a: 1}
   Cooldown: 0.1
   BaseStats:
-    Speed: 4.339911
+    Speed: 7.4
     Duration: 0
     Size: 0
     Damage: 0
@@ -784,3 +430,358 @@ MonoBehaviour:
   symbolColor: {r: 1, g: 1, b: 1, a: 1}
   owner: {fileID: 0}
   instanceIndex: 75
+  invertNodeColors: 0
+--- !u!114 &3581950120545823150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebada4b227f663a4d9d204be5a95d0e4, type: 3}
+  m_Name: DamageEffect(Clone)
+  m_EditorClassIdentifier: Assembly-CSharp::DamageEffect
+  quality: 0
+  price:
+    type: 1
+    value: 0
+    min: 350
+    max: 500
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    curveMultiplier: 1
+    curveTimeMax: 1
+  RandomizeOnStart: 0
+  statRandomizer:
+    Cooldown:
+      type: 1
+      value: 3
+      min: 0.2
+      max: 0.5
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Speed:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Damage:
+      type: 1
+      value: 0
+      min: 5
+      max: 10
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Piercing:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Bounce:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+  runeName: Rusty Damage
+  runeType: Effect
+  runeDescription: Adds a damaging effect to the attached spell.
+  color: {r: 0.38039216, g: 0.050980393, b: 0.38039216, a: 1}
+  Cooldown: 0.2
+  BaseStats:
+    Speed: 0
+    Duration: 0
+    Size: 0
+    Damage: 7.9
+    Piercing: 0
+    Bounce: 0
+    Knockback: 0
+  Interface: {fileID: 0}
+  hierarchy: 1
+  ConectedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  OwnerSpell:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  startingGridInd: -1
+  startingNode: 0
+  ConectionPorts: 000000000000000002000000000000000000000002000000
+  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
+  nodeSymbolSprite: {fileID: 21300000, guid: 58b2eaedcdb75d142875dec809da79ee, type: 3}
+  symbolColor: {r: 1, g: 0, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: 39
+--- !u!114 &6533114072811741991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b2ab1ed0c378944f8357d7513ab20be, type: 3}
+  m_Name: Boomerang(Clone)
+  m_EditorClassIdentifier: Assembly-CSharp::SpellTrajectory
+  quality: 0
+  price:
+    type: 1
+    value: 0
+    min: 350
+    max: 500
+    curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    curveMultiplier: 1
+    curveTimeMax: 1
+  RandomizeOnStart: 0
+  statRandomizer:
+    Cooldown:
+      type: 0
+      value: 0.2
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Speed:
+      type: 1
+      value: 0
+      min: 15
+      max: 30
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Duration:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Size:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Damage:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Piercing:
+      type: 1
+      value: 0
+      min: 3
+      max: 7
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Bounce:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+    Knockback:
+      type: 0
+      value: 0
+      min: 0
+      max: 0
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      curveMultiplier: 1
+      curveTimeMax: 1
+  runeName: Rusty Boomerang
+  runeType: Trajectory
+  runeDescription: The spell moves in a boomerang pattern.
+  color: {r: 0.090196066, g: 0.1492894, b: 0.40392157, a: 1}
+  Cooldown: 0.2
+  BaseStats:
+    Speed: 29.8
+    Duration: 0
+    Size: 0
+    Damage: 0
+    Piercing: 4.3
+    Bounce: 0
+    Knockback: 0
+  Interface: {fileID: 0}
+  hierarchy: 1
+  ConectedNodes:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  OwnerSpell:
+    spellName: 
+    colorIndex: 0
+    symbolIndex: 0
+    spellNodes: []
+    SpellCooldown: 0
+    auxCooldown: 0
+    coreNode: {fileID: 0}
+    triggers: []
+    spellEffects: []
+    validSpell: 0
+    grid: {fileID: 0}
+    instanceIndex: 0
+    onCooldown: 0
+  startingGridInd: -1
+  startingNode: 0
+  ConectionPorts: 000000000000000000000000010000000000000000000000
+  spellInfos: {fileID: 11400000, guid: 540e4d31be86e724ca6254062843e2d7, type: 2}
+  nodeSymbolSprite: {fileID: 21300000, guid: 25c409f0d34894141b37dcf405429f19, type: 3}
+  symbolColor: {r: 0, g: 0.74509805, b: 1, a: 1}
+  owner: {fileID: 0}
+  instanceIndex: 12
+  trajectoryType: 8
+  HommingRange: 10

@@ -193,7 +193,7 @@ public class SpellInventoryUI : NetworkBehaviour
         {
             SpellNode runtimeNode = caster.AddRune(ssn.node, false);
 
-            runtimeNode.OwnerNode = newSpell;
+            runtimeNode.OwnerSpell = newSpell;
             runtimeNode.startingGridInd = ssn.gridIndex;
             runtimeNode.startingNode = true;
 

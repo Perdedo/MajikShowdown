@@ -20,7 +20,7 @@ public class Explosion : NetworkBehaviour
         disappearTimer.Paused = false;
     }
 
-    public void Initialize(Elements element)
+    public void Initialize(Elements element, float explosionRadius)
     {
         if(element == Elements.None)
         {
@@ -30,7 +30,7 @@ public class Explosion : NetworkBehaviour
         {
             enemyElement = element;
         }
-        VFXIndex = BuffersControl.Instance.SpawnEffect(enemyElement, SpellTypes.Explosion, transform, 10, duration);
+        VFXIndex = BuffersControl.Instance.SpawnEffect(enemyElement, SpellTypes.Explosion, transform, explosionRadius*2, duration);
     }
 
     private void Update()
