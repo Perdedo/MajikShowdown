@@ -1,12 +1,16 @@
 
+using Mirror;
+using Steamworks;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AllyCardUI : MonoBehaviour
+public class AllyCardUI : NetworkBehaviour
 {
+    public Player myPlayer;
     [Header("Ally Image")]
-    public Image allyImage;
+    public RawImage allyImage;
 
     [Header("Player Health")]
     public Slider healthSlider;
@@ -19,17 +23,77 @@ public class AllyCardUI : MonoBehaviour
     public Sprite readySprite;
     public Sprite notReadySprite;
 
-    public void SetAllyImage()
+    //protected Callback<AvatarImageLoaded_t> imageLoaded;
+    public NetworkIdentity id;
+    public override void OnStartServer()
     {
-        // Pegar a imagem da steam(igual o que rola no room) e colocar no card
+        id = GetComponentInParent<NetworkIdentity>(true);
     }
 
-    public void SetAllyName()
+    /*void OnImageLoaded(AvatarImageLoaded_t callback)
     {
-        // Pegar o nome do player da steam(igual o que rola no room) e colocar no card
+        if (callback.m_steamID.m_SteamID == myPlayer.playerSteamID)
+        {
+            allyImage.texture = GetSteamImageAsTexture(callback.m_iImage);
+        }
+        else
+        {
+            return;
+        }
+    }*/
+
+    private Texture2D GetSteamImageAsTexture(int iImage)
+    {
+        Texture2D texture = null;
+
+        bool isValid = SteamUtils.GetImageSize(iImage, out uint width, out uint height);
+        if (isValid)
+        {
+            byte[] image = new byte[width * height * 4];
+
+            isValid = SteamUtils.GetImageRGBA(iImage, image, (int)(width * height * 4));
+
+            if (isValid)
+            {
+                texture = new Texture2D((int)width, (int)height, TextureFormat.RGBA32, false, true);
+                texture.LoadRawTextureData(image);
+                texture.Apply();
+            }
+        }
+        return texture;
+    }
+    void GetPlayerIcon()
+    {
+        int imageID = SteamFriends.GetLargeFriendAvatar((CSteamID)myPlayer.playerSteamID);
+        if (imageID == -1)
+        {
+            return;
+        }
+        allyImage.texture = GetSteamImageAsTexture(imageID);
+    }
+    public void Initialize(Player p)
+    {
+        myPlayer = p;
+        myPlayer.myCards.Add(this);
+        SetupAllyHealth(myPlayer.DamageHandler.MaxHealth, myPlayer.DamageHandler.MaxHealth);
+        SetAllyName(myPlayer.playerName);
+        //imageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
+        GetPlayerIcon();
+        gameObject.SetActive(true);
+    }
+    
+
+    /*public void SetAllyImage()
+    {
+        
+    }*/
+
+    public void SetAllyName(string name)
+    {
+        allyNameText.text = name;
     }
 
-    public void SetAllyHealth(float health, float maxHealth)
+    public void SetupAllyHealth(float health, float maxHealth)
     {
         healthSlider.maxValue = maxHealth;
         healthSlider.value = health;
@@ -37,7 +101,14 @@ public class AllyCardUI : MonoBehaviour
         // Provavelmente vai precisar de mais coisas relacionadas ao mp, mas por enquanto é só isso mesmo
     }
 
-    public void AttAllyReadyImage(bool isReady)
+    [TargetRpc]
+    public void UpdateAllyHealth(NetworkConnectionToClient target, float health)
+    {
+        healthSlider.value = health;
+    }
+
+
+    /*public void AttAllyReadyImage(bool isReady)
     {
         if (isReady)
         {
@@ -49,5 +120,30 @@ public class AllyCardUI : MonoBehaviour
         }
 
         // Provavelmente vai precisar de mais coisas relacionadas ao mp, mas por enquanto é só isso mesmo
+    }*/
+
+    [TargetRpc]
+    public void UpdateAllyReady(NetworkConnectionToClient target, bool isReady)
+    {
+        if (isReady)
+        {
+            readyImage.sprite = readySprite;
+        }
+        else
+        {
+            readyImage.sprite = notReadySprite;
+        }
+    }
+
+    [TargetRpc]
+    public void SetReadyVisibility(NetworkConnectionToClient target, bool visible)
+    {
+        readyImage.gameObject.SetActive(visible);
+    }
+
+    [TargetRpc]
+    public void Disable(NetworkConnectionToClient target)
+    {
+        gameObject.SetActive(false);
     }
 }

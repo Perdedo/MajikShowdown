@@ -1,4 +1,6 @@
 using Mirror;
+using Steamworks;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -58,18 +60,82 @@ public class GameManager : MonoBehaviour
             return;
         }
         netCtrl?.ffManager.gameObject.SetActive(true);
+        if(Players.Count > 1)
+        {
+            foreach(Player p1 in Players)
+            {
+                foreach(Player p2 in Players)
+                {
+                    if(p1 != p2)
+                    {
+                        foreach(AllyCardUI card in p1.myUI.allyCards)
+                        {
+                            if(!p1.myUI.usedAllyCards.Contains(card))
+                            {
+                                p1.myUI.usedAllyCards.Add(card);
+                                if(p2.steamSynced && p2.nameSynced)
+                                {
+                                    card.Initialize(p2);
+                                }
+                                else
+                                {
+                                    StartCoroutine(WaitCardInitialize(p2, card));
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(p1.nameSynced)
+                {
+                    p1.myUI.playerNameText.text = p1.playerName;
+                }
+                else
+                {
+                    StartCoroutine(WaitNameInitialize(p1));
+                }
+            }
+        }
         /*if(hordeController != null)
         {
             hordeController.Initialize();
         }*/
     }
 
-    public void RemovePlayer(Player player)
+
+    IEnumerator WaitCardInitialize(Player p, AllyCardUI card)
+    {
+        yield return new WaitUntil(() => p.steamSynced);
+        yield return new WaitUntil(() => p.nameSynced);
+        card.Initialize(p);
+    }
+
+    IEnumerator WaitNameInitialize(Player p)
+    {
+        yield return new WaitUntil(() => p.nameSynced);
+        p.myUI.playerNameText.text = p.playerName;
+    }
+
+    public void RemovePlayer(Player player, bool isServer)
     {
         Players.Remove(player);
         if(Players.Count <= 0)
         {
             netCtrl?.ffManager?.gameObject.SetActive(false);
+        }
+        else if(isServer)
+        {
+            foreach(Player p in Players)
+            {
+                foreach(AllyCardUI card in p.myUI.usedAllyCards)
+                {
+                    if(card.myPlayer == player)
+                    {
+                        card.Disable(card.id.connectionToClient);
+                        break;
+                    }
+                }
+            }
         }
     }
     

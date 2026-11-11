@@ -24,6 +24,9 @@ public class PlayerUI : NetworkBehaviour
     [Header("Currency")]
     [SerializeField] private TMP_Text moneyText;
 
+    [Header("Horde Timer")]
+    [SerializeField] private TMP_Text panelTimerText;
+
     [Header("Rune Pickup")]
     [SerializeField] private RunePickupUI runePickupUI;
 
@@ -105,8 +108,14 @@ public class PlayerUI : NetworkBehaviour
     public Sprite notReadySprite;
 
     [Header("Ally Cards")]
-    public AllyCardUI allyCardPrefab;
-    public Transform allyCardsContainer;
+    public List<AllyCardUI> allyCards = new List<AllyCardUI>();
+    public List<AllyCardUI> usedAllyCards = new List<AllyCardUI>();
+    //public Transform allyCardsContainer;
+
+    [Header("Spectator")]
+    public GameObject spectatorPanel;
+    public TMP_Text spectatorPlayerText;
+    public TMP_Text spectatorHintText;
 
     [Header("Network")]
     public bool network = true;
@@ -153,6 +162,10 @@ public class PlayerUI : NetworkBehaviour
         if (shopPanel != null)
         {
             shopPanel.SetActive(false);
+        }
+        if (spectatorPanel != null)
+        {
+            spectatorPanel.SetActive(false);
         }
         ResolutionDropdown();
         ScreenModeDropdown();
@@ -202,6 +215,19 @@ public class PlayerUI : NetworkBehaviour
                 }
                 ResumeGameplay();
             }
+        }
+    }
+
+    [TargetRpc]
+    public void UpdateReady(bool isReady)
+    {
+        if (isReady)
+        {
+            readyImage.sprite = readySprite;
+        }
+        else
+        {
+            readyImage.sprite = notReadySprite;
         }
     }
     private void Update()
@@ -485,11 +511,12 @@ public class PlayerUI : NetworkBehaviour
         }
     }
 
-    public void UpdateHealthUI()
+    public void UpdateHealthUI(float hp)
     {
         if (damageHandler == null) return;
         healthSlider.maxValue = damageHandler.MaxHealth;
-        healthSlider.value = damageHandler.Health;
+        healthSlider.value = hp;
+        //healthSlider.value = damageHandler.Health;
     }
 
     public void LeavePauseButton()
@@ -1113,7 +1140,7 @@ public class PlayerUI : NetworkBehaviour
                 col.MarkedToDie = true;
             }
         }
-        GameManager.Instance.RemovePlayer(myPlayer);
+        GameManager.Instance.RemovePlayer(myPlayer, true);
         FlowFieldManager.instance.UpdateFlowField();
         ClientLeaveGame(this.connectionToClient);
     }
@@ -1162,6 +1189,13 @@ public class PlayerUI : NetworkBehaviour
     public void CloseTriggerSpellSelection()
     {
         triggerSpellSelectionPanel.SetActive(false);
+    }
+
+    public void UpdateHordeTimerText(string txt)
+    {
+        if (panelTimerText == null) return;
+
+        panelTimerText.text = txt;
     }
 
     private void EnableLoadingState()
@@ -1232,6 +1266,35 @@ public class PlayerUI : NetworkBehaviour
         if (moneyText == null) return;
 
         moneyText.text = amount.ToString();
+    }
+
+    public void ShowSpectatorUI(string playerName)
+    {
+        if (spectatorPanel == null) return;
+
+        spectatorPanel.SetActive(true);
+        UpdateSpectatorUI(playerName);
+    }
+
+    public void UpdateSpectatorUI(string playerName)
+    {
+        if (spectatorPlayerText != null)
+        {
+            spectatorPlayerText.text = string.IsNullOrEmpty(playerName) ? "No players available to spectate" : "You are watching " + playerName;
+        }
+
+        if (spectatorHintText != null)
+        {
+            spectatorHintText.text = string.IsNullOrEmpty(playerName) ? "" : "Left Click to switch player";
+        }
+    }
+
+    public void HideSpectatorUI()
+    {
+        if (spectatorPanel != null)
+        {
+            spectatorPanel.SetActive(false);
+        }
     }
 
     public void ShowRunePickup(SpellNode node, Vector3 lootboxWorldPosition)

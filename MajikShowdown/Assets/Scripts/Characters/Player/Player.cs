@@ -1,6 +1,8 @@
 ﻿using Mirror;
+using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Cinemachine;
 using Unity.Mathematics;
 using UnityEngine;
@@ -9,6 +11,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 public class Player : Character
 {
+    [HideInInspector] public RoomPlayer myRoomPlayer;
+    [HideInInspector] public bool steamSynced = false;
+    [HideInInspector] public bool nameSynced = false;
+    [SyncVar(hook = "NameSync")] public string playerName;
+    [SyncVar(hook = "SteamSync")] public ulong playerSteamID;
+    public PlayerUI myUI;
     public GameObject mesh;
     public Collider col;
     [Header("Camera Options")]
@@ -69,6 +77,7 @@ public class Player : Character
     [SyncVar] public Vector2 netInput = Vector2.zero;
     public int TargetCellID;
 
+    public List<AllyCardUI> myCards = new List<AllyCardUI>();
     //public PlayerData data;
 
     [Serializable]
@@ -94,6 +103,10 @@ public class Player : Character
         DamageHandler = GetComponent<PlayerDamageHandler>();
         canBeKnocked = true;
         cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
+        if(!network)
+        {
+            myUI.playerNameText.gameObject.SetActive(false);
+        }
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }
 
@@ -102,6 +115,7 @@ public class Player : Character
         base.OnStartLocalPlayer();
         playerCamera.Priority = 2;
         input.enabled = true;
+        myUI.playerNameText.gameObject.SetActive(false);
         //readyForHorde = false;
     }
 
@@ -109,6 +123,22 @@ public class Player : Character
     {
         base.OnStartServer();
         money = startingMoney;
+        if(NetworkManager.singleton.GetComponent<RoomManager>() != null && network)
+        {
+            myRoomPlayer = NetworkManager.singleton.GetComponent<RoomManager>().playerList.Find(p => p.GetComponent<NetworkIdentity>().connectionToClient == this.GetComponentInParent<NetworkIdentity>(true).connectionToClient);
+            playerName = myRoomPlayer.playerName;
+            playerSteamID = myRoomPlayer.playerSteamID;
+        }
+    }
+
+    public void SteamSync(ulong oldVal, ulong newVal)
+    {
+        steamSynced = true;
+    }
+
+    public void NameSync(string oldVal, string newVal)
+    {
+        nameSynced = true;
     }
 
     protected override void FixedUpdate()
@@ -240,6 +270,27 @@ public class Player : Character
     void CMDReadyInput()
     {
         readyForHorde = true;
+        myUI.UpdateReady(true);
+        foreach(AllyCardUI card in myCards)
+        {
+            card.UpdateAllyReady(card.id.connectionToClient, true);
+        }
+    }
+
+    public void ResetReady()
+    {
+        myUI.UpdateReady(false);
+        readyForHorde = false;
+        foreach (AllyCardUI card in myCards)
+        {
+            card.UpdateAllyReady(card.id.connectionToClient, false);
+        }
+    }
+
+    [TargetRpc]
+    public void SetReadyImageVisibility(bool visible)
+    {
+        myUI.readyImage.gameObject.SetActive(visible);
     }
 
     public void GetReady(bool oldVal, bool newVal)
@@ -322,6 +373,34 @@ public class Player : Character
         {
             animator.ResetTrigger("Dash");
             animator.SetTrigger("Dash");
+        }
+    }
+
+    public void DownAnim()
+    {
+        if (network)
+        {
+            RPCAnimTrigger("Downed");
+            //CMDAnimTrigger("Downed");
+        }
+        else
+        {
+            animator.ResetTrigger("Downed");
+            animator.SetTrigger("Downed");
+        }
+    }
+
+    public void RevivedAnim()
+    {
+        if (network)
+        {
+            RPCAnimTrigger("Revived");
+            //CMDAnimTrigger("Revived");
+        }
+        else
+        {
+            animator.ResetTrigger("Revived");
+            animator.SetTrigger("Revived");
         }
     }
 
@@ -513,7 +592,7 @@ public class Player : Character
             previousInteraction.HideInteractionIndicator();
         }
 
-        GameManager.Instance.RemovePlayer(this);
+        GameManager.Instance.RemovePlayer(this, false);
     }
 
     [Command]

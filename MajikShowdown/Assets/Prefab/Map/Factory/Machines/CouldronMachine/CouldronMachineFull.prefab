@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2359035559402981067
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6919302035289117522}
+  - component: {fileID: 4393502171116954052}
+  m_Layer: 0
+  m_Name: BoxColliderRamp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6919302035289117522
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2359035559402981067}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: 0.30583847, w: 0.95208347}
+  m_LocalPosition: {x: -2.41, y: 4.11, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9207279113750798888}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 35.617}
+--- !u!65 &4393502171116954052
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2359035559402981067}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.5584608, y: 1, z: 2.9423935}
+  m_Center: {x: 0.039816275, y: 0.000000006684145, z: -0.05208827}
 --- !u!1 &2791037130790180421
 GameObject:
   m_ObjectHideFlags: 0
@@ -97,8 +150,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.6457424, y: 0.9525845, z: 2.7674484}
-  m_Center: {x: 3.613966, y: 4.0663924, z: 0.008999109}
+  m_Size: {x: 0.6457427, y: 0.5787187, z: 2.7674487}
+  m_Center: {x: 3.6139662, y: 3.8325195, z: 0.008999148}
 --- !u!65 &3751026071100661879
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -139,8 +192,61 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.6457424, y: 0.9525845, z: 2.7674484}
-  m_Center: {x: -3.613966, y: 4.0663924, z: 0.008999109}
+  m_Size: {x: 0.6457427, y: 0.62253696, z: 2.7674487}
+  m_Center: {x: -3.6139662, y: 3.775472, z: 0.008999148}
+--- !u!1 &3816461262271442148
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3652793319427574738}
+  - component: {fileID: 3479200560105262552}
+  m_Layer: 0
+  m_Name: BoxColliderRamp (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3652793319427574738
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816461262271442148}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: -0.30583647, w: 0.95208406}
+  m_LocalPosition: {x: 2.41, y: 4.11, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9207279113750798888}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -35.617}
+--- !u!65 &3479200560105262552
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816461262271442148}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.7196003, y: 1, z: 2.9423935}
+  m_Center: {x: -0.04075335, y: -0.000000004674938, z: -0.052088253}
 --- !u!1 &5134175407726070009
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,6 +278,8 @@ Transform:
   m_Children:
   - {fileID: 5007611585544155459}
   - {fileID: 8049697333707634532}
+  - {fileID: 6919302035289117522}
+  - {fileID: 3652793319427574738}
   m_Father: {fileID: 5379027287178458580}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6733754280410866406
@@ -255,8 +363,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
   m_SerializedVersion: 0
-  m_Size: {x: 11.15, y: 2.54, z: 4}
-  m_Center: {x: 0, y: -0.36, z: 0}
+  m_Size: {x: 11.15, y: 2.54, z: 4.893254}
+  m_Center: {x: 0, y: -0.36, z: 0.18078876}
   m_Area: 1
   m_AffectedAgents: ffffffff
 --- !u!1001 &315072545072118058

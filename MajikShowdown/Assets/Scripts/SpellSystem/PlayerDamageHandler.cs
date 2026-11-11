@@ -22,24 +22,28 @@ public class PlayerDamageHandler : CharacterDamageHandler
             }
         }
         Health = MathF.Max(Health - finalDamage, 0);
-        if (Health <= 0)
+        if (Health <= 0 && canDie)
         {
             Die();
         }
         if(network)
         {
-            UpdateUI();
+            UpdateUI(Health);
+            foreach (AllyCardUI card in myPlayer.myCards)
+            {
+                card.UpdateAllyHealth(card.id.connectionToClient, Health);
+            }
         }
         else
         {
-            GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+            GameManager.Instance.uiController.playerUI.UpdateHealthUI(Health);
         }
     }
 
     [TargetRpc]
-    public void UpdateUI()
+    public void UpdateUI(float hp)
     {
-        GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+        GameManager.Instance.uiController.playerUI.UpdateHealthUI(hp);
     }
 
     public override void Heal(float amount)
@@ -51,16 +55,21 @@ public class PlayerDamageHandler : CharacterDamageHandler
         Health = Mathf.Min(Health + amount, MaxHealth);
         if(network)
         {
-            UpdateUI();
+            UpdateUI(Health);
+            foreach(AllyCardUI card in myPlayer.myCards)
+            {
+                card.UpdateAllyHealth(card.id.connectionToClient, Health);
+            }
         }
         else
         {
-            GameManager.Instance.uiController.playerUI.UpdateHealthUI();
+            GameManager.Instance.uiController.playerUI.UpdateHealthUI(Health);
         }
     }
     public override void Die()
     {
         gameCharacter.Die();
+        myPlayer.DownAnim();
         //Atualizar depois com sistema de reviver
         myPlayer.dead = true;
         FlowFieldManager.instance.UpdateFlowField();
@@ -101,13 +110,20 @@ public class PlayerDamageHandler : CharacterDamageHandler
         Health = MaxHealth / 2;
         myPlayer.dead = false;
         FlowFieldManager.instance.UpdateFlowField();
+        myPlayer.RevivedAnim();
         if(network)
         {
             PanelRespawnSwitch();
+            UpdateUI(Health);
+            foreach (AllyCardUI card in myPlayer.myCards)
+            {
+                card.UpdateAllyHealth(card.id.connectionToClient, Health);
+            }
         }
         else
         {
             GameManager.Instance.uiController.playerUI.deathPanel.SetActive(false);
+            GameManager.Instance.uiController.playerUI.UpdateHealthUI(Health);
         }
         //Reappear();
     }

@@ -50,4 +50,18 @@ public class StaticRB : MonoBehaviour
             previousGoal = Vector3.zero;
         }
     }
+
+    public void ResetValues()
+    {
+        Velocity = Vector3.zero;
+        Acceleration = Vector3.zero;
+        velocityGoal = Vector3.zero;
+        previousGoal = Vector3.zero;
+        lerpingVelocity = false;
+    }
+
+    private void OnDisable()
+    {
+        ResetValues();
+    }
 }
