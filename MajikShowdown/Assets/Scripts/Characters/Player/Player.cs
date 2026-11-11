@@ -103,6 +103,10 @@ public class Player : Character
         DamageHandler = GetComponent<PlayerDamageHandler>();
         canBeKnocked = true;
         cameraRotation = new CameraRotation { x = lookAnchor.localRotation.eulerAngles.x, y = transform.localRotation.eulerAngles.y };
+        if(!network)
+        {
+            myUI.playerNameText.gameObject.SetActive(false);
+        }
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }
 
