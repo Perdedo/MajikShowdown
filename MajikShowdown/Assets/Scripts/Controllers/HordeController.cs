@@ -155,7 +155,7 @@ public class HordeController : NetworkBehaviour
                                 UsedEnemies[i].Reposition();
                             }
                             UsedEnemies[i].ResetKnockbackCooldown();
-                            if (UsedEnemies[i].flickering)
+                            if (UsedEnemies[i].damaged)
                             {
                                 UsedEnemies[i].Flicker();
                             }
@@ -170,6 +170,10 @@ public class HordeController : NetworkBehaviour
                         if (UsedEnemies[i] != null)
                         {
                             UsedEnemies[i].EnemyUpdate();
+                            if (UsedEnemies[i].damaged)
+                            {
+                                UsedEnemies[i].Flicker();
+                            }
                         }
                     }
                 }
@@ -215,10 +219,11 @@ public class HordeController : NetworkBehaviour
                             {
                                 e.Reposition();
                             }
-                            if(e.flickering)
-                            {
-                                e.Flicker();
-                            }
+                        }
+
+                        if (e.damaged)
+                        {
+                            e.Flicker();
                         }
                     }
                 }

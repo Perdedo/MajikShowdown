@@ -89,10 +89,8 @@ public class EnemySpawner : NetworkBehaviour
             totalSelection = 0;
             foreach(EnemySelection e in enemies)
             {
-                Debug.Log(e.enemy + ": " + e.chance);
                 totalSelection += e.chance;
             }
-            Debug.Log("Total: " + totalSelection);
             if(totalSelection > 0)
             {
                 randEnemy = UnityEngine.Random.Range(0, totalSelection);
