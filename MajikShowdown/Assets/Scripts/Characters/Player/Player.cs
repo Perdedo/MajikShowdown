@@ -40,7 +40,7 @@ public class Player : Character
     [SerializeField] protected float DashCooldown;
     [SerializeField] protected float GravityNegationTime;
     Timer dashTimer = new Timer(false), gravityTimer = new Timer(false);
-    bool dashOnCooldown;
+    [HideInInspector] public bool dashOnCooldown;
 
     [Header("Push Events")]
     public UnityEvent StartedPushing;

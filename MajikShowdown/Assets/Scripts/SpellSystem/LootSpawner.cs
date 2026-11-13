@@ -1,5 +1,6 @@
 using Mirror;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LootSpawner : NetworkBehaviour
@@ -10,6 +11,8 @@ public class LootSpawner : NetworkBehaviour
     public List<RuneLootBox> ActiveLootBoxes;
     public List<RuneLootBox> InactiveLootBoxes;
     public List<RuneLootPool> lootPools;
+    public bool network = true;
+
     void Update()
     {
         /*if (Input.GetKeyDown(KeyCode.L))
@@ -23,7 +26,7 @@ public class LootSpawner : NetworkBehaviour
     }
     public void SpawnLootBox(Vector3 position, /*RuneLootPool pool*/ int poolInd)
     {
-        if (!isServer)
+        if (!isServer && network)
         {
             return;
         }
@@ -36,12 +39,12 @@ public class LootSpawner : NetworkBehaviour
             g = inst.gameObject;
             inst.transform.position = position;
             g.SetActive(true);
-            RPCActivateLootBox(g);
+            if(network) RPCActivateLootBox(g);
         }
         else
         {
             g = Instantiate(prefab.gameObject, position, Quaternion.identity);
-            NetworkServer.Spawn(g);
+            if(network) NetworkServer.Spawn(g);
             inst = g.GetComponent<RuneLootBox>();
             runeLootBoxes.Add(inst);
         }
@@ -54,7 +57,7 @@ public class LootSpawner : NetworkBehaviour
     {
         box.lootPool = null;
         box.gameObject.SetActive(false);
-        RPCDeactivateLootBox(box.gameObject);
+        if(network) RPCDeactivateLootBox(box.gameObject);
         ActiveLootBoxes.Remove(box);
         InactiveLootBoxes.Add(box);
     }

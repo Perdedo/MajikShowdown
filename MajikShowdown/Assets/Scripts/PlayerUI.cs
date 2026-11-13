@@ -126,6 +126,10 @@ public class PlayerUI : NetworkBehaviour
         if(isLocalPlayer || !network)
         {
             GameManager.Instance.uiController.playerUI = this;
+            if(TutorialController.Instance != null)
+            {
+                TutorialController.Instance.ShowPopup(0);
+            }
         }
         else
         {
@@ -213,7 +217,10 @@ public class PlayerUI : NetworkBehaviour
                         GameManager.Instance.hordeController.Initialize();
                     }
                 }
-                ResumeGameplay();
+                if (SceneManager.GetActiveScene().name != "Tutorial")
+                {
+                    ResumeGameplay();
+                }
             }
         }
     }

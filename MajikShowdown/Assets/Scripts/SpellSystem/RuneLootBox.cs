@@ -18,7 +18,7 @@ public class RuneLootBox : InteractableObject
 
     public void Initialize()
     {
-        if(!isServer)
+        if(!isServer && LootSpawner.Instance.network)
         {
             return;
         }
@@ -82,7 +82,7 @@ public class RuneLootBox : InteractableObject
             listInd = aux.CastPoint.IndexOf(loot as SpellCastPoint);
         }
 
-        RPCGetLoot(qualityInd, typeInd, listInd);
+        if(LootSpawner.Instance.network) RPCGetLoot(qualityInd, typeInd, listInd);
     }
 
     [ClientRpc]
@@ -136,7 +136,6 @@ public class RuneLootBox : InteractableObject
         }
     }
 
-
     public override void Interact(Player player)
     {
         player.caster.AddRune(loot);
@@ -146,7 +145,7 @@ public class RuneLootBox : InteractableObject
             GameManager.Instance.uiController.playerUI.ShowRunePickup(loot, transform.position);
         }
 
-        if (!isServer)
+        if (!isServer && LootSpawner.Instance.network)
         {
             CMDInteract(GameManager.Instance.Players.IndexOf(player));
         }
