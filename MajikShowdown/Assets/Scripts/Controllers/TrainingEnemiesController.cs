@@ -77,7 +77,7 @@ public class TrainingEnemiesController : MonoBehaviour
                         UsedEnemies[i].Reposition();
                     }
                     UsedEnemies[i].ResetKnockbackCooldown();
-                    if (UsedEnemies[i].flickering)
+                    if (UsedEnemies[i].damaged)
                     {
                         UsedEnemies[i].Flicker();
                     }
@@ -92,6 +92,10 @@ public class TrainingEnemiesController : MonoBehaviour
                 if (UsedEnemies[i] != null)
                 {
                     UsedEnemies[i].EnemyUpdate();
+                    if (UsedEnemies[i].damaged)
+                    {
+                        UsedEnemies[i].Flicker();
+                    }
                 }
             }
         }

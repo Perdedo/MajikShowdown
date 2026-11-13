@@ -81,18 +81,21 @@ public class Enemy : CrowdCharacter
 
     public List<EnemyElementColors> baseColors = new List<EnemyElementColors>();
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
-    [HideInInspector][SyncVar(hook = "ResetFlicker")] public bool flickering = false;
-    [HideInInspector] public int flickerAmmount = 0;
+    [HideInInspector][SyncVar(hook = "ResetFlicker")] public bool damaged = false;
+    [HideInInspector] public float dmgEffectProgress = 0;
 
     public void ChangeColor(int oldVal, int newVal)
     {
-        if(newVal >= 0)
+        dmgEffectProgress = 0;
+        damaged = false;
+        if (newVal >= 0)
         {
             foreach(Material mat in mesh.materials)
             {
                 mat.SetColor("_Main_Color", GameManager.Instance.hordeController.enemyElementColors[newVal].mainColor);
                 mat.SetColor("_Emission_Color", GameManager.Instance.hordeController.enemyElementColors[newVal].emissionColor);
                 mat.SetColor("_Emission_Color1", GameManager.Instance.hordeController.enemyElementColors[newVal].emissionColor1);
+                mat.SetFloat("_Damage", 0);
             }
         }
         else
@@ -102,6 +105,7 @@ public class Enemy : CrowdCharacter
                 mesh.materials[i].SetColor("_Main_Color", baseColors[i].mainColor);
                 mesh.materials[i].SetColor("_Emission_Color", baseColors[i].emissionColor);
                 mesh.materials[i].SetColor("_Emission_Color1", baseColors[i].emissionColor1);
+                mesh.materials[i].SetFloat("_Damage", 0);
             }
         }
     }
@@ -113,13 +117,16 @@ public class Enemy : CrowdCharacter
             return;
         }
         colorIndex = index;
-        if(index >= 0)
+        dmgEffectProgress = 0;
+        damaged = false;
+        if (index >= 0)
         {
             foreach(Material mat in mesh.materials)
             {
                 mat.SetColor("_Main_Color", GameManager.Instance.trainingController.enemyElementColors[index].mainColor);
                 mat.SetColor("_Emission_Color", GameManager.Instance.trainingController.enemyElementColors[index].emissionColor);
                 mat.SetColor("_Emission_Color1", GameManager.Instance.trainingController.enemyElementColors[index].emissionColor1);
+                mat.SetFloat("_Damage", 0);
             }
         }
         else
@@ -129,6 +136,7 @@ public class Enemy : CrowdCharacter
                 mesh.materials[i].SetColor("_Main_Color", baseColors[i].mainColor);
                 mesh.materials[i].SetColor("_Emission_Color", baseColors[i].emissionColor);
                 mesh.materials[i].SetColor("_Emission_Color1", baseColors[i].emissionColor1);
+                mesh.materials[i].SetFloat("_Damage", 0);
             }
         }
     }
@@ -390,21 +398,31 @@ public class Enemy : CrowdCharacter
 
     public void Flicker()
     {
-        mesh.enabled = !mesh.enabled;
+        dmgEffectProgress = Mathf.Clamp(dmgEffectProgress + Time.deltaTime * 1.5f, 0f, 1f);
+        foreach (Material mat in mesh.materials)
+        {
+            mat.SetFloat("_Damage", dmgEffectProgress);
+        }
+        if(dmgEffectProgress >= 1)
+        {
+            damaged = false;
+            dmgEffectProgress = 0;
+        }
+        /*mesh.enabled = !mesh.enabled;
         flickerAmmount--;
 
         if(flickerAmmount <= 0)
         {
             mesh.enabled = true;
             flickering = false;
-        }
+        }*/
     }
 
     public void ResetFlicker(bool oldVal, bool newVal)
     {
         if(newVal)
         {
-            flickerAmmount = 6;
+            dmgEffectProgress = 0;
         }
     }
 

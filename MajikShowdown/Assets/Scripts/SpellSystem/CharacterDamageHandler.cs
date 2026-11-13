@@ -70,11 +70,11 @@ public class CharacterDamageHandler : NetworkBehaviour
         }
         else if(gameCharacter is Enemy)
         {
-            if(!network)
+            if(!network && !((Enemy)gameCharacter).damaged)
             {
-                ((Enemy)gameCharacter).flickerAmmount = 6;
+                ((Enemy)gameCharacter).dmgEffectProgress = 0;
             }
-            ((Enemy)gameCharacter).flickering = true;
+            ((Enemy)gameCharacter).damaged = true;
         }
     }
 
