@@ -176,6 +176,7 @@ public class ExplosiveEnemy : Enemy
                     leapTimer.SetTimer(0);
                     leapTimer.Paused = false;
                     attackTimer.SetTimer(0);
+                    target = GetClosestPlayer();
                     attackedPlayer = target;
                     attackTimer.Paused = false;
                     PlayAnimation(EnemyAnimState.Attack);
