@@ -121,15 +121,12 @@ public class PlayerUI : NetworkBehaviour
     public bool network = true;
     bool loaded;
 
+    [HideInInspector] public bool canOpenTutorialSpellPanel = false;
     private void Start()
     {
         if(isLocalPlayer || !network)
         {
             GameManager.Instance.uiController.playerUI = this;
-            if(TutorialController.Instance != null)
-            {
-                TutorialController.Instance.ShowPopup(0);
-            }
         }
         else
         {
@@ -217,9 +214,11 @@ public class PlayerUI : NetworkBehaviour
                         GameManager.Instance.hordeController.Initialize();
                     }
                 }
-                if (SceneManager.GetActiveScene().name != "Tutorial")
+                ResumeGameplay();
+
+                if (TutorialController.Instance != null)
                 {
-                    ResumeGameplay();
+                    TutorialController.Instance.tutorialMissions[TutorialController.Instance.activeMission].StartMission();
                 }
             }
         }
@@ -997,6 +996,11 @@ public class PlayerUI : NetworkBehaviour
         EnableUICursor();
     }
 
+    public void TutorialSpellPanel()
+    {
+        canOpenTutorialSpellPanel = true;
+    }
+
     public void OpenSpellPanelInput(InputAction.CallbackContext context)
     {
         if (!isLocalPlayer && network) return;
@@ -1004,6 +1008,7 @@ public class PlayerUI : NetworkBehaviour
         if (IsLoading()) return;
         if (myPlayer.dead) return;
         if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
+        if (TutorialController.Instance != null && canOpenTutorialSpellPanel)
 
         if (spellPanel.activeSelf && !pausePanel.activeSelf)
         {

@@ -2241,13 +2241,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TutorialController
   tutorialPopup:
   - pages:
-    - title: Walk Test
-      description: Walk Testing
-      sprite: {fileID: 3286163911610860551, guid: d37be086c50d58c4b8081e09c29b82cd, type: 3}
+    - title: Spell Creation
+      description: .
+      sprite: {fileID: 0}
       videoClip: {fileID: 0}
+    - title: teste
+      description: .
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    - title: teste2
+      description: .
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    popupShown: 0
+  - pages:
+    - title: Spell Crafting
+      description: .
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    popupShown: 0
+  - pages:
+    - title: Spell Crafting - Trajectory
+      description: .
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    popupShown: 0
+  - pages:
+    - title: Spell Crafting - Effect
+      description: .
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    popupShown: 0
   tutorialMissions:
-  - missionName: Test Mission
-    missionDescription: Mission Testing
+  - missionName: Walk
+    missionDescription: '- Press WASD keys to Move.'
     missionType: 3
     missionStarted:
       m_PersistentCalls:
@@ -2258,10 +2285,182 @@ MonoBehaviour:
     isStarted: 0
     isCompleted: 0
     utilityInt: 0
-    runePopupIndex: 0
-  tutorialPopupPrefab: {fileID: 499143342434617972, guid: 031296b1575e82d48bc2c84408ddbde3, type: 3}
+    runePopupIndex: -1
+  - missionName: Jump
+    missionDescription: '- Press Spacebar to Jump (Hold to Jump higher).'
+    missionType: 5
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInt: 0
+    runePopupIndex: -1
+  - missionName: Dash
+    missionDescription: '- Press Left Shift to Dash towards the direction you''re
+      moving.'
+    missionType: 4
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInt: 0
+    runePopupIndex: -1
+  - missionName: Start Crafting Spells
+    missionDescription: '- Press Tab to open the Spell Panel
+
+      - Create and
+      Edit a new Spell.
+
+      - Add your Core Rune to the Spell Tablet.
+
+      -
+      Equip and Cast the Spell.'
+    missionType: 2
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1716886058}
+          m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
+          m_MethodName: TutorialSpellPanel
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnRuneLootBox
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    isStarted: 0
+    isCompleted: 0
+    utilityInt: 1
+    runePopupIndex: 1
+  - missionName: Collect a New Rune
+    missionDescription: '- Press F near the Rune Loot Box to get a new Rune.'
+    missionType: 0
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInt: 0
+    runePopupIndex: -1
+  - missionName: Spell Movement
+    missionDescription: '- Go back to editing your Spell.
+
+      - Add your new Rune
+      to it.
+
+      - Cast it again.'
+    missionType: 2
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnRuneLootBox
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 1
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    isStarted: 0
+    isCompleted: 0
+    utilityInt: 2
+    runePopupIndex: 2
+  - missionName: Collect an Effect Rune
+    missionDescription: '- Press F near the Rune Loot Box to get another new Rune.'
+    missionType: 0
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInt: 0
+    runePopupIndex: -1
+  - missionName: Spell Damage
+    missionDescription: '- Go back to editing your Spell.
+
+      - Add your new Rune
+      to it.
+
+      - Cast it again.'
+    missionType: 2
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnRuneLootBox
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 2
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    isStarted: 0
+    isCompleted: 0
+    utilityInt: 3
+    runePopupIndex: 3
+  - missionName: Collect a Casting Point Rune
+    missionDescription: '- Press F near the Rune Loot Box to get another new Rune.'
+    missionType: 0
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInt: 0
+    runePopupIndex: -1
+  tutorialPopupPrefab: {fileID: 6105210495717521649, guid: cc88185100b7c144482e5694e624f29c, type: 3}
   tutorialTransform: {fileID: 1716886051}
   caster: {fileID: 1716886052}
+  activeMission: 0
 --- !u!4 &1053947340
 Transform:
   m_ObjectHideFlags: 0
@@ -2621,7 +2820,9 @@ MonoBehaviour:
   ActiveLootBoxes: []
   InactiveLootBoxes: []
   lootPools:
-  - {fileID: 11400000, guid: 1c199869c699e924a9e612d366b757e2, type: 2}
+  - {fileID: 11400000, guid: cd92e62dbec5c77468439c22b276470d, type: 2}
+  - {fileID: 11400000, guid: 481f114ee8a68fd4fb91486df92bf0d2, type: 2}
+  - {fileID: 11400000, guid: 13e73cc14eb3e1243bf34c5b592db873, type: 2}
   network: 0
 --- !u!4 &1414273966
 Transform:
@@ -3283,7 +3484,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2472678668191509851, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0010054364
+      value: 0.00070022146
       objectReference: {fileID: 0}
     - target: {fileID: 2558792582705806949, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_Enabled
@@ -3379,7 +3580,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4897791730548326591, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0.9999986
       objectReference: {fileID: 0}
     - target: {fileID: 4897791730548326591, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_AnchorMin.y
@@ -3415,7 +3616,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6775029081619686729, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: ownedNodes.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6775029081619686729, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: 'ownedNodes.Array.data[0]'
@@ -3586,6 +3787,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eebe486acfbc22f428ce29abf5f77efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpellCaster
+--- !u!114 &1716886058 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6932264981861579884, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
+  m_PrefabInstance: {fileID: 1716886049}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cd40e65d83988b4f8d57aae8968fc19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerUI
 --- !u!1 &1777958311
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,7 +18,6 @@ public class TutorialPopup : MonoBehaviour
     private int totalPages;
     private bool hasVideo;
 
-
     private void OnEnable()
     {
         previous.onClick.AddListener(OnPreviousClicked);
@@ -88,18 +87,20 @@ public class TutorialPopup : MonoBehaviour
     public void OnPreviousClicked()
     {
         // Handle previous button click
+        TutorialController.Instance.DecreasePageIndex();
     }
 
     public void OnNextClicked()
     {
         // Handle next button click
+        TutorialController.Instance.IncreasePageIndex();
     }
 
     public void OnOkClicked()
     {
-        Debug.Log(popupPanel);
         popupPanel.SetActive(false);
-        GameManager.Instance.uiController.playerUI.EnableGameplayCursor();
+        TutorialController.Instance.ResetPageIndex();
+        //GameManager.Instance.uiController.playerUI.EnableGameplayCursor();
     }
 
     public void SetImage(Sprite sprite)

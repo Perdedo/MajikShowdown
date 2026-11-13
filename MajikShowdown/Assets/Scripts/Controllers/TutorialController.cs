@@ -11,16 +11,19 @@ public class TutorialController : MonoBehaviour
     public struct TutorialPopupData
     {
         public TutorialPage[] pages;
+        [HideInInspector] public bool popupShown;
         public TutorialPopupData(TutorialPage[] pages)
         {
             this.pages = pages;
+            this.popupShown = false;
         }
+
     }
     [Serializable]
     public struct TutorialPage
     {
         public string title;
-        [TextArea(3, 10)] public string description;
+        [TextArea(5, 10)] public string description;
         public Sprite sprite;
         public VideoClip videoClip;
         public TutorialPage(string title, string description, Sprite sprite, VideoClip videoClip)
@@ -42,7 +45,7 @@ public class TutorialController : MonoBehaviour
     private int currentTutorialIndex = 0;
     private TutorialPopup popupInstance;
     private bool firstTutorial = true;
-    private int activeMission = 0;
+    public int activeMission = 0;
 
     private void Awake()
     {
@@ -56,14 +59,27 @@ public class TutorialController : MonoBehaviour
             tutorialMissions[activeMission].CheckCompletion();
             if (tutorialMissions[activeMission].isCompleted)
             {
-                activeMission++;
+                if(activeMission < tutorialMissions.Length - 1)
+                {
+                    activeMission++;
+                    tutorialMissions[activeMission].StartMission();
+                }
             }
         }
         if(GameManager.Instance.uiController.playerUI.editSpellPanel.activeSelf)
         {
-            if (tutorialMissions[activeMission].runePopupIndex != -1)
+            if (tutorialMissions[activeMission].runePopupIndex != -1 && !tutorialPopup[tutorialMissions[activeMission].runePopupIndex].popupShown)
             {
+                ResetPageIndex();
                 ShowPopup(tutorialMissions[activeMission].runePopupIndex);
+            }
+        }
+        if(GameManager.Instance.uiController.playerUI.spellPanel.activeSelf)
+        {
+            if (!tutorialPopup[0].popupShown)
+            {
+                ResetPageIndex();
+                ShowPopup(0);
             }
         }
     }
@@ -72,10 +88,10 @@ public class TutorialController : MonoBehaviour
     {
         if (tutorialPopup[tutorialIndex].pages.Length > 0)
         {
+            currentTutorialIndex = tutorialIndex;
             ShowPage(currentPageIndex, tutorialIndex);
-            Debug.Log(GameManager.Instance.uiController);
-            Debug.Log(GameManager.Instance.uiController.playerUI);
-            GameManager.Instance.uiController.playerUI.EnableUICursor();
+            //GameManager.Instance.uiController.playerUI.EnableUICursor();
+            tutorialPopup[tutorialIndex].popupShown = true;
         }
     }
 
@@ -91,6 +107,28 @@ public class TutorialController : MonoBehaviour
             firstTutorial = false;
         }
         popupInstance.ChangePopupDetails(page.title, page.description, page.sprite, page.videoClip, pageIndex + 1, tutorialPopup[tutorialIndex].pages.Length);
+    }
+
+    public void ResetPageIndex()
+    {
+        currentPageIndex = 0;
+    }
+
+    public void IncreasePageIndex()
+    {
+        currentPageIndex++;
+        ShowPopup(currentTutorialIndex);
+    }
+
+    public void DecreasePageIndex()
+    {
+        currentPageIndex--;
+        ShowPopup(currentTutorialIndex);
+    }
+
+    public void SpawnRuneLootBox(int poolIndex)
+    {
+        LootSpawner.Instance.SpawnLootBox(GameManager.Instance.Players[0].gameObject.transform.position + (Vector3.up * 0.5f), poolIndex);
     }
 
     /*public void ShowNextTutorial()
@@ -114,7 +152,7 @@ public class TutorialMission
     }
 
     public string missionName;
-    public string missionDescription;
+    [TextArea(5, 10)] public string missionDescription;
     public MissionType missionType;
     public UnityEvent missionStarted;
     public UnityEvent missionCompleted;
@@ -141,10 +179,13 @@ public class TutorialMission
                 check = GameManager.Instance.trainingController.UsedEnemies.Count == 0;
                 break;
             case MissionType.CastSpell:
-                check = GameManager.Instance.Players[0].caster.spells[0].spellNodes.Count == utilityInt;
+                if (SpellColliderManager.Instance.activeSpellColliders.Count > 0)
+                {
+                    check = SpellColliderManager.Instance.activeSpellColliders[0].OwnerSpell.spellNodes.Count == utilityInt;
+                }
                 break;
             case MissionType.Walk:
-                check = GameManager.Instance.Players[0].lastHorizontalDirection != Vector3.zero; // Example distance
+                check = GameManager.Instance.Players[0].directionInput != Vector2.zero;
                 break;
             case MissionType.Dash:
                 check = GameManager.Instance.Players[0].dashOnCooldown;
@@ -162,6 +203,6 @@ public class TutorialMission
     {
         isCompleted = true;
         missionCompleted.Invoke();
-        Debug.Log("Mission Completed" + missionName);
+        Debug.Log("Mission Completed: " + missionName);
     }
 }
