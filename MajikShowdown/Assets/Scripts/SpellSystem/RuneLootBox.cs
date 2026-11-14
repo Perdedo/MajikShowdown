@@ -140,7 +140,7 @@ public class RuneLootBox : InteractableObject
     {
         player.caster.AddRune(loot);
 
-        if (player.isLocalPlayer)
+        if (player.isLocalPlayer || !LootSpawner.Instance.network)
         {
             GameManager.Instance.uiController.playerUI.ShowRunePickup(loot, transform.position);
         }
