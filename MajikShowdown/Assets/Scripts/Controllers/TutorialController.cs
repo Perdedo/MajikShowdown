@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -131,6 +132,10 @@ public class TutorialController : MonoBehaviour
         LootSpawner.Instance.SpawnLootBox(GameManager.Instance.Players[0].gameObject.transform.position + (Vector3.up * 0.5f), poolIndex);
     }
 
+    public void SpawnEnemy()
+    {
+        this.GetComponent<TrainingEnemySpawner>().Interact(GameManager.Instance.Players[0]);
+    }
     /*public void ShowNextTutorial()
     {
         ShowPopup(currentTutorialIndex);
@@ -146,6 +151,7 @@ public class TutorialMission
         Collect,
         Defeat,
         CastSpell,
+        CastTriggerSpell,
         Walk,
         Dash,
         Jump
@@ -158,11 +164,12 @@ public class TutorialMission
     public UnityEvent missionCompleted;
     [HideInInspector] public bool isStarted;
     [HideInInspector] public bool isCompleted;
-    public int utilityInt;
+    public List<int> utilityInts;
     public int runePopupIndex = -1;
     public void StartMission()
     {
         isStarted = true;
+        Debug.Log("Mission Started: " + missionName);
         missionStarted.Invoke();
     }
     public void CheckCompletion()
@@ -181,7 +188,19 @@ public class TutorialMission
             case MissionType.CastSpell:
                 if (SpellColliderManager.Instance.activeSpellColliders.Count > 0)
                 {
-                    check = SpellColliderManager.Instance.activeSpellColliders[0].OwnerSpell.spellNodes.Count == utilityInt;
+                    check = SpellColliderManager.Instance.activeSpellColliders[0].OwnerSpell.spellNodes.Count == utilityInts[0];
+                }
+                break;
+            case MissionType.CastTriggerSpell:
+                if (SpellColliderManager.Instance.activeSpellColliders.Count > 0)
+                {
+                    foreach(SpellCollider col in SpellColliderManager.Instance.activeSpellColliders)
+                    {
+                        if(col.OwnerSpell.spellNodes.Count == utilityInts[0] && col.triggerInfos.Count > 0 && col.triggerInfos[0].Trigger.TriggeredSpell != null && col.triggerInfos[0].Trigger.trigger == SpellTrigger.Triggers.OnHit)
+                        {
+                            check = col.triggerInfos[0].Trigger.TriggeredSpell.spellNodes.Count == utilityInts[1];
+                        }
+                    }
                 }
                 break;
             case MissionType.Walk:

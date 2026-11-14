@@ -2220,6 +2220,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1053947340}
   - component: {fileID: 1053947339}
+  - component: {fileID: 1053947342}
+  - component: {fileID: 1053947341}
   m_Layer: 0
   m_Name: TutorialController
   m_TagString: Untagged
@@ -2255,53 +2257,93 @@ MonoBehaviour:
       videoClip: {fileID: 0}
     popupShown: 0
   - pages:
-    - title: Spell Crafting
-      description: .
+    - title: Spell Crafting - Basics
+      description: Runes are the building blocks for your Spell. Different Rune combinations
+        will result in different Spell effects. There are multiple types of Runes,
+        each serving a different function within the Spell.
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    - title: Spell Crafting - Basics
+      description: 'In addition to their innate effects, each Rune contains its own
+        stats, which are added to the Spell''s stats once the Rune is rightfully
+        connected. Runes also have Cooldown costs, which may increase or decrease
+        the cooldown of the Spell. Each rune also has its own Rarity, which defines
+        the quality of its stats.
+
+'
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    - title: Spell Crafting - Core
+      description: 'Core Runes are responsible for defining the type of Spell that
+        will be cast. They are required for the Spell to work and must be placed
+        on the center slot of the Rune Tablet. '
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    - title: Spell Crafting - Core
+      description: "The Core Rune contains the stat multipliers of the Spell. Every
+        stat from any rune will be multiplied by these values before it is added
+        to the Spell\u2019s stats. The multipliers vary depending on which type of
+        Core Rune that Spell is using."
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    - title: Spell Crafting - Core
+      description: "In the Core Rune's description, it\u2019s possible to configure
+        what the Spell collides with and what it doesn't."
       sprite: {fileID: 0}
       videoClip: {fileID: 0}
     popupShown: 0
   - pages:
+    - title: Spell Crafting - Expanding
+      description: 'To add another Rune to a spell, that Rune must be connected via
+        one of its Sockets to the Core Rune or to a sequence of Runes connected to
+        the Core Rune. To make a connection, the Sockets must have the same shape. '
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
     - title: Spell Crafting - Trajectory
-      description: .
+      description: Trajectory Runes are responsible for defining how your Spell will
+        move, and usually add speed to it as well.
       sprite: {fileID: 0}
       videoClip: {fileID: 0}
     popupShown: 0
   - pages:
     - title: Spell Crafting - Effect
-      description: .
+      description: An Effect Rune is required to determine what the Spell will do
+        when it hits a Creature. It can either deal Damage or Heal.
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    popupShown: 0
+  - pages:
+    - title: Spell Crafting - Casting Point
+      description: A Casting Point Rune determines the point in space where the Spell
+        will initially appear. If not determined, the Spell will be directly cast
+        from its Spellcaster's position.
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    popupShown: 0
+  - pages:
+    - title: Spell Crafting - Stats
+      description: Stat Runes have no innate effect on their own. They add specific
+        stats to the Spell's stats. Stat Runes have blank Sockets and can be connected
+        with other runes that also have blank Sockets.
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    popupShown: 0
+  - pages:
+    - title: Spell Crafting - Invoker
+      description: Invoker Runes can be used to cast another Spell via the current
+        Spell, depending on a defined Condition. You could make it so a Projectile
+        invokes an Explosion once it hits something.
+      sprite: {fileID: 0}
+      videoClip: {fileID: 0}
+    - title: Spell Crafting - Invoker
+      description: 'To define the Condition and the invoked Spell, you must configure
+        them in the Invoker Rune''s description. '
       sprite: {fileID: 0}
       videoClip: {fileID: 0}
     popupShown: 0
   tutorialMissions:
   - missionName: Walk
     missionDescription: '- Press WASD keys to Move.'
-    missionType: 3
-    missionStarted:
-      m_PersistentCalls:
-        m_Calls: []
-    missionCompleted:
-      m_PersistentCalls:
-        m_Calls: []
-    isStarted: 0
-    isCompleted: 0
-    utilityInt: 0
-    runePopupIndex: -1
-  - missionName: Jump
-    missionDescription: '- Press Spacebar to Jump (Hold to Jump higher).'
-    missionType: 5
-    missionStarted:
-      m_PersistentCalls:
-        m_Calls: []
-    missionCompleted:
-      m_PersistentCalls:
-        m_Calls: []
-    isStarted: 0
-    isCompleted: 0
-    utilityInt: 0
-    runePopupIndex: -1
-  - missionName: Dash
-    missionDescription: '- Press Left Shift to Dash towards the direction you''re
-      moving.'
     missionType: 4
     missionStarted:
       m_PersistentCalls:
@@ -2311,7 +2353,34 @@ MonoBehaviour:
         m_Calls: []
     isStarted: 0
     isCompleted: 0
-    utilityInt: 0
+    utilityInts: 
+    runePopupIndex: -1
+  - missionName: Jump
+    missionDescription: '- Press Spacebar to Jump (Hold to Jump higher).'
+    missionType: 6
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInts: 
+    runePopupIndex: -1
+  - missionName: Dash
+    missionDescription: '- Press Left Shift to Dash towards the direction you''re
+      moving.'
+    missionType: 5
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInts: 
     runePopupIndex: -1
   - missionName: Start Crafting Spells
     missionDescription: '- Press Tab to open the Spell Panel
@@ -2356,7 +2425,7 @@ MonoBehaviour:
           m_CallState: 2
     isStarted: 0
     isCompleted: 0
-    utilityInt: 1
+    utilityInts: 01000000
     runePopupIndex: 1
   - missionName: Collect a New Rune
     missionDescription: '- Press F near the Rune Loot Box to get a new Rune.'
@@ -2369,7 +2438,7 @@ MonoBehaviour:
         m_Calls: []
     isStarted: 0
     isCompleted: 0
-    utilityInt: 0
+    utilityInts: 
     runePopupIndex: -1
   - missionName: Spell Movement
     missionDescription: '- Go back to editing your Spell.
@@ -2399,7 +2468,7 @@ MonoBehaviour:
           m_CallState: 2
     isStarted: 0
     isCompleted: 0
-    utilityInt: 2
+    utilityInts: 02000000
     runePopupIndex: 2
   - missionName: Collect an Effect Rune
     missionDescription: '- Press F near the Rune Loot Box to get another new Rune.'
@@ -2412,7 +2481,7 @@ MonoBehaviour:
         m_Calls: []
     isStarted: 0
     isCompleted: 0
-    utilityInt: 0
+    utilityInts: 
     runePopupIndex: -1
   - missionName: Spell Damage
     missionDescription: '- Go back to editing your Spell.
@@ -2422,6 +2491,31 @@ MonoBehaviour:
 
       - Cast it again.'
     missionType: 2
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnEnemy
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 2
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    isStarted: 0
+    isCompleted: 0
+    utilityInts: 03000000
+    runePopupIndex: 3
+  - missionName: Defeat an Enemy
+    missionDescription: '- Use your Spell to defeat an Enemy.'
+    missionType: 1
     missionStarted:
       m_PersistentCalls:
         m_Calls: []
@@ -2442,8 +2536,8 @@ MonoBehaviour:
           m_CallState: 2
     isStarted: 0
     isCompleted: 0
-    utilityInt: 3
-    runePopupIndex: 3
+    utilityInts: 
+    runePopupIndex: -1
   - missionName: Collect a Casting Point Rune
     missionDescription: '- Press F near the Rune Loot Box to get another new Rune.'
     missionType: 0
@@ -2455,8 +2549,168 @@ MonoBehaviour:
         m_Calls: []
     isStarted: 0
     isCompleted: 0
-    utilityInt: 0
+    utilityInts: 
     runePopupIndex: -1
+  - missionName: Spell Casting Point
+    missionDescription: '- Go back to editing your Spell.
+
+      - Add your new Rune
+      to it.
+
+      - Cast it again.'
+    missionType: 2
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnRuneLootBox
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 3
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnRuneLootBox
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 4
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnRuneLootBox
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 5
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    isStarted: 0
+    isCompleted: 0
+    utilityInts: 04000000
+    runePopupIndex: 4
+  - missionName: Collect Stat Runes
+    missionDescription: '- Press F near the Rune Loot Boxes to get new Runes.'
+    missionType: 0
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInts: 
+    runePopupIndex: -1
+  - missionName: Spell Stats
+    missionDescription: '- Go back to editing your Spell.
+
+      - Add your new Runes
+      to it.
+
+      - Cast it again.'
+    missionType: 2
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnRuneLootBox
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 6
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnRuneLootBox
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 7
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 1053947339}
+          m_TargetAssemblyTypeName: TutorialController, Assembly-CSharp
+          m_MethodName: SpawnRuneLootBox
+          m_Mode: 3
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 1
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    isStarted: 0
+    isCompleted: 0
+    utilityInts: 07000000
+    runePopupIndex: 5
+  - missionName: Collect Invoker and New Spell Runes
+    missionDescription: '- Press F near the Rune Loot Boxes to get new Runes.'
+    missionType: 0
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInts: 
+    runePopupIndex: -1
+  - missionName: Spell Invocation
+    missionDescription: '- Create a new Spell.
+
+      - Add the Explosion Core Rune
+      and the new Damage Rune to it.
+
+      - Go back to editing your Projectile
+      Spell.
+
+      - Add the Invoker Rune to it.
+
+      - Configure the Invoker
+      to Cast the Explosion Spell on Hit.
+
+      - Cast the Projectile Spell.'
+    missionType: 3
+    missionStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    missionCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    isStarted: 0
+    isCompleted: 0
+    utilityInts: 0800000002000000
+    runePopupIndex: 6
   tutorialPopupPrefab: {fileID: 6105210495717521649, guid: cc88185100b7c144482e5694e624f29c, type: 3}
   tutorialTransform: {fileID: 1716886051}
   caster: {fileID: 1716886052}
@@ -2476,6 +2730,45 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1053947341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053947338}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkIdentity
+  sceneId: 4152251566
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &1053947342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053947338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a53288d27a81c24f873de6aa58219b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrainingEnemySpawner
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  interactionMessage: 
+  interactionIndicator: {fileID: 0}
+  interactionArea: {fileID: 0}
+  enemyPrefab: {fileID: 1083197047355929555, guid: e1a2ae55f209c9741aa98d333fd350d6, type: 3}
+  spawnPos: {fileID: 1342788895}
+  spawnCount: 1
+  distanceBetweenSpawns: {x: 0, y: 0, z: 0}
 --- !u!1 &1098791412
 GameObject:
   m_ObjectHideFlags: 0
@@ -2762,6 +3055,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestAuxiliar
   objectsToTurnOn:
+  - {fileID: 1053947338}
   - {fileID: 1716886050}
   - {fileID: 1027599879}
   - {fileID: 154040968}
@@ -2777,6 +3071,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1342788894
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1342788895}
+  m_Layer: 0
+  m_Name: EnemySpawnPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1342788895
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342788894}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -21.2, y: 2.9, z: -19.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2823,6 +3148,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cd92e62dbec5c77468439c22b276470d, type: 2}
   - {fileID: 11400000, guid: 481f114ee8a68fd4fb91486df92bf0d2, type: 2}
   - {fileID: 11400000, guid: 13e73cc14eb3e1243bf34c5b592db873, type: 2}
+  - {fileID: 11400000, guid: 9169106fee3332343ae8806846f681fc, type: 2}
+  - {fileID: 11400000, guid: 5ec68058ae2f5d84386f7f16bd352ac6, type: 2}
+  - {fileID: 11400000, guid: 5ba26db5814eda74f9196dda662105c2, type: 2}
+  - {fileID: 11400000, guid: 15ae17a312600484f93089ba4b10711b, type: 2}
+  - {fileID: 11400000, guid: 875447cf4c36325479828799554211b1, type: 2}
   network: 0
 --- !u!4 &1414273966
 Transform:
@@ -3460,7 +3790,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 398792914025255036, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1701926122361929969, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: network
@@ -3600,11 +3930,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6510346988652173208, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6510346988652173208, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6723739018361911861, guid: fbff54f997c8c674aafce3fb6238252b, type: 3}
       propertyPath: network
@@ -4097,12 +4427,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TrainingEnemiesController
   spawners:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1053947342}
   Directions:
   - x: 0
     y: 0
@@ -4630,3 +4955,4 @@ SceneRoots:
   - {fileID: 1716886049}
   - {fileID: 1964818794}
   - {fileID: 1053947340}
+  - {fileID: 1342788895}

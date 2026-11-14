@@ -20,7 +20,7 @@ public class SpellCollider : NetworkBehaviour
     Timer HitTimer = new Timer(false);
     Timer CollisionTimer = new Timer(false);
     [NonSerialized] public float LifeTime = 0;
-    List<TriggerInfo> triggerInfos = new List<TriggerInfo>();
+    [HideInInspector] public List<TriggerInfo> triggerInfos = new List<TriggerInfo>();
     [NonSerialized] public Vector3 previousVelocity;
 
     public UnityEvent OnCast = new UnityEvent(), OnHit = new UnityEvent(), OnDeath = new UnityEvent();

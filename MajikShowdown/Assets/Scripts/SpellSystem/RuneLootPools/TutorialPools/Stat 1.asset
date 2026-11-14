@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc8b72238e768d247910b68c7423d0cb, type: 3}
+  m_Name: Stat 1
+  m_EditorClassIdentifier: Assembly-CSharp::RuneLootPool
+  RarityChance:
+    Entries:
+    - Weight: 1
+      label: Rusty
+      Value: 0
+    - Weight: 0
+      label: Forged
+      Value: 1
+    - Weight: 0
+      label: Refined
+      Value: 2
+  Rusty:
+    TypeChance:
+      Entries:
+      - Weight: 0
+        label: Core
+        Value: 0
+      - Weight: 0
+        label: Trajectory
+        Value: 1
+      - Weight: 0
+        label: Effect
+        Value: 2
+      - Weight: 1
+        label: Stat
+        Value: 3
+      - Weight: 0
+        label: Trigger
+        Value: 4
+      - Weight: 0
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory: []
+    Effect: []
+    Stat:
+    - {fileID: 11400000, guid: 00d940a69857b54469ce48eda478de0e, type: 2}
+    Trigger: []
+    CastPoint: []
+  Forged:
+    TypeChance:
+      Entries:
+      - Weight: 0.2
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0.2
+        label: Effect
+        Value: 2
+      - Weight: 0.2
+        label: Stat
+        Value: 3
+      - Weight: 0.1
+        label: Trigger
+        Value: 4
+      - Weight: 0.1
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory: []
+    Effect: []
+    Stat: []
+    Trigger: []
+    CastPoint: []
+  Refined:
+    TypeChance:
+      Entries:
+      - Weight: 0.2
+        label: Core
+        Value: 0
+      - Weight: 0.2
+        label: Trajectory
+        Value: 1
+      - Weight: 0.2
+        label: Effect
+        Value: 2
+      - Weight: 0.2
+        label: Stat
+        Value: 3
+      - Weight: 0.1
+        label: Trigger
+        Value: 4
+      - Weight: 0.1
+        label: CastPoint
+        Value: 5
+    Core: []
+    Trajectory: []
+    Effect: []
+    Stat: []
+    Trigger: []
+    CastPoint: []

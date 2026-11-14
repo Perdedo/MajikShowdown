@@ -61,6 +61,10 @@ public class TrainingEnemy : Enemy
             }
             return;
         }
+        if(TutorialController.Instance != null)
+        {
+            return;
+        }
         if (forwardCell != null)
         {
             CheckForJump();
