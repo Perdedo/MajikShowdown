@@ -103,6 +103,7 @@ public class CasterEnemy : Enemy
             {
                 attacked = false;
                 attackTimer.SetTimer(0);
+                target = GetClosestPlayer();
                 attackedPlayer = target;
                 attackTimer.Paused = false;
                 PlayAnimation(EnemyAnimState.Attack);

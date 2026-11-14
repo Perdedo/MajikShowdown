@@ -127,7 +127,12 @@ public class FlowFieldManager : MonoBehaviour
             if (!p.dead)
             {
                 Targets.Add(p.transform);
-                lastTargetsPos.Add(WorldToGridPosition(p.transform.position));
+                FieldCell c = WorldToGridPosition(p.transform.position);
+                if (c == null)
+                {
+                    c = flowField.allCells[p.TargetCellID];
+                }
+                lastTargetsPos.Add(c);
                 p.TargetCellID = lastTargetsPos[lastTargetsPos.Count - 1].ID;
             }
         }

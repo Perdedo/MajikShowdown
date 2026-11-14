@@ -28,6 +28,10 @@ Material:
         m_Texture: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _EmissionMask:
+        m_Texture: {fileID: 2800000, guid: 43e37d1bcfe047c4298f3f645f0d6761, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Ramp_Shadow:
         m_Texture: {fileID: 2800000, guid: e3832516c7c1da74b8d4701d9cf699ea, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -56,6 +60,8 @@ Material:
     m_Floats:
     - _Ambient_Light: 0.12
     - _Backlight_Amount: 3
+    - _EMISSIO_NMASK: 0
+    - _EmssionStregth: 1
     - _Float: 0.7
     - _QueueControl: 0
     - _QueueOffset: 0
@@ -67,6 +73,8 @@ Material:
     m_Colors:
     - _Base_Color: {r: 0.743859, g: 0.7710428, b: 0.7924528, a: 1}
     - _Cutoff_Threshold: {r: -1.05, g: 0.17, b: 0, a: 0}
+    - _EmissionColor_1: {r: 0.4811321, g: 0.004662829, b: 0, a: 1}
+    - _EmissionColor_2: {r: 0, g: 1.143483, b: 6.691291, a: 0}
     - _Specular_Color: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
