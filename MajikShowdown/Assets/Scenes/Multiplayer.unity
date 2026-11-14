@@ -549,7 +549,7 @@ MonoBehaviour:
   baseEnemyChances:
   - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
     typeIndex: 0
-    maxAmmount: 500
+    maxAmmountPerPlayer: 500
     chance: 0
     spawnCurve:
       serializedVersion: 2
@@ -603,7 +603,7 @@ MonoBehaviour:
     elements: []
   - enemy: {fileID: 1272920518353865679, guid: 8785d2e793b49d54cb564707858f0f29, type: 3}
     typeIndex: 0
-    maxAmmount: 500
+    maxAmmountPerPlayer: 500
     chance: 0
     spawnCurve:
       serializedVersion: 2
@@ -648,7 +648,7 @@ MonoBehaviour:
     elements: []
   - enemy: {fileID: 1083197047355929555, guid: c8d89e7ace515ac4d8eee06448a0a6fb, type: 3}
     typeIndex: 0
-    maxAmmount: 500
+    maxAmmountPerPlayer: 500
     chance: 0
     spawnCurve:
       serializedVersion: 2
@@ -693,7 +693,7 @@ MonoBehaviour:
     elements: []
   - enemy: {fileID: 1083197047355929555, guid: 808169c51eb7c3e47b2054fa93efc1dd, type: 3}
     typeIndex: 0
-    maxAmmount: 500
+    maxAmmountPerPlayer: 500
     chance: 0
     spawnCurve:
       serializedVersion: 2
@@ -738,7 +738,7 @@ MonoBehaviour:
     elements: []
   - enemy: {fileID: 1272920518353865679, guid: 3364965d1fa285145b734610c2cd4b68, type: 3}
     typeIndex: 0
-    maxAmmount: 500
+    maxAmmountPerPlayer: 500
     chance: 0
     spawnCurve:
       serializedVersion: 2
@@ -783,7 +783,7 @@ MonoBehaviour:
     elements: []
   - enemy: {fileID: 1272920518353865679, guid: 97bc68d4e85f54b40ad694b8eb63a92e, type: 3}
     typeIndex: 0
-    maxAmmount: 500
+    maxAmmountPerPlayer: 500
     chance: 0
     spawnCurve:
       serializedVersion: 2
@@ -830,7 +830,7 @@ MonoBehaviour:
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
       typeIndex: 0
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -880,17 +880,17 @@ MonoBehaviour:
         - serializedVersion: 3
           time: 0
           value: 0
-          inSlope: 0.1
-          outSlope: 0.1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0.1
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 0
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
@@ -1084,7 +1084,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1272920518353865679, guid: 8785d2e793b49d54cb564707858f0f29, type: 3}
       typeIndex: 1
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -1125,17 +1125,17 @@ MonoBehaviour:
         - serializedVersion: 3
           time: 0
           value: 0
-          inSlope: 0.1
-          outSlope: 0.1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0.1
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 0
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
@@ -1444,7 +1444,7 @@ MonoBehaviour:
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
       typeIndex: 0
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -1698,7 +1698,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1272920518353865679, guid: 8785d2e793b49d54cb564707858f0f29, type: 3}
       typeIndex: 1
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -1943,7 +1943,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1083197047355929555, guid: c8d89e7ace515ac4d8eee06448a0a6fb, type: 3}
       typeIndex: 2
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -1983,7 +1983,7 @@ MonoBehaviour:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
+          value: 1
           inSlope: 0
           outSlope: 0
           tangentMode: 34
@@ -1992,7 +1992,7 @@ MonoBehaviour:
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0
+          value: 1
           inSlope: 0
           outSlope: 0
           tangentMode: 34
@@ -2303,14 +2303,14 @@ MonoBehaviour:
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c8d89e7ace515ac4d8eee06448a0a6fb, type: 3}
       typeIndex: 2
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0.9999637
+          value: 0
           inSlope: 0.003345985
           outSlope: 0.003345985
           tangentMode: 0
@@ -2318,8 +2318,17 @@ MonoBehaviour:
           inWeight: 0
           outWeight: 0.35872787
         - serializedVersion: 3
-          time: 1
-          value: 1
+          time: 0.6654341
+          value: 0.0046503237
+          inSlope: 0.027794722
+          outSlope: 0.027794722
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.99999046
+          value: 0.049965397
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -2334,18 +2343,18 @@ MonoBehaviour:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0.1
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
@@ -2543,38 +2552,29 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 0.5
-        inSlope: 2
-        outSlope: 2
+        inSlope: -0.46889
+        outSlope: -0.46889
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.2865701
       - serializedVersion: 3
-        time: 0.35
-        value: 1
-        inSlope: -0.0037558947
-        outSlope: -0.0037558947
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.57516044
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.65
-        value: 1
-        inSlope: 0.0031441846
-        outSlope: 0.0031441846
+        time: 0.3714169
+        value: 0.36580405
+        inSlope: -0.41664737
+        outSlope: -0.41664737
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.6672902
-        outWeight: 0.33333334
+        outWeight: 0.62236476
       - serializedVersion: 3
-        time: 0.85
-        value: 0.75
-        inSlope: -1.6428576
-        outSlope: -1.6428576
+        time: 0.7208293
+        value: 0.2619106
+        inSlope: -0.4735425
+        outSlope: -0.4735425
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333322
+        inWeight: 0.5800902
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
@@ -2654,7 +2654,7 @@ MonoBehaviour:
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
       typeIndex: 0
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -2908,7 +2908,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1272920518353865679, guid: 8785d2e793b49d54cb564707858f0f29, type: 3}
       typeIndex: 1
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -3153,7 +3153,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1083197047355929555, guid: c8d89e7ace515ac4d8eee06448a0a6fb, type: 3}
       typeIndex: 2
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -3168,14 +3168,14 @@ MonoBehaviour:
           inWeight: 0
           outWeight: 0.35872787
         - serializedVersion: 3
-          time: 0.119603544
-          value: 0.032293204
-          inSlope: 0.11600025
-          outSlope: 0.11600025
+          time: 0.1237659
+          value: 0.045853645
+          inSlope: 0.057243694
+          outSlope: 0.057243694
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.25697806
-          outWeight: 0.1443544
+          inWeight: 0.35258165
+          outWeight: 0.1250424
         - serializedVersion: 3
           time: 0.99999046
           value: 0.049965397
@@ -3193,18 +3193,18 @@ MonoBehaviour:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0.1
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
@@ -3398,7 +3398,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1083197047355929555, guid: 808169c51eb7c3e47b2054fa93efc1dd, type: 3}
       typeIndex: 3
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -3758,7 +3758,7 @@ MonoBehaviour:
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
       typeIndex: 0
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -4012,7 +4012,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1272920518353865679, guid: 8785d2e793b49d54cb564707858f0f29, type: 3}
       typeIndex: 1
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -4257,7 +4257,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1083197047355929555, guid: c8d89e7ace515ac4d8eee06448a0a6fb, type: 3}
       typeIndex: 2
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -4272,17 +4272,17 @@ MonoBehaviour:
           inWeight: 0
           outWeight: 0.35872787
         - serializedVersion: 3
-          time: 0.2541697
-          value: 0.045689177
-          inSlope: -0.41994497
-          outSlope: -0.41994497
+          time: 0.34460223
+          value: 0.03559027
+          inSlope: -0.36612248
+          outSlope: -0.36612248
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.07059614
-          outWeight: 0.057845503
+          inWeight: 0.33333334
+          outWeight: 0.05909087
         - serializedVersion: 3
-          time: 1
-          value: 0.050473347
+          time: 0.99999046
+          value: 0.049965397
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -4297,18 +4297,18 @@ MonoBehaviour:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0.1
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
@@ -4502,7 +4502,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1083197047355929555, guid: 808169c51eb7c3e47b2054fa93efc1dd, type: 3}
       typeIndex: 3
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -4747,7 +4747,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1272920518353865679, guid: 97bc68d4e85f54b40ad694b8eb63a92e, type: 3}
       typeIndex: 5
-      maxAmmount: 500
+      maxAmmountPerPlayer: 10
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -5107,7 +5107,7 @@ MonoBehaviour:
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: 808169c51eb7c3e47b2054fa93efc1dd, type: 3}
       typeIndex: 3
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -5350,44 +5350,280 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
         elementChance: 0
+    - enemy: {fileID: 1272920518353865679, guid: 97bc68d4e85f54b40ad694b8eb63a92e, type: 3}
+      typeIndex: 5
+      maxAmmountPerPlayer: 10
+      chance: 0
+      spawnCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 0.003345985
+          outSlope: 0.003345985
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.35872787
+        - serializedVersion: 3
+          time: 0.5044695
+          value: 0.016551604
+          inSlope: 0.041851893
+          outSlope: 0.041851893
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.3232463
+          outWeight: 0.51621825
+        - serializedVersion: 3
+          time: 1
+          value: 0.01
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      elementalChanceCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      elementalChance: 0
+      elements:
+      - element: 2
+        elementCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0.1
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0.2
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        elementChance: 0
+      - element: 1
+        elementCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0.1
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0.2
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        elementChance: 0
+      - element: 4
+        elementCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        elementChance: 0
+      - element: 5
+        elementCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0.1
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0.2
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        elementChance: 0
+      - element: 7
+        elementCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0.1
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0.2
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        elementChance: 0
+      - element: 3
+        elementCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0.1
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0.2
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        elementChance: 0
+      - element: 6
+        elementCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0.1
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 0.2
+            inSlope: 0.1
+            outSlope: 0.1
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        elementChance: 0
     spawnerFrequencyCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
         value: 0.5
-        inSlope: 2
-        outSlope: 2
+        inSlope: -0.46889
+        outSlope: -0.46889
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.2865701
       - serializedVersion: 3
-        time: 0.35
-        value: 1
-        inSlope: -0.0037558947
-        outSlope: -0.0037558947
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.57516044
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.65
-        value: 1
-        inSlope: 0.0031441846
-        outSlope: 0.0031441846
+        time: 0.3714169
+        value: 0.36580405
+        inSlope: -0.41664737
+        outSlope: -0.41664737
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.6672902
-        outWeight: 0.33333334
+        outWeight: 0.62236476
       - serializedVersion: 3
-        time: 0.85
-        value: 0.75
-        inSlope: -1.6428576
-        outSlope: -1.6428576
+        time: 0.7208293
+        value: 0.2619106
+        inSlope: -0.4735425
+        outSlope: -0.4735425
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333322
+        inWeight: 0.5800902
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
@@ -5467,7 +5703,7 @@ MonoBehaviour:
   - enemyChances:
     - enemy: {fileID: 1083197047355929555, guid: c393348445899554c9edbeabdae0d77d, type: 3}
       typeIndex: 0
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -5721,7 +5957,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1272920518353865679, guid: 8785d2e793b49d54cb564707858f0f29, type: 3}
       typeIndex: 1
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -5966,7 +6202,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1083197047355929555, guid: c8d89e7ace515ac4d8eee06448a0a6fb, type: 3}
       typeIndex: 2
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -5981,17 +6217,17 @@ MonoBehaviour:
           inWeight: 0
           outWeight: 0.35872787
         - serializedVersion: 3
-          time: 0.49583638
-          value: 0.025927268
-          inSlope: -0.3649634
-          outSlope: -0.3649634
+          time: 0.3987719
+          value: 0.032977268
+          inSlope: -0.37602976
+          outSlope: -0.37602976
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.0672326
-          outWeight: 0.057845503
+          inWeight: 0.33333334
+          outWeight: 0.057478733
         - serializedVersion: 3
-          time: 1
-          value: 0.050473347
+          time: 0.99999046
+          value: 0.049965397
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -6006,18 +6242,18 @@ MonoBehaviour:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0
           outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
-          value: 0.1
-          inSlope: 0.1
-          outSlope: 0.1
+          value: 1
+          inSlope: 0
+          outSlope: 0
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
@@ -6211,7 +6447,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1083197047355929555, guid: 808169c51eb7c3e47b2054fa93efc1dd, type: 3}
       typeIndex: 3
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -6456,7 +6692,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1272920518353865679, guid: 3364965d1fa285145b734610c2cd4b68, type: 3}
       typeIndex: 4
-      maxAmmount: 500
+      maxAmmountPerPlayer: 500
       chance: 0
       spawnCurve:
         serializedVersion: 2
@@ -6701,7 +6937,7 @@ MonoBehaviour:
         elementChance: 0
     - enemy: {fileID: 1272920518353865679, guid: 97bc68d4e85f54b40ad694b8eb63a92e, type: 3}
       typeIndex: 5
-      maxAmmount: 500
+      maxAmmountPerPlayer: 10
       chance: 0
       spawnCurve:
         serializedVersion: 2
