@@ -1008,7 +1008,7 @@ public class PlayerUI : NetworkBehaviour
         if (IsLoading()) return;
         if (myPlayer.dead) return;
         if (GameManager.Instance.hordeController != null && !GameManager.Instance.hordeController.running) return;
-        if (TutorialController.Instance != null && canOpenTutorialSpellPanel)
+        if (TutorialController.Instance != null && !canOpenTutorialSpellPanel) return;
 
         if (spellPanel.activeSelf && !pausePanel.activeSelf)
         {
