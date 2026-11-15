@@ -17,11 +17,11 @@ public class BufferTests : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Equals))
         {
-            index = BuffersControl.Instance.SpawnEffect(Elements.Earth, SpellTypes.Projectile, points[0].transform, 1);
+            TesteType(SpellTypes.Explosion,points);
         }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
-           BuffersControl.Instance.UnspawnEffect(Elements.Earth, SpellTypes.Projectile, index);   
+            BuffersControl.Instance.SpawnEffect(Elements.Darkness, SpellTypes.Explosion, points[4].transform, 1, 1.5f);   
         }
     }
     public void TestBufferSpawn()
@@ -53,7 +53,13 @@ public class BufferTests : MonoBehaviour
     }
     public void TesteType(SpellTypes type, List<GameObject> points)
     {
-        if(type != SpellTypes.Explosion)
+        BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1, 1);
+        BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1, 1);
+        BuffersControl.Instance.SpawnEffect(Elements.Darkness,type, points[2].transform, 1, 1);
+        BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 1, 1);
+        BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 1, 1);
+        BuffersControl.Instance.SpawnEffect(Elements.Decay,type, points[5].transform, 1, 1);
+        /*if(type != SpellTypes.Explosion)
         {
             BuffersControl.Instance.SpawnEffect(Elements.Fire,type, points[0].transform, 1);
             BuffersControl.Instance.SpawnEffect(Elements.Radiance,type, points[1].transform, 1);
@@ -70,7 +76,7 @@ public class BufferTests : MonoBehaviour
             BuffersControl.Instance.SpawnEffect(Elements.Ice,type, points[3].transform, 4.5f, 2.25f);
             BuffersControl.Instance.SpawnEffect(Elements.Earth,type, points[4].transform, 5.5f, 2.5f);
             BuffersControl.Instance.SpawnEffect(Elements.Decay,type, points[5].transform, 6.5f, 3f);
-        }
+        }*/
         
         
     }
