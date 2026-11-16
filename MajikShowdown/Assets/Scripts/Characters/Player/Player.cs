@@ -40,7 +40,7 @@ public class Player : Character
     [SerializeField] protected float DashCooldown;
     [SerializeField] protected float GravityNegationTime;
     Timer dashTimer = new Timer(false), gravityTimer = new Timer(false);
-    bool dashOnCooldown;
+    [HideInInspector] public bool dashOnCooldown;
 
     [Header("Push Events")]
     public UnityEvent StartedPushing;
@@ -106,6 +106,7 @@ public class Player : Character
         if(!network)
         {
             myUI.playerNameText.gameObject.SetActive(false);
+            money = startingMoney;
         }
         //cameraAim = playerCamera.GetComponent<CinemachineThirdPersonAim>();
     }
@@ -641,21 +642,29 @@ public class Player : Character
         }
     }
 
-    [Server]
+    //[Server]
     public void AddMoney(int amount)
     {
         if (amount <= 0) return;
 
         money += amount;
+        if (!network)
+        {
+            GameManager.Instance.uiController.playerUI.UpdateMoneyUI(money);
+        }
     }
 
-    [Server]
+    //[Server]
     public bool SpendMoney(int amount)
     {
         if (amount <= 0) return false;
         if (money < amount) return false;
 
         money -= amount;
+        if(!network)
+        {
+            GameManager.Instance.uiController.playerUI.UpdateMoneyUI(money);
+        }
         return true;
     }
 

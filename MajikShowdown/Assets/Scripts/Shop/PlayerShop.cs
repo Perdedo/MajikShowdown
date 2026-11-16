@@ -19,10 +19,18 @@ public class PlayerShop : NetworkBehaviour
 
     public int RerollPrice => currentRerollPrice;
 
+    public bool network = true;
+
     private void Awake()
     {
         player = GetComponent<Player>();
         offers = new ShopOffer[offerCount];
+        if(!network)
+        {
+            GenerateRerollPrice();
+            GenerateOffers();
+            RefreshLocalShop();
+        }
     }
 
     public override void OnStartServer()
@@ -46,14 +54,28 @@ public class PlayerShop : NetworkBehaviour
 
     public void TryBuy(int slotIndex)
     {
-        if (!isOwned) return;
-        CMDBuy(slotIndex);
+        if (!isOwned && network) return;
+        if(network)
+        {
+            CMDBuy(slotIndex);
+        }
+        else
+        {
+            Buy(slotIndex);
+        }
     }
 
     public void TryReroll()
     {
-        if (!isOwned) return;
-        CMDReroll();
+        if (!isOwned && network) return;
+        if(network)
+        {
+            CMDReroll();
+        }
+        else
+        {
+            Reroll();
+        }
     }
 
     [Command]
@@ -77,6 +99,18 @@ public class PlayerShop : NetworkBehaviour
         TargetGiveRune(connectionToClient, GetNodeRarityIndex(offer.node), GetNodeTypeIndex(offer.node), GetNodeListIndex(offer.node));
         TargetPurchaseCompleted(connectionToClient, slotIndex);
     }
+    private void Buy(int slotIndex)
+    {
+        if (slotIndex < 0 || slotIndex >= offers.Length) return;
+
+        ShopOffer offer = offers[slotIndex];
+        if (offer == null || offer.node == null || offer.purchased) return;
+        if (!player.SpendMoney(offer.price)) return;
+
+        player.caster.AddRune(offer.node);
+        offer.purchased = true;
+        RefreshLocalShop();
+    }
 
     [Command]
     private void CMDReroll()
@@ -87,8 +121,16 @@ public class PlayerShop : NetworkBehaviour
         GenerateOffers();
         SendShopToOwner();
     }
+    private void Reroll()
+    {
+        if (!player.SpendMoney(currentRerollPrice)) return;
 
-    [Server]
+        GenerateRerollPrice();
+        GenerateOffers();
+        RefreshLocalShop();
+    }
+
+    //[Server]
     private void GenerateOffers()
     {
         if (lootPool == null)
@@ -116,7 +158,7 @@ public class PlayerShop : NetworkBehaviour
         }
     }
 
-    [Server]
+    //[Server]
     private void GenerateRerollPrice()
     {
         if (rerollPrice == null)
