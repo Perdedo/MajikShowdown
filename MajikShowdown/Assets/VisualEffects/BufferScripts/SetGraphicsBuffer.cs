@@ -22,6 +22,8 @@ public class SetGraphicsBuffer : MonoBehaviour
     static readonly ExposedProperty newEventArea = "OnNewArea";
     static readonly ExposedProperty endEventArea = "OnEndArea";
     static readonly ExposedProperty positionAttribute = "position";
+    static readonly ExposedProperty lifeAttribute = "lifetime";
+
     static readonly ExposedProperty indexAttribute = "MyIndex";
 
     static readonly ExposedProperty sizeAttribute = "size"; 
@@ -89,7 +91,6 @@ public class SetGraphicsBuffer : MonoBehaviour
 
             ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
             eventAttribute.SetVector3(positionAttribute, place.position);
-            if(myType == SpellTypes.Area) eventAttribute.SetUint(indexAttribute, (uint)index);
             visualEffect.SendEvent(newEvent, eventAttribute);
             return index;
         }
@@ -131,7 +132,6 @@ public class SetGraphicsBuffer : MonoBehaviour
 
             ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
             eventAttribute.SetVector3(positionAttribute, place.position);
-            if(myType == SpellTypes.Area) eventAttribute.SetUint(indexAttribute, (uint)index);
             visualEffect.SendEvent(newEvent, eventAttribute);
             return index;
         }
@@ -257,5 +257,12 @@ public class SetGraphicsBuffer : MonoBehaviour
     {
         buffer?.Release();
         buffer = null;
+    }
+    Vector2 GetTimeSize(float dec)
+    {
+        float x = Mathf.Floor(dec * 10);
+        float y =  10 * ((dec * 10) - x );
+        Vector2 vec = new Vector2(x/10,y);
+        return vec;
     }
 }
