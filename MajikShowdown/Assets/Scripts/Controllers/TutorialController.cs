@@ -40,8 +40,9 @@ public class TutorialController : MonoBehaviour
     public TutorialMission[] tutorialMissions;
     public TutorialPopup tutorialPopupPrefab;
     public Transform tutorialTransform;
+    public Transform lootSpawnPoint;
     public SpellCaster caster;
-
+    private int lootSpawnCount = 0;
     private int currentPageIndex = 0;
     private int currentTutorialIndex = 0;
     private TutorialPopup popupInstance;
@@ -118,6 +119,7 @@ public class TutorialController : MonoBehaviour
     public void ResetPageIndex()
     {
         currentPageIndex = 0;
+        lootSpawnCount = 0;
     }
 
     public void IncreasePageIndex()
@@ -134,7 +136,8 @@ public class TutorialController : MonoBehaviour
 
     public void SpawnRuneLootBox(int poolIndex)
     {
-        LootSpawner.Instance.SpawnLootBox(GameManager.Instance.Players[0].gameObject.transform.position + (Vector3.up * 0.5f), poolIndex);
+        LootSpawner.Instance.SpawnLootBox(lootSpawnPoint.position - (Vector3.forward * lootSpawnCount * 2), poolIndex);
+        lootSpawnCount++;
     }
 
     public void SpawnEnemy()
