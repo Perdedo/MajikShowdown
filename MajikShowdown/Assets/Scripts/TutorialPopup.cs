@@ -15,9 +15,10 @@ public class TutorialPopup : MonoBehaviour
     public Image image;
     public VideoPlayer videoPlayer;
     [HideInInspector] public int currentPageIndex;
+    [HideInInspector] public bool returnToGameplay = false;
     private int totalPages;
     private bool hasVideo;
-
+    
     private void OnEnable()
     {
         previous.onClick.AddListener(OnPreviousClicked);
@@ -100,7 +101,11 @@ public class TutorialPopup : MonoBehaviour
     {
         popupPanel.SetActive(false);
         TutorialController.Instance.ResetPageIndex();
-        //GameManager.Instance.uiController.playerUI.EnableGameplayCursor();
+        if(returnToGameplay)
+        {
+            GameManager.Instance.uiController.playerUI.EnableGameplayCursor();
+            returnToGameplay = false;
+        }
     }
 
     public void SetImage(Sprite sprite)

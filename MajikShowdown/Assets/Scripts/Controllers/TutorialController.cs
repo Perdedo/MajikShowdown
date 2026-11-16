@@ -47,6 +47,7 @@ public class TutorialController : MonoBehaviour
     private TutorialPopup popupInstance;
     private bool firstTutorial = true;
     public int activeMission = 0;
+    public ShopInteractable shopArea;
 
     private void Awake()
     {
@@ -72,7 +73,7 @@ public class TutorialController : MonoBehaviour
             if (tutorialMissions[activeMission].runePopupIndex != -1 && !tutorialPopup[tutorialMissions[activeMission].runePopupIndex].popupShown)
             {
                 ResetPageIndex();
-                ShowPopup(tutorialMissions[activeMission].runePopupIndex);
+                ShowPopup(tutorialMissions[activeMission].runePopupIndex, false);
             }
         }
         if(GameManager.Instance.uiController.playerUI.spellPanel.activeSelf)
@@ -80,18 +81,22 @@ public class TutorialController : MonoBehaviour
             if (!tutorialPopup[0].popupShown)
             {
                 ResetPageIndex();
-                ShowPopup(0);
+                ShowPopup(0, false);
             }
         }
     }
 
-    public void ShowPopup(int tutorialIndex)
+    public void ShowPopup(int tutorialIndex, bool inGameplay)
     {
         if (tutorialPopup[tutorialIndex].pages.Length > 0)
         {
             currentTutorialIndex = tutorialIndex;
+            if(inGameplay)
+            {
+                GameManager.Instance.uiController.playerUI.EnableUICursor();
+                popupInstance.returnToGameplay = true;
+            }
             ShowPage(currentPageIndex, tutorialIndex);
-            //GameManager.Instance.uiController.playerUI.EnableUICursor();
             tutorialPopup[tutorialIndex].popupShown = true;
         }
     }
@@ -118,13 +123,13 @@ public class TutorialController : MonoBehaviour
     public void IncreasePageIndex()
     {
         currentPageIndex++;
-        ShowPopup(currentTutorialIndex);
+        ShowPopup(currentTutorialIndex, false);
     }
 
     public void DecreasePageIndex()
     {
         currentPageIndex--;
-        ShowPopup(currentTutorialIndex);
+        ShowPopup(currentTutorialIndex, false);
     }
 
     public void SpawnRuneLootBox(int poolIndex)
@@ -136,6 +141,21 @@ public class TutorialController : MonoBehaviour
     {
         this.GetComponent<TrainingEnemySpawner>().Interact(GameManager.Instance.Players[0]);
     }
+
+    public void StartShop(int moneyAmmount)
+    {
+        GameManager.Instance.Players[0].AddMoney(moneyAmmount);
+        shopArea.gameObject.SetActive(true);
+        ResetPageIndex();
+        ShowPopup(7, true);
+    }
+
+    public void ShowLastPopup()
+    {
+        ResetPageIndex();
+        ShowPopup(tutorialPopup.Length - 1, true);
+    }
+
     /*public void ShowNextTutorial()
     {
         ShowPopup(currentTutorialIndex);
@@ -154,7 +174,9 @@ public class TutorialMission
         CastTriggerSpell,
         Walk,
         Dash,
-        Jump
+        Jump,
+        Buy,
+        Menu
     }
 
     public string missionName;
@@ -211,6 +233,12 @@ public class TutorialMission
                 break;
             case MissionType.Jump:
                 check = GameManager.Instance.Players[0].CvState == Character.CharVerticalState.jumping;
+                break;
+            case MissionType.Buy:
+                check = GameManager.Instance.Players[0].caster.ownedNodes.Count >= utilityInts[0] && !GameManager.Instance.uiController.playerUI.IsShopOpen;
+                break;
+            case MissionType.Menu:
+                check = false;
                 break;
         }
         if (check)
