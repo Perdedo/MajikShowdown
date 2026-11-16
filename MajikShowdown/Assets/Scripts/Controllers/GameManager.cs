@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
     public void AddPlayer(Player player)
     {
         Players.Add(player);
-        if(NetworkManager.singleton != null && NetworkManager.singleton.GetComponent<RoomManager>() != null && Players.Count != NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count)
+        if(Players[0].network && NetworkManager.singleton != null && NetworkManager.singleton.GetComponent<RoomManager>() != null && Players.Count != NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count)
         {
             return;
         }
@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour
     public void RemovePlayer(Player player, bool isServer)
     {
         Players.Remove(player);
-        if(Players.Count <= 0)
+        if(Players.Count <= 0 && netCtrl.ffManager != null)
         {
             netCtrl?.ffManager?.gameObject.SetActive(false);
         }

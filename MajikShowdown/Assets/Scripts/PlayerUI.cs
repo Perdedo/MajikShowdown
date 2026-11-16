@@ -1130,13 +1130,20 @@ public class PlayerUI : NetworkBehaviour
 
     public void LeaveGameButton()
     {
-        if(isServer)
+        if(network)
         {
-            SteamLobby.instance.LeaveLobby();
+            if(isServer)
+            {
+                SteamLobby.instance.LeaveLobby();
+            }
+            else
+            {
+                HandleClientLeave();
+            }
         }
         else
         {
-            HandleClientLeave();
+            GameManager.Instance.uiController.ChangeScene("Menu");
         }
         EnableUICursor();
     }
