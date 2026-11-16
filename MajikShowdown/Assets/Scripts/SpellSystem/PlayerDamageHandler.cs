@@ -22,7 +22,7 @@ public class PlayerDamageHandler : CharacterDamageHandler
             }
         }
         Health = MathF.Max(Health - finalDamage, 0);
-        if (Health <= 0 && canDie)
+        if (Health <= 0 && canDie && !myPlayer.dead)
         {
             Die();
         }
