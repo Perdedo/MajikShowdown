@@ -7320,20 +7320,20 @@ MonoBehaviour:
   enemyElementColors:
   - element: Ice
     mainColor: {r: 0, g: 0.5, b: 1, a: 1}
-    emissionColor: {r: 0, g: 0.4626761, b: 7.906699, a: 1}
-    emissionColor1: {r: 0, g: 4.2624607, b: 11.984314, a: 0}
+    emissionColor: {r: 0, g: 0.04383036, b: 0.7490196, a: 1}
+    emissionColor1: {r: 0, g: 0.37675184, b: 1.0592737, a: 0}
   - element: Fire
     mainColor: {r: 1, g: 0, b: 0, a: 1}
-    emissionColor: {r: 85.332466, g: 0.6937599, b: 0, a: 1}
-    emissionColor1: {r: 11.984314, g: 0.099882975, b: 0, a: 0}
+    emissionColor: {r: 1.0592737, g: 0.008611982, b: 0, a: 1}
+    emissionColor1: {r: 0.7490196, g: 0.006242686, b: 0, a: 0}
   - element: Lightning
     mainColor: {r: 0, g: 1, b: 1, a: 1}
-    emissionColor: {r: 0, g: 2.1185474, b: 1.3381577, a: 1}
-    emissionColor1: {r: 1.4731045, g: 1.4458812, b: 0, a: 0}
+    emissionColor: {r: 0, g: 1.0592737, b: 0.6690788, a: 1}
+    emissionColor1: {r: 0.7490195, g: 0.7351775, b: 0, a: 0}
   - element: Radiance
     mainColor: {r: 1, g: 1, b: 0, a: 1}
-    emissionColor: {r: 2.1411636, g: 2.1411636, b: 0.07069884, a: 1}
-    emissionColor1: {r: 3.4822028, g: 3.106405, b: 0.83769965, a: 0}
+    emissionColor: {r: 0.74901956, g: 0.74901956, b: 0.024731794, a: 1}
+    emissionColor1: {r: 1.0592736, g: 0.94495726, b: 0.25482523, a: 1}
   - element: Decay
     mainColor: {r: 0, g: 1, b: 0, a: 1}
     emissionColor: {r: 0, g: 0.007843138, b: 0, a: 1}
@@ -7341,7 +7341,7 @@ MonoBehaviour:
   - element: Earth
     mainColor: {r: 0.5, g: 0.2, b: 0, a: 1}
     emissionColor: {r: 0.105882354, g: 0.02745098, b: 0, a: 1}
-    emissionColor1: {r: 0, g: 0.13333334, b: 0.003921569, a: 0}
+    emissionColor1: {r: 0, g: 0.26666668, b: 0.007843138, a: 1}
   - element: Darkness
     mainColor: {r: 0.2, g: 0, b: 0.5, a: 1}
     emissionColor: {r: 0.015686275, g: 0, b: 0.11372549, a: 1}
@@ -15886,6 +15886,46 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_Seed
+      value: -32881
+      objectReference: {fileID: 0}
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ScaleOffset.max.y
+      value: 0.42
+      objectReference: {fileID: 0}
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ScaleOffset.min.y
+      value: 0.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ScaleOffset.setup
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[1].Prefab
+      value: 
+      objectReference: {fileID: 8958768375019405527, guid: e68c94786c0ee8149826f1ddb1d0b420, type: 3}
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[2].Prefab
+      value: 
+      objectReference: {fileID: 5410704108029358133, guid: 9d85b822df574ef47aebd3af5c3e1d71, type: 3}
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[0].Probability
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[1].Probability
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 355697037134085601, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[2].Probability
+      value: 33
+      objectReference: {fileID: 0}
     - target: {fileID: 1263475787257998674, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -15898,6 +15938,34 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 1ef31e0be4bd82b47ad1d3b37c992a69, type: 2}
+    - target: {fileID: 2679082694618657896, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_Seed
+      value: -48658
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679082694618657896, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679082694618657896, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[1].Prefab
+      value: 
+      objectReference: {fileID: 1817323109063731353, guid: d8316d43f775a564fa5d9a0014ac1b56, type: 3}
+    - target: {fileID: 2679082694618657896, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[2].Prefab
+      value: 
+      objectReference: {fileID: 6535510770500471991, guid: 9bfa8a0083d68204b9a2663605ff9737, type: 3}
+    - target: {fileID: 2679082694618657896, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[0].Probability
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679082694618657896, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[1].Probability
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 2679082694618657896, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
+      propertyPath: m_ItemsToInstantiate.Array.data[2].Probability
+      value: 33
+      objectReference: {fileID: 0}
     - target: {fileID: 2697517378752217755, guid: 88631a418f21f354ba35cfb95528c2f7, type: 3}
       propertyPath: m_Name
       value: Map
