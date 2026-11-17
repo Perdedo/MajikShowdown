@@ -22,6 +22,10 @@ public class SetGraphicsBuffer : MonoBehaviour
     static readonly ExposedProperty newEventArea = "OnNewArea";
     static readonly ExposedProperty endEventArea = "OnEndArea";
     static readonly ExposedProperty positionAttribute = "position";
+    static readonly ExposedProperty lifeAttribute = "lifetime";
+
+    static readonly ExposedProperty indexAttribute = "MyIndex";
+
     static readonly ExposedProperty sizeAttribute = "size"; 
     static readonly ExposedProperty hitEventProjec = "OnHitProject";
 
@@ -77,15 +81,17 @@ public class SetGraphicsBuffer : MonoBehaviour
             {
                 instances.Add(place);
                 spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
-                newCall = true;
             }
             else
             {
                 index = nullIndex.Dequeue();
                 instances[index] = place;
                 spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
-                newCall = true;
             }
+
+            ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
+            eventAttribute.SetVector3(positionAttribute, place.position);
+            visualEffect.SendEvent(newEvent, eventAttribute);
             return index;
         }
         
@@ -112,19 +118,21 @@ public class SetGraphicsBuffer : MonoBehaviour
         else
         {
             int index = instances.Count;
-            if (nullIndex.Count == 0)
+            if(nullIndex.Count == 0)
             {
                 instances.Add(place);
-                spawnPoints.Add(new Vector4(place.position.x, place.position.y, place.position.z, size));
-                newCall = true;
+                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
             }
             else
             {
                 index = nullIndex.Dequeue();
                 instances[index] = place;
-                spawnPoints[index] = new Vector4(place.position.x, place.position.y, place.position.z, size);
-                newCall = true;
+                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
             }
+
+            ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
+            eventAttribute.SetVector3(positionAttribute, place.position);
+            visualEffect.SendEvent(newEvent, eventAttribute);
             return index;
         }
 
@@ -140,6 +148,7 @@ public class SetGraphicsBuffer : MonoBehaviour
             eventAttribute.SetVector3(positionAttribute, instances[index].position);
             eventAttribute.SetFloat(sizeAttribute, spawnPoints[index].w);
             visualEffect.SendEvent(endEventArea, eventAttribute);
+            
         }else if(myType == SpellTypes.Projectile)
         {
             eventAttribute.SetVector3(positionAttribute, instances[index].position);
@@ -176,12 +185,6 @@ public class SetGraphicsBuffer : MonoBehaviour
         List<Vector4> points = GetBufferPoints();
         gBuffer.SetData(points);
         visualEffect.SetInt(bufferCount, points.Count);
-        if (newCall)
-        {
-            ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
-            visualEffect.SendEvent(newEvent);
-            newCall = false;
-        }
     }
 
     public void ClientUpdateVFXs()
@@ -192,12 +195,6 @@ public class SetGraphicsBuffer : MonoBehaviour
         List<Vector4> points = GetBufferPoints();
         gBuffer.SetData(points);
         visualEffect.SetInt(bufferCount, points.Count);
-        if (newCall)
-        {
-            ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
-            visualEffect.SendEvent(newEvent);
-            newCall = false;
-        }
     }
     
     void OnDisable()
@@ -260,5 +257,12 @@ public class SetGraphicsBuffer : MonoBehaviour
     {
         buffer?.Release();
         buffer = null;
+    }
+    Vector2 GetTimeSize(float dec)
+    {
+        float x = Mathf.Floor(dec * 10);
+        float y =  10 * ((dec * 10) - x );
+        Vector2 vec = new Vector2(x/10,y);
+        return vec;
     }
 }
