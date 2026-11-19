@@ -179,8 +179,8 @@ MonoBehaviour:
     mainColor: {r: 1, g: 1, b: 1, a: 1}
     emissionColor: {r: 85.332466, g: 0.6937599, b: 0, a: 1}
     emissionColor1: {r: 11.984314, g: 0.099882975, b: 0, a: 0}
-  flickering: 0
-  flickerAmmount: 0
+  damaged: 0
+  dmgEffectProgress: 0
 --- !u!114 &1432205814886390903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,11 +281,11 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  BaseMaxHealth: 5
-  MaxHealth: 5
-  Health: 5
+  BaseMaxHealth: 1
+  MaxHealth: 1
+  Health: 1
   minHealthMultiplier: 1
-  maxHealthMultiplier: 1.5
+  maxHealthMultiplier: 3
   resistancePercentValue: 50
   weaknessPercentValue: -100
   Resistances: []
