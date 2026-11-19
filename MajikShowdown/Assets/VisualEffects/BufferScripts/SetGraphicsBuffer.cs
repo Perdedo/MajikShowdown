@@ -60,7 +60,6 @@ public class SetGraphicsBuffer : MonoBehaviour
         if(myType != SpellTypes.Explosion && myType != SpellTypes.Area)
         {
             int index = instances.Count;
-            newCall = myParent.myElement == Elements.Earth;
             if(nullIndex.Count == 0)
             {
                 instances.Add(place);
@@ -71,6 +70,13 @@ public class SetGraphicsBuffer : MonoBehaviour
                 index = nullIndex.Dequeue();
                 instances[index] = place;
                 spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+            }
+            if(myParent.myElement == Elements.Earth)
+            {
+                ExposedProperty newEvent = newEventArea;
+                eventAttribute.SetVector3(positionAttribute, place.position);
+                visualEffect.SendEvent(newEvent, eventAttribute);
+
             }
             return index;
         }
@@ -92,6 +98,7 @@ public class SetGraphicsBuffer : MonoBehaviour
             ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
             eventAttribute.SetVector3(positionAttribute, place.position);
             visualEffect.SendEvent(newEvent, eventAttribute);
+            Debug.Log(GetTimeSize(size));
             return index;
         }
         
@@ -112,6 +119,13 @@ public class SetGraphicsBuffer : MonoBehaviour
                 index = nullIndex.Dequeue();
                 instances[index] = place;
                 spawnPoints[index] = new Vector4(place.position.x, place.position.y, place.position.z, size);
+            }
+            if(myParent.myElement == Elements.Earth)
+            {
+                ExposedProperty newEvent = newEventArea;
+                eventAttribute.SetVector3(positionAttribute, place.position);
+                visualEffect.SendEvent(newEvent, eventAttribute);
+
             }
             return index;
         }
@@ -261,7 +275,7 @@ public class SetGraphicsBuffer : MonoBehaviour
     Vector2 GetTimeSize(float dec)
     {
         float x = Mathf.Floor(dec * 10);
-        float y =  10 * ((dec * 10) - x );
+        float y =  100 * ((dec * 10) - x );
         Vector2 vec = new Vector2(x/10,y);
         return vec;
     }

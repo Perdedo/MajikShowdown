@@ -48,7 +48,8 @@ public class BuffersControl : MonoBehaviour
     public int SpawnEffect(Elements element, SpellTypes type, Transform place, float size, float time)
     {
         int index = -1;
-        size = size + (time/100);
+
+        size = size + (time/1000);//time < 10 ? size + (time/1000): size + (time/1000);
         for(int i = 0; i < buffers.Count; i++)
         {
             if(buffers[i].myElement == element)
