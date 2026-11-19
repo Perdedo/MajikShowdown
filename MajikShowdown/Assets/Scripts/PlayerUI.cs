@@ -1195,13 +1195,25 @@ public class PlayerUI : NetworkBehaviour
             if (child.name == "None") continue;
             Destroy(child.gameObject);
         }
+
+        Transform none = triggerSpellContent.Find("None");
+        if (none != null)
+        {
+            Button noneButton = none.GetComponent<Button>();
+            if (noneButton != null)
+            {
+                noneButton.onClick.RemoveAllListeners();
+                noneButton.onClick.AddListener(() => callback?.Invoke(null));
+            }
+        }
+
         foreach (Spell spell in spells)
         {
             if (spell == null) continue;
-
             SpellSelectionEntry entry = Instantiate(spellEntryPrefab, triggerSpellContent);
             entry.Setup(spell, visualDatabase.icons[spell.symbolIndex], visualDatabase.colors[spell.colorIndex], callback);
         }
+
         triggerSpellSelectionPanel.SetActive(true);
     }
 
