@@ -18,7 +18,7 @@ public class SpellInventoryUI : NetworkBehaviour
     public GameObject spellCardPrefab;
     public Transform createSpellCard;
     public PlayerUI playerUI;
-
+    int nextSpellNumber = 1;
     [Header("Network")]
     public bool network = true;
 
@@ -246,7 +246,7 @@ public class SpellInventoryUI : NetworkBehaviour
 
     string GenerateSpellName()
     {
-        return "Nameless";
+        return "Spell " + nextSpellNumber++;
     }
 
     void CreateSpellCard(Spell spell)

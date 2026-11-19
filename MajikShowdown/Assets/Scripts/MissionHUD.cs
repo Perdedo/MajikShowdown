@@ -21,9 +21,11 @@ public class MissionHUD : MonoBehaviour
 
     private Vector2 shownPosition;
     private Vector2 hiddenPosition;
-
     private Coroutine panelAnimation;
-
+    private float defaultPanelHeight;
+    private float defaultDescriptionHeight;
+    private Vector2 defaultPanelOffsetMin;
+    private string lastMissionDescription;
     private bool screenOpen;
     private bool helperExpanded;
 
@@ -41,6 +43,10 @@ public class MissionHUD : MonoBehaviour
             enabled = false;
             return;
         }
+
+        defaultPanelHeight = missionPanel.rect.height;
+        defaultDescriptionHeight = missionDescription.rectTransform.rect.height;
+        defaultPanelOffsetMin = missionPanel.offsetMin;
 
         shownPosition = missionPanel.anchoredPosition;
         hiddenPosition = CalculateHiddenPosition();
@@ -94,16 +100,38 @@ public class MissionHUD : MonoBehaviour
         {
             missionTitle.text = "";
             missionDescription.text = "";
-            return;
+        }
+        else
+        {
+            TutorialMission mission = controller.tutorialMissions[controller.activeMission];
+
+            if (missionTitle.text != mission.missionName)
+                missionTitle.text = mission.missionName;
+
+            if (missionDescription.text != mission.missionDescription)
+                missionDescription.text = mission.missionDescription;
         }
 
-        TutorialMission mission = controller.tutorialMissions[controller.activeMission];
+        if (lastMissionDescription != missionDescription.text)
+        {
+            lastMissionDescription = missionDescription.text;
+            UpdateMissionPanelHeight();
+        }
+    }
 
-        if (missionTitle.text != mission.missionName)
-            missionTitle.text = mission.missionName;
+    private void UpdateMissionPanelHeight()
+    {
+        missionDescription.ForceMeshUpdate();
 
-        if (missionDescription.text != mission.missionDescription)
-            missionDescription.text = mission.missionDescription;
+        float requiredHeight = Mathf.Max(defaultDescriptionHeight, missionDescription.preferredHeight);
+        float extraHeight = requiredHeight - defaultDescriptionHeight;
+
+        RectTransform descriptionRect = missionDescription.rectTransform;
+        descriptionRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, requiredHeight);
+
+        Vector2 panelOffsetMin = defaultPanelOffsetMin;
+        panelOffsetMin.y -= extraHeight;
+        missionPanel.offsetMin = panelOffsetMin;
     }
 
     private bool IsAnyWatchedPanelOpen()
