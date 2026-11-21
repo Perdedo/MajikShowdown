@@ -98,7 +98,6 @@ public class SetGraphicsBuffer : MonoBehaviour
             ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
             eventAttribute.SetVector3(positionAttribute, place.position);
             visualEffect.SendEvent(newEvent, eventAttribute);
-            Debug.Log(GetTimeSize(size));
             return index;
         }
         
