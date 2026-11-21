@@ -6,6 +6,7 @@ public class RuneLootBox : InteractableObject
     public RuneLootPool lootPool;
     [SyncVar]public int lootPoolInd;
     public SpellNode loot;
+    bool looted = false;
     public SpellNode GetLoot()
     {
         if (lootPool == null)
@@ -22,6 +23,7 @@ public class RuneLootBox : InteractableObject
         {
             return;
         }
+        looted = false;
         lootPool = LootSpawner.Instance.lootPools[lootPoolInd];
         loot = GetLoot();
         int qualityInd = -1;
@@ -92,6 +94,7 @@ public class RuneLootBox : InteractableObject
         {
             return;
         }
+        looted = false;
         lootPool = LootSpawner.Instance.lootPools[lootPoolInd];
         RuneQualityGroup aux = null;
         switch(rarityInd)
@@ -138,6 +141,8 @@ public class RuneLootBox : InteractableObject
 
     public override void Interact(Player player)
     {
+        if (looted) return;
+        looted = true;
         player.caster.AddRune(loot);
 
         if (player.isLocalPlayer || !LootSpawner.Instance.network)
@@ -148,6 +153,7 @@ public class RuneLootBox : InteractableObject
         if (!isServer && LootSpawner.Instance.network)
         {
             CMDInteract(GameManager.Instance.Players.IndexOf(player));
+            gameObject.SetActive(false);
         }
         else
         {
