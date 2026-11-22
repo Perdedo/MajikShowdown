@@ -32,6 +32,7 @@ public class SetGraphicsBuffer : MonoBehaviour
     VFXEventAttribute eventAttribute;
     ElementBuffers myParent;
 
+    bool newCall = false;
     public VFXNetworkAuxiliar netAux;
     void Start()
     {
@@ -55,54 +56,49 @@ public class SetGraphicsBuffer : MonoBehaviour
         if(netAux != null)
         {
             netAux.AddEffect(this, place, size);
+        }
+        if(myType != SpellTypes.Explosion && myType != SpellTypes.Area)
+        {
             int index = instances.Count;
+            if(nullIndex.Count == 0)
+            {
+                instances.Add(place);
+                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+            }
+            else
+            {
+                index = nullIndex.Dequeue();
+                instances[index] = place;
+                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+            }
+            if(myParent.myElement == Elements.Earth)
+            {
+                ExposedProperty newEvent = newEventArea;
+                eventAttribute.SetVector3(positionAttribute, place.position);
+                visualEffect.SendEvent(newEvent, eventAttribute);
+
+            }
             return index;
         }
         else
         {
-            if(myType != SpellTypes.Explosion && myType != SpellTypes.Area)
+            int index = instances.Count;
+            if(nullIndex.Count == 0)
             {
-                int index = instances.Count;
-                if(nullIndex.Count == 0)
-                {
-                    instances.Add(place);
-                    spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
-                }
-                else
-                {
-                    index = nullIndex.Dequeue();
-                    instances[index] = place;
-                    spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
-                }
-                if(myParent.myElement == Elements.Earth)
-                {
-                    ExposedProperty newEvent = newEventArea;
-                    eventAttribute.SetVector3(positionAttribute, place.position);
-                    visualEffect.SendEvent(newEvent, eventAttribute);
-
-                }
-                return index;
+                instances.Add(place);
+                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
             }
             else
             {
-                int index = instances.Count;
-                if(nullIndex.Count == 0)
-                {
-                    instances.Add(place);
-                    spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
-                }
-                else
-                {
-                    index = nullIndex.Dequeue();
-                    instances[index] = place;
-                    spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
-                }
-
-                ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
-                eventAttribute.SetVector3(positionAttribute, place.position);
-                visualEffect.SendEvent(newEvent, eventAttribute);
-                return index;
+                index = nullIndex.Dequeue();
+                instances[index] = place;
+                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
             }
+
+            ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
+            eventAttribute.SetVector3(positionAttribute, place.position);
+            visualEffect.SendEvent(newEvent, eventAttribute);
+            return index;
         }
         
     }
@@ -111,6 +107,7 @@ public class SetGraphicsBuffer : MonoBehaviour
         if (myType != SpellTypes.Explosion && myType != SpellTypes.Area)
         {
             int index = instances.Count;
+            newCall = myParent.myElement == Elements.Earth;
             if (nullIndex.Count == 0)
             {
                 instances.Add(place);

@@ -59,10 +59,10 @@ public class VFXNetworkAuxiliar : NetworkBehaviour
     [ClientRpc]
     public void RPCAddEffect(int index, GameObject place, float size)
     {
-        /*if(isServer)
+        if(isServer)
         {
             return;
-        }*/
+        }
         vfxBuffers[index].ClientAddEffect(place.transform, size);
     }
 
