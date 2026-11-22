@@ -590,6 +590,7 @@ GameObject:
   m_Component:
   - component: {fileID: 587172983737758204}
   - component: {fileID: 2173193453861871517}
+  - component: {fileID: 7766966319633701501}
   m_Layer: 0
   m_Name: TopBarrier
   m_TagString: Untagged
@@ -633,6 +634,26 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 250, y: 1, z: 250}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7766966319633701501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 555239412010758326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 1
+  m_Area: 1
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 0
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &615272022191829068
 GameObject:
   m_ObjectHideFlags: 0
@@ -4295,6 +4316,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5900419650699064232}
     m_Modifications:
+    - target: {fileID: 3959941008508527451, guid: 81c3e266a23059e40b84a561217a593d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.8432854
+      objectReference: {fileID: 0}
+    - target: {fileID: 3959941008508527451, guid: 81c3e266a23059e40b84a561217a593d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.032801643
+      objectReference: {fileID: 0}
+    - target: {fileID: 3959941008508527451, guid: 81c3e266a23059e40b84a561217a593d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.026302965
+      objectReference: {fileID: 0}
+    - target: {fileID: 3959941008508527451, guid: 81c3e266a23059e40b84a561217a593d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.53581905
+      objectReference: {fileID: 0}
+    - target: {fileID: 3959941008508527451, guid: 81c3e266a23059e40b84a561217a593d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -1.555
+      objectReference: {fileID: 0}
+    - target: {fileID: 3959941008508527451, guid: 81c3e266a23059e40b84a561217a593d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -4.562
+      objectReference: {fileID: 0}
+    - target: {fileID: 3959941008508527451, guid: 81c3e266a23059e40b84a561217a593d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 64.925
+      objectReference: {fileID: 0}
     - target: {fileID: 7473810308679439246, guid: 81c3e266a23059e40b84a561217a593d, type: 3}
       propertyPath: m_Name
       value: Tunnel
