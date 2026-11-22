@@ -160,9 +160,13 @@ public class TrainingEnemiesController : MonoBehaviour
                 usedEnemiesByType[ind].Add(auxEnemy);
                 auxEnemy.DamageHandler.Resistances.Clear();
                 float randElemental = UnityEngine.Random.Range(0, 100);
-                if (randElemental < elementalChance || auxEnemy is TrainingCasterEnemy)
+                if (randElemental < elementalChance || auxEnemy is TrainingCasterEnemy || auxEnemy is TrainingExplosiveEnemy)
                 {
                     auxEnemy.element = (Elements)UnityEngine.Random.Range(1, Enum.GetNames(typeof(Elements)).Length);
+                    if(auxEnemy.element == Elements.Lightning)
+                    {
+                        auxEnemy.element = Elements.Radiance;
+                    }
                     auxEnemy.DamageHandler.Resistances.Add(new Resistance(auxEnemy.element, auxEnemy.DamageHandler.resistancePercentValue));
                     switch (auxEnemy.element)
                     {
