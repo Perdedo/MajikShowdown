@@ -32,7 +32,6 @@ public class SetGraphicsBuffer : MonoBehaviour
     VFXEventAttribute eventAttribute;
     ElementBuffers myParent;
 
-    bool newCall = false;
     public VFXNetworkAuxiliar netAux;
     void Start()
     {
@@ -107,7 +106,6 @@ public class SetGraphicsBuffer : MonoBehaviour
         if (myType != SpellTypes.Explosion && myType != SpellTypes.Area)
         {
             int index = instances.Count;
-            newCall = myParent.myElement == Elements.Earth;
             if (nullIndex.Count == 0)
             {
                 instances.Add(place);
@@ -146,6 +144,7 @@ public class SetGraphicsBuffer : MonoBehaviour
             ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
             eventAttribute.SetVector3(positionAttribute, place.position);
             visualEffect.SendEvent(newEvent, eventAttribute);
+            Debug.Log(size);
             return index;
         }
 
