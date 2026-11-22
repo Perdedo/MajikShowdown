@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
     public UIController uiController;
     public List<Player> Players = new List<Player>();
+    public List<EnemyElementColors> PlayerColors = new List<EnemyElementColors>();
     public NetworkAuxiliarControl netCtrl;
     public HordeController hordeController;
     public TrainingEnemiesController trainingController;
@@ -55,6 +56,23 @@ public class GameManager : MonoBehaviour
     public void AddPlayer(Player player)
     {
         Players.Add(player);
+        foreach(SkinnedMeshRenderer mesh in player.meshes)
+        {
+            for(int i = 0; i < mesh.materials.Length; i++)
+            {
+                if(i > 0)
+                {
+                    mesh.materials[i].SetColor("_Base_Color", PlayerColors[Players.IndexOf(player)].mainColor);
+                    mesh.materials[i].SetColor("_EmissionColor_1", PlayerColors[Players.IndexOf(player)].mainColor);
+                    mesh.materials[i].SetColor("_EmissionColor_2", PlayerColors[Players.IndexOf(player)].mainColor);
+                }
+                else
+                {
+                    mesh.materials[i].SetColor("_Emission_Color", PlayerColors[Players.IndexOf(player)].emissionColor);
+                    mesh.materials[i].SetColor("_Emission_Color1", PlayerColors[Players.IndexOf(player)].emissionColor1);
+                }
+            }
+        }
         if(Players[0].network && NetworkManager.singleton != null && NetworkManager.singleton.GetComponent<RoomManager>() != null && Players.Count != NetworkManager.singleton.GetComponent<RoomManager>().playerList.Count)
         {
             return;
