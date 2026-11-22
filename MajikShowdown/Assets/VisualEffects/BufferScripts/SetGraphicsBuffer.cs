@@ -55,49 +55,54 @@ public class SetGraphicsBuffer : MonoBehaviour
         if(netAux != null)
         {
             netAux.AddEffect(this, place, size);
-        }
-        if(myType != SpellTypes.Explosion && myType != SpellTypes.Area)
-        {
             int index = instances.Count;
-            if(nullIndex.Count == 0)
-            {
-                instances.Add(place);
-                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
-            }
-            else
-            {
-                index = nullIndex.Dequeue();
-                instances[index] = place;
-                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
-            }
-            if(myParent.myElement == Elements.Earth)
-            {
-                ExposedProperty newEvent = newEventArea;
-                eventAttribute.SetVector3(positionAttribute, place.position);
-                visualEffect.SendEvent(newEvent, eventAttribute);
-
-            }
             return index;
         }
         else
         {
-            int index = instances.Count;
-            if(nullIndex.Count == 0)
+            if(myType != SpellTypes.Explosion && myType != SpellTypes.Area)
             {
-                instances.Add(place);
-                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                int index = instances.Count;
+                if(nullIndex.Count == 0)
+                {
+                    instances.Add(place);
+                    spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                }
+                else
+                {
+                    index = nullIndex.Dequeue();
+                    instances[index] = place;
+                    spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+                }
+                if(myParent.myElement == Elements.Earth)
+                {
+                    ExposedProperty newEvent = newEventArea;
+                    eventAttribute.SetVector3(positionAttribute, place.position);
+                    visualEffect.SendEvent(newEvent, eventAttribute);
+
+                }
+                return index;
             }
             else
             {
-                index = nullIndex.Dequeue();
-                instances[index] = place;
-                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
-            }
+                int index = instances.Count;
+                if(nullIndex.Count == 0)
+                {
+                    instances.Add(place);
+                    spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                }
+                else
+                {
+                    index = nullIndex.Dequeue();
+                    instances[index] = place;
+                    spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+                }
 
-            ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
-            eventAttribute.SetVector3(positionAttribute, place.position);
-            visualEffect.SendEvent(newEvent, eventAttribute);
-            return index;
+                ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
+                eventAttribute.SetVector3(positionAttribute, place.position);
+                visualEffect.SendEvent(newEvent, eventAttribute);
+                return index;
+            }
         }
         
     }
