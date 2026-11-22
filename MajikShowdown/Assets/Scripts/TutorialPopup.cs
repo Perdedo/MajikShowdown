@@ -18,7 +18,7 @@ public class TutorialPopup : MonoBehaviour
     [HideInInspector] public bool returnToGameplay = false;
     private int totalPages;
     private bool hasVideo;
-    
+
     private void OnEnable()
     {
         previous.onClick.AddListener(OnPreviousClicked);
@@ -36,18 +36,12 @@ public class TutorialPopup : MonoBehaviour
     public void ChangePopupDetails(string titleText, string descText, Sprite sprite, VideoClip videoClip, int currentPage, int totalPage)
     {
         SetTitle(titleText);
-        if(descText != null)
+        if (descText != null)
         {
             SetDesc(descText);
         }
-        if(image != null)
-        {
-            SetImage(sprite);
-        }
-        if (videoClip != null)
-        {
-            SetVideoClip(videoClip);
-        }
+        SetImage(sprite);
+        SetVideoClip(videoClip);
         SetPageNumber(currentPage, totalPage);
         SetPreviousButtonActive(currentPage > 1);
         SetNextButtonActive(currentPage < totalPage);
@@ -101,7 +95,7 @@ public class TutorialPopup : MonoBehaviour
     {
         popupPanel.SetActive(false);
         TutorialController.Instance.ResetPageIndex();
-        if(returnToGameplay)
+        if (returnToGameplay)
         {
             GameManager.Instance.uiController.playerUI.EnableGameplayCursor();
             returnToGameplay = false;
