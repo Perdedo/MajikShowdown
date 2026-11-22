@@ -9,6 +9,16 @@ public class VFXNetworkAuxiliar : NetworkBehaviour
 
     public override void OnStartClient()
     {
+        if (isServer) return;
+        instance = this;
+        foreach(SetGraphicsBuffer buffer in vfxBuffers)
+        {
+            buffer.Initialize();
+        }
+    }
+
+    public override void OnStartServer()
+    {
         instance = this;
         foreach(SetGraphicsBuffer buffer in vfxBuffers)
         {
