@@ -30,6 +30,7 @@ public class SetGraphicsBuffer : MonoBehaviour
     static readonly ExposedProperty hitEventProjec = "OnHitProject";
 
     VFXEventAttribute eventAttribute;
+    List<VFXEventAttribute> eventAttributes = new List<VFXEventAttribute>();
     ElementBuffers myParent;
 
     bool newCall = false;
@@ -64,6 +65,7 @@ public class SetGraphicsBuffer : MonoBehaviour
             {
                 instances.Add(place);
                 spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                eventAttributes.Add(visualEffect.CreateVFXEventAttribute());
             }
             else
             {
@@ -74,8 +76,10 @@ public class SetGraphicsBuffer : MonoBehaviour
             if(myParent.myElement == Elements.Earth)
             {
                 ExposedProperty newEvent = newEventArea;
-                eventAttribute.SetVector3(positionAttribute, place.position);
-                visualEffect.SendEvent(newEvent, eventAttribute);
+                //eventAttribute.SetVector3(positionAttribute, place.position);
+                //visualEffect.SendEvent(newEvent, eventAttribute);
+                eventAttributes[index].SetVector3(positionAttribute, place.position);
+                visualEffect.SendEvent(newEvent, eventAttributes[index]);
 
             }
             return index;
@@ -87,6 +91,7 @@ public class SetGraphicsBuffer : MonoBehaviour
             {
                 instances.Add(place);
                 spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                eventAttributes.Add(visualEffect.CreateVFXEventAttribute());
             }
             else
             {
@@ -96,8 +101,10 @@ public class SetGraphicsBuffer : MonoBehaviour
             }
 
             ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
-            eventAttribute.SetVector3(positionAttribute, place.position);
-            visualEffect.SendEvent(newEvent, eventAttribute);
+            //eventAttribute.SetVector3(positionAttribute, place.position);
+            //visualEffect.SendEvent(newEvent, eventAttribute);
+            eventAttributes[index].SetVector3(positionAttribute, place.position);
+            visualEffect.SendEvent(newEvent, eventAttributes[index]);
             return index;
         }
         
@@ -107,11 +114,11 @@ public class SetGraphicsBuffer : MonoBehaviour
         if (myType != SpellTypes.Explosion && myType != SpellTypes.Area)
         {
             int index = instances.Count;
-            newCall = myParent.myElement == Elements.Earth;
             if (nullIndex.Count == 0)
             {
                 instances.Add(place);
                 spawnPoints.Add(new Vector4(place.position.x, place.position.y, place.position.z, size));
+                eventAttributes.Add(visualEffect.CreateVFXEventAttribute());
             }
             else
             {
@@ -119,11 +126,13 @@ public class SetGraphicsBuffer : MonoBehaviour
                 instances[index] = place;
                 spawnPoints[index] = new Vector4(place.position.x, place.position.y, place.position.z, size);
             }
-            if(myParent.myElement == Elements.Earth)
+            if (myParent.myElement == Elements.Earth)
             {
                 ExposedProperty newEvent = newEventArea;
-                eventAttribute.SetVector3(positionAttribute, place.position);
-                visualEffect.SendEvent(newEvent, eventAttribute);
+                //eventAttribute.SetVector3(positionAttribute, place.position);
+                //visualEffect.SendEvent(newEvent, eventAttribute);
+                eventAttributes[index].SetVector3(positionAttribute, place.position);
+                visualEffect.SendEvent(newEvent, eventAttributes[index]);
 
             }
             return index;
@@ -131,21 +140,24 @@ public class SetGraphicsBuffer : MonoBehaviour
         else
         {
             int index = instances.Count;
-            if(nullIndex.Count == 0)
+            if (nullIndex.Count == 0)
             {
                 instances.Add(place);
-                spawnPoints.Add(new Vector4(place.position.x,place.position.y,place.position.z,size));
+                spawnPoints.Add(new Vector4(place.position.x, place.position.y, place.position.z, size));
+                eventAttributes.Add(visualEffect.CreateVFXEventAttribute());
             }
             else
             {
                 index = nullIndex.Dequeue();
                 instances[index] = place;
-                spawnPoints[index] = new Vector4(place.position.x,place.position.y,place.position.z,size);
+                spawnPoints[index] = new Vector4(place.position.x, place.position.y, place.position.z, size);
             }
 
             ExposedProperty newEvent = myType == SpellTypes.Explosion ? newEventExplosion : newEventArea;
-            eventAttribute.SetVector3(positionAttribute, place.position);
-            visualEffect.SendEvent(newEvent, eventAttribute);
+            //eventAttribute.SetVector3(positionAttribute, place.position);
+            //visualEffect.SendEvent(newEvent, eventAttribute);
+            eventAttributes[index].SetVector3(positionAttribute, place.position);
+            visualEffect.SendEvent(newEvent, eventAttributes[index]);
             return index;
         }
 
