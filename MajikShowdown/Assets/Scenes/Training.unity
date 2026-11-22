@@ -14,7 +14,7 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 1
+  m_Fog: 0
   m_FogColor: {r: 0.8584906, g: 0.45143855, b: 0.33610713, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.009
@@ -3936,6 +3936,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiController: {fileID: 0}
   Players: []
+  PlayerColors:
+  - element: Player 1
+    mainColor: {r: 0.5, g: 0, b: 0, a: 1}
+    emissionColor: {r: 0.19607843, g: 0, b: 0, a: 1}
+    emissionColor1: {r: 0.47058824, g: 0, b: 0, a: 1}
+  - element: Player 2
+    mainColor: {r: 0, g: 0, b: 0.5, a: 1}
+    emissionColor: {r: 0, g: 0, b: 0.11764706, a: 1}
+    emissionColor1: {r: 0, g: 0, b: 0.78431374, a: 1}
+  - element: Player 3
+    mainColor: {r: 0.75, g: 0.7, b: 0, a: 1}
+    emissionColor: {r: 0.47058824, g: 0.3137255, b: 0, a: 1}
+    emissionColor1: {r: 0.47058824, g: 0.47058824, b: 0, a: 1}
+  - element: Player 4
+    mainColor: {r: 0, g: 0.5, b: 0, a: 1}
+    emissionColor: {r: 0, g: 0.19607843, b: 0, a: 1}
+    emissionColor1: {r: 0, g: 0.47058824, b: 0, a: 1}
   netCtrl: {fileID: 0}
   hordeController: {fileID: 0}
   trainingController: {fileID: 0}
@@ -8364,20 +8381,20 @@ MonoBehaviour:
   enemyElementColors:
   - element: Ice
     mainColor: {r: 0, g: 0.5, b: 1, a: 1}
-    emissionColor: {r: 0, g: 0.4626761, b: 7.906699, a: 1}
-    emissionColor1: {r: 0, g: 4.2624607, b: 11.984314, a: 0}
+    emissionColor: {r: 0, g: 0.061985493, b: 1.0592737, a: 1}
+    emissionColor1: {r: 0, g: 0.5328076, b: 1.4980392, a: 0}
   - element: Fire
     mainColor: {r: 1, g: 0, b: 0, a: 1}
-    emissionColor: {r: 85.332466, g: 0.6937599, b: 0, a: 1}
-    emissionColor1: {r: 11.984314, g: 0.099882975, b: 0, a: 0}
+    emissionColor: {r: 1.0592737, g: 0.50468016, b: 0, a: 1}
+    emissionColor1: {r: 1.0592737, g: 0.008828491, b: 0, a: 0}
   - element: Lightning
     mainColor: {r: 0, g: 1, b: 1, a: 1}
-    emissionColor: {r: 0, g: 2.1185474, b: 1.3381577, a: 1}
-    emissionColor1: {r: 1.4731045, g: 1.4458812, b: 0, a: 0}
+    emissionColor: {r: 0, g: 1.0592737, b: 0.6690788, a: 1}
+    emissionColor1: {r: 1.498039, g: 1.470355, b: 0, a: 0}
   - element: Radiance
     mainColor: {r: 1, g: 1, b: 0, a: 1}
-    emissionColor: {r: 2.1411636, g: 2.1411636, b: 0.07069884, a: 1}
-    emissionColor1: {r: 3.4822028, g: 3.106405, b: 0.83769965, a: 0}
+    emissionColor: {r: 0.7490196, g: 0.7490196, b: 0.024731796, a: 1}
+    emissionColor1: {r: 1.0592737, g: 0.9449574, b: 0.25482526, a: 0}
   - element: Decay
     mainColor: {r: 0, g: 1, b: 0, a: 1}
     emissionColor: {r: 0, g: 0.007843138, b: 0, a: 1}
@@ -8871,9 +8888,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1297577861070360448, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
-      propertyPath: m_CastShadows
-      value: 1
+    - target: {fileID: 551057522142676243, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Value.x
+      value: 1.0228049
+      objectReference: {fileID: 0}
+    - target: {fileID: 551057522142676243, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Value.y
+      value: 1.0592737
+      objectReference: {fileID: 0}
+    - target: {fileID: 551057522142676243, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[1].m_Value.z
+      value: 0.20485952
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133184423029580891, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Gradient.m_Array.Array.data[0].m_Value.key0.b
+      value: 0.30479094
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133184423029580891, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Gradient.m_Array.Array.data[0].m_Value.key0.g
+      value: 0.7640413
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133184423029580891, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Gradient.m_Array.Array.data[0].m_Value.key0.r
+      value: 1.0592736
       objectReference: {fileID: 0}
     - target: {fileID: 1921680596906593342, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8915,13 +8952,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5470890192348874501, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
-      propertyPath: bufferCapacity
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 6689734942567695830, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
       propertyPath: m_Name
       value: BufferControl
+      objectReference: {fileID: 0}
+    - target: {fileID: 8163954951294986396, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.x
+      value: 1.0592737
+      objectReference: {fileID: 0}
+    - target: {fileID: 8163954951294986396, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.y
+      value: 0.80894876
+      objectReference: {fileID: 0}
+    - target: {fileID: 8163954951294986396, guid: 845b11ab2f579f246b3474d813d612cd, type: 3}
+      propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.z
+      value: 0.25482523
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

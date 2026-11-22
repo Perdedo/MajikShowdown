@@ -17,7 +17,8 @@ public class Player : Character
     [SyncVar(hook = "NameSync")] public string playerName;
     [SyncVar(hook = "SteamSync")] public ulong playerSteamID;
     public PlayerUI myUI;
-    public GameObject mesh;
+    //public GameObject mesh;
+    public List<SkinnedMeshRenderer> meshes = new List<SkinnedMeshRenderer>();
     public Collider col;
     [Header("Camera Options")]
     public CinemachineCamera playerCamera;
@@ -246,10 +247,10 @@ public class Player : Character
         {
             input.enabled = !newVal;
         }*/
-        if(mesh != null)
+        /*if(mesh != null)
         {
             mesh.SetActive(!newVal);
-        }
+        }*/
         if(col != null)
         {
             col.enabled = !newVal;

@@ -84,7 +84,7 @@ public class BuffersControl : MonoBehaviour
     private IEnumerator  RemoveExplosion(float time, Elements element, int index)
     {
 
-        yield return new WaitForSeconds(1 + time);
+        yield return new WaitForSeconds(0.01f + time);
         UnspawnEffect(element, SpellTypes.Explosion, index);
     }
 }

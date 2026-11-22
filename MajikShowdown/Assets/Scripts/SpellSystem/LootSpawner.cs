@@ -39,7 +39,7 @@ public class LootSpawner : NetworkBehaviour
             g = inst.gameObject;
             inst.transform.position = position;
             g.SetActive(true);
-            if(network) RPCActivateLootBox(g);
+            if(network) RPCActivateLootBox(g, position);
         }
         else
         {
@@ -63,8 +63,9 @@ public class LootSpawner : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RPCActivateLootBox(GameObject obj)
+    public void RPCActivateLootBox(GameObject obj, Vector3 pos)
     {
+        obj.transform.position = pos;
         obj.SetActive(true);
     }
 

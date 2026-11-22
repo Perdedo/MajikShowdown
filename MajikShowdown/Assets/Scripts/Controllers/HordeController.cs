@@ -466,6 +466,7 @@ public class HordeController : NetworkBehaviour
     public void StartPause()
     {
         xray.SetActive(false);
+        XRayOff();
         pauseStartTime = Time.time;
         pauseEndTime = pauseStartTime + pauseDuration;
         inPause = true;
@@ -482,6 +483,18 @@ public class HordeController : NetworkBehaviour
             }
         }
         StartCoroutine(EndPause());
+    }
+
+    [ClientRpc]
+    public void XRayOn()
+    {
+        xray.SetActive(true);
+    }
+
+    [ClientRpc]
+    public void XRayOff()
+    {
+        xray.SetActive(false);
     }
 
     [Server]
@@ -635,6 +648,7 @@ public class HordeController : NetworkBehaviour
     {
         yield return new WaitForSeconds(hordes[hordeIndex].hordeDuration);
         xray.SetActive(true);
+        XRayOn();
         inHordeTime = false;
         foreach(Player p in GameManager.Instance.Players)
         {
