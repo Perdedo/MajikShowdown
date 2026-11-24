@@ -114,12 +114,12 @@ public class SpellCollider : NetworkBehaviour
         {
             float extraDuration = Mathf.Min(1, stats.Duration * 0.2f);
             float roundedDuration = Mathf.Round((stats.Duration + extraDuration) * 10) / 10;
-            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size/2 * 10) / 10, roundedDuration);
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round((stats.Size / 2)*1.1f * 10) / 10, roundedDuration);
         }
-        else if(OwnerSpell.coreNode.Type == SpellTypes.Area)
+        else if (OwnerSpell.coreNode.Type == SpellTypes.Area)
         {
-            float roundedDuration = Mathf.Round(stats.Duration  * 10) / 10;
-            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size/2 * 10) / 10, roundedDuration);
+            float roundedDuration = Mathf.Round(stats.Duration * 10) / 10;
+            VFXIndex = BuffersControl.Instance.SpawnEffect(OwnerSpell.coreNode.Element, OwnerSpell.coreNode.Type, transform, Mathf.Round(stats.Size * 10) / 10, roundedDuration);
         }
         else
         {
@@ -168,17 +168,20 @@ public class SpellCollider : NetworkBehaviour
                 HitTimer.SetTimer(0);
             }
         }
+        if (OwnerSpell.coreNode.Type != SpellTypes.Area || !expanding)
+        {
+            if (UseAcceleration)
+            {
+                rb.LerpToVelocity(OwnerSpell.coreNode.GetVelocity(this), stats.Speed * 2);
+                SetTrajectoryForward(rb.Velocity);
+            }
+            else
+            {
+                rb.CancelLerp();
+                rb.Velocity = OwnerSpell.coreNode.GetVelocity(this);
+            }
+        }
 
-        if (UseAcceleration)
-        {
-            rb.LerpToVelocity(OwnerSpell.coreNode.GetVelocity(this), stats.Speed * 2);
-            SetTrajectoryForward(rb.Velocity);
-        }
-        else
-        {
-            rb.CancelLerp();
-            rb.Velocity = OwnerSpell.coreNode.GetVelocity(this);
-        }
         previousVelocity = rb.Velocity;
         foreach (TriggerInfo t in triggerInfos)
         {
@@ -372,7 +375,7 @@ public class SpellCollider : NetworkBehaviour
                     scaleTime = stats.Duration;
                     break;
                 default:
-                    scaleTime = 0.3f;
+                    scaleTime = 0.2f;
                     break;
             }
             if (LifeTime <= scaleTime)
