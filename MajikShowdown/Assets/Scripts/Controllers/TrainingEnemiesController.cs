@@ -18,6 +18,7 @@ public class TrainingEnemiesController : MonoBehaviour
     [HideInInspector] public List<HashSet<Enemy>> usedEnemiesByType = new List<HashSet<Enemy>>();
     public float spawnerHeight = 2;
     public int maxEnemyCount = 500;
+    public int[] maxSoundPerEnemyType = new int[6];
     Timer aiCalcTimer = new Timer(false);
     float enemyAIupdateRate = 1f / 10f;
     public float elementalChance = 5;
@@ -59,7 +60,7 @@ public class TrainingEnemiesController : MonoBehaviour
     }
     private void Update()
     {
-        if(UsedEnemies.Count <= 0 && DyingEnemies.Count <= 0)
+        if (UsedEnemies.Count <= 0 && DyingEnemies.Count <= 0)
         {
             return;
         }
@@ -72,7 +73,7 @@ public class TrainingEnemiesController : MonoBehaviour
                 if (UsedEnemies[i] != null)
                 {
                     UsedEnemies[i].MoveDirection = results[i];
-                    if(!(UsedEnemies[i] is TrainingCasterEnemy))
+                    if (!(UsedEnemies[i] is TrainingCasterEnemy))
                     {
                         UsedEnemies[i].Reposition();
                     }
@@ -83,6 +84,10 @@ public class TrainingEnemiesController : MonoBehaviour
                     }
                     UsedEnemies[i].EnemyUpdate();
                 }
+            }
+            foreach (Enemy e in StartEnemySoundJob())
+            {
+                e.soundController.PlayEnemySounds();
             }
         }
         else
@@ -99,11 +104,11 @@ public class TrainingEnemiesController : MonoBehaviour
                 }
             }
         }
-        if(DyingEnemies.Count > 0)
+        if (DyingEnemies.Count > 0)
         {
-            for(int i = 0; i < DyingEnemies.Count; i++)
+            for (int i = 0; i < DyingEnemies.Count; i++)
             {
-                if(DyingEnemies[i] != null)
+                if (DyingEnemies[i] != null)
                 {
                     DyingEnemies[i].DyingUpdate();
                 }
@@ -115,7 +120,7 @@ public class TrainingEnemiesController : MonoBehaviour
     Enemy auxEnemy;
     public void SpawnEnemy(TrainingEnemySpawner spawner, GameObject enemy, Vector3 pos, int quantity, Vector3 distanceBetweenSpawns)
     {
-        for(int i = 0; i < quantity; i++)
+        for (int i = 0; i < quantity; i++)
         {
             if (UsedEnemies.Count < maxEnemyCount)
             {
@@ -163,7 +168,7 @@ public class TrainingEnemiesController : MonoBehaviour
                 if (randElemental < elementalChance || auxEnemy is TrainingCasterEnemy || auxEnemy is TrainingExplosiveEnemy)
                 {
                     auxEnemy.element = (Elements)UnityEngine.Random.Range(1, Enum.GetNames(typeof(Elements)).Length);
-                    if(auxEnemy.element == Elements.Lightning)
+                    if (auxEnemy.element == Elements.Lightning)
                     {
                         auxEnemy.element = Elements.Radiance;
                     }
@@ -461,5 +466,55 @@ public class TrainingEnemiesController : MonoBehaviour
         nDot.Dispose();
         commands.Dispose();
 
+    }
+List<Enemy> StartEnemySoundJob()
+    {
+        List<Enemy> selectedEnemies = new List<Enemy>();
+        NativeArray<EnemyJobData> enemiesInfo = new NativeArray<EnemyJobData>(UsedEnemies.Count, Allocator.TempJob);
+        for (int i = 0; i < UsedEnemies.Count; i++)
+        {
+            if (UsedEnemies[i] != null)
+            {
+                enemiesInfo[i] = new EnemyJobData()
+                {
+                    Position = UsedEnemies[i].transform.position,
+                };
+            }
+        }
+        float3 playerPos = GameManager.Instance.Players[0].transform.position;
+        for(int i = 0; i<usedEnemiesByType.Count; i++)
+        {
+            HashSet<Enemy> hash = usedEnemiesByType[i];
+            NativeArray<int> enemyTypeIndices = new NativeArray<int>(hash.Count, Allocator.TempJob);
+            int index = 0;
+            foreach(Enemy e in hash)
+            {
+                if (e != null)
+                {
+                    enemyTypeIndices[index] = e.ActiveID.ID;
+                    index++;
+                }
+            }
+            EnemySoundJob soundJob = new EnemySoundJob()
+            {
+                PlayerPosition = playerPos,
+                SoundDistance = 35,
+                MaxEnemies = maxSoundPerEnemyType[i],
+                EnemyTypeIndices = enemyTypeIndices,
+                EnemyData = enemiesInfo,
+                SelectedEnemyIndices = new NativeList<int>(Allocator.TempJob)
+            };
+            JobHandle handle = soundJob.Schedule();
+            handle.Complete();
+            foreach(int id in soundJob.SelectedEnemyIndices)
+            {
+                selectedEnemies.Add(UsedEnemies[id]);
+            }
+            enemyTypeIndices.Dispose();
+            soundJob.SelectedEnemyIndices.Dispose();
+            
+        }
+        enemiesInfo.Dispose();
+        return selectedEnemies;
     }
 }

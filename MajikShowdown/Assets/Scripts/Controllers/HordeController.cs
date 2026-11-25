@@ -8,6 +8,7 @@ using UnityEngine;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine.Rendering.Universal;
+using System.Linq;
 
 public class HordeController : NetworkBehaviour
 {
@@ -44,6 +45,7 @@ public class HordeController : NetworkBehaviour
     bool possiblePos;
     public TextMeshProUGUI enemyCounterTxt;
     public int maxEnemyCount = 500;
+    public int[] maxSoundPerEnemyType = new int[6];
     //public int hordesToWin = 3;
     int hordeCount;
     public float lastTime;
@@ -161,6 +163,10 @@ public class HordeController : NetworkBehaviour
                             }
                             UsedEnemies[i].EnemyUpdate();
                         }
+                    }
+                    foreach (Enemy e in StartEnemySoundJob())
+                    {
+                        e.soundController.PlayEnemySounds();
                     }
                 }
                 else
@@ -454,6 +460,64 @@ public class HordeController : NetworkBehaviour
 
     }
 
+    List<Enemy> StartEnemySoundJob()
+    {
+        List<Enemy> selectedEnemies = new List<Enemy>();
+        NativeArray<EnemyJobData> enemiesInfo = new NativeArray<EnemyJobData>(UsedEnemies.Count, Allocator.TempJob);
+        for (int i = 0; i < UsedEnemies.Count; i++)
+        {
+            if (UsedEnemies[i] != null)
+            {
+                enemiesInfo[i] = new EnemyJobData()
+                {
+                    Position = UsedEnemies[i].transform.position,
+                };
+            }
+        }
+        float3 playerPos = float3.zero;
+        foreach(Player p in GameManager.Instance.Players)
+        {
+            if (p.isLocalPlayer)
+            {
+                playerPos = p.transform.position;
+                break;
+            }
+        }
+        for(int i = 0; i<usedEnemiesByType.Count; i++)
+        {
+            HashSet<Enemy> hash = usedEnemiesByType[i];
+            NativeArray<int> enemyTypeIndices = new NativeArray<int>(hash.Count, Allocator.TempJob);
+            int index = 0;
+            foreach(Enemy e in hash)
+            {
+                if (e != null)
+                {
+                    enemyTypeIndices[index] = e.ActiveID.ID;
+                    index++;
+                }
+            }
+            EnemySoundJob soundJob = new EnemySoundJob()
+            {
+                PlayerPosition = playerPos,
+                SoundDistance = 35,
+                MaxEnemies = maxSoundPerEnemyType[i],
+                EnemyTypeIndices = enemyTypeIndices,
+                EnemyData = enemiesInfo,
+                SelectedEnemyIndices = new NativeList<int>(Allocator.TempJob)
+            };
+            JobHandle handle = soundJob.Schedule();
+            handle.Complete();
+            foreach(int id in soundJob.SelectedEnemyIndices)
+            {
+                selectedEnemies.Add(UsedEnemies[id]);
+            }
+            enemyTypeIndices.Dispose();
+            soundJob.SelectedEnemyIndices.Dispose();
+            
+        }
+        enemiesInfo.Dispose();
+        return selectedEnemies;
+    }
     public void Initialize()
     {
         if (!isServer || running) return;

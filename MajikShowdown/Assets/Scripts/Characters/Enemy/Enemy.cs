@@ -83,6 +83,7 @@ public class Enemy : CrowdCharacter
     //[SyncVar (hook = "OnAnimStateChange")] public EnemyAnimState animState;
     [HideInInspector][SyncVar(hook = "ResetFlicker")] public bool damaged = false;
     [HideInInspector] public float dmgEffectProgress = 0;
+    public EnemySoundController soundController;
 
     public void ChangeColor(int oldVal, int newVal)
     {
@@ -90,7 +91,7 @@ public class Enemy : CrowdCharacter
         damaged = false;
         if (newVal >= 0)
         {
-            foreach(Material mat in mesh.materials)
+            foreach (Material mat in mesh.materials)
             {
                 mat.SetColor("_Main_Color", GameManager.Instance.hordeController.enemyElementColors[newVal].mainColor);
                 mat.SetColor("_Emission_Color", GameManager.Instance.hordeController.enemyElementColors[newVal].emissionColor);
@@ -112,7 +113,7 @@ public class Enemy : CrowdCharacter
 
     public void OfflineChangeColor(int index)
     {
-        if(colorIndex == index)
+        if (colorIndex == index)
         {
             return;
         }
@@ -121,7 +122,7 @@ public class Enemy : CrowdCharacter
         damaged = false;
         if (index >= 0)
         {
-            foreach(Material mat in mesh.materials)
+            foreach (Material mat in mesh.materials)
             {
                 mat.SetColor("_Main_Color", GameManager.Instance.trainingController.enemyElementColors[index].mainColor);
                 mat.SetColor("_Emission_Color", GameManager.Instance.trainingController.enemyElementColors[index].emissionColor);
@@ -239,7 +240,7 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        if(transparency > 0)
+        if (transparency > 0)
         {
             transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
 
@@ -251,7 +252,7 @@ public class Enemy : CrowdCharacter
         }
         timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
-        if((predTarget - transform.position).sqrMagnitude < 100)
+        if ((predTarget - transform.position).sqrMagnitude < 100)
         {
             transform.position = Vector3.Lerp(transform.position, predTarget, Time.deltaTime * 15);
         }
@@ -277,14 +278,14 @@ public class Enemy : CrowdCharacter
     public void ResetTransform(Vector3 spawnPos)
     {
         transparency = 1;
-        foreach(Material mat in mesh.materials)
+        foreach (Material mat in mesh.materials)
         {
             mat.SetFloat("_Alpha_Threshold", 1);
         }
         transform.position = spawnPos;
         rb.position = spawnPos;
-        transformInfo = new EnemyTransformInfo(spawnPos,(byte)transform.rotation.eulerAngles.y, Vector3.zero);
-        if(GameManager.Instance.hordeController.enemiesInfo.Count > instanceIndex)
+        transformInfo = new EnemyTransformInfo(spawnPos, (byte)transform.rotation.eulerAngles.y, Vector3.zero);
+        if (GameManager.Instance.hordeController.enemiesInfo.Count > instanceIndex)
         {
             GameManager.Instance.hordeController.enemiesInfo[instanceIndex] = transformInfo;
         }
@@ -365,11 +366,11 @@ public class Enemy : CrowdCharacter
         {
             mat.SetFloat("_Alpha_Threshold", transparency);
         }
-        if(transparency >= 1)
+        if (transparency >= 1)
         {
             if (GameManager.Instance.hordeController != null)
             {
-                if(isServer)
+                if (isServer)
                 {
                     GameManager.Instance.hordeController.enemies.Remove(this);
                     GameManager.Instance.hordeController.UpdateEnemyText(GameManager.Instance.hordeController.enemies.Count);
@@ -403,7 +404,7 @@ public class Enemy : CrowdCharacter
         {
             mat.SetFloat("_Damage", dmgEffectProgress);
         }
-        if(dmgEffectProgress >= 1)
+        if (dmgEffectProgress >= 1)
         {
             damaged = false;
             dmgEffectProgress = 0;
@@ -420,7 +421,7 @@ public class Enemy : CrowdCharacter
 
     public void ResetFlicker(bool oldVal, bool newVal)
     {
-        if(newVal)
+        if (newVal)
         {
             dmgEffectProgress = 0;
         }
@@ -1035,7 +1036,7 @@ public class Enemy : CrowdCharacter
         //transform.Rotate(Vector3.up, Vector3.SignedAngle(transform.forward, new Vector3(interestDirection.x, 0, interestDirection.z), Vector3.up) * Time.fixedDeltaTime * rotationSpeed);
         if (Time.frameCount % 2 == 0)
         {
-            if(targetVector.magnitude > TargetStoppingDistance)
+            if (targetVector.magnitude > TargetStoppingDistance)
             {
                 Vector3 dir = interestDirection;
                 dir.y = 0;
@@ -1586,6 +1587,51 @@ public struct EnemyCalculateDotJob : IJobParallelFor
     public void Execute(int index)
     {
         NormalDot[index] = math.dot(Res[index].normal, Vector3.up);
+    }
+}
+[BurstCompile]
+public struct EnemySoundJob : IJob
+{
+    [Unity.Collections.ReadOnly] public NativeArray<EnemyJobData> EnemyData;
+    [Unity.Collections.ReadOnly] public NativeArray<int> EnemyTypeIndices;
+    [Unity.Collections.ReadOnly] public float3 PlayerPosition;
+    public float SoundDistance;
+    public int MaxEnemies;
+    public NativeList<int> SelectedEnemyIndices;
+    public void Execute()
+    {
+        foreach (int ID in EnemyTypeIndices)
+        {
+            float distance = math.distance(EnemyData[ID].Position, PlayerPosition);
+            if (distance <= SoundDistance)
+            {
+                if (SelectedEnemyIndices.Length < MaxEnemies)
+                {
+                    SelectedEnemyIndices.Add(ID);
+                }
+                else
+                {
+                    int switchID = -1;
+                    float maxDistance = distance;
+                    for (int i = 0; i < SelectedEnemyIndices.Length; i++)
+                    {
+                        float dist = math.distance(EnemyData[SelectedEnemyIndices[i]].Position, PlayerPosition);
+                        if (maxDistance < dist)
+                        {
+                            maxDistance = dist;
+                            switchID = i;
+                        }
+                    }
+                    if (switchID > -1)
+                    {
+                        SelectedEnemyIndices[switchID] = ID;
+                    }
+                }
+            }
+        }
+
+
+
     }
 }
 public struct EnemyJobData
