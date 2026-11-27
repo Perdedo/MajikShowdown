@@ -30,6 +30,7 @@ public class TrainingWheelEnemy : WheelEnemy
         attacked = true;
         jumpOnCooldown = false;
         prevMoving = false;
+        repositioning = false;
         //CheckFieldLocation();
     }
     public override void EnemyUpdate()
@@ -51,15 +52,41 @@ public class TrainingWheelEnemy : WheelEnemy
         {
             return;
         }
-        if (transparency > 0)
+        if (!repositioning)
         {
-            transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
-
-            foreach (Material mat in mesh.materials)
+            if (transparency > 0)
             {
-                mat.SetFloat("_Alpha_Threshold", transparency);
+                transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
+
+                foreach (Material mat in mesh.materials)
+                {
+                    mat.SetFloat("_Alpha_Threshold", transparency);
+                }
+                return;
             }
-            return;
+        }
+        else
+        {
+            if (transparency < 1)
+            {
+                transparency = Mathf.Clamp(transparency + Time.deltaTime, 0, 1);
+
+                foreach (Material mat in mesh.materials)
+                {
+                    mat.SetFloat("_Alpha_Threshold", transparency);
+                }
+                return;
+            }
+            else
+            {
+                rb.interpolation = RigidbodyInterpolation.None;
+                rb.position = reposition;
+                transform.position = reposition;
+                ResetAllVelocities();
+                rb.interpolation = RigidbodyInterpolation.Interpolate;
+                repositioning = false;
+                return;
+            }
         }
         if (forwardCell != null)
         {

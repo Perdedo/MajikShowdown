@@ -74,7 +74,8 @@ public class Enemy : CrowdCharacter
     protected Vector3 predTarget;
     protected int detectRadius;
     public float maxDistanceFromPlayer = 100, repositionRange = 20;
-
+    protected bool repositioning = false;
+    protected Vector3 reposition;
     public Animator animator;
     protected bool prevMoving = false, moving = false;
     public enum EnemyAnimState : byte { None, Attack, Jump, Land, Stop, Teleport };
@@ -179,6 +180,7 @@ public class Enemy : CrowdCharacter
         jumpOnCooldown = false;
         prevMoving = false;
         moving = false;
+        repositioning = false;
         //CheckFieldLocation();
     }
     public void UpdateIdWrapper(int value)
@@ -240,15 +242,41 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        if (transparency > 0)
+        if (!repositioning)
         {
-            transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
-
-            foreach (Material mat in mesh.materials)
+            if (transparency > 0)
             {
-                mat.SetFloat("_Alpha_Threshold", transparency);
+                transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
+
+                foreach (Material mat in mesh.materials)
+                {
+                    mat.SetFloat("_Alpha_Threshold", transparency);
+                }
+                return;
             }
-            return;
+        }
+        else
+        {
+            if (transparency < 1)
+            {
+                transparency = Mathf.Clamp(transparency + Time.deltaTime, 0, 1);
+
+                foreach (Material mat in mesh.materials)
+                {
+                    mat.SetFloat("_Alpha_Threshold", transparency);
+                }
+                return;
+            }
+            else
+            {
+                rb.interpolation = RigidbodyInterpolation.None;
+                rb.position = reposition;
+                transform.position = reposition;
+                ResetAllVelocities();
+                rb.interpolation = RigidbodyInterpolation.Interpolate;
+                repositioning = false;
+                return;
+            }
         }
         timePred = (float)NetworkTime.time - GameManager.Instance.hordeController.lastTime;
         predTarget = GameManager.Instance.hordeController.enemiesInfo[instanceIndex].pos + GameManager.Instance.hordeController.enemiesInfo[instanceIndex].vel * timePred;
@@ -291,6 +319,7 @@ public class Enemy : CrowdCharacter
         }
         prevMoving = false;
         moving = false;
+        repositioning = false;
     }
 
     public virtual void EnemyUpdate()
@@ -312,15 +341,41 @@ public class Enemy : CrowdCharacter
         {
             return;
         }
-        if (transparency > 0)
+        if(!repositioning)
         {
-            transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
-
-            foreach (Material mat in mesh.materials)
+            if (transparency > 0)
             {
-                mat.SetFloat("_Alpha_Threshold", transparency);
+                transparency = Mathf.Clamp(transparency - Time.deltaTime, 0, 1);
+
+                foreach (Material mat in mesh.materials)
+                {
+                    mat.SetFloat("_Alpha_Threshold", transparency);
+                }
+                return;
             }
-            return;
+        }
+        else
+        {
+            if (transparency < 1)
+            {
+                transparency = Mathf.Clamp(transparency + Time.deltaTime, 0, 1);
+
+                foreach (Material mat in mesh.materials)
+                {
+                    mat.SetFloat("_Alpha_Threshold", transparency);
+                }
+                return;
+            }
+            else
+            {
+                rb.interpolation = RigidbodyInterpolation.None;
+                rb.position = reposition;
+                transform.position = reposition;
+                ResetAllVelocities();
+                rb.interpolation = RigidbodyInterpolation.Interpolate;
+                repositioning = false;
+                return;
+            }
         }
         if (forwardCell != null)
         {
@@ -578,14 +633,15 @@ public class Enemy : CrowdCharacter
         }
         if (targetVector.sqrMagnitude > maxDistanceFromPlayer * maxDistanceFromPlayer)
         {
-            Vector3 reposition = CheckReposition();
+            reposition = CheckReposition();
             if (reposition != Vector3.zero)
             {
-                rb.interpolation = RigidbodyInterpolation.None;
+                repositioning = true;
+                /*rb.interpolation = RigidbodyInterpolation.None;
                 rb.position = reposition;
                 transform.position = reposition;
                 ResetAllVelocities();
-                rb.interpolation = RigidbodyInterpolation.Interpolate;
+                rb.interpolation = RigidbodyInterpolation.Interpolate;*/
             }
         }
     }
