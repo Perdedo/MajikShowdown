@@ -1,4 +1,5 @@
 using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -12,14 +13,8 @@ public class LootSpawner : NetworkBehaviour
     public List<RuneLootBox> InactiveLootBoxes;
     public List<RuneLootPool> lootPools;
     public bool network = true;
+    public float collectTime = 1.2f;
 
-    void Update()
-    {
-        /*if (Input.GetKeyDown(KeyCode.L))
-        {
-            SpawnLootBox(Vector3.up, test);
-        }*/
-    }
     void Awake()
     {
         Instance = this;
@@ -56,10 +51,18 @@ public class LootSpawner : NetworkBehaviour
     public void DespawnLootBox(RuneLootBox box)
     {
         box.lootPool = null;
-        box.gameObject.SetActive(false);
-        if(network) RPCDeactivateLootBox(box.gameObject);
         ActiveLootBoxes.Remove(box);
         InactiveLootBoxes.Add(box);
+        StartCoroutine(WaitCollectAnim(box));
+        //box.gameObject.SetActive(false);
+        //if(network) RPCDeactivateLootBox(box.gameObject);
+    }
+
+    IEnumerator WaitCollectAnim(RuneLootBox box)
+    {
+        yield return new WaitForSeconds(collectTime);
+        box.gameObject.SetActive(false);
+        if (network) RPCDeactivateLootBox(box.gameObject);
     }
 
     [ClientRpc]

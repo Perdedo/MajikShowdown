@@ -7,6 +7,7 @@ public class RuneLootBox : InteractableObject
     [SyncVar]public int lootPoolInd;
     public SpellNode loot;
     bool looted = false;
+    public Animator animator;
     public SpellNode GetLoot()
     {
         if (lootPool == null)
@@ -19,6 +20,7 @@ public class RuneLootBox : InteractableObject
 
     public void Initialize()
     {
+        animator.ResetTrigger("Collect");
         if(!isServer && LootSpawner.Instance.network)
         {
             return;
@@ -90,7 +92,8 @@ public class RuneLootBox : InteractableObject
     [ClientRpc]
     public void RPCGetLoot(int rarityInd, int typeInd, int listInd)
     {
-        if(isServer)
+        animator.ResetTrigger("Collect");
+        if (isServer)
         {
             return;
         }
@@ -144,6 +147,7 @@ public class RuneLootBox : InteractableObject
         if (looted) return;
         looted = true;
         player.caster.AddRune(loot);
+        animator.SetTrigger("Collect");
 
         if (player.isLocalPlayer || !LootSpawner.Instance.network)
         {
@@ -153,18 +157,31 @@ public class RuneLootBox : InteractableObject
         if (!isServer && LootSpawner.Instance.network)
         {
             CMDInteract(GameManager.Instance.Players.IndexOf(player));
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
         }
         else
         {
             LootSpawner.Instance.DespawnLootBox(this);
+            if(LootSpawner.Instance.network)
+            {
+                RPCCollect();
+            }
         }
     }
 
     [Command(requiresAuthority = false)]
     public void CMDInteract(int playerInd)
     {
+        looted = true;
+        RPCCollect();
         GameManager.Instance.Players[playerInd].caster.AddRune(loot);
         LootSpawner.Instance.DespawnLootBox(this);
+    }
+
+    [ClientRpc]
+    public void RPCCollect()
+    {
+        looted = true;
+        animator.SetTrigger("Collect");
     }
 }

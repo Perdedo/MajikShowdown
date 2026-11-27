@@ -299,7 +299,6 @@ public class Player : Character
     {
         if(newVal)
         {
-            Debug.Log("Ready");
             GameManager.Instance.hordeController.CheckReadyPlayers();
         }
     }
