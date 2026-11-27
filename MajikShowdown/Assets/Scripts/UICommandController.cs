@@ -33,7 +33,7 @@ public class UICommandController : NetworkBehaviour
         }
         else
         {
-            if(GameManager.Instance.uiController != null)
+            if(GameManager.Instance.uiController != null && caster.ownedNodes.Count == caster.runtimeNodes.Count)
             {
                 GameManager.Instance.uiController.playerUI = playerUI;
                 spellInventoryUI.CreateStartingSpells();
@@ -57,7 +57,7 @@ public class UICommandController : NetworkBehaviour
 
     IEnumerator WaitOfflineSetup()
     {
-        yield return new WaitUntil(() => GameManager.Instance != null && GameManager.Instance.uiController != null);
+        yield return new WaitUntil(() => GameManager.Instance != null && GameManager.Instance.uiController != null && caster.ownedNodes.Count == caster.runtimeNodes.Count);
         GameManager.Instance.uiController.playerUI = playerUI;
         spellInventoryUI.CreateStartingSpells();
     }
