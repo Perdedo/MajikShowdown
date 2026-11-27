@@ -30,7 +30,9 @@ public class Explosion : NetworkBehaviour
         {
             enemyElement = element;
         }
-        VFXIndex = BuffersControl.Instance.SpawnEffect(enemyElement, SpellTypes.Explosion, transform, explosionRadius*2, duration);
+        float extraDuration = Mathf.Min(1, duration * 0.2f);
+        float roundedDuration = Mathf.Round((duration + extraDuration) * 10) / 10;
+        VFXIndex = BuffersControl.Instance.SpawnEffect(enemyElement, SpellTypes.Explosion, transform, Mathf.Round(explosionRadius*20) / 10, roundedDuration);
     }
 
     private void Update()

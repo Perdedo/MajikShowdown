@@ -194,7 +194,6 @@ public class TutorialMission
     public void StartMission()
     {
         isStarted = true;
-        Debug.Log("Mission Started: " + missionName);
         missionStarted.Invoke();
     }
     public void CheckCompletion()
@@ -253,6 +252,5 @@ public class TutorialMission
     {
         isCompleted = true;
         missionCompleted.Invoke();
-        Debug.Log("Mission Completed: " + missionName);
     }
 }

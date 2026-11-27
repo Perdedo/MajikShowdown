@@ -6,7 +6,7 @@ public class ExplosiveEnemy : Enemy
     public float explosionRadius = 10, knockbackStrength = 100, knockbackLift = 0.5f;
     public GameObject explosionVFX;
     public LayerMask affectedByExplosion;
-    Collider[] hits;
+    Collider[] hits = new Collider[64];
     protected bool exploded = false;
     Vector3 knockbackDir, leapDir;
     protected Timer leapTimer = new Timer(false);
@@ -33,9 +33,10 @@ public class ExplosiveEnemy : Enemy
             NetworkServer.Spawn(inst);
         }
         inst.GetComponent<Explosion>().Initialize(element, explosionRadius);
-        hits = Physics.OverlapSphere(transform.position, explosionRadius, affectedByExplosion);
-        foreach (Collider collider in hits)
+        int ammount = Physics.OverlapSphereNonAlloc(transform.position, explosionRadius, hits, affectedByExplosion);
+        for(int i = 0; i < ammount; i++)
         {
+            Collider collider = hits[i];
             if (collider.gameObject != this.gameObject)
             {
                 collider.gameObject.GetComponent<IGameCharacter>().DamageHandler.TakeDamage(dmgCtrl);
