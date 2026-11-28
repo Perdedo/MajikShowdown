@@ -39,7 +39,6 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby()
     {
-        Debug.Log("Botão clicado");
 
         if (!SteamManager.Initialized)
         {
@@ -47,7 +46,6 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
-        Debug.Log("Criando lobby...");
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, NetworkManager.singleton.maxConnections);
     }
 

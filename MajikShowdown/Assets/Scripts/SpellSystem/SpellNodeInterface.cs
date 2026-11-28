@@ -92,14 +92,35 @@ public class SpellNodeInterface : MonoBehaviour
     {
         bool inverted = Node is SpellStat stat && stat.invertNodeColors;
 
+        Material mat = new Material(mainImage.material);
+        mainImage.material = mat;
+
         if (inverted)
         {
             mainImage.sprite = invertedBackgroundSprite;
-            mainImage.color = Color.white;
+            //mainImage.color = Color.white;
+            mat.SetColor("_Color", Color.white);
         }
         else
         {
-            mainImage.color = Node.color;
+            //mainImage.color = Node.color;
+            mat.SetColor("_Color", Node.color);
+        }
+
+        switch(Node.quality)
+        {
+            case SpellNode.Quality.Rusty:
+                mat.SetFloat("_IsRefined", 0);
+                mat.SetFloat("_IsRusty", 1);
+                break;
+            case SpellNode.Quality.Forged:
+                mat.SetFloat("_IsRefined", 0);
+                mat.SetFloat("_IsRusty", 0);
+                break;
+            case SpellNode.Quality.Refined:
+                mat.SetFloat("_IsRefined", 1);
+                mat.SetFloat("_IsRusty", 0);
+                break;
         }
 
         mainImage.alphaHitTestMinimumThreshold = 0.1f;
